@@ -11,7 +11,7 @@ set -euo pipefail
 
 DOMAIN="hispike.in"
 PROJECT_DIR="/var/www/petdogs"
-GIT_REPO="https://github.com/YOUR_USERNAME/petdogs.git"   # update this
+GIT_REPO="https://github.com/kondapalligopi-eng/spike.git"
 
 GREEN='\033[0;32m'; NC='\033[0m'
 log() { echo -e "${GREEN}[SETUP]${NC} $*"; }

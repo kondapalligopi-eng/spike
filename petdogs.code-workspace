@@ -1,0 +1,75 @@
+{
+  "folders": [
+    {
+      "name": "Root",
+      "path": "."
+    },
+    {
+      "name": "Backend (FastAPI)",
+      "path": "./backend"
+    },
+    {
+      "name": "Frontend (React + TS)",
+      "path": "./frontend"
+    },
+    {
+      "name": "Nginx",
+      "path": "./nginx"
+    }
+  ],
+  "settings": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "[python]": {
+      "editor.defaultFormatter": "ms-python.black-formatter"
+    },
+    "python.defaultInterpreterPath": "${workspaceFolder:Backend (FastAPI)}/.venv/Scripts/python.exe",
+    "typescript.preferences.importModuleSpecifier": "shortest",
+    "tailwindCSS.experimental.classRegex": [
+      ["clsx\\(([^)]*)\\)", "'([^']*)'"]
+    ]
+  },
+  "extensions": {
+    "recommendations": [
+      "ms-python.python",
+      "ms-python.black-formatter",
+      "charliermarsh.ruff",
+      "esbenp.prettier-vscode",
+      "bradlc.vscode-tailwindcss",
+      "dbaeumer.vscode-eslint",
+      "prisma.prisma",
+      "ms-azuretools.vscode-docker",
+      "humao.rest-client"
+    ]
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Backend: FastAPI",
+        "type": "python",
+        "request": "launch",
+        "module": "uvicorn",
+        "args": ["app.main:app", "--reload", "--host", "0.0.0.0", "--port", "8000"],
+        "cwd": "${workspaceFolder:Backend (FastAPI)}",
+        "envFile": "${workspaceFolder:Backend (FastAPI)}/.env",
+        "justMyCode": false
+      },
+      {
+        "name": "Frontend: Vite Dev",
+        "type": "node",
+        "request": "launch",
+        "runtimeExecutable": "npm",
+        "runtimeArgs": ["run", "dev"],
+        "cwd": "${workspaceFolder:Frontend (React + TS)}",
+        "console": "integratedTerminal"
+      }
+    ],
+    "compounds": [
+      {
+        "name": "Full Stack",
+        "configurations": ["Backend: FastAPI", "Frontend: Vite Dev"]
+      }
+    ]
+  }
+}
