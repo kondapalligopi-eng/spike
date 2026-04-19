@@ -47,7 +47,7 @@ services:
   # -------------------------------------------------------------------------
   - type: web
     name: petdogs-frontend
-    runtime: static
+    env: static
     plan: free
     region: oregon
     rootDir: frontend
@@ -57,7 +57,7 @@ services:
       - key: VITE_USE_MOCK
         value: "false"
       - key: VITE_API_URL
-        sync: false   # Set this in Render dashboard after backend deploys
+        sync: false
     routes:
       - type: rewrite
         source: /*
