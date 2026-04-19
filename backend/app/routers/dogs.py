@@ -145,19 +145,20 @@ async def update_dog(
 
 @router.delete(
     "/{dog_id}",
-    status_code=status.HTTP_204_NO_CONTENT,
+    status_code=status.HTTP_200_OK,
     summary="Delete a dog listing (owner or admin only)",
 )
 async def delete_dog(
     dog_id: uuid.UUID,
     current_user: User = Depends(get_current_active_user),
     db: AsyncSession = Depends(get_db),
-) -> None:
+) -> dict:
     dog = await DogService.get_by_id(db, dog_id)
     if dog is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Dog not found")
     _require_dog_ownership(dog.owner_id, current_user)
     await DogService.delete(db, dog)
+    return {"message": "Dog listing deleted successfully"}
 
 
 @router.post(
