@@ -1,0 +1,17 @@
+.env
+.env.*
+!.env.example
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+tests/
+*.egg-info/
+dist/
+build/
+.git/
+.gitignore
+docker-compose.yml
+*.md

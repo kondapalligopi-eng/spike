@@ -1,0 +1,101 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: petdogs_postgres_prod
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    # No port exposure in production — access only from within Docker network
+
+  redis:
+    image: redis:7-alpine
+    container_name: petdogs_redis_prod
+    restart: always
+    volumes:
+      - redis_data:/data
+    deploy:
+      resources:
+        limits:
+          memory: 128m
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    # No port exposure in production — access only from within Docker network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: petdogs_backend_prod
+    restart: always
+    env_file:
+      - .env.prod
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    # No port exposure in production — nginx proxies to this service
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: production
+    container_name: petdogs_frontend_prod
+    restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 64m
+    depends_on:
+      - backend
+
+  nginx:
+    image: nginx:alpine
+    container_name: petdogs_nginx_prod
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - frontend_static:/usr/share/nginx/html:ro
+    deploy:
+      resources:
+        limits:
+          memory: 64m
+    depends_on:
+      - backend
+      - frontend
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  frontend_static:
+    driver: local

@@ -1,0 +1,58 @@
+# Environment files
+.env
+.env.prod
+*.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+coverage.xml
+
+# Node / Frontend
+node_modules/
+dist/
+.pnp
+.pnp.js
+
+# Docker
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Alembic
+alembic/versions/*.pyc
+
+# Uploads / media
+uploads/
+media/
+
+# SSL certs
+nginx/ssl/
+*.pem
+*.key
+*.crt
