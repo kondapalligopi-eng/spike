@@ -19,7 +19,7 @@ set -euo pipefail
 # -----------------------------------------------------------------------------
 PROJECT_DIR="/var/www/petdogs"          # Absolute path to the repo on the VPS
 GIT_BRANCH="main"                       # Branch to deploy
-SITE_URL="https://yourpetdogswebsite.com"
+SITE_URL="https://hispike.in"
 COMPOSE_FILE="docker-compose.prod.yml"
 
 # Colour helpers
