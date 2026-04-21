@@ -11,6 +11,7 @@ import { MyDogs } from '@/pages/MyDogs';
 import { NewDog } from '@/pages/NewDog';
 import { Adoptions } from '@/pages/Adoptions';
 import { Admin } from '@/pages/Admin';
+import { Swimming } from '@/pages/Swimming';
 import { NotFound } from '@/pages/NotFound';
 
 export default function App() {
