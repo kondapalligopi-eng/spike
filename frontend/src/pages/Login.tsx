@@ -60,7 +60,7 @@ export function Login() {
           {/* Logo */}
           <div className="text-center mb-8">
             <Link to="/" className="inline-flex items-center gap-2 text-2xl font-bold text-warm-900">
-              <span>🐾</span> PetDogs
+              <img src="/logo.png" alt="Cuddly Friend" className="h-8 w-8 object-contain" /> Cuddly Friend
             </Link>
             <h1 className="text-3xl font-extrabold text-warm-900 mt-4 mb-2">Welcome back</h1>
             <p className="text-warm-500">Sign in to your account</p>
