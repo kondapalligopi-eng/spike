@@ -61,7 +61,7 @@ export function Register() {
     mutationFn: registerApi,
     onSuccess: (data) => {
       storeLogin(data.access_token, data.user);
-      toast.success(`Welcome to PetDogs, ${data.user.full_name}!`);
+      toast.success(`Welcome to Cuddly Friend, ${data.user.full_name}!`);
       navigate(redirectTo, { replace: true });
     },
     onError: (error: Error) => {
