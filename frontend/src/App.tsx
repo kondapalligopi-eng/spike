@@ -14,6 +14,7 @@ import { Admin } from '@/pages/Admin';
 import { Swimming } from '@/pages/Swimming';
 import { Hospital } from '@/pages/Hospital';
 import { Park } from '@/pages/Park';
+import { Grooming } from '@/pages/Grooming';
 import { NotFound } from '@/pages/NotFound';
 
 export default function App() {
