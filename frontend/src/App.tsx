@@ -30,6 +30,7 @@ export default function App() {
         <Route path="dogs/:id" element={<DogDetail />} />
         <Route path="swimming" element={<Swimming />} />
         <Route path="hospital" element={<Hospital />} />
+        <Route path="park" element={<Park />} />
 
         {/* Protected routes */}
         <Route
