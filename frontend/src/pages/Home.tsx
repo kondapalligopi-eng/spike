@@ -58,6 +58,30 @@ export function Home() {
         </div>
       </section>
 
+      {/* Services / Categories */}
+      <section className="py-12 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6">
+            {[
+              { label: 'Hospital', emoji: '🏥' },
+              { label: 'Park', emoji: '🌳' },
+              { label: 'Swimming', emoji: '🏊' },
+              { label: 'Grooming', emoji: '✂️' },
+              { label: 'Pet Supplies', emoji: '🛒' },
+            ].map(({ label, emoji }) => (
+              <button
+                key={label}
+                type="button"
+                className="flex flex-col items-center justify-center gap-2 p-5 rounded-2xl bg-warm-50 border border-warm-200 hover:border-primary-400 hover:bg-primary-50 hover:-translate-y-0.5 transition-all shadow-sm"
+              >
+                <span className="text-4xl">{emoji}</span>
+                <span className="text-sm font-semibold text-warm-800">{label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Stats Section */}
       {stats && (
         <section className="py-12 bg-warm-50">
