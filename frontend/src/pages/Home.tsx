@@ -33,20 +33,12 @@ export function Home() {
                 Trusted vets, dog parks, swim lessons, grooming, and premium
                 supplies — every service your best friend needs, under one roof.
               </p>
-              <div className="flex flex-wrap gap-3">
-                <Link
-                  to="/dogs"
-                  className="inline-block px-8 py-3 bg-primary-500 hover:bg-primary-400 text-white font-semibold rounded-md transition-colors shadow-lg"
-                >
-                  Find a Dog
-                </Link>
-                <Link
-                  to="/hospital"
-                  className="inline-block px-8 py-3 bg-white/15 hover:bg-white/25 backdrop-blur-sm border border-white/30 text-white font-semibold rounded-md transition-colors"
-                >
-                  Explore Services
-                </Link>
-              </div>
+              <Link
+                to="/hospital"
+                className="inline-block px-8 py-3 bg-primary-500 hover:bg-primary-400 text-white font-semibold rounded-md transition-colors shadow-lg"
+              >
+                Explore Services
+              </Link>
             </div>
 
             {/* Right: service label */}
