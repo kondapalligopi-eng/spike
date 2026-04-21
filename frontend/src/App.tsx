@@ -32,6 +32,7 @@ export default function App() {
         <Route path="swimming" element={<Swimming />} />
         <Route path="hospital" element={<Hospital />} />
         <Route path="park" element={<Park />} />
+        <Route path="grooming" element={<Grooming />} />
 
         {/* Protected routes */}
         <Route
