@@ -21,36 +21,53 @@ export function Home() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full py-16 lg:py-20">
             {/* Left: headline + CTA */}
             <div className="max-w-xl">
+              <p className="text-xs sm:text-sm font-semibold tracking-[0.3em] text-accent-300 mb-4 uppercase">
+                Your Dog's Everything, In One Place
+              </p>
               <h1 className="text-5xl lg:text-6xl font-extrabold uppercase tracking-tight leading-[1.05] mb-6">
-                Make That Tail-Wag
+                From Adoption
                 <br />
-                Feeling Last
+                To Adventure
               </h1>
               <p className="text-lg lg:text-xl text-primary-100/90 mb-8 leading-relaxed">
-                The joy of companionship never ends when you're
-                <br className="hidden sm:block" />
-                coming home to the ultimate best friend.
+                Trusted vets, dog parks, swim lessons, grooming, and premium
+                supplies — every service your best friend needs, under one roof.
               </p>
-              <Link
-                to="/dogs"
-                className="inline-block px-8 py-3 bg-primary-500 hover:bg-primary-400 text-white font-semibold rounded-md transition-colors shadow-lg"
-              >
-                Find Yours
-              </Link>
+              <div className="flex flex-wrap gap-3">
+                <Link
+                  to="/dogs"
+                  className="inline-block px-8 py-3 bg-primary-500 hover:bg-primary-400 text-white font-semibold rounded-md transition-colors shadow-lg"
+                >
+                  Find a Dog
+                </Link>
+                <Link
+                  to="/hospital"
+                  className="inline-block px-8 py-3 bg-white/15 hover:bg-white/25 backdrop-blur-sm border border-white/30 text-white font-semibold rounded-md transition-colors"
+                >
+                  Explore Services
+                </Link>
+              </div>
             </div>
 
-            {/* Right: event label */}
+            {/* Right: service label */}
             <div className="hidden lg:flex items-start justify-end">
               <div className="text-right">
                 <p className="text-sm font-semibold tracking-[0.3em] text-primary-200 mb-2">
                   THE CUDDLY FRIEND
                 </p>
                 <p className="text-5xl font-extrabold uppercase tracking-tight leading-none">
-                  Adoption
+                  All-In-One
                 </p>
                 <p className="text-2xl font-light uppercase tracking-[0.25em] text-primary-100 mt-2">
-                  Event
+                  Pet Care
                 </p>
+                <ul className="mt-6 text-xs tracking-[0.25em] uppercase text-primary-100/80 space-y-1.5">
+                  <li>🏥 Vet Hospital</li>
+                  <li>🌳 Dog Parks</li>
+                  <li>🏊 Swim Training</li>
+                  <li>✂️ Grooming Salon</li>
+                  <li>🛒 Pet Supplies</li>
+                </ul>
               </div>
             </div>
           </div>
