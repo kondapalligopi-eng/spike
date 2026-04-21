@@ -144,14 +144,35 @@ export function Navbar() {
       {mobileOpen && (
         <div className="md:hidden border-t border-warm-200 bg-white animate-fade-in">
           <nav className="px-4 py-4 flex flex-col gap-1">
+            {[
+              { to: '/hospital', label: 'Hospital' },
+              { to: '/park', label: 'Park' },
+              { to: '/swimming', label: 'Swimming' },
+              { to: '/grooming', label: 'Grooming' },
+              { to: '/pet-supplies', label: 'Pet Supplies' },
+            ].map(({ to, label }) => (
+              <NavLink
+                key={to}
+                to={to}
+                className={({ isActive }) =>
+                  `px-4 py-2.5 rounded-xl text-sm font-medium tracking-wider uppercase ${isActive ? 'bg-accent-100 text-warm-900' : 'text-warm-700 hover:bg-warm-50'}`
+                }
+                onClick={() => setMobileOpen(false)}
+              >
+                {label}
+              </NavLink>
+            ))}
+
+            <div className="border-t border-warm-100 my-2" />
+
             <NavLink
               to="/dogs"
               className={({ isActive }) =>
-                `px-4 py-2.5 rounded-xl text-sm font-medium tracking-wider uppercase ${isActive ? 'bg-primary-50 text-primary-600' : 'text-warm-700 hover:bg-warm-50'}`
+                `px-4 py-2.5 rounded-xl text-sm font-medium tracking-wider uppercase ${isActive ? 'bg-primary-50 text-primary-600' : 'text-warm-600 hover:bg-warm-50'}`
               }
               onClick={() => setMobileOpen(false)}
             >
-              Browse
+              Browse Dogs
             </NavLink>
 
             {isAuthenticated && (
@@ -159,7 +180,7 @@ export function Navbar() {
                 <NavLink
                   to="/my-dogs"
                   className={({ isActive }) =>
-                    `px-4 py-2.5 rounded-xl text-sm font-medium tracking-wider uppercase ${isActive ? 'bg-primary-50 text-primary-600' : 'text-warm-700 hover:bg-warm-50'}`
+                    `px-4 py-2.5 rounded-xl text-sm font-medium tracking-wider uppercase ${isActive ? 'bg-primary-50 text-primary-600' : 'text-warm-600 hover:bg-warm-50'}`
                   }
                   onClick={() => setMobileOpen(false)}
                 >
@@ -168,7 +189,7 @@ export function Navbar() {
                 <NavLink
                   to="/adoptions"
                   className={({ isActive }) =>
-                    `px-4 py-2.5 rounded-xl text-sm font-medium tracking-wider uppercase ${isActive ? 'bg-primary-50 text-primary-600' : 'text-warm-700 hover:bg-warm-50'}`
+                    `px-4 py-2.5 rounded-xl text-sm font-medium tracking-wider uppercase ${isActive ? 'bg-primary-50 text-primary-600' : 'text-warm-600 hover:bg-warm-50'}`
                   }
                   onClick={() => setMobileOpen(false)}
                 >
@@ -177,7 +198,7 @@ export function Navbar() {
                 <NavLink
                   to="/profile"
                   className={({ isActive }) =>
-                    `px-4 py-2.5 rounded-xl text-sm font-medium tracking-wider uppercase ${isActive ? 'bg-primary-50 text-primary-600' : 'text-warm-700 hover:bg-warm-50'}`
+                    `px-4 py-2.5 rounded-xl text-sm font-medium tracking-wider uppercase ${isActive ? 'bg-primary-50 text-primary-600' : 'text-warm-600 hover:bg-warm-50'}`
                   }
                   onClick={() => setMobileOpen(false)}
                 >
@@ -190,7 +211,7 @@ export function Navbar() {
               <NavLink
                 to="/admin"
                 className={({ isActive }) =>
-                  `px-4 py-2.5 rounded-xl text-sm font-medium tracking-wider uppercase ${isActive ? 'bg-primary-50 text-primary-600' : 'text-warm-700 hover:bg-warm-50'}`
+                  `px-4 py-2.5 rounded-xl text-sm font-medium tracking-wider uppercase ${isActive ? 'bg-primary-50 text-primary-600' : 'text-warm-600 hover:bg-warm-50'}`
                 }
                 onClick={() => setMobileOpen(false)}
               >
