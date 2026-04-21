@@ -31,8 +31,8 @@ export function Navbar() {
             to="/"
             className="flex items-center gap-2.5 font-bold text-xl text-warm-900 hover:text-primary-600 transition-colors"
           >
-            <span className="text-2xl">🐾</span>
-            <span>PetDogs</span>
+            <img src="/logo.png" alt="Cuddly Friend" className="h-10 w-10 object-contain" />
+            <span>Cuddly Friend</span>
           </Link>
 
           {/* Desktop nav */}
