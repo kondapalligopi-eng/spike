@@ -81,66 +81,6 @@ export function Home() {
         </div>
       </section>
 
-      {/* How it works */}
-      <section className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-extrabold text-warm-900 mb-4">How It Works</h2>
-            <p className="text-warm-500 text-lg max-w-xl mx-auto">
-              Finding your perfect companion has never been easier
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              {
-                step: '01',
-                title: 'Browse Dogs',
-                description: 'Explore our collection of adoptable dogs. Filter by breed, size, age, and more to find your perfect match.',
-                emoji: '🔍',
-              },
-              {
-                step: '02',
-                title: 'Submit Request',
-                description: 'Found the one? Submit an adoption request with a personal message about why you\'d be a great owner.',
-                emoji: '📝',
-              },
-              {
-                step: '03',
-                title: 'Welcome Home',
-                description: 'Once approved, coordinate with the current owner and welcome your new best friend home!',
-                emoji: '🏠',
-              },
-            ].map(({ step, title, description, emoji }) => (
-              <div key={step} className="relative flex flex-col items-center text-center p-8 rounded-2xl bg-warm-50 border border-warm-200">
-                <div className="text-5xl mb-4">{emoji}</div>
-                <div className="text-xs font-bold text-primary-500 uppercase tracking-widest mb-2">
-                  Step {step}
-                </div>
-                <h3 className="text-xl font-bold text-warm-900 mb-3">{title}</h3>
-                <p className="text-warm-500 leading-relaxed">{description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Banner */}
-      <section className="py-16 bg-gradient-to-r from-primary-500 to-accent-500 text-white">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl font-extrabold mb-4">
-            Have a Dog Looking for a Home?
-          </h2>
-          <p className="text-primary-100 text-lg mb-8 max-w-xl mx-auto">
-            Create a listing in minutes and connect with thousands of potential adopters.
-          </p>
-          <Link
-            to="/my-dogs/new"
-            className="inline-flex items-center gap-2 px-8 py-4 bg-white text-primary-600 font-bold rounded-2xl hover:bg-primary-50 transition-all shadow-lg"
-          >
-            List a Dog for Adoption
-          </Link>
-        </div>
-      </section>
     </div>
   );
 }
