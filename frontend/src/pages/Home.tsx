@@ -25,9 +25,9 @@ export function Home() {
                 Your Dog's Everything, In One Place
               </p>
               <h1 className="text-5xl lg:text-6xl font-extrabold uppercase tracking-tight leading-[1.05] mb-6">
-                From Adoption
+                From Wellness
                 <br />
-                To Adventure
+                To Wagging Tails
               </h1>
               <p className="text-lg lg:text-xl text-primary-100/90 mb-8 leading-relaxed">
                 Trusted vets, dog parks, swim lessons, grooming, and premium
