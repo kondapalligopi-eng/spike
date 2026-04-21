@@ -1,12 +1,6 @@
 import { Link } from 'react-router-dom';
-import { useFeaturedDogsQuery, useAdminStatsQuery } from '@/hooks/useDogs';
-import { DogCard } from '@/components/DogCard';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
 
 export function Home() {
-  const { data: featuredDogs, isLoading: dogsLoading } = useFeaturedDogsQuery();
-  const { data: stats } = useAdminStatsQuery();
-
   return (
     <div className="flex flex-col">
       {/* Hero Banner — cinematic wide layout */}
