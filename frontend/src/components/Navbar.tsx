@@ -25,14 +25,14 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-sm border-b border-warm-200 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <Link
             to="/"
-            className="flex items-center gap-2.5 font-bold text-xl text-warm-900 hover:text-primary-600 transition-colors"
+            className="flex items-center hover:opacity-80 transition-opacity"
+            aria-label="Cuddly Friend — Home"
           >
-            <img src="/logo.png" alt="Cuddly Friend" className="h-10 w-10 object-contain" />
-            <span>Cuddly Friend</span>
+            <img src="/logo.png" alt="Cuddly Friend" className="h-16 w-16 object-contain" />
           </Link>
 
           {/* Desktop nav */}
