@@ -28,6 +28,7 @@ export default function App() {
         <Route path="dogs" element={<Dogs />} />
         <Route path="dogs/:id" element={<DogDetail />} />
         <Route path="swimming" element={<Swimming />} />
+        <Route path="hospital" element={<Hospital />} />
 
         {/* Protected routes */}
         <Route
