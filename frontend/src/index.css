@@ -71,12 +71,12 @@
   }
 
   .shadow-primary-200 {
-    --tw-shadow-color: rgb(253 230 138 / 0.5);
+    --tw-shadow-color: rgb(191 219 254 / 0.5);
     --tw-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
   }
 
   .shadow-accent-200 {
-    --tw-shadow-color: rgb(254 215 170 / 0.5);
+    --tw-shadow-color: rgb(254 240 138 / 0.5);
     --tw-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
   }
 }

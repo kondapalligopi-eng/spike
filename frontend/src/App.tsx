@@ -11,6 +11,11 @@ import { MyDogs } from '@/pages/MyDogs';
 import { NewDog } from '@/pages/NewDog';
 import { Adoptions } from '@/pages/Adoptions';
 import { Admin } from '@/pages/Admin';
+import { Swimming } from '@/pages/Swimming';
+import { Hospital } from '@/pages/Hospital';
+import { Park } from '@/pages/Park';
+import { Grooming } from '@/pages/Grooming';
+import { PetSupplies } from '@/pages/PetSupplies';
 import { NotFound } from '@/pages/NotFound';
 
 export default function App() {
@@ -25,6 +30,11 @@ export default function App() {
         <Route index element={<Home />} />
         <Route path="dogs" element={<Dogs />} />
         <Route path="dogs/:id" element={<DogDetail />} />
+        <Route path="swimming" element={<Swimming />} />
+        <Route path="hospital" element={<Hospital />} />
+        <Route path="park" element={<Park />} />
+        <Route path="grooming" element={<Grooming />} />
+        <Route path="pet-supplies" element={<PetSupplies />} />
 
         {/* Protected routes */}
         <Route
