@@ -132,16 +132,11 @@ export function Navbar() {
 
         {/* Second row: centered nav with active underline */}
         <nav className="hidden md:flex items-center justify-center gap-8 pb-4">
-          <NavLink to="/dogs" className={navLinkClass}>Browse</NavLink>
-          {isAuthenticated && (
-            <>
-              <NavLink to="/my-dogs" className={navLinkClass}>My Listings</NavLink>
-              <NavLink to="/adoptions" className={navLinkClass}>My Adoptions</NavLink>
-            </>
-          )}
-          {isAdmin && (
-            <NavLink to="/admin" className={navLinkClass}>Admin</NavLink>
-          )}
+          <NavLink to="/hospital" className={navLinkClass}>Hospital</NavLink>
+          <NavLink to="/park" className={navLinkClass}>Park</NavLink>
+          <NavLink to="/swimming" className={navLinkClass}>Swimming</NavLink>
+          <NavLink to="/grooming" className={navLinkClass}>Grooming</NavLink>
+          <NavLink to="/pet-supplies" className={navLinkClass}>Pet Supplies</NavLink>
         </nav>
       </div>
 
