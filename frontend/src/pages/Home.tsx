@@ -9,52 +9,57 @@ export function Home() {
 
   return (
     <div className="flex flex-col">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary-500 via-primary-600 to-accent-600 text-white">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-10 left-10 text-9xl">🐶</div>
-          <div className="absolute bottom-10 right-10 text-9xl">🐾</div>
-          <div className="absolute top-1/2 left-1/4 text-7xl">🦴</div>
-        </div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32">
-          <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-medium mb-6">
-              <span>🌟</span>
-              <span>Find your perfect furry companion</span>
-            </div>
-            <h1 className="text-5xl lg:text-7xl font-extrabold leading-tight mb-6">
-              Every Dog
-              <br />
-              <span className="text-primary-200">Deserves a</span>
-              <br />
-              Loving Home
-            </h1>
-            <p className="text-xl text-primary-100 mb-10 leading-relaxed max-w-xl">
-              Browse hundreds of adoptable dogs from shelters and loving families.
-              Your next best friend is just a click away.
-            </p>
-            <div className="flex flex-wrap gap-4">
+      {/* Hero Banner — cinematic wide layout */}
+      <section className="relative overflow-hidden bg-gradient-to-r from-primary-900 via-primary-800 to-primary-600 text-white">
+        {/* Background image (optional — drop /hero-dogs.jpg into public/) */}
+        <img
+          src="/hero-dogs.jpg"
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 w-full h-full object-cover object-right opacity-0 transition-opacity duration-500"
+          onLoad={(e) => { (e.currentTarget as HTMLImageElement).style.opacity = '1'; }}
+          onError={(e) => { (e.currentTarget as HTMLImageElement).remove(); }}
+        />
+        {/* Left-to-right dark gradient overlay so text stays readable */}
+        <div className="absolute inset-0 bg-gradient-to-r from-primary-900/95 via-primary-900/70 to-transparent" />
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-[460px] lg:min-h-[540px] flex items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full py-16 lg:py-20">
+            {/* Left: headline + CTA */}
+            <div className="max-w-xl">
+              <h1 className="text-5xl lg:text-6xl font-extrabold uppercase tracking-tight leading-[1.05] mb-6">
+                Make That Tail-Wag
+                <br />
+                Feeling Last
+              </h1>
+              <p className="text-lg lg:text-xl text-primary-100/90 mb-8 leading-relaxed">
+                The joy of companionship never ends when you're
+                <br className="hidden sm:block" />
+                coming home to the ultimate best friend.
+              </p>
               <Link
                 to="/dogs"
-                className="px-8 py-4 bg-white text-primary-600 font-bold rounded-2xl hover:bg-primary-50 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                className="inline-block px-8 py-3 bg-primary-500 hover:bg-primary-400 text-white font-semibold rounded-md transition-colors shadow-lg"
               >
-                Browse Dogs
-              </Link>
-              <Link
-                to="/register"
-                className="px-8 py-4 bg-white/20 backdrop-blur-sm text-white font-bold rounded-2xl hover:bg-white/30 transition-all border border-white/30"
-              >
-                List Your Dog
+                Find Yours
               </Link>
             </div>
-          </div>
-        </div>
 
-        {/* Wave divider */}
-        <div className="absolute bottom-0 left-0 right-0">
-          <svg viewBox="0 0 1440 80" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full">
-            <path d="M0 80L60 72C120 64 240 48 360 42.7C480 37.3 600 42.7 720 48C840 53.3 960 58.7 1080 58.7C1200 58.7 1320 53.3 1380 50.7L1440 48V80H1380C1320 80 1200 80 1080 80C960 80 840 80 720 80C600 80 480 80 360 80C240 80 120 80 60 80H0Z" fill="#fafaf9"/>
-          </svg>
+            {/* Right: event label */}
+            <div className="hidden lg:flex items-start justify-end">
+              <div className="text-right">
+                <p className="text-sm font-semibold tracking-[0.3em] text-primary-200 mb-2">
+                  THE CUDDLY FRIEND
+                </p>
+                <p className="text-5xl font-extrabold uppercase tracking-tight leading-none">
+                  Adoption
+                </p>
+                <p className="text-2xl font-light uppercase tracking-[0.25em] text-primary-100 mt-2">
+                  Event
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
