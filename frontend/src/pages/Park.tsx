@@ -116,7 +116,7 @@ export function Park() {
 
   return (
     <div className="bg-white">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-8">
+      <div className={`max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 grid grid-cols-1 gap-8 ${selectedSpot ? 'lg:grid-cols-[1fr_280px]' : ''}`}>
         {/* Left / main column */}
         <div>
           {selectedSpot ? (
