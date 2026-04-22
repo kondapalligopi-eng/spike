@@ -287,20 +287,25 @@ export function Park() {
         {/* Right sidebar — only shown on detail view */}
         {selectedSpot && (
           <aside className="space-y-6">
-            {/* Map card */}
+            {/* Map card — live OpenStreetMap embed for the selected spot */}
             <div className="border border-warm-200 rounded-md overflow-hidden">
-              <div className="relative aspect-[4/3] bg-gradient-to-br from-primary-100 via-warm-100 to-accent-100 flex items-center justify-center">
-                <div className="absolute inset-0 opacity-60" style={{
-                  backgroundImage:
-                    'radial-gradient(circle at 30% 40%, #bfdbfe 0, transparent 40%), radial-gradient(circle at 70% 60%, #fef08a 0, transparent 35%)',
-                }} />
-                <span className="relative text-5xl">🗺️</span>
-                <button
-                  type="button"
+              <div className="relative aspect-[4/3] bg-warm-100">
+                <iframe
+                  key={selectedSpot.name}
+                  title={`Map of ${selectedSpot.name}`}
+                  src={`https://www.google.com/maps?q=${encodeURIComponent(`${selectedSpot.name}, ${selectedSpot.locality}`)}&output=embed`}
+                  className="absolute inset-0 w-full h-full border-0"
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                />
+                <a
+                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${selectedSpot.name}, ${selectedSpot.locality}`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="absolute top-3 right-3 px-3 py-1.5 bg-warm-900/90 hover:bg-warm-900 text-white text-xs font-semibold rounded-md"
                 >
-                  View on Map
-                </button>
+                  Open in Maps
+                </a>
               </div>
             </div>
 
