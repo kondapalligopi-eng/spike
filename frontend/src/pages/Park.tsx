@@ -27,7 +27,7 @@ const SPOTS: ParkSpot[] = [
     name: 'Cubbon Park',
     locality: 'Sampangi Rama Nagar, Bengaluru',
     rating: 5,
-    image: 'https://placedog.net/800/600?id=1',
+    image: '/cubbon-park.jpg',
   },
   {
     name: 'Lalbagh Botanical Garden',
