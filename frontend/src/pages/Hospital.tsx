@@ -144,13 +144,6 @@ export function Hospital() {
         </div>
       </section>
 
-      {/* Dark title strip */}
-      <section className="bg-primary-800 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <h1 className="text-xl sm:text-2xl font-semibold">Best Pet Hospitals Near Me</h1>
-        </div>
-      </section>
-
       {/* City chips */}
       <section className="bg-white border-b border-warm-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
