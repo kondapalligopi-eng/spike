@@ -17,13 +17,8 @@ type Product = {
 };
 
 const BRANDS = [
-  'Chewy Made',
-  '360 Pet Nutrition',
-  'A Better Treat',
-  'A Strong Heart',
-  'ACANA',
-  'Addiction',
-  'AFreschi',
+  'Royal Canin',
+  'Royal Canin Veterinary Diet',
 ];
 
 const LIFESTAGES = ['Puppy', 'Adult', 'Senior', 'All Lifestages'];
