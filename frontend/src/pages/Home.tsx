@@ -33,21 +33,21 @@ export function Home() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full py-8 lg:py-10">
             {/* Left: headline + CTA */}
             <div className="max-w-xl">
-              <p className="text-xs sm:text-sm font-semibold tracking-[0.3em] text-accent-300 mb-4 uppercase">
+              <p className="text-[11px] sm:text-xs font-semibold tracking-[0.3em] text-accent-300 mb-2 uppercase">
                 Your Dog's Everything, In One Place
               </p>
-              <h1 className="text-5xl lg:text-6xl font-extrabold uppercase tracking-tight leading-[1.05] mb-6">
+              <h1 className="text-3xl lg:text-4xl font-extrabold uppercase tracking-tight leading-[1.05] mb-3">
                 From Wellness
                 <br />
                 To Wagging Tails
               </h1>
-              <p className="text-lg lg:text-xl text-primary-100/90 mb-8 leading-relaxed">
+              <p className="text-sm lg:text-base text-primary-100/90 mb-4 leading-relaxed">
                 Trusted vets, dog parks, swim lessons, grooming, and premium
                 supplies — every service your best friend needs, under one roof.
               </p>
               <Link
                 to="/hospital"
-                className="inline-block px-8 py-3 bg-primary-500 hover:bg-primary-400 text-white font-semibold rounded-md transition-colors shadow-lg"
+                className="inline-block px-6 py-2 bg-primary-500 hover:bg-primary-400 text-white text-sm font-semibold rounded-md transition-colors shadow-lg"
               >
                 Explore Services
               </Link>
