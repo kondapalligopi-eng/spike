@@ -107,6 +107,11 @@ export function Park() {
       )
     : SPOTS;
 
+  // Scroll to top when entering or leaving the detail view
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  }, [selectedSpot]);
+
   const detailInfoRows = (spot: ParkSpot) => [
     { ...INFO_ROWS[0], value: `${spot.locality} — ${INFO_ROWS[0].value.split(',').slice(-2).join(',').trim()}` },
     INFO_ROWS[1],
