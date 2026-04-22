@@ -15,6 +15,7 @@ import { Swimming } from '@/pages/Swimming';
 import { Hospital } from '@/pages/Hospital';
 import { Park } from '@/pages/Park';
 import { Grooming } from '@/pages/Grooming';
+import { GroomingSalon } from '@/pages/GroomingSalon';
 import { PetSupplies } from '@/pages/PetSupplies';
 import { NotFound } from '@/pages/NotFound';
 
