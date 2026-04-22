@@ -24,28 +24,40 @@ const HIGHLIGHTS = [
 
 const SPOTS: ParkSpot[] = [
   {
-    name: "Rosie's Dog Beach",
-    locality: 'Long Beach, CA',
+    name: 'Cubbon Park',
+    locality: 'Sampangi Rama Nagar, Bengaluru',
     rating: 5,
     image: '/park-1.jpg',
   },
   {
-    name: 'Arroyo Burro Beach (Hendry’s Beach)',
-    locality: 'Santa Barbara, CA',
+    name: 'Lalbagh Botanical Garden',
+    locality: 'Mavalli, Bengaluru',
     rating: 5,
     image: '/park-2.jpg',
   },
   {
-    name: 'Fort Funston',
-    locality: 'San Francisco, CA',
+    name: 'Agara Lake Park',
+    locality: 'HSR Layout, Bengaluru',
     rating: 4,
     image: '/park-3.jpg',
   },
   {
-    name: 'Point Isabel Regional Shoreline',
-    locality: 'Richmond, CA',
-    rating: 5,
+    name: 'Indiranagar Defence Colony Park',
+    locality: 'Indiranagar, Bengaluru',
+    rating: 4,
     image: '/park-4.jpg',
+  },
+  {
+    name: 'Bellandur Lake Park',
+    locality: 'Bellandur, Bengaluru',
+    rating: 4,
+    image: '/park-5.jpg',
+  },
+  {
+    name: 'Whitefield Memorial Park',
+    locality: 'Whitefield, Bengaluru',
+    rating: 4,
+    image: '/park-6.jpg',
   },
 ];
 
