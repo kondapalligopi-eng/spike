@@ -56,16 +56,16 @@ export function Home() {
             {/* Right: service label */}
             <div className="hidden lg:flex items-start justify-end">
               <div className="text-right">
-                <p className="text-sm font-semibold tracking-[0.3em] text-primary-200 mb-2">
+                <p className="text-xs font-semibold tracking-[0.3em] text-primary-200 mb-1">
                   THE CUDDLY FRIEND
                 </p>
-                <p className="text-5xl font-extrabold uppercase tracking-tight leading-none">
+                <p className="text-3xl font-extrabold uppercase tracking-tight leading-none">
                   All-In-One
                 </p>
-                <p className="text-2xl font-light uppercase tracking-[0.25em] text-primary-100 mt-2">
+                <p className="text-lg font-light uppercase tracking-[0.25em] text-primary-100 mt-1">
                   Pet Care
                 </p>
-                <ul className="mt-6 text-xs tracking-[0.25em] uppercase text-primary-100/80 space-y-1.5">
+                <ul className="mt-3 text-[11px] tracking-[0.25em] uppercase text-primary-100/80 space-y-1">
                   <li>🏥 Vet Hospital</li>
                   <li>🌳 Dog Parks</li>
                   <li>🏊 Swim Training</li>
