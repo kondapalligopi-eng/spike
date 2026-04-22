@@ -361,7 +361,7 @@ export function PetSupplies() {
           {/* Product grid */}
           <section>
             <div className="flex items-center justify-between mb-5 text-sm text-warm-600">
-              <span>1–{PRODUCTS.length} of 1,284 results</span>
+              <span>{visibleProducts.length === 0 ? '0' : `1–${visibleProducts.length}`} of {visibleProducts.length} results</span>
               <select className="border border-warm-300 rounded-md px-3 py-1.5 outline-none bg-white">
                 <option>Sort by: Featured</option>
                 <option>Price: Low to High</option>
@@ -369,11 +369,17 @@ export function PetSupplies() {
                 <option>Customer Rating</option>
               </select>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {PRODUCTS.map((p) => (
-                <ProductCard key={p.name} product={p} />
-              ))}
-            </div>
+            {visibleProducts.length === 0 ? (
+              <div className="border border-dashed border-warm-300 rounded-md p-10 text-center text-sm text-warm-500">
+                No products match the selected filters.
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {visibleProducts.map((p) => (
+                  <ProductCard key={p.name} product={p} />
+                ))}
+              </div>
+            )}
           </section>
         </div>
       </div>
