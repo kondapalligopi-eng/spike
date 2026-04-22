@@ -64,6 +64,7 @@ export function Layout() {
 
   return (
     <div className="min-h-screen bg-warm-50 flex flex-col">
+      <ScrollToTop />
       <Navbar />
       <main className="flex-1">
         <Outlet />
