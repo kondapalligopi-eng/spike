@@ -284,26 +284,26 @@ export function Park() {
           )}
         </div>
 
-        {/* Right sidebar */}
-        <aside className="space-y-6">
-          {/* Map card */}
-          <div className="border border-warm-200 rounded-md overflow-hidden">
-            <div className="relative aspect-[4/3] bg-gradient-to-br from-primary-100 via-warm-100 to-accent-100 flex items-center justify-center">
-              <div className="absolute inset-0 opacity-60" style={{
-                backgroundImage:
-                  'radial-gradient(circle at 30% 40%, #bfdbfe 0, transparent 40%), radial-gradient(circle at 70% 60%, #fef08a 0, transparent 35%)',
-              }} />
-              <span className="relative text-5xl">🗺️</span>
-              <button
-                type="button"
-                className="absolute top-3 right-3 px-3 py-1.5 bg-warm-900/90 hover:bg-warm-900 text-white text-xs font-semibold rounded-md"
-              >
-                View Results on Map
-              </button>
+        {/* Right sidebar — only shown on detail view */}
+        {selectedSpot && (
+          <aside className="space-y-6">
+            {/* Map card */}
+            <div className="border border-warm-200 rounded-md overflow-hidden">
+              <div className="relative aspect-[4/3] bg-gradient-to-br from-primary-100 via-warm-100 to-accent-100 flex items-center justify-center">
+                <div className="absolute inset-0 opacity-60" style={{
+                  backgroundImage:
+                    'radial-gradient(circle at 30% 40%, #bfdbfe 0, transparent 40%), radial-gradient(circle at 70% 60%, #fef08a 0, transparent 35%)',
+                }} />
+                <span className="relative text-5xl">🗺️</span>
+                <button
+                  type="button"
+                  className="absolute top-3 right-3 px-3 py-1.5 bg-warm-900/90 hover:bg-warm-900 text-white text-xs font-semibold rounded-md"
+                >
+                  View on Map
+                </button>
+              </div>
             </div>
-          </div>
 
-          {selectedSpot && (
             <div className="border border-warm-200 rounded-md p-4">
               <p className="text-xs font-bold tracking-widest text-warm-700 mb-2 text-center">
                 LOCATION
@@ -311,8 +311,8 @@ export function Park() {
               <p className="text-sm text-warm-800 font-semibold">{selectedSpot.name}</p>
               <p className="text-xs text-warm-500 mt-1">📍 {selectedSpot.locality}</p>
             </div>
-          )}
-        </aside>
+          </aside>
+        )}
       </div>
     </div>
   );
