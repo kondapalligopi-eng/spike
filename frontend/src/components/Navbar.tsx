@@ -96,7 +96,7 @@ export function Navbar() {
             {/* Center: logo */}
             <div className="flex justify-center">
               <Link to="/" aria-label="Cuddly Friend — Home" className="hover:opacity-80 transition-opacity">
-                <img src="/logo.png" alt="Cuddly Friend" className="h-16 w-16 sm:h-20 sm:w-20 object-contain" />
+                <img src="/logo.png" alt="Cuddly Friend" className="h-24 w-24 sm:h-28 sm:w-28 object-contain drop-shadow-sm" />
               </Link>
             </div>
 
