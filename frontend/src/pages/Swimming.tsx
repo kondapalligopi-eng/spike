@@ -46,12 +46,17 @@ const SECTIONS: Section[] = [
 ];
 
 function Panel({ section }: { section: Section }) {
-  const { heading, body, cta, image, imageAlt, imageSide, background } = section;
+  const { eyebrow, heading, body, cta, image, imageAlt, imageSide, background } = section;
   const bg = background === 'warm' ? 'bg-warm-100' : 'bg-white';
   const textFirst = imageSide === 'right';
 
   const textBlock: ReactNode = (
     <div className="flex flex-col justify-center p-8 lg:p-12">
+      {eyebrow && (
+        <p className="text-xs font-semibold tracking-[0.25em] text-accent-500 mb-3">
+          {eyebrow}
+        </p>
+      )}
       <h2 className="text-3xl lg:text-4xl font-extrabold text-primary-700 mb-3">
         {heading}
       </h2>
