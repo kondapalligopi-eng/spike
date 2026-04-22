@@ -69,12 +69,46 @@ export function GroomingSalon() {
     <div className="bg-white">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         {/* Breadcrumb */}
-        <nav className="text-xs text-warm-500 mb-3">
-          <Link to="/grooming" className="hover:underline">Cuddly Friend Grooming</Link>
-          <span className="mx-2">·</span>
-          {salon.state}
-          <span className="mx-2">·</span>
-          <span className="text-warm-800">{salon.area}</span>
+        <nav aria-label="Breadcrumb" className="mb-4">
+          <ol className="flex flex-wrap items-center gap-y-1 text-sm">
+            <li>
+              <Link
+                to="/"
+                className="inline-flex items-center gap-1 px-2 py-1 -ml-2 rounded text-warm-600 hover:text-primary-700 hover:bg-warm-100 transition-colors"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
+                <span className="sr-only">Home</span>
+              </Link>
+            </li>
+            <li aria-hidden="true" className="text-warm-400 mx-1">
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+            </li>
+            <li>
+              <Link
+                to="/grooming"
+                className="px-2 py-1 rounded text-warm-600 hover:text-primary-700 hover:bg-warm-100 transition-colors font-medium"
+              >
+                Grooming Salons
+              </Link>
+            </li>
+            <li aria-hidden="true" className="text-warm-400 mx-1">
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+            </li>
+            <li>
+              <span
+                aria-current="page"
+                className="px-2 py-1 rounded bg-primary-50 text-primary-800 font-semibold"
+              >
+                {salon.area}, {salon.city}
+              </span>
+            </li>
+          </ol>
         </nav>
 
         {/* Title */}
