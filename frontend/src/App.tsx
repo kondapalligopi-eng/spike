@@ -35,6 +35,7 @@ export default function App() {
         <Route path="hospital" element={<Hospital />} />
         <Route path="park" element={<Park />} />
         <Route path="grooming" element={<Grooming />} />
+        <Route path="grooming/:slug" element={<GroomingSalon />} />
         <Route path="pet-supplies" element={<PetSupplies />} />
 
         {/* Protected routes */}
