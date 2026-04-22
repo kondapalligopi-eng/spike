@@ -149,8 +149,10 @@ export function Navbar() {
             {/* Right: search + user */}
             <div className="flex items-center justify-end gap-2 sm:gap-3">
               <button
-                className="p-2 rounded-lg text-warm-700 hover:bg-warm-100 transition-colors"
+                onClick={() => setSearchOpen((o) => !o)}
+                className={`p-2 rounded-lg transition-colors ${searchOpen ? 'text-primary-700 bg-primary-50' : 'text-warm-700 hover:bg-warm-100'}`}
                 aria-label="Search"
+                aria-expanded={searchOpen}
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z" />
