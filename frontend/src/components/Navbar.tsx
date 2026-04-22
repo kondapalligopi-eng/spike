@@ -181,19 +181,14 @@ export function Navbar() {
         </div>
       </header>
 
-      {/* Slide-in drawer overlay */}
+      {/* Slide-in drawer — sits below the sticky header so the navbar + page stay interactive */}
       {drawerOpen && (
         <>
-          <div
-            className="fixed inset-0 z-50 bg-black/30 animate-fade-in"
-            onClick={closeDrawer}
-            aria-hidden="true"
-          />
           <aside
             role="dialog"
-            aria-modal="true"
+            aria-modal="false"
             aria-label="Main menu"
-            className="fixed inset-y-0 left-0 z-50 w-80 max-w-[85vw] bg-white shadow-2xl flex flex-col animate-slide-in-left"
+            className="fixed top-[180px] sm:top-[200px] bottom-0 left-0 z-40 w-80 max-w-[85vw] bg-white shadow-2xl flex flex-col animate-slide-in-left"
           >
             {/* Close button — NOWNESS-style centered, thin, gold accent */}
             <div className="flex items-center justify-center h-16">
