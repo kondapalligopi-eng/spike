@@ -247,29 +247,42 @@ export function Navbar() {
           />
           <div className="fixed top-[180px] sm:top-[200px] inset-x-0 z-40 bg-white border-b border-warm-200 shadow-lg animate-fade-in">
             <div className="max-w-3xl mx-auto px-4 sm:px-6 py-5">
-              <label className="flex items-center gap-2 px-3 py-2 border border-warm-300 rounded-md bg-white">
-                <svg className="w-5 h-5 text-warm-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z" />
-                </svg>
-                <input
-                  autoFocus
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search hospitals, parks, brands, services…"
-                  className="w-full text-sm outline-none bg-transparent text-warm-800 placeholder:text-warm-400"
-                />
-                {searchQuery && (
-                  <button
-                    type="button"
-                    onClick={() => setSearchQuery('')}
-                    className="text-warm-400 hover:text-warm-700 text-sm"
-                    aria-label="Clear search"
-                  >
-                    ✕
-                  </button>
-                )}
-              </label>
+              <div className="flex items-center gap-2">
+                <label className="flex-1 flex items-center gap-2 px-3 py-2 border border-warm-300 rounded-md bg-white">
+                  <svg className="w-5 h-5 text-warm-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z" />
+                  </svg>
+                  <input
+                    autoFocus
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search hospitals, parks, brands, services…"
+                    className="w-full text-sm outline-none bg-transparent text-warm-800 placeholder:text-warm-400"
+                  />
+                  {searchQuery && (
+                    <button
+                      type="button"
+                      onClick={() => setSearchQuery('')}
+                      className="text-warm-400 hover:text-warm-700 text-sm"
+                      aria-label="Clear search"
+                    >
+                      ✕
+                    </button>
+                  )}
+                </label>
+                <button
+                  type="button"
+                  onClick={() => { setSearchOpen(false); setSearchQuery(''); }}
+                  className="p-2 rounded-md text-warm-600 hover:text-warm-900 hover:bg-warm-100 transition-colors"
+                  aria-label="Close search"
+                  title="Close search (Esc)"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
 
               <div className="mt-4 max-h-[60vh] overflow-y-auto">
                 {!searchQuery.trim() ? (
