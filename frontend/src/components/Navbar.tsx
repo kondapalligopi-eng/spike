@@ -66,18 +66,42 @@ export function Navbar() {
   const navigate = useNavigate();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   // (body scroll intentionally not locked — page should remain interactive while drawer is open)
 
-  // Close drawer on ESC
+  // Close drawer / search on ESC
   useEffect(() => {
-    if (!drawerOpen) return;
+    if (!drawerOpen && !searchOpen) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setDrawerOpen(false);
+      if (e.key === 'Escape') {
+        if (drawerOpen) setDrawerOpen(false);
+        if (searchOpen) setSearchOpen(false);
+      }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [drawerOpen]);
+  }, [drawerOpen, searchOpen]);
+
+  const searchResults = searchQuery.trim()
+    ? SEARCH_INDEX.filter((entry) =>
+        `${entry.title} ${entry.subtitle ?? ''} ${entry.section}`
+          .toLowerCase()
+          .includes(searchQuery.trim().toLowerCase()),
+      ).slice(0, 30)
+    : [];
+
+  const groupedResults = searchResults.reduce<Record<string, SearchEntry[]>>((acc, entry) => {
+    (acc[entry.section] ||= []).push(entry);
+    return acc;
+  }, {});
+
+  const goToResult = (to: string) => {
+    setSearchOpen(false);
+    setSearchQuery('');
+    navigate(to);
+  };
 
   const handleLogout = () => {
     logout();
