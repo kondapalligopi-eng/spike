@@ -78,7 +78,7 @@ export function Navbar() {
       <header className="sticky top-0 z-40 bg-white border-b border-warm-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Top row: hamburger | centered logo | right icons */}
-          <div className="grid grid-cols-3 items-center h-40 sm:h-48">
+          <div className="grid grid-cols-3 items-center h-20 sm:h-24">
             {/* Left: hamburger */}
             <div className="flex items-center">
               <button
