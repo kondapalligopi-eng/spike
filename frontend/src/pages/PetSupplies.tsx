@@ -19,6 +19,8 @@ type Product = {
 const BRANDS = [
   'Royal Canin',
   'Royal Canin Veterinary Diet',
+  'Pedigree',
+  'ACANA',
 ];
 
 const LIFESTAGES = ['Puppy', 'Adult', 'Senior', 'All Lifestages'];
