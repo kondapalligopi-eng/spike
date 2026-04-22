@@ -61,14 +61,6 @@ const SPOTS: ParkSpot[] = [
   },
 ];
 
-const QUICK_LINKS = [
-  { icon: '🏨', label: 'Hotels' },
-  { icon: '🍽️', label: 'Restaurants' },
-  { icon: '🎾', label: 'Activities' },
-  { icon: '🎉', label: 'Events' },
-  { icon: '🛎️', label: 'Services' },
-];
-
 function PawRating({ value, max = 5 }: { value: number; max?: number }) {
   return (
     <div className="flex items-center gap-1">
