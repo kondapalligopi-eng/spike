@@ -74,51 +74,81 @@ function PawRating({ value, max = 5 }: { value: number; max?: number }) {
 
 export function Park() {
   const [query, setQuery] = useState('California');
+  const [selectedSpot, setSelectedSpot] = useState<ParkSpot | null>(null);
+
+  const detailInfoRows = (spot: ParkSpot) => [
+    { ...INFO_ROWS[0], value: `${spot.locality} — ${INFO_ROWS[0].value.split(',').slice(-2).join(',').trim()}` },
+    INFO_ROWS[1],
+    INFO_ROWS[2],
+    INFO_ROWS[3],
+  ];
 
   return (
     <div className="bg-white">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-8">
         {/* Left / main column */}
         <div>
-          {/* Info table */}
-          <div className="border border-warm-200 rounded-md overflow-hidden mb-8">
-            <table className="w-full text-sm">
-              <tbody>
-                {INFO_ROWS.map((row, idx) => (
-                  <tr
-                    key={row.label}
-                    className={idx % 2 === 0 ? 'bg-primary-50' : 'bg-white'}
-                  >
-                    <td className="w-48 px-4 py-3 font-semibold text-primary-800 border-r border-warm-200">
-                      <span className="mr-2">{row.icon}</span>
-                      {row.label}
-                    </td>
-                    <td className="px-4 py-3 text-warm-700">
-                      <span className="mr-1">📍</span>
-                      {row.link ? (
-                        <a href="#" className="text-primary-700 underline hover:text-primary-800">
-                          {row.value}
-                        </a>
-                      ) : (
-                        row.value
-                      )}
-                    </td>
-                  </tr>
+          {selectedSpot ? (
+            <>
+              {/* Back button */}
+              <button
+                type="button"
+                onClick={() => setSelectedSpot(null)}
+                className="inline-flex items-center gap-2 mb-6 text-sm text-primary-700 hover:text-primary-900 font-semibold"
+              >
+                <span aria-hidden="true">←</span> Back to results
+              </button>
+
+              {/* Title */}
+              <div className="flex items-start justify-between mb-4 gap-4">
+                <div>
+                  <h2 className="text-2xl font-bold text-warm-900">{selectedSpot.name}</h2>
+                  <p className="text-sm text-warm-500 mt-1">📍 {selectedSpot.locality}</p>
+                </div>
+                <PawRatingDark value={selectedSpot.rating} />
+              </div>
+
+              {/* Info table */}
+              <div className="border border-warm-200 rounded-md overflow-hidden mb-8">
+                <table className="w-full text-sm">
+                  <tbody>
+                    {detailInfoRows(selectedSpot).map((row, idx) => (
+                      <tr
+                        key={row.label}
+                        className={idx % 2 === 0 ? 'bg-primary-50' : 'bg-white'}
+                      >
+                        <td className="w-48 px-4 py-3 font-semibold text-primary-800 border-r border-warm-200">
+                          <span className="mr-2">{row.icon}</span>
+                          {row.label}
+                        </td>
+                        <td className="px-4 py-3 text-warm-700">
+                          <span className="mr-1">📍</span>
+                          {row.link ? (
+                            <a href="#" className="text-primary-700 underline hover:text-primary-800">
+                              {row.value}
+                            </a>
+                          ) : (
+                            row.value
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Highlights */}
+              <ul className="space-y-3 mb-10">
+                {HIGHLIGHTS.map((h) => (
+                  <li key={h} className="flex items-start gap-3 text-warm-800">
+                    <span className="mt-0.5 text-primary-600 text-lg">🐾</span>
+                    <span>{h}</span>
+                  </li>
                 ))}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Highlights */}
-          <ul className="space-y-3 mb-10">
-            {HIGHLIGHTS.map((h) => (
-              <li key={h} className="flex items-start gap-3 text-warm-800">
-                <span className="mt-0.5 text-primary-600 text-lg">🐾</span>
-                <span>{h}</span>
-              </li>
-            ))}
-          </ul>
-
+              </ul>
+            </>
+          ) : (
+            <>
           {/* Search bar */}
           <div className="flex items-center gap-2 mb-3">
             <div className="flex-1 flex items-center gap-2 px-3 py-2 border border-warm-300 rounded-md bg-white">
