@@ -316,8 +316,6 @@ export function PetSupplies() {
               items={BRANDS}
               selected={selectedBrands}
               onToggle={(i) => toggle(selectedBrands, i, setSelectedBrands)}
-              withSearch
-              moreCount={281}
             />
             <FilterSection
               title="Lifestage"
