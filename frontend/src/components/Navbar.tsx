@@ -37,15 +37,7 @@ export function Navbar() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
 
-  // Lock body scroll when drawer open
-  useEffect(() => {
-    if (drawerOpen) {
-      document.body.style.overflow = 'hidden';
-      return () => {
-        document.body.style.overflow = '';
-      };
-    }
-  }, [drawerOpen]);
+  // (body scroll intentionally not locked — page should remain interactive while drawer is open)
 
   // Close drawer on ESC
   useEffect(() => {
