@@ -186,15 +186,6 @@ export function Navbar() {
               )}
             </div>
           </div>
-
-          {/* Second row: centered nav with active underline, framed by top + bottom rules */}
-          <nav className="hidden md:flex items-center justify-center gap-8 pt-2 pb-2 border-t border-warm-200">
-            <NavLink to="/hospital" className={navLinkClass}>Hospital</NavLink>
-            <NavLink to="/park" className={navLinkClass}>Park</NavLink>
-            <NavLink to="/swimming" className={navLinkClass}>Swimming</NavLink>
-            <NavLink to="/grooming" className={navLinkClass}>Grooming</NavLink>
-            <NavLink to="/pet-supplies" className={navLinkClass}>Pet Supplies</NavLink>
-          </nav>
         </div>
       </header>
 
