@@ -77,12 +77,12 @@ export function Navbar() {
     <>
       <header className="sticky top-0 z-40 bg-white border-b border-warm-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Top row: hamburger | centered logo | right icons */}
-          <div className="grid grid-cols-3 items-center h-20 sm:h-24">
-            {/* Left: hamburger */}
-            <div className="flex items-center">
+          {/* Single row: [hamburger (mobile) + left nav] | centered logo | [right nav + search + user] */}
+          <div className="grid grid-cols-3 items-center h-24 sm:h-28">
+            {/* Left: hamburger (mobile) + first half of nav links (desktop) */}
+            <div className="flex items-center gap-6">
               <button
-                className="p-2 rounded-lg text-warm-700 hover:bg-warm-100 transition-colors"
+                className="md:hidden p-2 rounded-lg text-warm-700 hover:bg-warm-100 transition-colors"
                 onClick={() => setDrawerOpen(true)}
                 aria-label="Open menu"
                 aria-expanded={drawerOpen}
@@ -91,17 +91,26 @@ export function Navbar() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
               </button>
+              <nav className="hidden md:flex items-center gap-6 lg:gap-8">
+                <NavLink to="/hospital" className={navLinkClass}>Hospital</NavLink>
+                <NavLink to="/park" className={navLinkClass}>Park</NavLink>
+                <NavLink to="/swimming" className={navLinkClass}>Swimming</NavLink>
+              </nav>
             </div>
 
-            {/* Center: logo */}
+            {/* Center: logo (larger) */}
             <div className="flex justify-center">
               <Link to="/" aria-label="Cuddly Friend — Home" className="hover:opacity-80 transition-opacity">
-                <img src="/logo.png" alt="Cuddly Friend" className="h-16 w-16 sm:h-20 sm:w-20 object-contain" />
+                <img src="/logo.png" alt="Cuddly Friend" className="h-20 w-20 sm:h-24 sm:w-24 object-contain" />
               </Link>
             </div>
 
-            {/* Right: search + user */}
-            <div className="flex items-center justify-end gap-2 sm:gap-3">
+            {/* Right: second half of nav links (desktop) + search + user */}
+            <div className="flex items-center justify-end gap-4 sm:gap-6">
+              <nav className="hidden md:flex items-center gap-6 lg:gap-8">
+                <NavLink to="/grooming" className={navLinkClass}>Grooming</NavLink>
+                <NavLink to="/pet-supplies" className={navLinkClass}>Pet Supplies</NavLink>
+              </nav>
               <button
                 className="p-2 rounded-lg text-warm-700 hover:bg-warm-100 transition-colors"
                 aria-label="Search"
