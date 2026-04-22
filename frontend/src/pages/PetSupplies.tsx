@@ -319,6 +319,13 @@ export function PetSupplies() {
     setState(next);
   };
 
+  const visibleProducts = PRODUCTS.filter((p) => {
+    if (selectedBrands.size > 0 && !selectedBrands.has(p.brand)) return false;
+    if (selectedStages.size > 0 && (!p.lifestage || !selectedStages.has(p.lifestage))) return false;
+    if (selectedForms.size > 0 && (!p.form || !selectedForms.has(p.form))) return false;
+    return true;
+  });
+
   return (
     <div className="bg-white">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
