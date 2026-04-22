@@ -241,17 +241,22 @@ export function Park() {
 
           {/* Title & intro */}
           <h2 className="text-2xl font-bold text-warm-900 mb-3">
-            Dog Friendly Activities in {query || 'Your Area'}
+            Dog Friendly Activities in {appliedQuery || 'Bangalore'}
           </h2>
           <p className="text-sm text-warm-600 mb-6 leading-relaxed">
-            Don't leave Fido in the hotel room when you're on vacation. Get out and play! No matter where you're
-            headed in {query || 'your area'}, we can point you towards the nearest off-leash dog park, the most popular dog
-            beach, a really great hiking trail, and lots of other places to play with Fido.
+            Don't leave Fido at home when you're out exploring. Get out and play! Wherever you are in
+            {' '}{appliedQuery || 'Bangalore'}, we can point you towards the nearest off-leash dog park, a great
+            walking trail, and lots of other places to spend the day with your pup.
           </p>
 
           {/* Spot cards */}
+          {visibleSpots.length === 0 ? (
+            <div className="border border-dashed border-warm-300 rounded-md p-10 text-center text-sm text-warm-500">
+              No parks found for "{appliedQuery}". Try Indiranagar, HSR, Whitefield, Koramangala, or clear the search.
+            </div>
+          ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {SPOTS.map((spot) => (
+            {visibleSpots.map((spot) => (
               <article
                 key={spot.name}
                 onClick={() => setSelectedSpot(spot)}
