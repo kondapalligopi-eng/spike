@@ -189,7 +189,7 @@ export function Park() {
           ) : (
             <>
           {/* Search bar */}
-          <div className="flex items-center gap-2 mb-3">
+          <form onSubmit={fetchResults} className="flex items-center gap-2 mb-3">
             <div className="flex-1 flex items-center gap-2 px-3 py-2 border border-warm-300 rounded-md bg-white">
               <svg className="w-4 h-4 text-warm-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z" />
@@ -198,7 +198,7 @@ export function Park() {
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search location"
+                placeholder="Search Bangalore locality (e.g. Indiranagar, HSR)"
                 className="w-full text-sm outline-none bg-transparent text-warm-700"
               />
               {query && (
@@ -213,7 +213,7 @@ export function Park() {
               )}
             </div>
             <button
-              type="button"
+              type="submit"
               className="px-5 py-2 bg-primary-500 hover:bg-primary-600 text-white text-sm font-semibold rounded-md transition-colors"
             >
               Fetch
