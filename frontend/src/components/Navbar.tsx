@@ -19,6 +19,36 @@ const DRAWER_BOTTOM: DrawerItem[] = [
   { label: 'Contact Us', to: '#' },
 ];
 
+type SearchEntry = { title: string; subtitle?: string; section: string; to: string };
+
+const SEARCH_INDEX: SearchEntry[] = [
+  { section: 'Services', title: 'Hospital', subtitle: 'Vet care across Bangalore', to: '/hospital' },
+  { section: 'Services', title: 'Park', subtitle: 'Dog-friendly parks & lakes', to: '/park' },
+  { section: 'Services', title: 'Swimming', subtitle: 'Aquatic training', to: '/swimming' },
+  { section: 'Services', title: 'Grooming', subtitle: 'Salon & spa', to: '/grooming' },
+  { section: 'Services', title: 'Pet Supplies', subtitle: 'Food, treats, accessories', to: '/pet-supplies' },
+  { section: 'Services', title: 'Browse Dogs', subtitle: 'Adoption listings', to: '/dogs' },
+
+  { section: 'Hospitals', title: 'Indiranagar Pet Care Hospital', subtitle: 'Indiranagar', to: '/hospital' },
+  { section: 'Hospitals', title: 'Koramangala Animal Clinic', subtitle: 'Koramangala', to: '/hospital' },
+  { section: 'Hospitals', title: 'Whitefield 24x7 Vet Emergency', subtitle: 'Whitefield', to: '/hospital' },
+  { section: 'Hospitals', title: 'HSR Companion Hospital', subtitle: 'HSR Layout', to: '/hospital' },
+  { section: 'Hospitals', title: 'Jayanagar Paws & Claws Centre', subtitle: 'Jayanagar', to: '/hospital' },
+  { section: 'Hospitals', title: 'Marathahalli Veterinary Superspeciality', subtitle: 'Marathahalli', to: '/hospital' },
+
+  { section: 'Parks', title: 'Cubbon Park', subtitle: 'Sampangi Rama Nagar', to: '/park' },
+  { section: 'Parks', title: 'Lalbagh Botanical Garden', subtitle: 'Mavalli', to: '/park' },
+  { section: 'Parks', title: 'Agara Lake Park', subtitle: 'HSR Layout', to: '/park' },
+  { section: 'Parks', title: 'Indiranagar Defence Colony Park', subtitle: 'Indiranagar', to: '/park' },
+  { section: 'Parks', title: 'Bellandur Lake Park', subtitle: 'Bellandur', to: '/park' },
+  { section: 'Parks', title: 'Whitefield Memorial Park', subtitle: 'Whitefield', to: '/park' },
+
+  { section: 'Brands', title: 'Royal Canin', subtitle: 'Pet Supplies', to: '/pet-supplies' },
+  { section: 'Brands', title: 'Royal Canin Veterinary Diet', subtitle: 'Pet Supplies', to: '/pet-supplies' },
+  { section: 'Brands', title: 'Pedigree', subtitle: 'Pet Supplies', to: '/pet-supplies' },
+  { section: 'Brands', title: 'ACANA', subtitle: 'Pet Supplies', to: '/pet-supplies' },
+];
+
 function SocialIcon({ label, children, href = '#' }: { label: string; children: React.ReactNode; href?: string }) {
   return (
     <a
