@@ -29,8 +29,8 @@ export function Home() {
         {/* Left-to-right dark gradient overlay so text stays readable */}
         <div className="absolute inset-0 bg-gradient-to-r from-primary-900/95 via-primary-900/70 to-transparent" />
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-[460px] lg:min-h-[540px] flex items-center">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full py-16 lg:py-20">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-[280px] lg:min-h-[340px] flex items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full py-8 lg:py-10">
             {/* Left: headline + CTA */}
             <div className="max-w-xl">
               <p className="text-xs sm:text-sm font-semibold tracking-[0.3em] text-accent-300 mb-4 uppercase">
