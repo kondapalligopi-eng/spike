@@ -30,13 +30,19 @@ export function Hospital() {
   const [specialty, setSpecialty] = useState(SPECIALTIES[0]);
   const [location, setLocation] = useState(LOCATIONS[0]);
   const [activeCity, setActiveCity] = useState<string | null>(null);
+  const [applied, setApplied] = useState({ search: '', specialty: SPECIALTIES[0], location: LOCATIONS[0] });
+
+  const applySearch = (e?: React.FormEvent) => {
+    e?.preventDefault();
+    setApplied({ search: search.trim(), specialty, location });
+  };
 
   return (
     <div className="bg-white">
       {/* Search toolbar */}
       <section className="border-b border-warm-200 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex flex-wrap items-center gap-2 lg:gap-3">
+          <form onSubmit={applySearch} className="flex flex-wrap items-center gap-2 lg:gap-3">
             {/* Search input */}
             <label className="flex items-center gap-2 px-3 py-2 border border-warm-300 rounded-md bg-white flex-1 min-w-[200px]">
               <svg className="w-4 h-4 text-warm-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
