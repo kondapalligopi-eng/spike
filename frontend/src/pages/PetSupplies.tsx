@@ -14,6 +14,8 @@ type Product = {
   savePct?: number;
   sponsored?: boolean;
   deal?: boolean;
+  lifestage?: string;
+  form?: string;
 };
 
 const BRANDS = [
