@@ -78,24 +78,36 @@ export function Home() {
         </div>
       </section>
 
-      {/* Services / Categories */}
+      {/* Services / Categories — editorial thumbnail grid */}
       <section className="py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6 sm:gap-8">
             {[
-              { label: 'Hospital', emoji: '🏥', to: '/hospital' },
-              { label: 'Park', emoji: '🌳', to: '/park' },
-              { label: 'Swimming', emoji: '🏊', to: '/swimming' },
-              { label: 'Grooming', emoji: '✂️', to: '/grooming' },
-              { label: 'Pet Supplies', emoji: '🛒', to: '/pet-supplies' },
-            ].map(({ label, emoji, to }) => (
-              <Link
-                key={label}
-                to={to}
-                className="flex flex-col items-center justify-center gap-2 p-5 rounded-2xl bg-warm-50 border border-warm-200 hover:border-primary-400 hover:bg-primary-50 hover:-translate-y-0.5 transition-all shadow-sm"
-              >
-                <span className="text-4xl">{emoji}</span>
-                <span className="text-sm font-semibold text-warm-800">{label}</span>
+              { label: 'Hospital', emoji: '🏥', kicker: 'Vet Care', image: '/services/hospital.jpg', tint: 'from-rose-200 to-rose-400', to: '/hospital' },
+              { label: 'Park', emoji: '🌳', kicker: 'Outdoors', image: '/services/park.jpg', tint: 'from-emerald-200 to-emerald-500', to: '/park' },
+              { label: 'Swimming', emoji: '🏊', kicker: 'Aquatic', image: '/services/swimming.jpg', tint: 'from-sky-200 to-sky-500', to: '/swimming' },
+              { label: 'Grooming', emoji: '✂️', kicker: 'Salon', image: '/services/grooming.jpg', tint: 'from-amber-200 to-amber-400', to: '/grooming' },
+              { label: 'Pet Supplies', emoji: '🛒', kicker: 'Shop', image: '/services/pet-supplies.jpg', tint: 'from-violet-200 to-violet-400', to: '/pet-supplies' },
+            ].map(({ label, emoji, kicker, image, tint, to }) => (
+              <Link key={label} to={to} className="group block text-center">
+                <p className="text-xs text-warm-600 mb-3 tracking-wide">{kicker}</p>
+                <div className={`relative aspect-[4/3] overflow-hidden bg-gradient-to-br ${tint}`}>
+                  <img
+                    src={image}
+                    alt=""
+                    aria-hidden="true"
+                    className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-500 group-hover:scale-[1.03]"
+                    onLoad={(e) => { (e.currentTarget as HTMLImageElement).style.opacity = '1'; }}
+                    onError={(e) => { (e.currentTarget as HTMLImageElement).remove(); }}
+                  />
+                  <span aria-hidden="true" className="absolute inset-0 flex items-center justify-center text-5xl drop-shadow">
+                    {emoji}
+                  </span>
+                  <span className="absolute bottom-2 right-2 text-[11px] font-medium text-white bg-black/60 px-2 py-0.5 rounded-sm tracking-wide">
+                    {emoji}
+                  </span>
+                </div>
+                <p className="mt-3 text-sm text-warm-900 group-hover:text-primary-700 transition-colors">{label}</p>
               </Link>
             ))}
           </div>
