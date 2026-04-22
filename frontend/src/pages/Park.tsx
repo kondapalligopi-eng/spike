@@ -215,6 +215,7 @@ export function Park() {
             {SPOTS.map((spot) => (
               <article
                 key={spot.name}
+                onClick={() => setSelectedSpot(spot)}
                 className="relative rounded-md overflow-hidden aspect-[4/3] bg-warm-200 group cursor-pointer"
               >
                 <img
