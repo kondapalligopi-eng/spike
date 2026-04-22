@@ -243,6 +243,8 @@ export function Park() {
               </article>
             ))}
           </div>
+            </>
+          )}
         </div>
 
         {/* Right sidebar */}
