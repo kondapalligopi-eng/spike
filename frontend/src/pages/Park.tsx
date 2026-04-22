@@ -27,37 +27,37 @@ const SPOTS: ParkSpot[] = [
     name: 'Cubbon Park',
     locality: 'Sampangi Rama Nagar, Bengaluru',
     rating: 5,
-    image: '/park-1.jpg',
+    image: 'https://placedog.net/800/600?id=1',
   },
   {
     name: 'Lalbagh Botanical Garden',
     locality: 'Mavalli, Bengaluru',
     rating: 5,
-    image: '/park-2.jpg',
+    image: 'https://placedog.net/800/600?id=12',
   },
   {
     name: 'Agara Lake Park',
     locality: 'HSR Layout, Bengaluru',
     rating: 4,
-    image: '/park-3.jpg',
+    image: 'https://placedog.net/800/600?id=27',
   },
   {
     name: 'Indiranagar Defence Colony Park',
     locality: 'Indiranagar, Bengaluru',
     rating: 4,
-    image: '/park-4.jpg',
+    image: 'https://placedog.net/800/600?id=44',
   },
   {
     name: 'Bellandur Lake Park',
     locality: 'Bellandur, Bengaluru',
     rating: 4,
-    image: '/park-5.jpg',
+    image: 'https://placedog.net/800/600?id=63',
   },
   {
     name: 'Whitefield Memorial Park',
     locality: 'Whitefield, Bengaluru',
     rating: 4,
-    image: '/park-6.jpg',
+    image: 'https://placedog.net/800/600?id=88',
   },
 ];
 
