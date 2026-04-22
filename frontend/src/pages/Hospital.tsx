@@ -211,7 +211,14 @@ export function Hospital() {
                 rating: '4.8',
               },
             ]
-              .filter((h) => !activeCity || h.locality.toLowerCase().includes(activeCity.toLowerCase()))
+              .filter((h) => {
+                const q = applied.search.toLowerCase();
+                if (q && !`${h.name} ${h.locality} ${h.specialties}`.toLowerCase().includes(q)) return false;
+                if (applied.specialty !== SPECIALTIES[0] && !h.specialties.toLowerCase().includes(applied.specialty.toLowerCase())) return false;
+                if (applied.location !== LOCATIONS[0] && !h.locality.toLowerCase().includes(applied.location.toLowerCase())) return false;
+                if (activeCity && !h.locality.toLowerCase().includes(activeCity.toLowerCase())) return false;
+                return true;
+              })
               .map((h) => (
                 <div
                   key={h.name}
