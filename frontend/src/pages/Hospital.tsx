@@ -13,16 +13,17 @@ const SPECIALTIES = [
 
 const LOCATIONS = [
   'All Locations',
-  'Bandra',
-  'Andheri',
-  'Mulund',
-  'Vashi',
-  'Mahim',
-  'Kalyan',
-  'Thane',
+  'Indiranagar',
+  'Koramangala',
+  'Whitefield',
+  'HSR Layout',
+  'Jayanagar',
+  'Marathahalli',
+  'Electronic City',
+  'BTM Layout',
 ];
 
-const CITIES = ['Mulund', 'Vashi', 'Mahim', 'Kalyan', 'Andheri', 'Thane'];
+const CITIES = ['Indiranagar', 'Koramangala', 'Whitefield', 'HSR Layout', 'Jayanagar', 'Marathahalli'];
 
 export function Hospital() {
   const [search, setSearch] = useState('');
