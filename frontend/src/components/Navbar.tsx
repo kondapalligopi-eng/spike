@@ -203,15 +203,15 @@ export function Navbar() {
             aria-label="Main menu"
             className="fixed inset-y-0 left-0 z-50 w-80 max-w-[85vw] bg-white shadow-2xl flex flex-col animate-slide-in-left"
           >
-            {/* Close button */}
-            <div className="flex items-center justify-center h-20 border-b border-warm-200">
+            {/* Close button — NOWNESS-style left-aligned, accent color */}
+            <div className="flex items-center justify-start h-20 px-6 border-b border-warm-200">
               <button
                 onClick={closeDrawer}
-                className="p-2 text-warm-600 hover:text-warm-900 transition-colors"
+                className="p-1 text-accent-400 hover:text-accent-500 transition-colors"
                 aria-label="Close menu"
               >
                 <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M6 18L18 6M6 6l12 12" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
