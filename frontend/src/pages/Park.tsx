@@ -72,6 +72,21 @@ function PawRating({ value, max = 5 }: { value: number; max?: number }) {
   );
 }
 
+function PawRatingDark({ value, max = 5 }: { value: number; max?: number }) {
+  return (
+    <div className="flex items-center gap-1">
+      {Array.from({ length: max }).map((_, i) => (
+        <span
+          key={i}
+          className={i < value ? 'text-accent-500' : 'text-warm-300'}
+        >
+          🐾
+        </span>
+      ))}
+    </div>
+  );
+}
+
 export function Park() {
   const [query, setQuery] = useState('California');
   const [selectedSpot, setSelectedSpot] = useState<ParkSpot | null>(null);
