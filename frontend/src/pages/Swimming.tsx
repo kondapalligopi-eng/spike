@@ -13,12 +13,13 @@ type Section = {
 
 const SECTIONS: Section[] = [
   {
+    eyebrow: 'BENGALURU · YEAR-ROUND SWIM SCHOOL',
     heading: 'Swim Training Programs',
     body:
-      "As dogs grow and develop, swimming is one of the best low-impact ways to build strength, stamina, and confidence in the water. See how our structured swim sessions fit into every life stage.",
+      "Bengaluru's hot summers and humid monsoons make swimming one of the safest, most enjoyable workouts for city dogs. Our climate-controlled pools in Indiranagar, Whitefield, HSR Layout, and Sarjapur Road run every day of the year — filtered, pH-balanced, and kept at a dog-friendly 28–30°C. Certified trainers work in small batches with Indies, Labs, Goldens, Beagles, Pugs, and brachycephalic breeds, teaching paddle technique, entry/exit confidence, and in-water recall. Sessions are 30 minutes, by appointment, with life-jacket rental and post-swim towel-dry included.",
     cta: 'Learn More About Swim Training',
     image: '/swim-1.jpg',
-    imageAlt: 'Dog learning to swim with instructor',
+    imageAlt: 'Dog learning to swim with instructor in Bengaluru',
     imageSide: 'right',
     background: 'warm',
   },
