@@ -104,8 +104,77 @@ export function GroomingSalon() {
           </div>
         </section>
 
+        {/* Location, hours & map */}
+        <section className="grid grid-cols-1 md:grid-cols-[1fr_1fr_1.2fr] gap-6 py-10 border-b border-warm-200">
+          <div>
+            <p className="text-sm text-warm-700 mb-1">
+              <span className="font-semibold">Cuddly Friend Grooming</span>{' '}
+              <Link to="/grooming" className="text-accent-600 hover:underline text-xs ml-1">
+                Change
+              </Link>
+            </p>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-sm font-bold text-warm-900">{avgRating}</span>
+              <Stars value={Math.round(Number(avgRating))} />
+              <span className="text-xs text-warm-500">{totalReviews} reviews</span>
+            </div>
+            <p className="text-sm text-warm-700">{salon.address}</p>
+            <p className="text-sm text-warm-500 mb-4">{salon.phone}</p>
+            <button
+              type="button"
+              className="text-sm font-semibold text-accent-600 hover:underline mb-4 block"
+            >
+              Get Directions
+            </button>
+            <button
+              type="button"
+              className="inline-block px-5 py-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-semibold rounded-md transition-colors"
+            >
+              Book now
+            </button>
+          </div>
+
+          <div>
+            <p className="text-sm text-primary-700 font-semibold mb-2">
+              Open today until {salon.openTodayUntil}
+            </p>
+            <dl className="text-sm space-y-0.5">
+              {salon.hours.map((h) => (
+                <div key={h.day} className="flex justify-between max-w-[180px] text-warm-700">
+                  <dt className="italic">{h.day}</dt>
+                  <dd className="italic">{h.hours}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+
+          <div className="relative rounded-md overflow-hidden border border-warm-200 min-h-[180px] bg-gradient-to-br from-warm-100 via-primary-50 to-accent-50">
+            <div
+              aria-hidden="true"
+              className="absolute inset-0 opacity-70"
+              style={{
+                backgroundImage:
+                  'linear-gradient(115deg, #e5e7eb 20%, transparent 20%), linear-gradient(65deg, #fef9c3 25%, transparent 25%), radial-gradient(circle at 80% 30%, #bfdbfe 0, transparent 40%)',
+              }}
+            />
+            <div className="absolute top-3 left-3 text-[10px] font-bold tracking-widest text-warm-600">
+              {salon.mapLabel.map((line, i) => (
+                <span key={i}>
+                  {line}
+                  {i < salon.mapLabel.length - 1 && <br />}
+                </span>
+              ))}
+            </div>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <svg className="w-10 h-10 text-primary-700 drop-shadow" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 0112 6.5a2.5 2.5 0 010 5z" />
+              </svg>
+            </div>
+          </div>
+        </section>
+
         {/* Ratings & reviews */}
-        <section className="pt-10 border-t border-warm-200">
+        <section className="pt-10">
           <h2 className="text-xl font-bold text-warm-900 mb-6">Ratings &amp; reviews</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-[260px_1fr] gap-10">
