@@ -218,7 +218,7 @@ export function Park() {
             >
               Fetch
             </button>
-          </div>
+          </form>
 
           {/* Filter row */}
           <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-warm-600 border-b border-warm-200 pb-4 mb-6">
