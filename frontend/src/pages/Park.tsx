@@ -100,8 +100,20 @@ function PawRatingDark({ value, max = 5 }: { value: number; max?: number }) {
 }
 
 export function Park() {
-  const [query, setQuery] = useState('California');
+  const [query, setQuery] = useState('Bangalore');
+  const [appliedQuery, setAppliedQuery] = useState('');
   const [selectedSpot, setSelectedSpot] = useState<ParkSpot | null>(null);
+
+  const fetchResults = (e?: React.FormEvent) => {
+    e?.preventDefault();
+    setAppliedQuery(query.trim());
+  };
+
+  const visibleSpots = appliedQuery
+    ? SPOTS.filter((s) =>
+        `${s.name} ${s.locality}`.toLowerCase().includes(appliedQuery.toLowerCase()),
+      )
+    : SPOTS;
 
   const detailInfoRows = (spot: ParkSpot) => [
     { ...INFO_ROWS[0], value: `${spot.locality} — ${INFO_ROWS[0].value.split(',').slice(-2).join(',').trim()}` },
