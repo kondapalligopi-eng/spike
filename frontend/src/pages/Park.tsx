@@ -303,28 +303,15 @@ export function Park() {
             </div>
           </div>
 
-          {/* Quick links */}
-          <div className="border border-warm-200 rounded-md">
-            <div className="px-4 py-3 border-b border-warm-200 text-center">
-              <p className="text-xs font-bold tracking-widest text-warm-700">
-                {(query || 'LOCAL').toUpperCase()} QUICK LINKS
+          {selectedSpot && (
+            <div className="border border-warm-200 rounded-md p-4">
+              <p className="text-xs font-bold tracking-widest text-warm-700 mb-2 text-center">
+                LOCATION
               </p>
+              <p className="text-sm text-warm-800 font-semibold">{selectedSpot.name}</p>
+              <p className="text-xs text-warm-500 mt-1">📍 {selectedSpot.locality}</p>
             </div>
-            <ul>
-              {QUICK_LINKS.map((link) => (
-                <li
-                  key={link.label}
-                  className="flex items-center justify-between px-4 py-3 border-b border-warm-100 last:border-b-0 hover:bg-warm-50 cursor-pointer transition-colors"
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="text-lg">{link.icon}</span>
-                    <span className="text-sm text-warm-800">{link.label}</span>
-                  </div>
-                  <span className="text-warm-400 text-xs">▾</span>
-                </li>
-              ))}
-            </ul>
-          </div>
+          )}
         </aside>
       </div>
     </div>
