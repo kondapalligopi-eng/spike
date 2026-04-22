@@ -237,6 +237,84 @@ export function Navbar() {
         </div>
       </header>
 
+      {/* Site-wide search panel — slides down from below the sticky header */}
+      {searchOpen && (
+        <>
+          <div
+            className="fixed top-[180px] sm:top-[200px] inset-x-0 bottom-0 z-30"
+            onClick={() => setSearchOpen(false)}
+            aria-hidden="true"
+          />
+          <div className="fixed top-[180px] sm:top-[200px] inset-x-0 z-40 bg-white border-b border-warm-200 shadow-lg animate-fade-in">
+            <div className="max-w-3xl mx-auto px-4 sm:px-6 py-5">
+              <label className="flex items-center gap-2 px-3 py-2 border border-warm-300 rounded-md bg-white">
+                <svg className="w-5 h-5 text-warm-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z" />
+                </svg>
+                <input
+                  autoFocus
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search hospitals, parks, brands, services…"
+                  className="w-full text-sm outline-none bg-transparent text-warm-800 placeholder:text-warm-400"
+                />
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery('')}
+                    className="text-warm-400 hover:text-warm-700 text-sm"
+                    aria-label="Clear search"
+                  >
+                    ✕
+                  </button>
+                )}
+              </label>
+
+              <div className="mt-4 max-h-[60vh] overflow-y-auto">
+                {!searchQuery.trim() ? (
+                  <p className="text-xs text-warm-500 text-center py-6">
+                    Try searching "Indiranagar", "Royal Canin", "Cubbon Park", or "Grooming"
+                  </p>
+                ) : searchResults.length === 0 ? (
+                  <p className="text-sm text-warm-500 text-center py-6">
+                    No results for "{searchQuery}"
+                  </p>
+                ) : (
+                  <ul className="space-y-5">
+                    {Object.entries(groupedResults).map(([section, entries]) => (
+                      <li key={section}>
+                        <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-warm-500 mb-2">
+                          {section}
+                        </p>
+                        <ul className="divide-y divide-warm-100 border border-warm-200 rounded-md overflow-hidden">
+                          {entries.map((entry) => (
+                            <li key={`${entry.section}-${entry.title}`}>
+                              <button
+                                onClick={() => goToResult(entry.to)}
+                                className="w-full text-left px-3 py-2.5 hover:bg-warm-50 flex items-center justify-between gap-3 transition-colors"
+                              >
+                                <div>
+                                  <p className="text-sm text-warm-900 font-medium">{entry.title}</p>
+                                  {entry.subtitle && (
+                                    <p className="text-xs text-warm-500 mt-0.5">{entry.subtitle}</p>
+                                  )}
+                                </div>
+                                <span aria-hidden="true" className="text-warm-400 text-sm">→</span>
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
       {/* Slide-in drawer — sits below the sticky header so the navbar + page stay interactive */}
       {drawerOpen && (
         <>
