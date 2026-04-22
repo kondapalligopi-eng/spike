@@ -8,8 +8,8 @@ type ParkSpot = {
 };
 
 const INFO_ROWS = [
-  { icon: '📗', label: 'Address:', value: 'Duboce St, Scott St, San Francisco, CA 94114', link: true },
-  { icon: '🕐', label: 'Open Times:', value: '5 am to midnight' },
+  { icon: '📗', label: 'Address:', value: 'Kasturba Road, Sampangi Rama Nagar, Bengaluru, Karnataka 560001', link: true },
+  { icon: '🕐', label: 'Open Times:', value: '5 am to 8 pm' },
   { icon: '💲', label: 'Cost:', value: 'Free to use, may need to pay for parking' },
   { icon: '🐕', label: 'Off-Leash:', value: 'Yes, in designated areas only' },
 ];
