@@ -39,6 +39,13 @@ export function Hospital() {
 
   return (
     <div className="bg-white">
+      {/* Dark title strip */}
+      <section className="bg-primary-800 text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <h1 className="text-xl sm:text-2xl font-semibold">Best Pet Hospitals Near Me</h1>
+        </div>
+      </section>
+
       {/* Search toolbar */}
       <section className="border-b border-warm-200 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -134,13 +141,6 @@ export function Hospital() {
               </svg>
             </button>
           </form>
-        </div>
-      </section>
-
-      {/* Dark title strip */}
-      <section className="bg-primary-800 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <h1 className="text-xl sm:text-2xl font-semibold">Best Pet Hospitals Near Me</h1>
         </div>
       </section>
 

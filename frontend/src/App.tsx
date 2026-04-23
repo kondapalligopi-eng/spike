@@ -15,6 +15,7 @@ import { Swimming } from '@/pages/Swimming';
 import { Hospital } from '@/pages/Hospital';
 import { Park } from '@/pages/Park';
 import { Grooming } from '@/pages/Grooming';
+import { GroomingSalon } from '@/pages/GroomingSalon';
 import { PetSupplies } from '@/pages/PetSupplies';
 import { NotFound } from '@/pages/NotFound';
 
@@ -34,6 +35,7 @@ export default function App() {
         <Route path="hospital" element={<Hospital />} />
         <Route path="park" element={<Park />} />
         <Route path="grooming" element={<Grooming />} />
+        <Route path="grooming/:slug" element={<GroomingSalon />} />
         <Route path="pet-supplies" element={<PetSupplies />} />
 
         {/* Protected routes */}
