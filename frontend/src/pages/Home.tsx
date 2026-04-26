@@ -91,7 +91,7 @@ export function Home() {
             ].map(({ label, emoji, kicker, image, tint, to }) => (
               <Link key={label} to={to} className="group block text-center">
                 <p className="text-xs text-warm-600 mb-3 tracking-wide">{kicker}</p>
-                <div className={`relative mx-auto aspect-square w-40 sm:w-44 lg:w-48 rounded-full overflow-hidden bg-gradient-to-br ${tint} ring-1 ring-warm-200 group-hover:ring-primary-400 transition`}>
+                <div className={`relative mx-auto aspect-square w-24 sm:w-28 lg:w-32 rounded-full overflow-hidden bg-gradient-to-br ${tint} ring-1 ring-warm-200 group-hover:ring-primary-400 transition`}>
                   <img
                     src={image}
                     alt=""
@@ -100,7 +100,7 @@ export function Home() {
                     onLoad={(e) => { (e.currentTarget as HTMLImageElement).style.opacity = '1'; }}
                     onError={(e) => { (e.currentTarget as HTMLImageElement).remove(); }}
                   />
-                  <span aria-hidden="true" className="absolute inset-0 flex items-center justify-center text-5xl drop-shadow">
+                  <span aria-hidden="true" className="absolute inset-0 flex items-center justify-center text-3xl sm:text-4xl drop-shadow">
                     {emoji}
                   </span>
                 </div>
