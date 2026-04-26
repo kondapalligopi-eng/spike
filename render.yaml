@@ -58,7 +58,40 @@ services:
         value: "false"
       - key: VITE_API_URL
         sync: false
+    # Pre-rendered static pages (vite-react-ssg with dirStyle: nested) live at
+    # /<route>/index.html. Map clean URLs to those files BEFORE the SPA catch-all
+    # so corporate URL classifiers (Zscaler, BlueCoat, etc.) get the real
+    # pre-rendered HTML instead of the SPA shell from /index.html.
     routes:
+      - type: rewrite
+        source: /dogs
+        destination: /dogs/index.html
+      - type: rewrite
+        source: /swimming
+        destination: /swimming/index.html
+      - type: rewrite
+        source: /hospital
+        destination: /hospital/index.html
+      - type: rewrite
+        source: /park
+        destination: /park/index.html
+      - type: rewrite
+        source: /grooming
+        destination: /grooming/index.html
+      - type: rewrite
+        source: /pet-supplies
+        destination: /pet-supplies/index.html
+      - type: rewrite
+        source: /adoptions
+        destination: /adoptions/index.html
+      - type: rewrite
+        source: /login
+        destination: /login/index.html
+      - type: rewrite
+        source: /register
+        destination: /register/index.html
+      # SPA fallback for everything else (dynamic routes, protected routes,
+      # 404s — React Router handles them client-side).
       - type: rewrite
         source: /*
         destination: /index.html

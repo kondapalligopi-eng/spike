@@ -25,6 +25,7 @@ export default defineConfig({
     entry: 'src/main.tsx',
     script: 'async',
     formatting: 'none',
+    dirStyle: 'nested',
     includedRoutes(paths: string[]) {
       return paths.filter((p) => !PROTECTED_PATHS.includes(p));
     },
