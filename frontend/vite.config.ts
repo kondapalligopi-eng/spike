@@ -2,7 +2,8 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
 
-// https://vitejs.dev/config/
+const PROTECTED_PATHS = ['/profile', '/my-dogs', '/my-dogs/new', '/admin'];
+
 export default defineConfig({
   plugins: [react()],
   resolve: {
@@ -20,4 +21,12 @@ export default defineConfig({
       },
     },
   },
-})
+  ssgOptions: {
+    entry: 'src/main.tsx',
+    script: 'async',
+    formatting: 'none',
+    includedRoutes(paths: string[]) {
+      return paths.filter((p) => !PROTECTED_PATHS.includes(p));
+    },
+  },
+} as any)
