@@ -105,7 +105,7 @@ export function Home() {
                   </span>
                   <span
                     aria-hidden="true"
-                    className="absolute -bottom-1 -right-1 w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-full bg-white text-lg sm:text-xl shadow ring-1 ring-warm-200"
+                    className="absolute -bottom-1 -right-1 w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-white text-xl sm:text-2xl shadow-lg ring-2 ring-primary-300 group-hover:ring-primary-500 group-hover:scale-110 transition"
                   >
                     {badge}
                   </span>
