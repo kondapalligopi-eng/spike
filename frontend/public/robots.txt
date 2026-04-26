@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+Disallow: /admin
+Disallow: /profile
+Disallow: /my-dogs
+
+Sitemap: https://hispike.in/sitemap.xml
