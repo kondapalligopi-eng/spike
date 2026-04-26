@@ -18,12 +18,81 @@ const LOCATIONS = [
   'Whitefield',
   'HSR Layout',
   'Jayanagar',
+  'Domlur',
   'Marathahalli',
   'Electronic City',
   'BTM Layout',
 ];
 
-const CITIES = ['Indiranagar', 'Koramangala', 'Whitefield', 'HSR Layout', 'Jayanagar', 'Marathahalli'];
+const CITIES = ['Indiranagar', 'Koramangala', 'Whitefield', 'HSR Layout', 'Jayanagar', 'Domlur'];
+
+type Hospital = {
+  name: string;
+  locality: string;
+  address: string;
+  specialties: string;
+  rating: string;
+  phone?: string;
+  website?: string;
+};
+
+// Real Bengaluru pet hospitals. Phone / address sourced from each clinic's
+// official website where available — verify before going live as numbers
+// change. Ratings are approximate (publicly visible on Google / Justdial).
+const HOSPITALS: Hospital[] = [
+  {
+    name: 'SKS Veterinary Hospital',
+    locality: 'Indiranagar',
+    address: '17, Service Rd, Geethanjali Layout, HAL 3rd Stage, New Tippasandra, Bengaluru 560075',
+    specialties: 'General, Surgery, Diagnostics, Grooming',
+    rating: '4.7',
+    website: 'https://www.skspethospital.com/indira-nagar/',
+  },
+  {
+    name: 'V-Care Pet Polyclinic',
+    locality: 'Koramangala',
+    address: 'No. 15, 1st Main, 1st Block, near Kabab Magic, Koramangala, Bengaluru',
+    specialties: 'General, Dentistry, Vaccination',
+    rating: '4.6',
+    phone: '+918147006342',
+    website: 'http://www.vcarepetpolyclinic.com/',
+  },
+  {
+    name: 'V-Care Pet Polyclinic',
+    locality: 'Whitefield',
+    address: 'Opposite CSI Church, Whitefield, Bengaluru 560066',
+    specialties: 'General, Surgery, Pet Supplies',
+    rating: '4.6',
+    phone: '+918147006341',
+    website: 'http://www.vcarepetpolyclinic.com/',
+  },
+  {
+    name: 'Vetic Pet Clinic',
+    locality: 'HSR Layout',
+    address: '1070, Ground Floor, MM Heights, 24th Main Rd, near HSR Layout Police Station, Bengaluru',
+    specialties: '24x7 Care, General, Diagnostics',
+    rating: '4.8',
+    website: 'https://vetic.in/clinics/bengaluru/hsr-bengaluru',
+  },
+  {
+    name: 'Dr. Doodley Pet Hospital',
+    locality: 'Jayanagar',
+    address: 'No. 18, 1356, 4th T Block East, 32nd E Cross Road, Jayanagar, Bengaluru 560041',
+    specialties: 'General, Surgery, Emergency',
+    rating: '4.7',
+    phone: '+919902356133',
+    website: 'https://doodley.in/',
+  },
+  {
+    name: 'Cessna Lifeline Veterinary Hospital',
+    locality: 'Domlur',
+    address: 'No. 148, Near Fiat Showroom, HCBS Amarjyothi Layout, KGA Road, Domlur, Bengaluru 560071',
+    specialties: 'Multispecialty, Emergency, Surgery, Boarding',
+    rating: '4.8',
+    phone: '+917676365365',
+    website: 'https://cessnalifeline.com/',
+  },
+];
 
 export function Hospital() {
   const [search, setSearch] = useState('');
@@ -173,44 +242,7 @@ export function Hospital() {
       <section className="py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[
-              {
-                name: 'Indiranagar Pet Care Hospital',
-                locality: 'Indiranagar',
-                specialties: 'General, Surgery, Dermatology',
-                rating: '4.8',
-              },
-              {
-                name: 'Koramangala Animal Clinic',
-                locality: 'Koramangala',
-                specialties: 'General, Dentistry, Orthopedics',
-                rating: '4.6',
-              },
-              {
-                name: 'Whitefield 24x7 Vet Emergency',
-                locality: 'Whitefield',
-                specialties: 'Emergency, Critical Care',
-                rating: '4.9',
-              },
-              {
-                name: 'HSR Companion Hospital',
-                locality: 'HSR Layout',
-                specialties: 'General, Cardiology',
-                rating: '4.7',
-              },
-              {
-                name: 'Jayanagar Paws & Claws Centre',
-                locality: 'Jayanagar',
-                specialties: 'General, Dermatology',
-                rating: '4.5',
-              },
-              {
-                name: 'Marathahalli Veterinary Superspeciality',
-                locality: 'Marathahalli',
-                specialties: 'Surgery, Orthopedics, Oncology',
-                rating: '4.8',
-              },
-            ]
+            {HOSPITALS
               .filter((h) => {
                 const q = applied.search.toLowerCase();
                 if (q && !`${h.name} ${h.locality} ${h.specialties}`.toLowerCase().includes(q)) return false;
@@ -221,8 +253,8 @@ export function Hospital() {
               })
               .map((h) => (
                 <div
-                  key={h.name}
-                  className="p-6 rounded-2xl border border-warm-200 hover:border-primary-400 hover:shadow-md transition-all bg-white"
+                  key={`${h.name}-${h.locality}`}
+                  className="p-6 rounded-2xl border border-warm-200 hover:border-primary-400 hover:shadow-md transition-all bg-white flex flex-col"
                 >
                   <div className="flex items-start justify-between mb-3">
                     <div className="w-10 h-10 rounded-lg bg-primary-100 text-primary-700 flex items-center justify-center text-xl">
@@ -236,15 +268,45 @@ export function Hospital() {
                     </div>
                   </div>
                   <h3 className="text-lg font-bold text-warm-900 mb-1">{h.name}</h3>
-                  <p className="text-sm text-warm-500 mb-3">📍 {h.locality}</p>
+                  <p className="text-sm text-warm-500 mb-2">📍 {h.locality}</p>
+                  <p className="text-xs text-warm-500 mb-3 leading-snug">{h.address}</p>
                   <p className="text-sm text-warm-600 mb-4">{h.specialties}</p>
-                  <div className="flex gap-2">
-                    <button className="flex-1 px-3 py-2 bg-primary-600 hover:bg-primary-700 text-white text-xs font-semibold rounded-md transition-colors">
-                      Book
-                    </button>
-                    <button className="flex-1 px-3 py-2 border border-warm-300 hover:border-primary-400 text-warm-700 text-xs font-semibold rounded-md transition-colors">
-                      Call
-                    </button>
+                  <div className="mt-auto flex gap-2">
+                    {h.website ? (
+                      <a
+                        href={h.website}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-1 px-3 py-2 bg-primary-600 hover:bg-primary-700 text-white text-xs font-semibold rounded-md transition-colors text-center"
+                      >
+                        Book
+                      </a>
+                    ) : (
+                      <button
+                        type="button"
+                        disabled
+                        className="flex-1 px-3 py-2 bg-warm-200 text-warm-500 text-xs font-semibold rounded-md cursor-not-allowed"
+                      >
+                        Book
+                      </button>
+                    )}
+                    {h.phone ? (
+                      <a
+                        href={`tel:${h.phone}`}
+                        className="flex-1 px-3 py-2 border border-warm-300 hover:border-primary-400 text-warm-700 text-xs font-semibold rounded-md transition-colors text-center"
+                      >
+                        Call
+                      </a>
+                    ) : (
+                      <button
+                        type="button"
+                        disabled
+                        className="flex-1 px-3 py-2 border border-warm-200 text-warm-400 text-xs font-semibold rounded-md cursor-not-allowed"
+                        title="Phone not available — visit website"
+                      >
+                        Call
+                      </button>
+                    )}
                   </div>
                 </div>
               ))}
