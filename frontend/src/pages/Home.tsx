@@ -91,7 +91,7 @@ export function Home() {
             ].map(({ label, dog, badge, kicker, image, tint, to }) => (
               <Link key={label} to={to} className="group block text-center">
                 <p className="text-xs text-warm-600 mb-3 tracking-wide">{kicker}</p>
-                <div className={`relative mx-auto aspect-square w-24 sm:w-28 lg:w-32 rounded-full overflow-visible bg-gradient-to-br ${tint} ring-1 ring-warm-200 group-hover:ring-primary-400 transition`}>
+                <div className={`relative mx-auto aspect-square w-20 sm:w-24 lg:w-28 rounded-full overflow-visible bg-gradient-to-br ${tint} ring-1 ring-warm-200 group-hover:ring-primary-400 transition`}>
                   <img
                     src={image}
                     alt=""
@@ -100,12 +100,12 @@ export function Home() {
                     onLoad={(e) => { (e.currentTarget as HTMLImageElement).style.opacity = '1'; }}
                     onError={(e) => { (e.currentTarget as HTMLImageElement).remove(); }}
                   />
-                  <span aria-hidden="true" className="absolute inset-0 flex items-center justify-center text-4xl sm:text-5xl drop-shadow">
+                  <span aria-hidden="true" className="absolute inset-0 flex items-center justify-center text-3xl sm:text-4xl drop-shadow">
                     {dog}
                   </span>
                   <span
                     aria-hidden="true"
-                    className="absolute -bottom-1 -right-1 w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full bg-white text-base sm:text-lg shadow ring-1 ring-warm-200"
+                    className="absolute -bottom-1 -right-1 w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-full bg-white text-lg sm:text-xl shadow ring-1 ring-warm-200"
                   >
                     {badge}
                   </span>
