@@ -83,25 +83,31 @@ export function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6 sm:gap-8">
             {[
-              { label: 'Hospital', emoji: '🏥', kicker: 'Vet Care', image: '/services/hospital.jpg', tint: 'from-rose-200 to-rose-400', to: '/hospital' },
-              { label: 'Park', emoji: '🌳', kicker: 'Outdoors', image: '/services/park.jpg', tint: 'from-emerald-200 to-emerald-500', to: '/park' },
-              { label: 'Swimming', emoji: '🏊', kicker: 'Aquatic', image: '/services/swimming.jpg', tint: 'from-sky-200 to-sky-500', to: '/swimming' },
-              { label: 'Grooming', emoji: '✂️', kicker: 'Salon', image: '/services/grooming.jpg', tint: 'from-amber-200 to-amber-400', to: '/grooming' },
-              { label: 'Pet Supplies', emoji: '🛒', kicker: 'Shop', image: '/services/pet-supplies.jpg', tint: 'from-violet-200 to-violet-400', to: '/pet-supplies' },
-            ].map(({ label, emoji, kicker, image, tint, to }) => (
+              { label: 'Hospital', dog: '🐶', badge: '🩺', kicker: 'Vet Care', image: '/services/hospital.jpg', tint: 'from-rose-200 to-rose-400', to: '/hospital' },
+              { label: 'Park', dog: '🐕', badge: '🌳', kicker: 'Outdoors', image: '/services/park.jpg', tint: 'from-emerald-200 to-emerald-500', to: '/park' },
+              { label: 'Swimming', dog: '🐶', badge: '🌊', kicker: 'Aquatic', image: '/services/swimming.jpg', tint: 'from-sky-200 to-sky-500', to: '/swimming' },
+              { label: 'Grooming', dog: '🐩', badge: '✂️', kicker: 'Salon', image: '/services/grooming.jpg', tint: 'from-amber-200 to-amber-400', to: '/grooming' },
+              { label: 'Pet Supplies', dog: '🐶', badge: '🦴', kicker: 'Shop', image: '/services/pet-supplies.jpg', tint: 'from-violet-200 to-violet-400', to: '/pet-supplies' },
+            ].map(({ label, dog, badge, kicker, image, tint, to }) => (
               <Link key={label} to={to} className="group block text-center">
                 <p className="text-xs text-warm-600 mb-3 tracking-wide">{kicker}</p>
-                <div className={`relative mx-auto aspect-square w-24 sm:w-28 lg:w-32 rounded-full overflow-hidden bg-gradient-to-br ${tint} ring-1 ring-warm-200 group-hover:ring-primary-400 transition`}>
+                <div className={`relative mx-auto aspect-square w-24 sm:w-28 lg:w-32 rounded-full overflow-visible bg-gradient-to-br ${tint} ring-1 ring-warm-200 group-hover:ring-primary-400 transition`}>
                   <img
                     src={image}
                     alt=""
                     aria-hidden="true"
-                    className="absolute inset-0 w-full h-full object-cover opacity-0 transition-all duration-500 group-hover:scale-[1.05]"
+                    className="absolute inset-0 w-full h-full object-cover opacity-0 rounded-full transition-all duration-500 group-hover:scale-[1.05]"
                     onLoad={(e) => { (e.currentTarget as HTMLImageElement).style.opacity = '1'; }}
                     onError={(e) => { (e.currentTarget as HTMLImageElement).remove(); }}
                   />
-                  <span aria-hidden="true" className="absolute inset-0 flex items-center justify-center text-3xl sm:text-4xl drop-shadow">
-                    {emoji}
+                  <span aria-hidden="true" className="absolute inset-0 flex items-center justify-center text-4xl sm:text-5xl drop-shadow">
+                    {dog}
+                  </span>
+                  <span
+                    aria-hidden="true"
+                    className="absolute -bottom-1 -right-1 w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full bg-white text-base sm:text-lg shadow ring-1 ring-warm-200"
+                  >
+                    {badge}
                   </span>
                 </div>
                 <p className="mt-3 text-sm text-warm-900 group-hover:text-primary-700 transition-colors">{label}</p>
