@@ -1,0 +1,21 @@
+# Render reads this file on every static-site deploy independently of
+# the routes block in render.yaml (which only syncs to the dashboard at
+# Blueprint provisioning time, not on subsequent commits).
+#
+# Map clean public URLs to their pre-rendered HTML (vite-react-ssg with
+# dirStyle: 'nested' writes /<route>/index.html). Status 200 means
+# rewrite (URL stays the same in the browser), not redirect.
+
+/dogs            /dogs/index.html            200
+/swimming        /swimming/index.html        200
+/hospital        /hospital/index.html        200
+/park            /park/index.html            200
+/grooming        /grooming/index.html        200
+/pet-supplies    /pet-supplies/index.html    200
+/adoptions       /adoptions/index.html       200
+/login           /login/index.html           200
+/register        /register/index.html        200
+
+# Everything else (dynamic routes, protected routes, 404s) falls through
+# to the SPA shell — React Router handles them client-side.
+/*               /index.html                 200
