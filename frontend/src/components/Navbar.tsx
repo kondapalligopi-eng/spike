@@ -29,12 +29,12 @@ const SEARCH_INDEX: SearchEntry[] = [
   { section: 'Services', title: 'Pet Supplies', subtitle: 'Food, treats, accessories', to: '/pet-supplies' },
   { section: 'Services', title: 'Browse Dogs', subtitle: 'Adoption listings', to: '/dogs' },
 
-  { section: 'Hospitals', title: 'Indiranagar Pet Care Hospital', subtitle: 'Indiranagar', to: '/hospital' },
-  { section: 'Hospitals', title: 'Koramangala Animal Clinic', subtitle: 'Koramangala', to: '/hospital' },
-  { section: 'Hospitals', title: 'Whitefield 24x7 Vet Emergency', subtitle: 'Whitefield', to: '/hospital' },
-  { section: 'Hospitals', title: 'HSR Companion Hospital', subtitle: 'HSR Layout', to: '/hospital' },
-  { section: 'Hospitals', title: 'Jayanagar Paws & Claws Centre', subtitle: 'Jayanagar', to: '/hospital' },
-  { section: 'Hospitals', title: 'Marathahalli Veterinary Superspeciality', subtitle: 'Marathahalli', to: '/hospital' },
+  { section: 'Hospitals', title: 'SKS Veterinary Hospital', subtitle: 'Indiranagar', to: '/hospital' },
+  { section: 'Hospitals', title: 'V-Care Pet Polyclinic', subtitle: 'Koramangala', to: '/hospital' },
+  { section: 'Hospitals', title: 'V-Care Pet Polyclinic', subtitle: 'Whitefield', to: '/hospital' },
+  { section: 'Hospitals', title: 'Vetic Pet Clinic', subtitle: 'HSR Layout', to: '/hospital' },
+  { section: 'Hospitals', title: 'Dr. Doodley Pet Hospital', subtitle: 'Jayanagar', to: '/hospital' },
+  { section: 'Hospitals', title: 'Cessna Lifeline Veterinary Hospital', subtitle: 'Domlur', to: '/hospital' },
 
   { section: 'Parks', title: 'Cubbon Park', subtitle: 'Sampangi Rama Nagar', to: '/park' },
   { section: 'Parks', title: 'Lalbagh Botanical Garden', subtitle: 'Mavalli', to: '/park' },
