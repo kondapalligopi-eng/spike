@@ -71,8 +71,13 @@ export async function register(data: RegisterData): Promise<AuthResponse> {
 
   const { confirm_password, ...payload } = data;
   void confirm_password;
-  const response = await apiClient.post<AuthResponse>('/auth/register', payload);
-  return response.data;
+
+  // Backend /auth/register returns UserResponse (no tokens). To leave
+  // the user signed in after successful registration, hit /auth/login
+  // immediately afterwards so the rest of the app sees a normal
+  // AuthResponse with token + user.
+  await apiClient.post<User>('/auth/register', payload);
+  return login({ email: data.email, password: data.password });
 }
 
 export async function refreshToken(): Promise<AuthResponse> {
