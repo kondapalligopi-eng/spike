@@ -25,17 +25,9 @@ const FOOTER_COLUMNS: { heading: string; links: { label: string; href: string; e
       { label: 'Give us your Feedback', href: '#' },
     ],
   },
-  {
-    heading: 'Vets by Area',
-    links: [
-      { label: 'Vets in Indiranagar', href: '/hospital' },
-      { label: 'Vets in Koramangala', href: '/hospital' },
-      { label: 'Vets in Whitefield', href: '/hospital' },
-      { label: 'Vets in HSR Layout', href: '/hospital' },
-      { label: 'Vets in Jayanagar', href: '/hospital' },
-      { label: 'Vets in Domlur', href: '/hospital' },
-    ],
-  },
+  // Intentionally blank third column — preserves the 4-column footer
+  // grid (logo / col1 / col2 / col3) while leaving room to fill later.
+  { heading: '', links: [] },
 ];
 
 function SocialIcon({ label, children, href = '#' }: { label: string; children: React.ReactNode; href?: string }) {
