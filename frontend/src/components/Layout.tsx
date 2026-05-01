@@ -26,16 +26,14 @@ const FOOTER_COLUMNS: { heading: string; links: { label: string; href: string; e
     ],
   },
   {
-    heading: 'Popular Links',
+    heading: 'Vets by Area',
     links: [
-      { label: 'Manage Your Account', href: '/profile' },
-      { label: 'New Listings', href: '/dogs' },
-      { label: 'Find or Become a Partner', href: '#' },
-      { label: 'Adoption Guide', href: '#' },
-      { label: 'HiSpike LIVE', href: '#' },
-      { label: 'Community Events', href: '#' },
-      { label: 'Mobile App', href: '#' },
-      { label: 'Newsletter Sign-Up', href: '#' },
+      { label: 'Vets in Indiranagar', href: '/hospital' },
+      { label: 'Vets in Koramangala', href: '/hospital' },
+      { label: 'Vets in Whitefield', href: '/hospital' },
+      { label: 'Vets in HSR Layout', href: '/hospital' },
+      { label: 'Vets in Jayanagar', href: '/hospital' },
+      { label: 'Vets in Domlur', href: '/hospital' },
     ],
   },
 ];
