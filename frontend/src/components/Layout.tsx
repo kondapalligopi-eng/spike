@@ -6,11 +6,8 @@ import { ToastContainer } from './Toast';
 
 const FOOTER_COLUMNS: { heading: string; links: { label: string; href: string; external?: boolean }[] }[] = [
   {
-    heading: 'New to Cuddly Friend?',
+    heading: 'New to HiSpike?',
     links: [
-      { label: 'What is Pet Adoption?', href: '#' },
-      { label: 'How It Works', href: '#' },
-      { label: 'Browse Available Dogs', href: '/dogs' },
       { label: 'Find a Vet', href: '/hospital' },
       { label: 'Grooming Services', href: '/grooming' },
       { label: 'Dog Parks Near You', href: '/park' },
@@ -19,32 +16,18 @@ const FOOTER_COLUMNS: { heading: string; links: { label: string; href: string; e
     ],
   },
   {
-    heading: 'About Cuddly Friend',
+    heading: 'About HiSpike',
     links: [
       { label: 'Our Story', href: '#' },
       { label: 'Newsroom', href: '#' },
       { label: 'Blog', href: '#' },
       { label: 'Careers', href: '#' },
-      { label: 'Trust', href: '#', external: true },
-      { label: 'CuddlyFriend.org', href: '#', external: true },
-      { label: 'Sustainability', href: '#' },
-      { label: 'Investors', href: '#' },
       { label: 'Give us your Feedback', href: '#' },
     ],
   },
-  {
-    heading: 'Popular Links',
-    links: [
-      { label: 'Manage Your Account', href: '/profile' },
-      { label: 'New Listings', href: '/dogs' },
-      { label: 'Find or Become a Partner', href: '#' },
-      { label: 'Adoption Guide', href: '#' },
-      { label: 'Cuddly Friend LIVE', href: '#' },
-      { label: 'Community Events', href: '#' },
-      { label: 'Mobile App', href: '#' },
-      { label: 'Newsletter Sign-Up', href: '#' },
-    ],
-  },
+  // Intentionally blank third column — preserves the 4-column footer
+  // grid (logo / col1 / col2 / col3) while leaving room to fill later.
+  { heading: '', links: [] },
 ];
 
 function SocialIcon({ label, children, href = '#' }: { label: string; children: React.ReactNode; href?: string }) {
@@ -75,7 +58,7 @@ export function Layout() {
           <div className="grid grid-cols-1 md:grid-cols-[240px_1fr_1fr_1fr] gap-10">
             {/* Logo + contact column */}
             <div>
-              <img src="/logo.png" alt="Cuddly Friend" className="h-20 w-20 object-contain mb-6" />
+              <img src="/logo.png" alt="HiSpike" className="h-20 w-20 object-contain mb-6" />
 
               <div className="flex items-center gap-3 mb-6">
                 <SocialIcon label="Facebook">
@@ -105,12 +88,6 @@ export function Layout() {
                 </SocialIcon>
               </div>
 
-              <p className="text-sm text-warm-700 mb-2">
-                Call us at{' '}
-                <a href="tel:18006649073" className="font-semibold hover:text-primary-700">
-                  1-800-PET-DOGS
-                </a>
-              </p>
               <a
                 href="#"
                 className="text-sm text-primary-700 font-medium underline hover:text-primary-800"
@@ -146,7 +123,7 @@ export function Layout() {
 
           {/* Bottom strip */}
           <div className="mt-12 pt-6 border-t border-warm-200 flex flex-col md:flex-row gap-3 items-center justify-between text-xs text-warm-500">
-            <p>© {new Date().getFullYear()} Cuddly Friend. Connecting dogs with loving families.</p>
+            <p>© {new Date().getFullYear()} HiSpike. All-in-one pet care for dogs.</p>
             <div className="flex gap-4">
               <a href="#" className="hover:text-warm-800">Privacy Policy</a>
               <a href="#" className="hover:text-warm-800">Terms of Service</a>

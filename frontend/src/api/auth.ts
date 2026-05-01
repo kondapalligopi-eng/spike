@@ -21,14 +21,28 @@ export async function login(credentials: LoginCredentials): Promise<AuthResponse
     };
   }
 
-  const formData = new URLSearchParams();
-  formData.append('username', credentials.email);
-  formData.append('password', credentials.password);
-
-  const response = await apiClient.post<AuthResponse>('/auth/login', formData, {
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+  // Backend /auth/login accepts JSON {email, password} and returns
+  // {access_token, refresh_token, token_type} — no user. Fetch the
+  // user separately so the AuthResponse contract this function returns
+  // (access_token + token_type + user) still holds.
+  const tokenResp = await apiClient.post<{
+    access_token: string;
+    refresh_token: string;
+    token_type: string;
+  }>('/auth/login', {
+    email: credentials.email,
+    password: credentials.password,
   });
-  return response.data;
+
+  const userResp = await apiClient.get<User>('/users/me', {
+    headers: { Authorization: `Bearer ${tokenResp.data.access_token}` },
+  });
+
+  return {
+    access_token: tokenResp.data.access_token,
+    token_type: tokenResp.data.token_type,
+    user: userResp.data,
+  };
 }
 
 export async function register(data: RegisterData): Promise<AuthResponse> {
@@ -57,8 +71,13 @@ export async function register(data: RegisterData): Promise<AuthResponse> {
 
   const { confirm_password, ...payload } = data;
   void confirm_password;
-  const response = await apiClient.post<AuthResponse>('/auth/register', payload);
-  return response.data;
+
+  // Backend /auth/register returns UserResponse (no tokens). To leave
+  // the user signed in after successful registration, hit /auth/login
+  // immediately afterwards so the rest of the app sees a normal
+  // AuthResponse with token + user.
+  await apiClient.post<User>('/auth/register', payload);
+  return login({ email: data.email, password: data.password });
 }
 
 export async function refreshToken(): Promise<AuthResponse> {

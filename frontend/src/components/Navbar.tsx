@@ -10,7 +10,6 @@ const DRAWER_TOP: DrawerItem[] = [
   { label: 'Swimming', to: '/swimming' },
   { label: 'Grooming', to: '/grooming' },
   { label: 'Pet Supplies', to: '/pet-supplies' },
-  { label: 'Browse Dogs', to: '/dogs' },
 ];
 
 const DRAWER_BOTTOM: DrawerItem[] = [
@@ -27,7 +26,6 @@ const SEARCH_INDEX: SearchEntry[] = [
   { section: 'Services', title: 'Swimming', subtitle: 'Aquatic training', to: '/swimming' },
   { section: 'Services', title: 'Grooming', subtitle: 'Salon & spa', to: '/grooming' },
   { section: 'Services', title: 'Pet Supplies', subtitle: 'Food, treats, accessories', to: '/pet-supplies' },
-  { section: 'Services', title: 'Browse Dogs', subtitle: 'Adoption listings', to: '/dogs' },
 
   { section: 'Hospitals', title: 'SKS Veterinary Hospital', subtitle: 'Indiranagar', to: '/hospital' },
   { section: 'Hospitals', title: 'V-Care Pet Polyclinic', subtitle: 'Koramangala', to: '/hospital' },
@@ -124,7 +122,7 @@ export function Navbar() {
       <header className="sticky top-0 z-50 bg-white border-b border-warm-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Top row: hamburger + centered logo + right icons */}
-          <div className="grid grid-cols-3 items-center h-44 sm:h-52">
+          <div className="grid grid-cols-3 items-center h-28 sm:h-44 lg:h-52">
             {/* Left: hamburger */}
             <div className="flex items-center">
               <button
@@ -141,8 +139,8 @@ export function Navbar() {
 
             {/* Center: logo */}
             <div className="flex justify-center">
-              <Link to="/" aria-label="Hispike — Home" className="hover:opacity-80 transition-opacity">
-                <img src="/logo.png" alt="Hispike" className="h-40 w-40 sm:h-48 sm:w-48 object-contain drop-shadow-sm" />
+              <Link to="/" aria-label="HiSpike — Home" className="hover:opacity-80 transition-opacity">
+                <img src="/logo.png" alt="HiSpike" className="h-20 w-20 sm:h-40 sm:w-40 lg:h-48 lg:w-48 object-contain drop-shadow-sm" />
               </Link>
             </div>
 
@@ -241,11 +239,11 @@ export function Navbar() {
       {searchOpen && (
         <>
           <div
-            className="fixed top-[180px] sm:top-[200px] inset-x-0 bottom-0 z-30"
+            className="fixed top-28 sm:top-44 md:top-[218px] lg:top-[250px] inset-x-0 bottom-0 z-30"
             onClick={() => setSearchOpen(false)}
             aria-hidden="true"
           />
-          <div className="fixed top-[180px] sm:top-[200px] inset-x-0 z-40 bg-white border-b border-warm-200 shadow-lg animate-fade-in">
+          <div className="fixed top-28 sm:top-44 md:top-[218px] lg:top-[250px] inset-x-0 z-40 bg-white border-b border-warm-200 shadow-lg animate-fade-in">
             <div className="max-w-3xl mx-auto px-4 sm:px-6 py-5">
               <div className="flex items-center gap-2">
                 <label className="flex-1 flex items-center gap-2 px-3 py-2 border border-warm-300 rounded-md bg-white">
@@ -335,17 +333,17 @@ export function Navbar() {
             role="dialog"
             aria-modal="false"
             aria-label="Main menu"
-            className="fixed top-[180px] sm:top-[200px] bottom-0 left-0 z-40 w-80 max-w-[85vw] bg-white shadow-2xl flex flex-col animate-slide-in-left"
+            className="fixed top-28 sm:top-44 md:top-[218px] lg:top-[250px] bottom-0 left-0 z-40 w-80 max-w-[85vw] bg-white shadow-2xl flex flex-col animate-slide-in-left"
           >
-            {/* Close button — NOWNESS-style centered, thin, gold accent */}
-            <div className="flex items-center justify-center h-16">
+            {/* Close button — top-right, prominent so it's an obvious target */}
+            <div className="flex items-center justify-end h-14 px-4">
               <button
                 onClick={closeDrawer}
-                className="p-1 text-accent-400 hover:text-accent-500 transition-colors"
+                className="p-2 rounded-full text-warm-700 hover:text-warm-900 hover:bg-warm-100 transition-colors"
                 aria-label="Close menu"
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.25} d="M6 18L18 6M6 6l12 12" />
+                <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.25} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>

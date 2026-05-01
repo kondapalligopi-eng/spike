@@ -120,7 +120,7 @@ export function Hospital() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <form onSubmit={applySearch} className="flex flex-wrap items-center gap-2 lg:gap-3">
             {/* Search input */}
-            <label className="flex items-center gap-2 px-3 py-2 border border-warm-300 rounded-md bg-white flex-1 min-w-[200px]">
+            <label className="flex items-center gap-2 px-3 py-2 border border-warm-300 rounded-md bg-white flex-1 w-full sm:w-auto sm:min-w-[200px]">
               <svg className="w-4 h-4 text-warm-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z" />
               </svg>
@@ -134,7 +134,7 @@ export function Hospital() {
             </label>
 
             {/* Specialty */}
-            <div className="flex items-center gap-2 px-3 py-2 border border-warm-300 rounded-md bg-white min-w-[200px]">
+            <div className="flex items-center gap-2 px-3 py-2 border border-warm-300 rounded-md bg-white w-full sm:w-auto sm:min-w-[200px]">
               <svg className="w-4 h-4 text-warm-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
               </svg>
@@ -150,7 +150,7 @@ export function Hospital() {
             </div>
 
             {/* Location */}
-            <div className="flex items-center gap-2 px-3 py-2 border border-warm-300 rounded-md bg-white min-w-[200px]">
+            <div className="flex items-center gap-2 px-3 py-2 border border-warm-300 rounded-md bg-white w-full sm:w-auto sm:min-w-[200px]">
               <svg className="w-4 h-4 text-warm-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
