@@ -5,9 +5,9 @@ export function Home() {
     <div className="flex flex-col">
       {/* Hero Banner — cinematic wide layout */}
       <section className="relative overflow-hidden bg-gradient-to-r from-primary-900 via-primary-800 to-primary-600 text-white">
-        {/* Optional real photo — drop /hero-dogs.jpg into public/ to replace the SVG decoration */}
+        {/* Real hero photo behind the gradient overlay. */}
         <img
-          src="/hero-dogs.jpg"
+          src="/herobannerimage.jpg"
           alt=""
           aria-hidden="true"
           className="absolute inset-0 w-full h-full object-cover object-right opacity-0 transition-opacity duration-500"
