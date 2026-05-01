@@ -241,11 +241,11 @@ export function Navbar() {
       {searchOpen && (
         <>
           <div
-            className="fixed top-28 sm:top-44 lg:top-52 inset-x-0 bottom-0 z-30"
+            className="fixed top-28 sm:top-44 md:top-[218px] lg:top-[250px] inset-x-0 bottom-0 z-30"
             onClick={() => setSearchOpen(false)}
             aria-hidden="true"
           />
-          <div className="fixed top-28 sm:top-44 lg:top-52 inset-x-0 z-40 bg-white border-b border-warm-200 shadow-lg animate-fade-in">
+          <div className="fixed top-28 sm:top-44 md:top-[218px] lg:top-[250px] inset-x-0 z-40 bg-white border-b border-warm-200 shadow-lg animate-fade-in">
             <div className="max-w-3xl mx-auto px-4 sm:px-6 py-5">
               <div className="flex items-center gap-2">
                 <label className="flex-1 flex items-center gap-2 px-3 py-2 border border-warm-300 rounded-md bg-white">
@@ -335,7 +335,7 @@ export function Navbar() {
             role="dialog"
             aria-modal="false"
             aria-label="Main menu"
-            className="fixed top-28 sm:top-44 lg:top-52 bottom-0 left-0 z-40 w-80 max-w-[85vw] bg-white shadow-2xl flex flex-col animate-slide-in-left"
+            className="fixed top-28 sm:top-44 md:top-[218px] lg:top-[250px] bottom-0 left-0 z-40 w-80 max-w-[85vw] bg-white shadow-2xl flex flex-col animate-slide-in-left"
           >
             {/* Close button — top-right, prominent so it's an obvious target */}
             <div className="flex items-center justify-end h-14 px-4">
