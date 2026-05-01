@@ -65,7 +65,7 @@ const DEFAULT_SERVICES: SalonService[] = [
 export const GROOMING_SALONS: GroomingSalonData[] = [
   {
     slug: 'indiranagar',
-    name: 'Cuddly Friend Grooming — Indiranagar',
+    name: 'HiSpike Grooming — Indiranagar',
     area: 'Indiranagar',
     city: 'Bengaluru',
     state: 'KA',
@@ -103,7 +103,7 @@ export const GROOMING_SALONS: GroomingSalonData[] = [
         age: '6 days ago',
         body: 'Nails were clipped too short — my dog limped for two days. Sharing so others can ask for extra care.',
         response: {
-          from: 'Cuddly Friend Services',
+          from: 'HiSpike Services',
           age: '3 days ago',
           body: 'Thank you for the feedback — we are reviewing the session with our stylist and reaching out directly. We take quick-clip incidents seriously.',
         },
@@ -112,7 +112,7 @@ export const GROOMING_SALONS: GroomingSalonData[] = [
   },
   {
     slug: 'koramangala',
-    name: 'Cuddly Friend Grooming — Koramangala',
+    name: 'HiSpike Grooming — Koramangala',
     area: 'Koramangala',
     city: 'Bengaluru',
     state: 'KA',
@@ -154,7 +154,7 @@ export const GROOMING_SALONS: GroomingSalonData[] = [
   },
   {
     slug: 'hsr-layout',
-    name: 'Cuddly Friend Grooming — HSR Layout',
+    name: 'HiSpike Grooming — HSR Layout',
     area: 'HSR Layout',
     city: 'Bengaluru',
     state: 'KA',
@@ -196,7 +196,7 @@ export const GROOMING_SALONS: GroomingSalonData[] = [
   },
   {
     slug: 'whitefield',
-    name: 'Cuddly Friend Grooming — Whitefield',
+    name: 'HiSpike Grooming — Whitefield',
     area: 'Whitefield',
     city: 'Bengaluru',
     state: 'KA',

@@ -142,7 +142,7 @@ export function GroomingSalon() {
         <section className="grid grid-cols-1 md:grid-cols-[1fr_1fr_1.2fr] gap-6 py-10 border-b border-warm-200">
           <div>
             <p className="text-sm text-warm-700 mb-1">
-              <span className="font-semibold">Cuddly Friend Grooming</span>{' '}
+              <span className="font-semibold">HiSpike Grooming</span>{' '}
               <Link to="/grooming" className="text-accent-600 hover:underline text-xs ml-1">
                 Change
               </Link>

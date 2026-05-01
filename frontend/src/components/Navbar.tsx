@@ -124,7 +124,7 @@ export function Navbar() {
       <header className="sticky top-0 z-50 bg-white border-b border-warm-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Top row: hamburger + centered logo + right icons */}
-          <div className="grid grid-cols-3 items-center h-44 sm:h-52">
+          <div className="grid grid-cols-3 items-center h-28 sm:h-44 lg:h-52">
             {/* Left: hamburger */}
             <div className="flex items-center">
               <button
@@ -141,8 +141,8 @@ export function Navbar() {
 
             {/* Center: logo */}
             <div className="flex justify-center">
-              <Link to="/" aria-label="Hispike — Home" className="hover:opacity-80 transition-opacity">
-                <img src="/logo.png" alt="Hispike" className="h-40 w-40 sm:h-48 sm:w-48 object-contain drop-shadow-sm" />
+              <Link to="/" aria-label="HiSpike — Home" className="hover:opacity-80 transition-opacity">
+                <img src="/logo.png" alt="HiSpike" className="h-20 w-20 sm:h-40 sm:w-40 lg:h-48 lg:w-48 object-contain drop-shadow-sm" />
               </Link>
             </div>
 

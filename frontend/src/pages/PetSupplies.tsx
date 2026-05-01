@@ -354,7 +354,7 @@ export function PetSupplies() {
                 to="/pet-supplies"
                 className="px-2 py-1 rounded text-warm-600 hover:text-primary-700 hover:bg-warm-100 transition-colors font-medium"
               >
-                Cuddly Friend Shop
+                HiSpike Shop
               </Link>
             </li>
             <li aria-hidden="true" className="text-warm-400 mx-1">

@@ -6,7 +6,7 @@ import { ToastContainer } from './Toast';
 
 const FOOTER_COLUMNS: { heading: string; links: { label: string; href: string; external?: boolean }[] }[] = [
   {
-    heading: 'New to Cuddly Friend?',
+    heading: 'New to HiSpike?',
     links: [
       { label: 'What is Pet Adoption?', href: '#' },
       { label: 'How It Works', href: '#' },
@@ -19,7 +19,7 @@ const FOOTER_COLUMNS: { heading: string; links: { label: string; href: string; e
     ],
   },
   {
-    heading: 'About Cuddly Friend',
+    heading: 'About HiSpike',
     links: [
       { label: 'Our Story', href: '#' },
       { label: 'Newsroom', href: '#' },
@@ -39,7 +39,7 @@ const FOOTER_COLUMNS: { heading: string; links: { label: string; href: string; e
       { label: 'New Listings', href: '/dogs' },
       { label: 'Find or Become a Partner', href: '#' },
       { label: 'Adoption Guide', href: '#' },
-      { label: 'Cuddly Friend LIVE', href: '#' },
+      { label: 'HiSpike LIVE', href: '#' },
       { label: 'Community Events', href: '#' },
       { label: 'Mobile App', href: '#' },
       { label: 'Newsletter Sign-Up', href: '#' },
@@ -75,7 +75,7 @@ export function Layout() {
           <div className="grid grid-cols-1 md:grid-cols-[240px_1fr_1fr_1fr] gap-10">
             {/* Logo + contact column */}
             <div>
-              <img src="/logo.png" alt="Cuddly Friend" className="h-20 w-20 object-contain mb-6" />
+              <img src="/logo.png" alt="HiSpike" className="h-20 w-20 object-contain mb-6" />
 
               <div className="flex items-center gap-3 mb-6">
                 <SocialIcon label="Facebook">
@@ -146,7 +146,7 @@ export function Layout() {
 
           {/* Bottom strip */}
           <div className="mt-12 pt-6 border-t border-warm-200 flex flex-col md:flex-row gap-3 items-center justify-between text-xs text-warm-500">
-            <p>© {new Date().getFullYear()} Cuddly Friend. Connecting dogs with loving families.</p>
+            <p>© {new Date().getFullYear()} HiSpike. Connecting dogs with loving families.</p>
             <div className="flex gap-4">
               <a href="#" className="hover:text-warm-800">Privacy Policy</a>
               <a href="#" className="hover:text-warm-800">Terms of Service</a>
