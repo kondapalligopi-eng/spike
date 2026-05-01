@@ -5,16 +5,6 @@ export function Home() {
     <div className="flex flex-col">
       {/* Hero Banner — cinematic wide layout */}
       <section className="relative overflow-hidden bg-gradient-to-r from-primary-900 via-primary-800 to-primary-600 text-white">
-        {/* Real hero photo behind the gradient overlay. */}
-        <img
-          src="/herobannerimage.jpg"
-          alt=""
-          aria-hidden="true"
-          className="absolute inset-0 w-full h-full object-cover object-right opacity-0 transition-opacity duration-500"
-          onLoad={(e) => { (e.currentTarget as HTMLImageElement).style.opacity = '1'; }}
-          onError={(e) => { (e.currentTarget as HTMLImageElement).remove(); }}
-        />
-
         {/* Decorative paw-print pattern (full banner) */}
         <div
           aria-hidden="true"
@@ -25,9 +15,6 @@ export function Home() {
             backgroundSize: '140px 140px',
           }}
         />
-
-        {/* Left-to-right dark gradient overlay so text stays readable */}
-        <div className="absolute inset-0 bg-gradient-to-r from-primary-900/95 via-primary-900/70 to-transparent" />
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-[280px] lg:min-h-[340px] flex items-center">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full py-8 lg:py-10">
@@ -47,30 +34,74 @@ export function Home() {
               </p>
               <Link
                 to="/hospital"
-                className="inline-block px-6 py-2 bg-primary-500 hover:bg-primary-400 text-white text-sm font-semibold rounded-md transition-colors shadow-lg"
+                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-accent-400 hover:bg-accent-300 text-warm-900 text-sm font-bold tracking-[0.15em] uppercase ring-2 ring-accent-300/50 hover:ring-accent-200 transition-all shadow-lg"
               >
                 Explore Services
               </Link>
             </div>
 
-            {/* Right: service label */}
-            <div className="hidden lg:flex items-start justify-end">
+            {/* Right: dog illustration + service label.
+                justify-between separates the dog (left) from the brand
+                stack (right) so they share the column without overlapping. */}
+            <div className="hidden lg:flex items-center justify-between gap-6">
+              <span
+                aria-hidden="true"
+                className="text-[160px] drop-shadow-2xl select-none -scale-x-100 leading-none"
+              >
+                🐕
+              </span>
               <div className="text-right">
-                <p className="text-xs font-semibold tracking-[0.3em] text-primary-200 mb-1">
-                  HISPIKE
+                {/* HiSpike wordmark — typographic contrast (light "HI"
+                    paired with extrabold "SPIKE") instead of two-tone
+                    colour. Both white so it reads cleanly on the dark
+                    hero, with a gold underline below. */}
+                <p
+                  className="text-5xl tracking-[0.12em] uppercase leading-none inline-flex items-center gap-1"
+                  style={{ fontFamily: '"Bebas Neue", "Inter", system-ui, sans-serif' }}
+                >
+                  <span className="text-accent-400 hover:text-white hover:scale-110 transition-all cursor-default inline-block origin-center">HI</span>
+                  {/* Inline paw SVG so its colour can be set to gold via
+                      currentColor — emoji 🐾 inherits OS colours and can't
+                      be tinted with CSS. */}
+                  <svg
+                    aria-hidden="true"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    className="w-5 h-5 text-accent-400 shrink-0"
+                  >
+                    <ellipse cx="5.5" cy="11" rx="2" ry="2.6" />
+                    <ellipse cx="18.5" cy="11" rx="2" ry="2.6" />
+                    <ellipse cx="9" cy="6" rx="1.8" ry="2.4" />
+                    <ellipse cx="15" cy="6" rx="1.8" ry="2.4" />
+                    <path d="M12 12c-3 0-5 2-5 4.5 0 2.2 1.7 3.5 5 3.5s5-1.3 5-3.5c0-2.5-2-4.5-5-4.5z" />
+                  </svg>
+                  <span className="text-white hover:text-accent-400 hover:scale-110 transition-all cursor-default inline-block origin-center">SPIKE</span>
                 </p>
-                <p className="text-3xl font-extrabold uppercase tracking-tight leading-none">
+                <div className="ml-auto mt-3 mb-4 h-0.5 w-20 bg-accent-400 rounded-full" />
+                <p className="text-2xl font-extrabold uppercase tracking-tight leading-none text-primary-100">
                   All-In-One
                 </p>
-                <p className="text-lg font-light uppercase tracking-[0.25em] text-primary-100 mt-1">
+                <p className="text-base font-light uppercase tracking-[0.25em] text-primary-100/80 mt-1">
                   Pet Care
                 </p>
-                <ul className="mt-3 text-[11px] tracking-[0.25em] uppercase text-primary-100/80 space-y-1">
-                  <li>🏥 Vet Hospital</li>
-                  <li>🌳 Dog Parks</li>
-                  <li>🏊 Swim Training</li>
-                  <li>✂️ Grooming Salon</li>
-                  <li>🛒 Pet Supplies</li>
+                <ul className="mt-4 space-y-1.5">
+                  {[
+                    { icon: '🏥', label: 'Vet Hospital', to: '/hospital' },
+                    { icon: '🌳', label: 'Dog Parks', to: '/park' },
+                    { icon: '🏊', label: 'Swim Training', to: '/swimming' },
+                    { icon: '✂️', label: 'Grooming Salon', to: '/grooming' },
+                    { icon: '🛒', label: 'Pet Supplies', to: '/pet-supplies' },
+                  ].map(({ icon, label, to }) => (
+                    <li key={to}>
+                      <Link
+                        to={to}
+                        className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold tracking-[0.2em] uppercase text-primary-100 bg-white/10 hover:bg-accent-400 hover:text-warm-900 ring-1 ring-white/20 hover:ring-accent-400 transition-all"
+                      >
+                        <span aria-hidden="true">{icon}</span>
+                        {label}
+                      </Link>
+                    </li>
+                  ))}
                 </ul>
               </div>
             </div>
