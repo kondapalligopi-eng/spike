@@ -98,12 +98,6 @@ export function Layout() {
                 </SocialIcon>
               </div>
 
-              <p className="text-sm text-warm-700 mb-2">
-                Call us at{' '}
-                <a href="tel:18006649073" className="font-semibold hover:text-primary-700">
-                  1-800-PET-DOGS
-                </a>
-              </p>
               <a
                 href="#"
                 className="text-sm text-primary-700 font-medium underline hover:text-primary-800"
