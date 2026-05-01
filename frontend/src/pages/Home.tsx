@@ -57,7 +57,7 @@ export function Home() {
             <div className="hidden lg:flex items-start justify-end">
               <div className="text-right">
                 <p className="text-xs font-semibold tracking-[0.3em] text-primary-200 mb-1">
-                  THE CUDDLY FRIEND
+                  HISPIKE
                 </p>
                 <p className="text-3xl font-extrabold uppercase tracking-tight leading-none">
                   All-In-One
