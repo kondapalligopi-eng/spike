@@ -121,7 +121,7 @@ export function Swimming() {
       <section className="bg-gradient-to-br from-primary-800 to-primary-600 text-white py-16">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <p className="text-sm font-semibold tracking-[0.3em] text-primary-200 mb-3">
-            CUDDLY FRIEND · SERVICES
+            HISPIKE · SERVICES
           </p>
           <h1 className="text-4xl lg:text-5xl font-extrabold uppercase tracking-tight mb-4">
             Swimming
