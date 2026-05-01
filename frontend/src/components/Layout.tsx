@@ -10,7 +10,6 @@ const FOOTER_COLUMNS: { heading: string; links: { label: string; href: string; e
     links: [
       { label: 'What is Pet Adoption?', href: '#' },
       { label: 'How It Works', href: '#' },
-      { label: 'Browse Available Dogs', href: '/dogs' },
       { label: 'Find a Vet', href: '/hospital' },
       { label: 'Grooming Services', href: '/grooming' },
       { label: 'Dog Parks Near You', href: '/park' },

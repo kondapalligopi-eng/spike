@@ -10,7 +10,6 @@ const DRAWER_TOP: DrawerItem[] = [
   { label: 'Swimming', to: '/swimming' },
   { label: 'Grooming', to: '/grooming' },
   { label: 'Pet Supplies', to: '/pet-supplies' },
-  { label: 'Browse Dogs', to: '/dogs' },
 ];
 
 const DRAWER_BOTTOM: DrawerItem[] = [
@@ -27,7 +26,6 @@ const SEARCH_INDEX: SearchEntry[] = [
   { section: 'Services', title: 'Swimming', subtitle: 'Aquatic training', to: '/swimming' },
   { section: 'Services', title: 'Grooming', subtitle: 'Salon & spa', to: '/grooming' },
   { section: 'Services', title: 'Pet Supplies', subtitle: 'Food, treats, accessories', to: '/pet-supplies' },
-  { section: 'Services', title: 'Browse Dogs', subtitle: 'Adoption listings', to: '/dogs' },
 
   { section: 'Hospitals', title: 'SKS Veterinary Hospital', subtitle: 'Indiranagar', to: '/hospital' },
   { section: 'Hospitals', title: 'V-Care Pet Polyclinic', subtitle: 'Koramangala', to: '/hospital' },
