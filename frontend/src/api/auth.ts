@@ -22,8 +22,8 @@ export async function login(credentials: LoginCredentials): Promise<AuthResponse
   }
 
   // Backend /auth/login accepts JSON {email, password} and returns
-  // {access_token, refresh_token, token_type} — no user. Fetch the user
-  // separately so the AuthResponse contract this function returns
+  // {access_token, refresh_token, token_type} — no user. Fetch the
+  // user separately so the AuthResponse contract this function returns
   // (access_token + token_type + user) still holds.
   const tokenResp = await apiClient.post<{
     access_token: string;
