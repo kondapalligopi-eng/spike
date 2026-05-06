@@ -95,7 +95,7 @@ export function Register() {
           {/* Logo */}
           <div className="text-center mb-8">
             <Link to="/" className="inline-flex items-center gap-2 text-2xl font-bold text-warm-900">
-              <img src="/logo.png" alt="HiSpike" className="h-8 w-8 object-contain" /> HiSpike
+              <img src="/logo.png?v=2" alt="HiSpike" className="h-8 w-8 object-contain" /> HiSpike
             </Link>
             <h1 className="text-3xl font-extrabold text-warm-900 mt-4 mb-2">Create account</h1>
             <p className="text-warm-500">Join thousands of dog lovers</p>
