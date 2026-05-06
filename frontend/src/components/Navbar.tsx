@@ -140,7 +140,7 @@ export function Navbar() {
             {/* Center: logo */}
             <div className="flex justify-center">
               <Link to="/" aria-label="HiSpike — Home" className="hover:opacity-80 transition-opacity">
-                <img src="/logo.png" alt="HiSpike" className="h-12 w-12 sm:h-14 sm:w-14 lg:h-16 lg:w-16 object-contain drop-shadow-sm transition-transform hover:scale-110" />
+                <img src="/logo.png?v=2" alt="HiSpike" className="h-12 w-12 sm:h-14 sm:w-14 lg:h-16 lg:w-16 object-contain drop-shadow-sm transition-transform hover:scale-110" />
               </Link>
             </div>
 

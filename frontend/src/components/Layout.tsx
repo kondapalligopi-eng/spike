@@ -58,7 +58,7 @@ export function Layout() {
           <div className="grid grid-cols-1 md:grid-cols-[240px_1fr_1fr_1fr] gap-10">
             {/* Logo + contact column */}
             <div>
-              <img src="/logo.png" alt="HiSpike" className="h-20 w-20 object-contain mb-6" />
+              <img src="/logo.png?v=2" alt="HiSpike" className="h-20 w-20 object-contain mb-6" />
 
               <div className="flex items-center gap-3 mb-6">
                 <SocialIcon label="Facebook">
