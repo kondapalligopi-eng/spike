@@ -95,7 +95,7 @@ export function Home() {
                     <li key={to}>
                       <Link
                         to={to}
-                        className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold tracking-[0.2em] uppercase text-primary-100 bg-white/10 hover:bg-accent-400 hover:text-warm-900 ring-1 ring-white/20 hover:ring-accent-400 transition-all"
+                        className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold tracking-[0.2em] uppercase bg-accent-400 hover:bg-accent-300 text-warm-900 ring-2 ring-accent-300/50 hover:ring-accent-200 transition-all shadow-md"
                       >
                         <span aria-hidden="true">{icon}</span>
                         {label}
@@ -110,7 +110,7 @@ export function Home() {
       </section>
 
       {/* Services / Categories — editorial thumbnail grid */}
-      <section className="py-6 bg-white">
+      <section className="py-10 bg-primary-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6 sm:gap-8">
             {[
@@ -143,6 +143,58 @@ export function Home() {
                 </div>
                 <p className="mt-3 text-sm text-warm-900 group-hover:text-primary-700 transition-colors">{label}</p>
               </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Why HiSpike — value-prop callouts. Fills the previous blank
+          gap between the service circles and the footer with something
+          the user actually reads. */}
+      <section className="py-12 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-10">
+            <p className="text-[11px] sm:text-xs font-semibold tracking-[0.3em] text-accent-600 uppercase mb-2">
+              Why HiSpike
+            </p>
+            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-warm-900">
+              Built for Bengaluru's dog owners
+            </h2>
+            <div className="mx-auto mt-3 h-0.5 w-16 bg-accent-400 rounded-full" />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              {
+                emoji: '✅',
+                title: 'Verified providers',
+                body: 'Every vet, salon, swim coach, and trainer is vetted before they make it to our directory.',
+              },
+              {
+                emoji: '🎯',
+                title: 'Hyperlocal picks',
+                body: 'Recommendations tied to your neighbourhood — Indiranagar, Koramangala, Whitefield, HSR Layout, and more.',
+              },
+              {
+                emoji: '🐾',
+                title: 'All in one place',
+                body: 'Vets, parks, swimming, grooming, supplies, and adoptions — no more juggling ten apps.',
+              },
+              {
+                emoji: '⭐',
+                title: 'Honest reviews',
+                body: 'Transparent ratings and notes from real Bengaluru dog parents, not paid promotions.',
+              },
+            ].map(({ emoji, title, body }) => (
+              <div
+                key={title}
+                className="rounded-2xl border-2 border-primary-100 bg-white p-5 hover:border-primary-300 hover:shadow-md transition-all"
+              >
+                <div className="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center text-2xl mb-4">
+                  {emoji}
+                </div>
+                <h3 className="text-base font-bold text-warm-900 mb-1">{title}</h3>
+                <p className="text-sm text-warm-600 leading-relaxed">{body}</p>
+              </div>
             ))}
           </div>
         </div>

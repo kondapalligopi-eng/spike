@@ -413,7 +413,8 @@ export function Park() {
         </>
       )}
 
-      <div className={`max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 grid grid-cols-1 gap-8 ${selectedSpot ? 'lg:grid-cols-[1fr_280px]' : ''} ${!selectedSpot ? 'bg-primary-50' : ''}`}>
+      <div className={`${!selectedSpot ? 'bg-primary-50' : ''}`}>
+      <div className={`max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 grid grid-cols-1 gap-8 ${selectedSpot ? 'lg:grid-cols-[1fr_280px]' : ''}`}>
         {/* Left / main column */}
         <div>
           {selectedSpot ? (
@@ -422,9 +423,12 @@ export function Park() {
               <button
                 type="button"
                 onClick={() => setSelectedSpot(null)}
-                className="inline-flex items-center gap-2 mb-6 text-sm text-primary-700 hover:text-primary-900 font-semibold"
+                className="inline-flex items-center gap-2 mb-6 px-4 py-2 rounded-full bg-white border-2 border-warm-300 text-warm-700 text-sm font-semibold hover:border-primary-500 hover:text-primary-700 hover:shadow-sm transition-all"
               >
-                <span aria-hidden="true">←</span> Back to results
+                <svg aria-hidden="true" className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
+                </svg>
+                Back to results
               </button>
 
               {/* Title */}
@@ -651,6 +655,7 @@ export function Park() {
             </div>
           </aside>
         )}
+      </div>
       </div>
 
       {/* Register-your-park modal */}
