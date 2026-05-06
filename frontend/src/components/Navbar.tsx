@@ -122,7 +122,7 @@ export function Navbar() {
       <header className="sticky top-0 z-50 bg-white border-b border-warm-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Top row: hamburger + centered logo + right icons */}
-          <div className="grid grid-cols-3 items-center h-28 sm:h-44 lg:h-52">
+          <div className="grid grid-cols-3 items-center h-16 sm:h-20 lg:h-24">
             {/* Left: hamburger */}
             <div className="flex items-center">
               <button
@@ -140,7 +140,7 @@ export function Navbar() {
             {/* Center: logo */}
             <div className="flex justify-center">
               <Link to="/" aria-label="HiSpike — Home" className="hover:opacity-80 transition-opacity">
-                <img src="/logo.png" alt="HiSpike" className="h-20 w-20 sm:h-40 sm:w-40 lg:h-48 lg:w-48 object-contain drop-shadow-sm" />
+                <img src="/logo.png" alt="HiSpike" className="h-12 w-12 sm:h-14 sm:w-14 lg:h-16 lg:w-16 object-contain drop-shadow-sm transition-transform hover:scale-110" />
               </Link>
             </div>
 
@@ -224,26 +224,32 @@ export function Navbar() {
             </div>
           </div>
 
-          {/* Second row: centered nav with active underline, framed by top + bottom rules */}
-          <nav className="hidden md:flex items-center justify-center gap-8 pt-2 pb-2 border-t border-warm-200">
+        </div>
+
+        {/* Second row: centered nav as a full-width strip with a tinted
+            brand-blue background. Sits OUTSIDE the max-w-7xl container so
+            the strip spans the full viewport, not just the centred max
+            width. Inner content is re-constrained to max-w-7xl. */}
+        <nav className="hidden md:block bg-primary-50 border-t border-warm-200">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-center gap-10 py-3">
             <NavLink to="/hospital" className={navLinkClass}>Hospital</NavLink>
             <NavLink to="/park" className={navLinkClass}>Park</NavLink>
             <NavLink to="/swimming" className={navLinkClass}>Swimming</NavLink>
             <NavLink to="/grooming" className={navLinkClass}>Grooming</NavLink>
             <NavLink to="/pet-supplies" className={navLinkClass}>Pet Supplies</NavLink>
-          </nav>
-        </div>
+          </div>
+        </nav>
       </header>
 
       {/* Site-wide search panel — slides down from below the sticky header */}
       {searchOpen && (
         <>
           <div
-            className="fixed top-28 sm:top-44 md:top-[218px] lg:top-[250px] inset-x-0 bottom-0 z-30"
+            className="fixed top-16 sm:top-20 md:top-[122px] lg:top-[138px] inset-x-0 bottom-0 z-30"
             onClick={() => setSearchOpen(false)}
             aria-hidden="true"
           />
-          <div className="fixed top-28 sm:top-44 md:top-[218px] lg:top-[250px] inset-x-0 z-40 bg-white border-b border-warm-200 shadow-lg animate-fade-in">
+          <div className="fixed top-16 sm:top-20 md:top-[122px] lg:top-[138px] inset-x-0 z-40 bg-white border-b border-warm-200 shadow-lg animate-fade-in">
             <div className="max-w-3xl mx-auto px-4 sm:px-6 py-5">
               <div className="flex items-center gap-2">
                 <label className="flex-1 flex items-center gap-2 px-3 py-2 border border-warm-300 rounded-md bg-white">
@@ -333,7 +339,7 @@ export function Navbar() {
             role="dialog"
             aria-modal="false"
             aria-label="Main menu"
-            className="fixed top-28 sm:top-44 md:top-[218px] lg:top-[250px] bottom-0 left-0 z-40 w-80 max-w-[85vw] bg-white shadow-2xl flex flex-col animate-slide-in-left"
+            className="fixed top-16 sm:top-20 md:top-[122px] lg:top-[138px] bottom-0 left-0 z-40 w-80 max-w-[85vw] bg-white shadow-2xl flex flex-col animate-slide-in-left"
           >
             {/* Close button — top-right, prominent so it's an obvious target */}
             <div className="flex items-center justify-end h-14 px-4">

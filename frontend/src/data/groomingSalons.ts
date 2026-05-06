@@ -65,7 +65,7 @@ const DEFAULT_SERVICES: SalonService[] = [
 export const GROOMING_SALONS: GroomingSalonData[] = [
   {
     slug: 'indiranagar',
-    name: 'HiSpike Grooming — Indiranagar',
+    name: 'Pawsh Paws Grooming Studio',
     area: 'Indiranagar',
     city: 'Bengaluru',
     state: 'KA',
@@ -112,7 +112,7 @@ export const GROOMING_SALONS: GroomingSalonData[] = [
   },
   {
     slug: 'koramangala',
-    name: 'HiSpike Grooming — Koramangala',
+    name: 'Wagging Tails Pet Spa',
     area: 'Koramangala',
     city: 'Bengaluru',
     state: 'KA',
@@ -154,7 +154,7 @@ export const GROOMING_SALONS: GroomingSalonData[] = [
   },
   {
     slug: 'hsr-layout',
-    name: 'HiSpike Grooming — HSR Layout',
+    name: 'Snip & Snout Pet Salon',
     area: 'HSR Layout',
     city: 'Bengaluru',
     state: 'KA',
@@ -196,7 +196,7 @@ export const GROOMING_SALONS: GroomingSalonData[] = [
   },
   {
     slug: 'whitefield',
-    name: 'HiSpike Grooming — Whitefield',
+    name: 'The Furry Tale Grooming',
     area: 'Whitefield',
     city: 'Bengaluru',
     state: 'KA',

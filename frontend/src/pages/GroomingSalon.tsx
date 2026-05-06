@@ -68,48 +68,16 @@ export function GroomingSalon() {
   return (
     <div className="bg-white">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        {/* Breadcrumb */}
-        <nav aria-label="Breadcrumb" className="mb-4">
-          <ol className="flex flex-wrap items-center gap-y-1 text-sm">
-            <li>
-              <Link
-                to="/"
-                className="inline-flex items-center gap-1 px-2 py-1 -ml-2 rounded text-warm-600 hover:text-primary-700 hover:bg-warm-100 transition-colors"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                </svg>
-                <span className="sr-only">Home</span>
-              </Link>
-            </li>
-            <li aria-hidden="true" className="text-warm-400 mx-1">
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-              </svg>
-            </li>
-            <li>
-              <Link
-                to="/grooming"
-                className="px-2 py-1 rounded text-warm-600 hover:text-primary-700 hover:bg-warm-100 transition-colors font-medium"
-              >
-                Grooming Salons
-              </Link>
-            </li>
-            <li aria-hidden="true" className="text-warm-400 mx-1">
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-              </svg>
-            </li>
-            <li>
-              <span
-                aria-current="page"
-                className="px-2 py-1 rounded bg-primary-50 text-primary-800 font-semibold"
-              >
-                {salon.area}, {salon.city}
-              </span>
-            </li>
-          </ol>
-        </nav>
+        {/* Back to results */}
+        <Link
+          to="/grooming"
+          className="inline-flex items-center gap-2 mb-6 px-4 py-2 rounded-full bg-white border-2 border-warm-300 text-warm-700 text-sm font-semibold hover:border-primary-500 hover:text-primary-700 hover:shadow-sm transition-all"
+        >
+          <svg aria-hidden="true" className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
+          </svg>
+          Back to results
+        </Link>
 
         {/* Title */}
         <h1 className="text-3xl font-bold text-warm-900 mb-6">
@@ -142,7 +110,7 @@ export function GroomingSalon() {
         <section className="grid grid-cols-1 md:grid-cols-[1fr_1fr_1.2fr] gap-6 py-10 border-b border-warm-200">
           <div>
             <p className="text-sm text-warm-700 mb-1">
-              <span className="font-semibold">HiSpike Grooming</span>{' '}
+              <span className="font-semibold">{salon.name}</span>{' '}
               <Link to="/grooming" className="text-accent-600 hover:underline text-xs ml-1">
                 Change
               </Link>

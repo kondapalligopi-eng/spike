@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
 
 type Product = {
   brand: string;
@@ -32,15 +31,15 @@ const FOOD_FORMS = ['Dry Food', 'Wet Food', 'Freeze-Dried', 'Raw', 'Treats'];
 const PRODUCTS: Product[] = [
   {
     brand: 'Royal Canin',
-    name: 'Size Health Nutrition Medium Adult Dry Dog Food, 15-lb bag',
+    name: 'Size Health Nutrition Medium Adult Dry Dog Food, 7-kg bag',
     image: '/supplies-1.jpg',
     emoji: '🥫',
     rating: 4.7,
     reviews: 8098,
-    price: 29.97,
-    perUnit: '$2.00/lb',
-    listPrice: 30.99,
-    salePrice: 19.48,
+    price: 2499,
+    perUnit: '₹360/kg',
+    listPrice: 2599,
+    salePrice: 1599,
     savePct: 35,
     sponsored: true,
     lifestage: 'Adult',
@@ -48,14 +47,14 @@ const PRODUCTS: Product[] = [
   },
   {
     brand: 'Royal Canin',
-    name: 'Size Health Nutrition Medium Puppy Dry Dog Food, 30-lb bag',
+    name: 'Size Health Nutrition Medium Puppy Dry Dog Food, 14-kg bag',
     image: '/supplies-2.jpg',
     emoji: '🥫',
     rating: 4.7,
     reviews: 8098,
-    price: 47.98,
-    perUnit: '$1.60/lb',
-    salePrice: 23.99,
+    price: 3999,
+    perUnit: '₹290/kg',
+    salePrice: 1999,
     savePct: 50,
     sponsored: true,
     lifestage: 'Puppy',
@@ -63,14 +62,14 @@ const PRODUCTS: Product[] = [
   },
   {
     brand: 'Pedigree',
-    name: 'Complete Nutrition Grilled Steak & Vegetable Flavor Dog Kibble Adult Dry Dog Food, 44-lb bag',
+    name: 'Complete Nutrition Grilled Steak & Vegetable Flavor Dog Kibble Adult Dry Dog Food, 20-kg bag',
     image: '/supplies-3.jpg',
     emoji: '🥩',
     rating: 4.7,
     reviews: 9772,
-    price: 30.98,
-    perUnit: '$0.71/lb',
-    salePrice: 26.33,
+    price: 2599,
+    perUnit: '₹130/kg',
+    salePrice: 2199,
     savePct: 15,
     sponsored: true,
     lifestage: 'Adult',
@@ -78,14 +77,14 @@ const PRODUCTS: Product[] = [
   },
   {
     brand: 'Royal Canin Veterinary Diet',
-    name: 'Gastrointestinal Low Fat Dry Dog Food, 17.6-lb bag',
+    name: 'Gastrointestinal Low Fat Dry Dog Food, 8-kg bag',
     image: '/supplies-4.jpg',
     emoji: '🍖',
     rating: 4.6,
     reviews: 3123,
-    price: 134.99,
-    perUnit: '$4.36/lb',
-    salePrice: 114.99,
+    price: 11299,
+    perUnit: '₹800/kg',
+    salePrice: 9599,
     savePct: 35,
     sponsored: true,
     lifestage: 'All Lifestages',
@@ -93,14 +92,14 @@ const PRODUCTS: Product[] = [
   },
   {
     brand: 'ACANA',
-    name: 'Singles Limited Ingredient Salmon & Pumpkin Recipe Dry Dog Food, 25-lb bag',
+    name: 'Singles Limited Ingredient Salmon & Pumpkin Recipe Dry Dog Food, 11-kg bag',
     image: '/supplies-5.jpg',
     emoji: '🐟',
     rating: 4.5,
     reviews: 5612,
-    price: 39.99,
-    perUnit: '$1.43/lb',
-    salePrice: 31.99,
+    price: 3349,
+    perUnit: '₹260/kg',
+    salePrice: 2699,
     savePct: 20,
     deal: true,
     lifestage: 'Adult',
@@ -108,26 +107,26 @@ const PRODUCTS: Product[] = [
   },
   {
     brand: 'Pedigree',
-    name: 'Choice Cuts in Gravy with Beef & Country Stew Adult Wet Dog Food, 22-oz cans',
+    name: 'Choice Cuts in Gravy with Beef & Country Stew Adult Wet Dog Food, 600-g cans',
     image: '/supplies-6.jpg',
     emoji: '🐕',
     rating: 4.6,
     reviews: 11420,
-    price: 22.98,
-    perUnit: '$0.77/lb',
+    price: 1899,
+    perUnit: '₹140/kg',
     lifestage: 'Adult',
     form: 'Wet Food',
   },
   {
     brand: 'Royal Canin',
-    name: 'Aging Care 12+ Small Senior Dry Dog Food, 13-lb bag',
+    name: 'Aging Care 12+ Small Senior Dry Dog Food, 6-kg bag',
     image: '/supplies-7.jpg',
     emoji: '🐶',
     rating: 4.8,
     reviews: 6240,
-    price: 62.48,
-    perUnit: '$2.08/lb',
-    salePrice: 53.11,
+    price: 5199,
+    perUnit: '₹380/kg',
+    salePrice: 4399,
     savePct: 15,
     lifestage: 'Senior',
     form: 'Dry Food',
@@ -139,9 +138,9 @@ const PRODUCTS: Product[] = [
     emoji: '🍗',
     rating: 4.7,
     reviews: 8800,
-    price: 12.98,
+    price: 1099,
     perUnit: '—',
-    salePrice: 9.38,
+    salePrice: 799,
     savePct: 20,
     deal: true,
     lifestage: 'All Lifestages',
@@ -265,18 +264,17 @@ function ProductCard({ product }: { product: Product }) {
       {/* Price */}
       <div className="mb-2">
         <span className="text-red-600 font-bold">
-          ${Math.floor(product.price)}
-          <sup className="text-sm">{product.price.toFixed(2).split('.')[1]}</sup>
+          ₹{product.price.toLocaleString('en-IN')}
         </span>
         <span className="text-xs text-warm-500 ml-1">({product.perUnit})</span>
         {product.listPrice && (
-          <span className="text-xs text-warm-500 line-through ml-2">${product.listPrice.toFixed(2)}</span>
+          <span className="text-xs text-warm-500 line-through ml-2">₹{product.listPrice.toLocaleString('en-IN')}</span>
         )}
       </div>
 
       {product.salePrice && (
         <p className="text-xs mb-2">
-          <span className="text-red-600 font-bold text-sm">${product.salePrice.toFixed(2)}</span>{' '}
+          <span className="text-red-600 font-bold text-sm">₹{product.salePrice.toLocaleString('en-IN')}</span>{' '}
           <span className="text-warm-700">
             Save {product.savePct}% today with Autoship, 5% off future orders
           </span>
@@ -286,12 +284,12 @@ function ProductCard({ product }: { product: Product }) {
       {/* Promo */}
       <p className="text-xs text-warm-700 mb-2 flex items-start gap-1">
         <span className="text-red-600">🏷️</span>
-        <span><span className="font-semibold">New Customers Only:</span> Spend $49+, get $20 off</span>
+        <span><span className="font-semibold">New Customers Only:</span> Spend ₹4,000+, get ₹500 off</span>
       </p>
 
       {/* Delivery */}
       <p className="text-xs text-warm-700">
-        <span className="font-semibold">Free</span> 1–3 day delivery on first-time orders over $35
+        <span className="font-semibold">Free</span> 1–3 day delivery on first-time orders over ₹500
       </p>
       <p className="text-xs text-warm-700 mb-4">
         <span className="font-semibold">Free</span> 365-day returns
@@ -329,51 +327,34 @@ export function PetSupplies() {
 
   return (
     <div className="bg-white">
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Breadcrumb / title */}
-        <nav aria-label="Breadcrumb" className="mb-4">
-          <ol className="flex flex-wrap items-center gap-y-1 text-sm">
-            <li>
-              <Link
-                to="/"
-                className="inline-flex items-center gap-1 px-2 py-1 -ml-2 rounded text-warm-600 hover:text-primary-700 hover:bg-warm-100 transition-colors"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                </svg>
-                <span className="sr-only">Home</span>
-              </Link>
-            </li>
-            <li aria-hidden="true" className="text-warm-400 mx-1">
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-              </svg>
-            </li>
-            <li>
-              <Link
-                to="/pet-supplies"
-                className="px-2 py-1 rounded text-warm-600 hover:text-primary-700 hover:bg-warm-100 transition-colors font-medium"
-              >
-                HiSpike Shop
-              </Link>
-            </li>
-            <li aria-hidden="true" className="text-warm-400 mx-1">
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-              </svg>
-            </li>
-            <li>
-              <span
-                aria-current="page"
-                className="px-2 py-1 rounded bg-primary-50 text-primary-800 font-semibold"
-              >
-                Dog Food &amp; Treats
-              </span>
-            </li>
-          </ol>
-        </nav>
-        <h1 className="text-2xl font-bold text-warm-900 mb-6">Dog Food &amp; Treats</h1>
+      <section className="relative overflow-hidden bg-gradient-to-r from-primary-900 via-primary-800 to-primary-600 text-white">
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 opacity-[0.08]"
+          style={{
+            backgroundImage:
+              `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'><g fill='white'><path d='M14 18a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm18 0a3 3 0 1 1 0 6 3 3 0 0 1 0-6zM18 8a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm10 0a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm-5 10a6 6 0 0 0-5.3 8.9l-.5 3.3c-.2 1.4.9 2.6 2.3 2.6h7a2.3 2.3 0 0 0 2.3-2.6l-.5-3.3A6 6 0 0 0 23 18z'/></g></svg>")`,
+            backgroundSize: '120px 120px',
+          }}
+        />
+        <div className="relative max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-6">
+          <span aria-hidden="true" className="text-4xl sm:text-5xl drop-shadow">🐕🦴</span>
+          <div className="flex-1">
+            <p className="text-[11px] sm:text-xs font-semibold tracking-[0.3em] text-accent-400 uppercase mb-1">
+              Shop · Bangalore
+            </p>
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight leading-tight">
+              Dog Food &amp; Treats
+            </h1>
+            <div className="mt-2 h-0.5 w-16 bg-accent-400 rounded-full" />
+            <p className="mt-2 text-sm text-primary-100/90 max-w-2xl">
+              Trusted brands delivered across Bengaluru — Royal Canin, Pedigree, ACANA. Dry food, wet food, treats, and veterinary diets for every life stage.
+            </p>
+          </div>
+        </div>
+      </section>
 
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-[240px_1fr] gap-8">
           {/* Filters sidebar */}
           <aside>

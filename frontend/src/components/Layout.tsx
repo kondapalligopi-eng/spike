@@ -53,7 +53,7 @@ export function Layout() {
         <Outlet />
       </main>
 
-      <footer className="bg-white border-t border-warm-200 mt-16">
+      <footer className="bg-white border-t border-warm-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="grid grid-cols-1 md:grid-cols-[240px_1fr_1fr_1fr] gap-10">
             {/* Logo + contact column */}
