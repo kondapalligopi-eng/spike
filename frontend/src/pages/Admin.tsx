@@ -1,5 +1,10 @@
-import { useEffect, useState } from 'react';
-import { getVisitStats, resetVisitStats, type VisitStats } from '@/lib/visitTracker';
+import { useEffect, useMemo, useState } from 'react';
+import {
+  getRangedStats,
+  getVisitStats,
+  type RangedVisitStats,
+  type VisitStats,
+} from '@/lib/visitTracker';
 
 function formatDateTime(d: Date | null): string {
   if (!d) return '—';
@@ -12,50 +17,138 @@ function formatDateTime(d: Date | null): string {
   });
 }
 
+// YYYY-MM-DD in the user's local timezone (matches what <input type="date">
+// produces and consumes).
+function toDateInputValue(d: Date): string {
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
+}
+
+function startOfDayMs(yyyymmdd: string): number {
+  const [y, m, d] = yyyymmdd.split('-').map(Number);
+  return new Date(y, (m ?? 1) - 1, d ?? 1, 0, 0, 0, 0).getTime();
+}
+
+function endOfDayMs(yyyymmdd: string): number {
+  const [y, m, d] = yyyymmdd.split('-').map(Number);
+  return new Date(y, (m ?? 1) - 1, d ?? 1, 23, 59, 59, 999).getTime();
+}
+
+function lastNDaysRange(days: number): { start: string; end: string } {
+  const end = new Date();
+  const start = new Date();
+  start.setDate(start.getDate() - (days - 1));
+  return { start: toDateInputValue(start), end: toDateInputValue(end) };
+}
+
 function VisitsSection() {
-  const [visit, setVisit] = useState<VisitStats>(() => getVisitStats());
+  // Default range: last 30 days
+  const initialRange = useMemo(() => lastNDaysRange(30), []);
+  const [startDate, setStartDate] = useState(initialRange.start);
+  const [endDate, setEndDate] = useState(initialRange.end);
+
+  const [allTime, setAllTime] = useState<VisitStats>(() => getVisitStats());
+  const [ranged, setRanged] = useState<RangedVisitStats>(() =>
+    getRangedStats(startOfDayMs(initialRange.start), endOfDayMs(initialRange.end)),
+  );
+
+  const refresh = () => {
+    setAllTime(getVisitStats());
+    setRanged(getRangedStats(startOfDayMs(startDate), endOfDayMs(endDate)));
+  };
+
+  // Recompute whenever the date range changes
+  useEffect(() => {
+    setRanged(getRangedStats(startOfDayMs(startDate), endOfDayMs(endDate)));
+  }, [startDate, endDate]);
 
   // Refresh on mount + every 5s so newly-tracked navigations are picked up
   useEffect(() => {
-    setVisit(getVisitStats());
-    const id = window.setInterval(() => setVisit(getVisitStats()), 5000);
+    refresh();
+    const id = window.setInterval(refresh, 5000);
     return () => window.clearInterval(id);
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [startDate, endDate]);
 
-  const handleReset = () => {
-    if (window.confirm('Reset local visit counters on this device? This cannot be undone.')) {
-      resetVisitStats();
-      setVisit(getVisitStats());
-    }
+  const setPreset = (days: number) => {
+    const r = lastNDaysRange(days);
+    setStartDate(r.start);
+    setEndDate(r.end);
   };
+
+  const dateInputClass =
+    'px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors bg-white text-warm-900';
 
   return (
     <section className="mb-10">
-      <div className="flex items-end justify-between mb-4 gap-3 flex-wrap">
-        <div>
-          <p className="text-[11px] font-semibold tracking-[0.3em] text-accent-600 uppercase mb-1">
-            Site Analytics
-          </p>
-          <h2 className="text-xl font-bold text-warm-900">Website visits</h2>
-        </div>
-        <button
-          type="button"
-          onClick={handleReset}
-          className="text-xs text-warm-500 hover:text-red-600 underline transition-colors"
-        >
-          Reset device counters
-        </button>
+      <div className="mb-4">
+        <p className="text-[11px] font-semibold tracking-[0.3em] text-accent-600 uppercase mb-1">
+          Site Analytics
+        </p>
+        <h2 className="text-xl font-bold text-warm-900">Website visits</h2>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Date range controls */}
+      <div className="rounded-2xl border-2 border-primary-100 bg-white p-4 mb-4">
+        <div className="flex flex-wrap items-end gap-4">
+          <label className="flex flex-col gap-1">
+            <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-primary-700">
+              Start date
+            </span>
+            <input
+              type="date"
+              value={startDate}
+              max={endDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              className={dateInputClass}
+            />
+          </label>
+          <label className="flex flex-col gap-1">
+            <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-primary-700">
+              End date
+            </span>
+            <input
+              type="date"
+              value={endDate}
+              min={startDate}
+              max={toDateInputValue(new Date())}
+              onChange={(e) => setEndDate(e.target.value)}
+              className={dateInputClass}
+            />
+          </label>
+          <div className="flex flex-wrap gap-2">
+            {[
+              { label: '7d', days: 7 },
+              { label: '30d', days: 30 },
+              { label: '90d', days: 90 },
+              { label: '1y', days: 365 },
+            ].map(({ label, days }) => (
+              <button
+                key={label}
+                type="button"
+                onClick={() => setPreset(days)}
+                className="px-3 py-1.5 rounded-full border border-warm-300 bg-white text-xs font-semibold text-warm-700 hover:border-primary-500 hover:text-primary-700 transition-colors"
+              >
+                Last {label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="rounded-2xl border-2 border-primary-100 bg-white p-5">
           <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-primary-700 mb-2">
             Total Visits
           </p>
           <p className="text-3xl font-extrabold text-warm-900">
-            {visit.pageViews.toLocaleString('en-IN')}
+            {ranged.pageViews.toLocaleString('en-IN')}
           </p>
-          <p className="text-xs text-warm-500 mt-1">Page views from this device</p>
+          <p className="text-xs text-warm-500 mt-1">
+            Page views in the selected range
+          </p>
         </div>
 
         <div className="rounded-2xl border-2 border-primary-100 bg-white p-5">
@@ -63,17 +156,10 @@ function VisitsSection() {
             Unique Visits
           </p>
           <p className="text-3xl font-extrabold text-warm-900">
-            {visit.uniqueSessions.toLocaleString('en-IN')}
+            {ranged.uniqueSessions.toLocaleString('en-IN')}
           </p>
-          <p className="text-xs text-warm-500 mt-1">Sessions (30-min idle window)</p>
-        </div>
-
-        <div className="rounded-2xl border-2 border-primary-100 bg-white p-5">
-          <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-primary-700 mb-2">
-            First Visit
-          </p>
-          <p className="text-base font-bold text-warm-900 leading-tight">
-            {formatDateTime(visit.firstVisitAt)}
+          <p className="text-xs text-warm-500 mt-1">
+            Sessions in range (30-min idle window)
           </p>
         </div>
 
@@ -82,8 +168,9 @@ function VisitsSection() {
             Last Visit
           </p>
           <p className="text-base font-bold text-warm-900 leading-tight">
-            {formatDateTime(visit.lastVisitAt)}
+            {formatDateTime(allTime.lastVisitAt)}
           </p>
+          <p className="text-xs text-warm-500 mt-1">All-time most recent</p>
         </div>
       </div>
 
