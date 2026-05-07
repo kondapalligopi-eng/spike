@@ -32,12 +32,26 @@ from app.services.user_service import UserService  # noqa: E402
 
 async def bootstrap() -> int:
     email = os.environ.get("ADMIN_EMAIL", "").strip().lower()
-    password = os.environ.get("ADMIN_PASSWORD", "")
+    password = os.environ.get("ADMIN_PASSWORD", "").strip()
     full_name = os.environ.get("ADMIN_FULL_NAME", "HiSpike Support")
 
     if not email or not password:
         print("[bootstrap_admin] ADMIN_EMAIL / ADMIN_PASSWORD not set — skipping.")
         return 0
+
+    # bcrypt only accepts passwords up to 72 bytes. Truncate with a warning
+    # so a fat-fingered env var (e.g. an accidentally pasted hash or token)
+    # doesn't break the bootstrap silently.
+    pw_bytes = password.encode("utf-8")
+    if len(pw_bytes) > 72:
+        print(
+            f"[bootstrap_admin] WARNING: ADMIN_PASSWORD is {len(pw_bytes)} bytes "
+            "(bcrypt cap is 72) — truncating before hashing. "
+            "The user should still log in with the FULL value entered (since the "
+            "frontend submits the same env value), but this is a strong hint that "
+            "the env var was set to the wrong thing (e.g. a hash). Fix it."
+        )
+        password = pw_bytes[:72].decode("utf-8", errors="ignore")
 
     async with AsyncSessionLocal() as db:
         existing = await UserService.get_by_email(db, email)
