@@ -13,5 +13,8 @@ echo "Running database migrations..."
 alembic upgrade head
 echo "Migrations complete."
 
+echo "Bootstrapping admin user (idempotent)..."
+python -m scripts.bootstrap_admin
+
 echo "Starting FastAPI on port ${PORT:-8000}..."
 exec uvicorn app.main:app --host 0.0.0.0 --port "${PORT:-8000}" --workers 1
