@@ -13,6 +13,12 @@ echo "Running database migrations..."
 alembic upgrade head
 echo "Migrations complete."
 
+echo "Ensuring tables exist (idempotent create_all fallback)..."
+# alembic/versions is empty, so 'upgrade head' is a no-op. Until proper
+# migrations exist, fall back to SQLAlchemy create_all so the schema
+# matches the models. Skips existing tables.
+python scripts/init_db.py || echo "[init_db] non-fatal failure — continuing"
+
 echo "Bootstrapping admin user (idempotent)..."
 # Run the script directly (not via -m) and never let a bootstrap failure
 # kill the API — if the seed fails, log it and keep starting uvicorn.
