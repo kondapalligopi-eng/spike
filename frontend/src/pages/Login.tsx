@@ -53,7 +53,7 @@ export function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-warm-50 flex items-center justify-center px-4 py-12">
+    <div className="bg-warm-50 flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
         {/* Card */}
         <div className="bg-white rounded-3xl shadow-xl border border-warm-200 p-8">
@@ -147,13 +147,6 @@ export function Login() {
               </Link>
             </p>
           </div>
-        </div>
-
-        {/* Back link */}
-        <div className="mt-6 text-center">
-          <Link to="/" className="text-sm text-warm-400 hover:text-warm-600 transition-colors">
-            ← Back to home
-          </Link>
         </div>
       </div>
     </div>

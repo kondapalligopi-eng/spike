@@ -25,6 +25,16 @@ export const MOCK_USERS: User[] = [
     created_at: '2024-02-01T00:00:00Z',
     updated_at: '2024-02-01T00:00:00Z',
   },
+  {
+    id: 3,
+    email: 'support@hispike.in',
+    full_name: 'HiSpike Support',
+    phone: '9999999999',
+    role: 'admin',
+    is_active: true,
+    created_at: '2026-01-01T00:00:00Z',
+    updated_at: '2026-01-01T00:00:00Z',
+  },
 ];
 
 export const MOCK_DOGS: Dog[] = [
