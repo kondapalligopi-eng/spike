@@ -18,19 +18,24 @@ import { Park } from '@/pages/Park';
 import { Grooming } from '@/pages/Grooming';
 import { GroomingSalon } from '@/pages/GroomingSalon';
 import { PetSupplies } from '@/pages/PetSupplies';
+import { OurStory } from '@/pages/OurStory';
+import { Newsroom } from '@/pages/Newsroom';
+import { Blog } from '@/pages/Blog';
+import { Careers } from '@/pages/Careers';
+import { Feedback } from '@/pages/Feedback';
 import { NotFound } from '@/pages/NotFound';
 
 export const routes: RouteRecord[] = [
   {
     element: <RootShell />,
     children: [
-      { path: '/login', Component: Login },
-      { path: '/register', Component: Register },
       {
         path: '/',
         element: <Layout />,
         children: [
           { index: true, Component: Home },
+          { path: 'login', Component: Login },
+          { path: 'register', Component: Register },
           { path: 'dogs', Component: Dogs },
           { path: 'dogs/:id', Component: DogDetail },
           { path: 'swimming', Component: Swimming },
@@ -39,6 +44,11 @@ export const routes: RouteRecord[] = [
           { path: 'grooming', Component: Grooming },
           { path: 'grooming/:slug', Component: GroomingSalon },
           { path: 'pet-supplies', Component: PetSupplies },
+          { path: 'about', Component: OurStory },
+          { path: 'newsroom', Component: Newsroom },
+          { path: 'blog', Component: Blog },
+          { path: 'careers', Component: Careers },
+          { path: 'feedback', Component: Feedback },
           {
             path: 'profile',
             element: (

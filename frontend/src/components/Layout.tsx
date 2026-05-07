@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom';
 import { Navbar } from './Navbar';
 import { ScrollToTop } from './ScrollToTop';
 import { ToastContainer } from './Toast';
+import { VisitTracker } from './VisitTracker';
 
 const FOOTER_COLUMNS: { heading: string; links: { label: string; href: string; external?: boolean }[] }[] = [
   {
@@ -18,11 +19,11 @@ const FOOTER_COLUMNS: { heading: string; links: { label: string; href: string; e
   {
     heading: 'About HiSpike',
     links: [
-      { label: 'Our Story', href: '#' },
-      { label: 'Newsroom', href: '#' },
-      { label: 'Blog', href: '#' },
-      { label: 'Careers', href: '#' },
-      { label: 'Give us your Feedback', href: '#' },
+      { label: 'Our Story', href: '/about' },
+      { label: 'Newsroom', href: '/newsroom' },
+      { label: 'Blog', href: '/blog' },
+      { label: 'Careers', href: '/careers' },
+      { label: 'Give us your Feedback', href: '/feedback' },
     ],
   },
   // Intentionally blank third column — preserves the 4-column footer
@@ -48,6 +49,7 @@ export function Layout() {
   return (
     <div className="min-h-screen bg-warm-50 flex flex-col">
       <ScrollToTop />
+      <VisitTracker />
       <Navbar />
       <main className="flex-1">
         <Outlet />

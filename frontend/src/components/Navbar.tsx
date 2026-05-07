@@ -5,6 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 type DrawerItem = { label: string; to: string };
 
 const DRAWER_TOP: DrawerItem[] = [
+  { label: 'Home', to: '/' },
   { label: 'Hospital', to: '/hospital' },
   { label: 'Park', to: '/park' },
   { label: 'Swimming', to: '/swimming' },
@@ -13,9 +14,9 @@ const DRAWER_TOP: DrawerItem[] = [
 ];
 
 const DRAWER_BOTTOM: DrawerItem[] = [
-  { label: 'About Us', to: '#' },
-  { label: 'Blog', to: '#' },
-  { label: 'Contact Us', to: '#' },
+  { label: 'About Us', to: '/about' },
+  { label: 'Blog', to: '/blog' },
+  { label: 'Contact Us', to: '/feedback' },
 ];
 
 type SearchEntry = { title: string; subtitle?: string; section: string; to: string };
@@ -123,8 +124,8 @@ export function Navbar() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Top row: hamburger + centered logo + right icons */}
           <div className="grid grid-cols-3 items-center h-16 sm:h-20 lg:h-24">
-            {/* Left: hamburger */}
-            <div className="flex items-center">
+            {/* Left: hamburger + home */}
+            <div className="flex items-center gap-1 sm:gap-2">
               <button
                 className="p-2 rounded-lg text-warm-700 hover:bg-warm-100 transition-colors"
                 onClick={() => setDrawerOpen(true)}
@@ -135,6 +136,16 @@ export function Navbar() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
               </button>
+              <Link
+                to="/"
+                aria-label="Home"
+                title="Home"
+                className="p-2 rounded-lg text-warm-700 hover:text-primary-700 hover:bg-warm-100 transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12 11.204 3.045a1.125 1.125 0 0 1 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75" />
+                </svg>
+              </Link>
             </div>
 
             {/* Center: logo */}
@@ -186,16 +197,6 @@ export function Navbar() {
                           </svg>
                           Profile
                         </Link>
-                        <Link
-                          to="/my-dogs"
-                          onClick={() => setUserMenuOpen(false)}
-                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-warm-700 hover:bg-warm-50 transition-colors"
-                        >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                          </svg>
-                          My Dogs
-                        </Link>
                         <div className="border-t border-warm-100 my-1" />
                         <button
                           onClick={handleLogout}
@@ -226,17 +227,18 @@ export function Navbar() {
 
         </div>
 
-        {/* Second row: centered nav as a full-width strip with a tinted
-            brand-blue background. Sits OUTSIDE the max-w-7xl container so
-            the strip spans the full viewport, not just the centred max
-            width. Inner content is re-constrained to max-w-7xl. */}
-        <nav className="hidden md:block bg-primary-50 border-t border-warm-200">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-center gap-10 py-3">
-            <NavLink to="/hospital" className={navLinkClass}>Hospital</NavLink>
-            <NavLink to="/park" className={navLinkClass}>Park</NavLink>
-            <NavLink to="/swimming" className={navLinkClass}>Swimming</NavLink>
-            <NavLink to="/grooming" className={navLinkClass}>Grooming</NavLink>
-            <NavLink to="/pet-supplies" className={navLinkClass}>Pet Supplies</NavLink>
+        {/* Second row: service nav strip — visible at every breakpoint so
+            mobile users can jump between services without opening the
+            drawer. Horizontally scrollable on narrow screens. */}
+        <nav className="bg-primary-50 border-t border-warm-200">
+          <div className="max-w-7xl mx-auto overflow-x-auto">
+            <div className="flex items-center justify-start md:justify-center gap-6 md:gap-10 px-4 sm:px-6 lg:px-8 py-3 min-w-max">
+              <NavLink to="/hospital" className={navLinkClass}>Hospital</NavLink>
+              <NavLink to="/park" className={navLinkClass}>Park</NavLink>
+              <NavLink to="/swimming" className={navLinkClass}>Swimming</NavLink>
+              <NavLink to="/grooming" className={navLinkClass}>Grooming</NavLink>
+              <NavLink to="/pet-supplies" className={navLinkClass}>Pet Supplies</NavLink>
+            </div>
           </div>
         </nav>
       </header>
@@ -245,11 +247,11 @@ export function Navbar() {
       {searchOpen && (
         <>
           <div
-            className="fixed top-16 sm:top-20 md:top-[122px] lg:top-[138px] inset-x-0 bottom-0 z-30"
+            className="fixed top-[106px] sm:top-[122px] lg:top-[138px] inset-x-0 bottom-0 z-30"
             onClick={() => setSearchOpen(false)}
             aria-hidden="true"
           />
-          <div className="fixed top-16 sm:top-20 md:top-[122px] lg:top-[138px] inset-x-0 z-40 bg-white border-b border-warm-200 shadow-lg animate-fade-in">
+          <div className="fixed top-[106px] sm:top-[122px] lg:top-[138px] inset-x-0 z-40 bg-white border-b border-warm-200 shadow-lg animate-fade-in">
             <div className="max-w-3xl mx-auto px-4 sm:px-6 py-5">
               <div className="flex items-center gap-2">
                 <label className="flex-1 flex items-center gap-2 px-3 py-2 border border-warm-300 rounded-md bg-white">
@@ -339,7 +341,7 @@ export function Navbar() {
             role="dialog"
             aria-modal="false"
             aria-label="Main menu"
-            className="fixed top-16 sm:top-20 md:top-[122px] lg:top-[138px] bottom-0 left-0 z-40 w-80 max-w-[85vw] bg-white shadow-2xl flex flex-col animate-slide-in-left"
+            className="fixed top-[106px] sm:top-[122px] lg:top-[138px] bottom-0 left-0 z-40 w-80 max-w-[85vw] bg-white shadow-2xl flex flex-col animate-slide-in-left"
           >
             {/* Close button — top-right, prominent so it's an obvious target */}
             <div className="flex items-center justify-end h-14 px-4">
@@ -363,6 +365,7 @@ export function Navbar() {
                   <li key={item.to} className="border-b border-warm-200">
                     <NavLink
                       to={item.to}
+                      end={item.to === '/'}
                       onClick={closeDrawer}
                       className={({ isActive }) =>
                         `block px-6 py-4 text-sm font-bold uppercase tracking-[0.15em] transition-colors ${
@@ -376,47 +379,19 @@ export function Navbar() {
                 ))}
 
                 {isAuthenticated && (
-                  <>
-                    <li className="border-b border-warm-200">
-                      <NavLink
-                        to="/my-dogs"
-                        onClick={closeDrawer}
-                        className={({ isActive }) =>
-                          `block px-6 py-4 text-sm font-bold uppercase tracking-[0.15em] transition-colors ${
-                            isActive ? 'text-primary-700' : 'text-warm-900 hover:text-primary-700'
-                          }`
-                        }
-                      >
-                        My Listings
-                      </NavLink>
-                    </li>
-                    <li className="border-b border-warm-200">
-                      <NavLink
-                        to="/adoptions"
-                        onClick={closeDrawer}
-                        className={({ isActive }) =>
-                          `block px-6 py-4 text-sm font-bold uppercase tracking-[0.15em] transition-colors ${
-                            isActive ? 'text-primary-700' : 'text-warm-900 hover:text-primary-700'
-                          }`
-                        }
-                      >
-                        My Adoptions
-                      </NavLink>
-                    </li>
-                    <li className="border-b border-warm-200">
-                      <NavLink
-                        to="/profile"
-                        onClick={closeDrawer}
-                        className={({ isActive }) =>
-                          `block px-6 py-4 text-sm font-bold uppercase tracking-[0.15em] transition-colors ${
-                            isActive ? 'text-primary-700' : 'text-warm-900 hover:text-primary-700'
-                          }`
-                        }
-                      >
-                        Profile
-                      </NavLink>
-                    </li>
-                  </>
+                  <li className="border-b border-warm-200">
+                    <NavLink
+                      to="/profile"
+                      onClick={closeDrawer}
+                      className={({ isActive }) =>
+                        `block px-6 py-4 text-sm font-bold uppercase tracking-[0.15em] transition-colors ${
+                          isActive ? 'text-primary-700' : 'text-warm-900 hover:text-primary-700'
+                        }`
+                      }
+                    >
+                      Profile
+                    </NavLink>
+                  </li>
                 )}
 
                 {isAdmin && (
