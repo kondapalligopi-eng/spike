@@ -1,7 +1,43 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { GROOMING_SALONS } from '@/data/groomingSalons';
+import { useQuery } from '@tanstack/react-query';
+import { listGroomingSalons, type GroomingSalonRead } from '@/api/groomingSalons';
 import { toast } from '@/store/toastStore';
+
+// Convert "HSR Layout" → "hsr-layout" so the listing tile's slug matches the
+// existing /grooming/:slug detail-page routes for the seeded salons. Salons
+// added by admin in new areas will produce new slugs that won't match any
+// existing detail page — those clicks land on the salon-not-found state,
+// which is the right behaviour for a salon we have no detail data for.
+function areaToSlug(area: string): string {
+  return area.toLowerCase().trim().replace(/\s+/g, '-');
+}
+
+type SalonTile = {
+  slug: string;
+  name: string;
+  area: string;
+  city: string;
+  address: string;
+  tint: string;
+  heroEmoji: string;
+  avg: number;
+  total: number;
+};
+
+function apiToTile(s: GroomingSalonRead): SalonTile {
+  return {
+    slug: areaToSlug(s.area),
+    name: s.name,
+    area: s.area,
+    city: s.city,
+    address: s.address,
+    tint: s.tint,
+    heroEmoji: s.hero_emoji,
+    avg: s.rating_avg,
+    total: s.rating_count,
+  };
+}
 
 const BANGALORE_NEIGHBOURHOODS = [
   'Banashankari', 'Banaswadi', 'Basavanagudi', 'Bellandur', 'Bommanahalli',
@@ -16,13 +52,6 @@ const BANGALORE_NEIGHBOURHOODS = [
   'Ulsoor', 'Vasanth Nagar', 'Vijayanagar', 'Whitefield', 'Yelahanka',
   'Yeshwantpur',
 ];
-
-function salonAvgRating(dist: { stars: number; count: number }[]) {
-  const total = dist.reduce((s, r) => s + r.count, 0);
-  if (total === 0) return { avg: 0, total: 0 };
-  const sum = dist.reduce((s, r) => s + r.stars * r.count, 0);
-  return { avg: sum / total, total };
-}
 
 function PawRating({ value, max = 5 }: { value: number; max?: number }) {
   return (
@@ -78,15 +107,25 @@ function PaginationControls({ currentPage, totalPages, onChange }: PaginationPro
   );
 }
 
-const SALON_LOCALITIES = Array.from(
-  new Set(GROOMING_SALONS.map((s) => s.area)),
-).sort();
-
 export function Grooming() {
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [locationFilter, setLocationFilter] = useState('');
   const [activeCity, setActiveCity] = useState<string | null>(null);
+
+  const salonsQuery = useQuery({
+    queryKey: ['grooming-salons'],
+    queryFn: listGroomingSalons,
+    staleTime: 30_000,
+  });
+  const allSalons = useMemo<SalonTile[]>(
+    () => (salonsQuery.data ?? []).map(apiToTile),
+    [salonsQuery.data],
+  );
+  const SALON_LOCALITIES = useMemo(
+    () => Array.from(new Set(allSalons.map((s) => s.area))).sort(),
+    [allSalons],
+  );
 
   const fetchResults = (e?: React.FormEvent) => {
     e?.preventDefault();
@@ -100,7 +139,7 @@ export function Grooming() {
     setActiveCity(null);
   };
 
-  const visibleSalons = GROOMING_SALONS.filter((s) => {
+  const visibleSalons = allSalons.filter((s) => {
     if (
       appliedQuery &&
       !`${s.name} ${s.area}`.toLowerCase().includes(appliedQuery.toLowerCase())
@@ -345,37 +384,34 @@ export function Grooming() {
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 auto-rows-fr gap-3 sm:gap-4">
-                {pagedSalons.map((salon) => {
-                  const { avg, total } = salonAvgRating(salon.ratingDistribution);
-                  return (
-                    <Link
-                      key={salon.slug}
-                      to={`/grooming/${salon.slug}`}
-                      className="rounded-md overflow-hidden bg-white shadow-sm hover:shadow-md transition-shadow group cursor-pointer flex flex-col"
-                    >
-                      <div className={`relative aspect-square bg-gradient-to-br ${salon.tint} flex items-center justify-center`}>
-                        <span className="text-6xl drop-shadow-sm">{salon.heroEmoji}🐕</span>
-                        <div className="absolute left-3 bottom-3 w-12 h-12 rounded-full bg-red-600 text-white flex flex-col items-center justify-center text-center shadow-md border-2 border-white">
-                          <span className="text-[7px] font-bold leading-tight tracking-wider">GROOM</span>
-                          <span className="text-base leading-none my-0.5">✂️</span>
-                          <span className="text-[7px] font-bold leading-tight tracking-wider">SALON</span>
-                        </div>
+                {pagedSalons.map((salon) => (
+                  <Link
+                    key={salon.slug + salon.name}
+                    to={`/grooming/${salon.slug}`}
+                    className="rounded-md overflow-hidden bg-white shadow-sm hover:shadow-md transition-shadow group cursor-pointer flex flex-col"
+                  >
+                    <div className={`relative aspect-square bg-gradient-to-br ${salon.tint} flex items-center justify-center`}>
+                      <span className="text-6xl drop-shadow-sm">{salon.heroEmoji}🐕</span>
+                      <div className="absolute left-3 bottom-3 w-12 h-12 rounded-full bg-red-600 text-white flex flex-col items-center justify-center text-center shadow-md border-2 border-white">
+                        <span className="text-[7px] font-bold leading-tight tracking-wider">GROOM</span>
+                        <span className="text-base leading-none my-0.5">✂️</span>
+                        <span className="text-[7px] font-bold leading-tight tracking-wider">SALON</span>
                       </div>
-                      <div className="bg-primary-600 group-hover:bg-primary-700 transition-colors p-3 sm:p-4 text-white flex-1">
-                        <h3 className="font-extrabold text-sm sm:text-base leading-tight mb-1">
-                          {salon.name}
-                        </h3>
-                        <div className="text-[11px] mb-1 flex items-center gap-2">
-                          <PawRating value={avg} />
-                          <span className="text-white/80 text-[10px]">· {total} reviews</span>
-                        </div>
-                        <p className="text-[11px] text-white/90 font-medium leading-tight">
-                          {salon.area}, {salon.city}
-                        </p>
+                    </div>
+                    <div className="bg-primary-600 group-hover:bg-primary-700 transition-colors p-3 sm:p-4 text-white flex-1">
+                      <h3 className="font-extrabold text-sm sm:text-base leading-tight mb-1">
+                        {salon.name}
+                      </h3>
+                      <div className="text-[11px] mb-1 flex items-center gap-2">
+                        <PawRating value={salon.avg} />
+                        <span className="text-white/80 text-[10px]">· {salon.total} reviews</span>
                       </div>
-                    </Link>
-                  );
-                })}
+                      <p className="text-[11px] text-white/90 font-medium leading-tight">
+                        {salon.area}, {salon.city}
+                      </p>
+                    </div>
+                  </Link>
+                ))}
               </div>
 
               <div className="mt-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">

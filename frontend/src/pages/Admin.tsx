@@ -4,9 +4,34 @@ import {
   createHospital,
   deleteHospital,
   listHospitals,
+  updateHospital,
   type HospitalCreate,
   type HospitalRead,
 } from '@/api/hospitals';
+import {
+  createPark,
+  deletePark,
+  listParks,
+  updatePark,
+  type ParkCreate,
+  type ParkRead,
+} from '@/api/parks';
+import {
+  createSwimSchool,
+  deleteSwimSchool,
+  listSwimSchools,
+  updateSwimSchool,
+  type SwimSchoolCreate,
+  type SwimSchoolRead,
+} from '@/api/swimSchools';
+import {
+  createGroomingSalon,
+  deleteGroomingSalon,
+  listGroomingSalons,
+  updateGroomingSalon,
+  type GroomingSalonCreate,
+  type GroomingSalonRead,
+} from '@/api/groomingSalons';
 import { toast } from '@/store/toastStore';
 import {
   getRangedStats,
@@ -30,7 +55,7 @@ const BANGALORE_NEIGHBOURHOODS = [
 ];
 
 type ListingKind = 'hospital' | 'park' | 'swimming' | 'grooming';
-type ListingAction = 'add' | 'remove';
+type ListingAction = 'add' | 'edit' | 'remove';
 type ListingCard = { label: string; emoji: string; tint: string; kind: ListingKind; action: ListingAction };
 
 const ADD_LISTING_CARDS: ListingCard[] = [
@@ -40,24 +65,43 @@ const ADD_LISTING_CARDS: ListingCard[] = [
   { label: 'Add Grooming',    emoji: '✂️',  tint: 'from-amber-200 to-amber-400',     kind: 'grooming', action: 'add' },
 ];
 
-const REMOVE_LISTING_CARDS: ListingCard[] = [
-  { label: 'Remove Hospital',    emoji: '🏥',  tint: 'from-rose-100 to-rose-300',       kind: 'hospital', action: 'remove' },
-  { label: 'Remove Park',        emoji: '🌳',  tint: 'from-emerald-100 to-emerald-300', kind: 'park',     action: 'remove' },
-  { label: 'Remove Swim School', emoji: '🐕💦', tint: 'from-sky-100 to-sky-300',         kind: 'swimming', action: 'remove' },
-  { label: 'Remove Grooming',    emoji: '✂️',  tint: 'from-amber-100 to-amber-300',     kind: 'grooming', action: 'remove' },
+const EDIT_LISTING_CARDS: ListingCard[] = [
+  { label: 'Edit Hospital',    emoji: '🏥',  tint: 'from-rose-100 to-rose-200',       kind: 'hospital', action: 'edit' },
+  { label: 'Edit Park',        emoji: '🌳',  tint: 'from-emerald-100 to-emerald-200', kind: 'park',     action: 'edit' },
+  { label: 'Edit Swim School', emoji: '🐕💦', tint: 'from-sky-100 to-sky-200',         kind: 'swimming', action: 'edit' },
+  { label: 'Edit Grooming',    emoji: '✂️',  tint: 'from-amber-100 to-amber-200',     kind: 'grooming', action: 'edit' },
 ];
 
-function AddHospitalModal({ onClose }: { onClose: () => void }) {
+const REMOVE_LISTING_CARDS: ListingCard[] = [
+  { label: 'Remove Hospital',    emoji: '🏥',  tint: 'from-rose-50 to-rose-100',       kind: 'hospital', action: 'remove' },
+  { label: 'Remove Park',        emoji: '🌳',  tint: 'from-emerald-50 to-emerald-100', kind: 'park',     action: 'remove' },
+  { label: 'Remove Swim School', emoji: '🐕💦', tint: 'from-sky-50 to-sky-100',         kind: 'swimming', action: 'remove' },
+  { label: 'Remove Grooming',    emoji: '✂️',  tint: 'from-amber-50 to-amber-100',     kind: 'grooming', action: 'remove' },
+];
+
+function AddHospitalModal({ onClose, existing }: { onClose: () => void; existing?: HospitalRead }) {
   const queryClient = useQueryClient();
-  const [form, setForm] = useState<HospitalCreate>({
-    name: '',
-    locality: '',
-    address: '',
-    phone: '',
-    specialties: '',
-    rating: '',
-    website: '',
-  });
+  const [form, setForm] = useState<HospitalCreate>(
+    existing
+      ? {
+          name: existing.name,
+          locality: existing.locality,
+          address: existing.address,
+          phone: existing.phone,
+          specialties: existing.specialties ?? '',
+          rating: existing.rating ?? '',
+          website: existing.website ?? '',
+        }
+      : {
+          name: '',
+          locality: '',
+          address: '',
+          phone: '',
+          specialties: '',
+          rating: '',
+          website: '',
+        }
+  );
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -68,14 +112,16 @@ function AddHospitalModal({ onClose }: { onClose: () => void }) {
   }, [onClose]);
 
   const mutation = useMutation({
-    mutationFn: createHospital,
+    mutationFn: existing
+      ? (data: HospitalCreate) => updateHospital(existing.id, data)
+      : createHospital,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['hospitals'] });
-      toast.success('Hospital added — visible on the Hospital page now.');
+      toast.success(existing ? 'Hospital updated.' : 'Hospital added — visible on the Hospital page now.');
       onClose();
     },
     onError: (err: Error) => {
-      toast.error(err.message || 'Could not add hospital. Please try again.');
+      toast.error(err.message || `Could not ${existing ? 'update' : 'add'} hospital. Please try again.`);
     },
   });
 
@@ -117,7 +163,7 @@ function AddHospitalModal({ onClose }: { onClose: () => void }) {
                 Vet Care · Bangalore
               </p>
               <h2 id="add-hospital-title" className="text-2xl font-extrabold text-warm-900">
-                Add a hospital
+                {existing ? 'Edit hospital' : 'Add a hospital'}
               </h2>
             </div>
             <button
@@ -235,7 +281,7 @@ function AddHospitalModal({ onClose }: { onClose: () => void }) {
                 disabled={mutation.isPending}
                 className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full bg-accent-400 hover:bg-accent-300 disabled:opacity-60 disabled:cursor-not-allowed text-warm-900 text-sm font-bold tracking-[0.15em] uppercase ring-2 ring-accent-300/50 hover:ring-accent-200 transition-all shadow-md"
               >
-                {mutation.isPending ? 'Adding…' : 'Add'}
+                {mutation.isPending ? (existing ? 'Saving…' : 'Adding…') : (existing ? 'Save' : 'Add')}
               </button>
             </div>
           </form>
@@ -245,13 +291,153 @@ function AddHospitalModal({ onClose }: { onClose: () => void }) {
   );
 }
 
-function RemoveHospitalModal({ onClose }: { onClose: () => void }) {
+type GenericRemoveProps<T> = {
+  onClose: () => void;
+  title: string;
+  eyebrow: string;
+  successMessage: string;
+  emptyMessage: string;
+  loadingLabel: string;
+  errorLabel: string;
+  queryKey: readonly unknown[];
+  fetchItems: () => Promise<T[]>;
+  deleteItem: (id: string) => Promise<void>;
+  getId: (item: T) => string;
+  getPrimary: (item: T) => string;
+  getSecondary: (item: T) => string;
+};
+
+type GenericPickProps<T> = {
+  onClose: () => void;
+  onPick: (item: T) => void;
+  title: string;
+  eyebrow: string;
+  emptyMessage: string;
+  loadingLabel: string;
+  errorLabel: string;
+  queryKey: readonly unknown[];
+  fetchItems: () => Promise<T[]>;
+  getId: (item: T) => string;
+  getPrimary: (item: T) => string;
+  getSecondary: (item: T) => string;
+};
+
+function GenericPickModal<T>({
+  onClose,
+  onPick,
+  title,
+  eyebrow,
+  emptyMessage,
+  loadingLabel,
+  errorLabel,
+  queryKey,
+  fetchItems,
+  getId,
+  getPrimary,
+  getSecondary,
+}: GenericPickProps<T>) {
+  const { data, isLoading, isError } = useQuery({
+    queryKey,
+    queryFn: fetchItems,
+  });
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [onClose]);
+
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
+      onClick={onClose}
+    >
+      <div
+        className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-hidden flex flex-col"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="p-6 sm:p-8 pb-4">
+          <div className="flex items-start justify-between gap-4 mb-1">
+            <div>
+              <p className="text-[11px] font-semibold tracking-[0.3em] text-accent-600 uppercase mb-1">
+                {eyebrow}
+              </p>
+              <h2 className="text-2xl font-extrabold text-warm-900">{title}</h2>
+            </div>
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Close"
+              className="p-2 rounded-full text-warm-700 hover:text-warm-900 hover:bg-warm-100 transition-colors"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.25} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          <div className="h-0.5 w-12 bg-accent-400 rounded-full mb-3" />
+          <p className="text-sm text-warm-600">
+            Pick the entry you want to edit.
+          </p>
+        </div>
+
+        <div className="px-6 sm:px-8 pb-6 sm:pb-8 overflow-y-auto">
+          {isLoading ? (
+            <p className="text-sm text-warm-500 py-6 text-center">{loadingLabel}</p>
+          ) : isError ? (
+            <p className="text-sm text-red-600 py-6 text-center">{errorLabel}</p>
+          ) : !data || data.length === 0 ? (
+            <p className="text-sm text-warm-500 py-6 text-center">{emptyMessage}</p>
+          ) : (
+            <ul className="divide-y divide-warm-200 border border-warm-200 rounded-xl overflow-hidden">
+              {data.map((item) => (
+                <li key={getId(item)} className="flex items-center justify-between gap-3 px-4 py-3">
+                  <div className="min-w-0">
+                    <p className="text-sm font-bold text-warm-900 truncate">{getPrimary(item)}</p>
+                    <p className="text-xs text-warm-500 truncate">📍 {getSecondary(item)}</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => onPick(item)}
+                    className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-colors border-2 border-warm-300 bg-white text-warm-700 hover:border-primary-500 hover:text-primary-700"
+                  >
+                    Edit
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function GenericRemoveModal<T>({
+  onClose,
+  title,
+  eyebrow,
+  successMessage,
+  emptyMessage,
+  loadingLabel,
+  errorLabel,
+  queryKey,
+  fetchItems,
+  deleteItem,
+  getId,
+  getPrimary,
+  getSecondary,
+}: GenericRemoveProps<T>) {
   const queryClient = useQueryClient();
   const [confirmId, setConfirmId] = useState<string | null>(null);
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['hospitals'],
-    queryFn: listHospitals,
+    queryKey,
+    queryFn: fetchItems,
   });
 
   useEffect(() => {
@@ -263,14 +449,14 @@ function RemoveHospitalModal({ onClose }: { onClose: () => void }) {
   }, [onClose]);
 
   const mutation = useMutation({
-    mutationFn: deleteHospital,
+    mutationFn: deleteItem,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['hospitals'] });
-      toast.success('Hospital removed.');
+      queryClient.invalidateQueries({ queryKey });
+      toast.success(successMessage);
       setConfirmId(null);
     },
     onError: (err: Error) => {
-      toast.error(err.message || 'Could not remove hospital. Please try again.');
+      toast.error(err.message || 'Could not remove. Please try again.');
     },
   });
 
@@ -286,7 +472,6 @@ function RemoveHospitalModal({ onClose }: { onClose: () => void }) {
     <div
       role="dialog"
       aria-modal="true"
-      aria-labelledby="remove-hospital-title"
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
       onClick={onClose}
     >
@@ -298,11 +483,9 @@ function RemoveHospitalModal({ onClose }: { onClose: () => void }) {
           <div className="flex items-start justify-between gap-4 mb-1">
             <div>
               <p className="text-[11px] font-semibold tracking-[0.3em] text-accent-600 uppercase mb-1">
-                Vet Care · Bangalore
+                {eyebrow}
               </p>
-              <h2 id="remove-hospital-title" className="text-2xl font-extrabold text-warm-900">
-                Remove a hospital
-              </h2>
+              <h2 className="text-2xl font-extrabold text-warm-900">{title}</h2>
             </div>
             <button
               type="button"
@@ -323,29 +506,26 @@ function RemoveHospitalModal({ onClose }: { onClose: () => void }) {
 
         <div className="px-6 sm:px-8 pb-6 sm:pb-8 overflow-y-auto">
           {isLoading ? (
-            <p className="text-sm text-warm-500 py-6 text-center">Loading hospitals…</p>
+            <p className="text-sm text-warm-500 py-6 text-center">{loadingLabel}</p>
           ) : isError ? (
-            <p className="text-sm text-red-600 py-6 text-center">
-              Could not load hospitals. Please close and try again.
-            </p>
+            <p className="text-sm text-red-600 py-6 text-center">{errorLabel}</p>
           ) : !data || data.length === 0 ? (
-            <p className="text-sm text-warm-500 py-6 text-center">
-              No hospitals to remove.
-            </p>
+            <p className="text-sm text-warm-500 py-6 text-center">{emptyMessage}</p>
           ) : (
             <ul className="divide-y divide-warm-200 border border-warm-200 rounded-xl overflow-hidden">
-              {data.map((h: HospitalRead) => {
-                const staged = confirmId === h.id;
+              {data.map((item) => {
+                const id = getId(item);
+                const staged = confirmId === id;
                 const removing = staged && mutation.isPending;
                 return (
-                  <li key={h.id} className="flex items-center justify-between gap-3 px-4 py-3">
+                  <li key={id} className="flex items-center justify-between gap-3 px-4 py-3">
                     <div className="min-w-0">
-                      <p className="text-sm font-bold text-warm-900 truncate">{h.name}</p>
-                      <p className="text-xs text-warm-500 truncate">📍 {h.locality}</p>
+                      <p className="text-sm font-bold text-warm-900 truncate">{getPrimary(item)}</p>
+                      <p className="text-xs text-warm-500 truncate">📍 {getSecondary(item)}</p>
                     </div>
                     <button
                       type="button"
-                      onClick={() => handleDelete(h.id)}
+                      onClick={() => handleDelete(id)}
                       disabled={removing}
                       className={`shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-colors ${
                         staged
@@ -366,45 +546,473 @@ function RemoveHospitalModal({ onClose }: { onClose: () => void }) {
   );
 }
 
-function AddListingsSection() {
-  const [openModal, setOpenModal] = useState<{ kind: ListingKind; action: ListingAction } | null>(null);
+function AddParkModal({ onClose, existing }: { onClose: () => void; existing?: ParkRead }) {
+  const queryClient = useQueryClient();
+  const [form, setForm] = useState<ParkCreate>(
+    existing
+      ? {
+          name: existing.name,
+          locality: existing.locality,
+          rating: existing.rating,
+          image_url: existing.image_url ?? '',
+          address: existing.address,
+          hours: existing.hours ?? '',
+          cost: existing.cost ?? '',
+          off_leash: existing.off_leash ?? '',
+          features: existing.features ?? '',
+          phone: existing.phone ?? '',
+          website: existing.website ?? '',
+          highlights: existing.highlights ?? [],
+        }
+      : {
+          name: '', locality: '', rating: 4, image_url: '',
+          address: '', hours: '', cost: '', off_leash: '',
+          features: '', phone: '', website: '', highlights: [],
+        }
+  );
+  const [highlightsText, setHighlightsText] = useState(
+    existing ? (existing.highlights ?? []).join('\n') : ''
+  );
 
-  const handleClick = (kind: ListingKind, action: ListingAction) => {
-    if (kind === 'hospital') {
-      setOpenModal({ kind, action });
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [onClose]);
+
+  const mutation = useMutation({
+    mutationFn: existing
+      ? (data: ParkCreate) => updatePark(existing.id, data)
+      : createPark,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['parks'] });
+      toast.success(existing ? 'Park updated.' : 'Park added — visible on the Park page now.');
+      onClose();
+    },
+    onError: (err: Error) => toast.error(err.message || `Could not ${existing ? 'update' : 'add'} park.`),
+  });
+
+  const onSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.name.trim() || !form.locality.trim() || !form.address.trim()) {
+      toast.error('Park name, locality, and address are required.');
       return;
     }
-    toast.info(`${kind[0].toUpperCase()}${kind.slice(1)} ${action}-form is coming next.`);
+    const highlights = highlightsText.split('\n').map((l) => l.trim()).filter(Boolean);
+    mutation.mutate({
+      name: form.name.trim(),
+      locality: form.locality.trim(),
+      rating: form.rating,
+      image_url: form.image_url?.trim() || undefined,
+      address: form.address.trim(),
+      hours: form.hours?.trim() || undefined,
+      cost: form.cost?.trim() || undefined,
+      off_leash: form.off_leash?.trim() || undefined,
+      features: form.features?.trim() || undefined,
+      phone: form.phone?.trim() || undefined,
+      website: form.website?.trim() || undefined,
+      highlights,
+    });
+  };
+
+  const star = <span className="text-red-500">*</span>;
+  const inputCls = 'w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors';
+  return (
+    <div role="dialog" aria-modal="true" className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50" onClick={onClose}>
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+        <div className="p-6 sm:p-8">
+          <div className="flex items-start justify-between gap-4 mb-1">
+            <div>
+              <p className="text-[11px] font-semibold tracking-[0.3em] text-accent-600 uppercase mb-1">Outdoors · Bangalore</p>
+              <h2 className="text-2xl font-extrabold text-warm-900">{existing ? 'Edit park' : 'Add a park'}</h2>
+            </div>
+            <button type="button" onClick={onClose} aria-label="Close" className="p-2 rounded-full text-warm-700 hover:text-warm-900 hover:bg-warm-100 transition-colors">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.25} d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+          </div>
+          <div className="h-0.5 w-12 bg-accent-400 rounded-full mb-5" />
+          <form onSubmit={onSubmit} className="space-y-4">
+            <label className="block">
+              <span className="block text-sm font-semibold text-warm-900 mb-1">Park name {star}</span>
+              <input type="text" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="e.g. Cubbon Park" className={inputCls} />
+            </label>
+            <label className="block">
+              <span className="block text-sm font-semibold text-warm-900 mb-1">Locality {star}</span>
+              <input type="text" required value={form.locality} onChange={(e) => setForm({ ...form, locality: e.target.value })} placeholder="e.g. Sampangi Rama Nagar, Bengaluru" className={inputCls} />
+            </label>
+            <label className="block">
+              <span className="block text-sm font-semibold text-warm-900 mb-1">Full address {star}</span>
+              <textarea required rows={2} value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} placeholder="Street, area, city, PIN" className={`${inputCls} resize-y`} />
+            </label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <label className="block">
+                <span className="block text-sm font-semibold text-warm-900 mb-1">Open hours</span>
+                <input type="text" value={form.hours ?? ''} onChange={(e) => setForm({ ...form, hours: e.target.value })} placeholder="e.g. 5 am to 8 pm" className={inputCls} />
+              </label>
+              <label className="block">
+                <span className="block text-sm font-semibold text-warm-900 mb-1">Cost</span>
+                <input type="text" value={form.cost ?? ''} onChange={(e) => setForm({ ...form, cost: e.target.value })} placeholder="e.g. Free to use" className={inputCls} />
+              </label>
+            </div>
+            <label className="block">
+              <span className="block text-sm font-semibold text-warm-900 mb-1">Off-leash policy</span>
+              <input type="text" value={form.off_leash ?? ''} onChange={(e) => setForm({ ...form, off_leash: e.target.value })} placeholder="e.g. Yes, in designated areas" className={inputCls} />
+            </label>
+            <label className="block">
+              <span className="block text-sm font-semibold text-warm-900 mb-1">Features / amenities</span>
+              <input type="text" value={form.features ?? ''} onChange={(e) => setForm({ ...form, features: e.target.value })} placeholder="Walking trails, Playground, Restrooms" className={inputCls} />
+              <span className="block text-xs text-warm-500 mt-1">Comma-separated list</span>
+            </label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <label className="block">
+                <span className="block text-sm font-semibold text-warm-900 mb-1">Phone</span>
+                <input type="tel" value={form.phone ?? ''} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="+91 ..." className={inputCls} />
+              </label>
+              <label className="block">
+                <span className="block text-sm font-semibold text-warm-900 mb-1">Website</span>
+                <input type="url" value={form.website ?? ''} onChange={(e) => setForm({ ...form, website: e.target.value })} placeholder="https://..." className={inputCls} />
+              </label>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <label className="block">
+                <span className="block text-sm font-semibold text-warm-900 mb-1">Rating (1–5)</span>
+                <input type="number" min={1} max={5} value={form.rating} onChange={(e) => setForm({ ...form, rating: Number(e.target.value) })} className={inputCls} />
+              </label>
+              <label className="block">
+                <span className="block text-sm font-semibold text-warm-900 mb-1">Image URL</span>
+                <input type="text" value={form.image_url ?? ''} onChange={(e) => setForm({ ...form, image_url: e.target.value })} placeholder="/parks/your-park.jpg" className={inputCls} />
+              </label>
+            </div>
+            <label className="block">
+              <span className="block text-sm font-semibold text-warm-900 mb-1">Highlights</span>
+              <textarea rows={4} value={highlightsText} onChange={(e) => setHighlightsText(e.target.value)} placeholder="One per line, e.g. Off-leash zone in the morning" className={`${inputCls} resize-y`} />
+              <span className="block text-xs text-warm-500 mt-1">One highlight per line</span>
+            </label>
+            <div className="pt-2 flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
+              <button type="button" onClick={onClose} className="px-5 py-2 rounded-full border-2 border-warm-300 text-warm-700 hover:bg-warm-100 text-sm font-semibold transition-colors">Cancel</button>
+              <button type="submit" disabled={mutation.isPending} className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full bg-accent-400 hover:bg-accent-300 disabled:opacity-60 disabled:cursor-not-allowed text-warm-900 text-sm font-bold tracking-[0.15em] uppercase ring-2 ring-accent-300/50 hover:ring-accent-200 transition-all shadow-md">{mutation.isPending ? (existing ? 'Saving…' : 'Adding…') : (existing ? 'Save' : 'Add')}</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AddSwimSchoolModal({ onClose, existing }: { onClose: () => void; existing?: SwimSchoolRead }) {
+  const queryClient = useQueryClient();
+  const [form, setForm] = useState<SwimSchoolCreate>(
+    existing
+      ? {
+          name: existing.name,
+          locality: existing.locality,
+          rating: existing.rating,
+          image_url: existing.image_url ?? '',
+          address: existing.address,
+          hours: existing.hours ?? '',
+          cost: existing.cost ?? '',
+          pool_type: existing.pool_type ?? '',
+          highlights: existing.highlights ?? [],
+        }
+      : {
+          name: '', locality: '', rating: 4, image_url: '', address: '',
+          hours: '', cost: '', pool_type: '', highlights: [],
+        }
+  );
+  const [highlightsText, setHighlightsText] = useState(
+    existing ? (existing.highlights ?? []).join('\n') : ''
+  );
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [onClose]);
+
+  const mutation = useMutation({
+    mutationFn: existing
+      ? (data: SwimSchoolCreate) => updateSwimSchool(existing.id, data)
+      : createSwimSchool,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['swim-schools'] });
+      toast.success(existing ? 'Swim school updated.' : 'Swim school added — visible on the Swimming page now.');
+      onClose();
+    },
+    onError: (err: Error) => toast.error(err.message || `Could not ${existing ? 'update' : 'add'} swim school.`),
+  });
+
+  const onSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.name.trim() || !form.locality.trim() || !form.address.trim()) {
+      toast.error('Name, locality, and address are required.');
+      return;
+    }
+    const highlights = highlightsText
+      .split('\n')
+      .map((l) => l.trim())
+      .filter(Boolean);
+    mutation.mutate({
+      name: form.name.trim(),
+      locality: form.locality.trim(),
+      rating: form.rating,
+      image_url: form.image_url?.trim() || undefined,
+      address: form.address.trim(),
+      hours: form.hours?.trim() || undefined,
+      cost: form.cost?.trim() || undefined,
+      pool_type: form.pool_type?.trim() || undefined,
+      highlights,
+    });
+  };
+
+  const star = <span className="text-red-500">*</span>;
+  return (
+    <div role="dialog" aria-modal="true" className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50" onClick={onClose}>
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+        <div className="p-6 sm:p-8">
+          <div className="flex items-start justify-between gap-4 mb-1">
+            <div>
+              <p className="text-[11px] font-semibold tracking-[0.3em] text-accent-600 uppercase mb-1">Aquatic · Bangalore</p>
+              <h2 className="text-2xl font-extrabold text-warm-900">{existing ? 'Edit swim school' : 'Add a swim school'}</h2>
+            </div>
+            <button type="button" onClick={onClose} aria-label="Close" className="p-2 rounded-full text-warm-700 hover:text-warm-900 hover:bg-warm-100 transition-colors">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.25} d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+          </div>
+          <div className="h-0.5 w-12 bg-accent-400 rounded-full mb-5" />
+          <form onSubmit={onSubmit} className="space-y-4">
+            <label className="block">
+              <span className="block text-sm font-semibold text-warm-900 mb-1">Swim school name {star}</span>
+              <input type="text" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="e.g. Indiranagar Aquatic Pet Centre" className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors" />
+            </label>
+            <label className="block">
+              <span className="block text-sm font-semibold text-warm-900 mb-1">Locality {star}</span>
+              <input type="text" required value={form.locality} onChange={(e) => setForm({ ...form, locality: e.target.value })} placeholder="e.g. Indiranagar, Bengaluru" className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors" />
+            </label>
+            <label className="block">
+              <span className="block text-sm font-semibold text-warm-900 mb-1">Address {star}</span>
+              <textarea required rows={2} value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} placeholder="Street, area, city, PIN" className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors resize-y" />
+            </label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <label className="block">
+                <span className="block text-sm font-semibold text-warm-900 mb-1">Rating (1–5)</span>
+                <input type="number" min={1} max={5} value={form.rating} onChange={(e) => setForm({ ...form, rating: Number(e.target.value) })} className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors" />
+              </label>
+              <label className="block">
+                <span className="block text-sm font-semibold text-warm-900 mb-1">Image URL</span>
+                <input type="text" value={form.image_url ?? ''} onChange={(e) => setForm({ ...form, image_url: e.target.value })} placeholder="/swim/swim7.jpg" className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors" />
+              </label>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <label className="block">
+                <span className="block text-sm font-semibold text-warm-900 mb-1">Open hours</span>
+                <input type="text" value={form.hours ?? ''} onChange={(e) => setForm({ ...form, hours: e.target.value })} placeholder="e.g. 7 am to 9 pm" className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors" />
+              </label>
+              <label className="block">
+                <span className="block text-sm font-semibold text-warm-900 mb-1">Cost</span>
+                <input type="text" value={form.cost ?? ''} onChange={(e) => setForm({ ...form, cost: e.target.value })} placeholder="e.g. ₹600 / 30-min session" className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors" />
+              </label>
+            </div>
+            <label className="block">
+              <span className="block text-sm font-semibold text-warm-900 mb-1">Pool type</span>
+              <input type="text" value={form.pool_type ?? ''} onChange={(e) => setForm({ ...form, pool_type: e.target.value })} placeholder="e.g. Heated indoor pool" className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors" />
+            </label>
+            <label className="block">
+              <span className="block text-sm font-semibold text-warm-900 mb-1">Highlights</span>
+              <textarea rows={4} value={highlightsText} onChange={(e) => setHighlightsText(e.target.value)} placeholder="One per line, e.g. Heated pool" className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors resize-y" />
+              <span className="block text-xs text-warm-500 mt-1">One highlight per line</span>
+            </label>
+            <div className="pt-2 flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
+              <button type="button" onClick={onClose} className="px-5 py-2 rounded-full border-2 border-warm-300 text-warm-700 hover:bg-warm-100 text-sm font-semibold transition-colors">Cancel</button>
+              <button type="submit" disabled={mutation.isPending} className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full bg-accent-400 hover:bg-accent-300 disabled:opacity-60 disabled:cursor-not-allowed text-warm-900 text-sm font-bold tracking-[0.15em] uppercase ring-2 ring-accent-300/50 hover:ring-accent-200 transition-all shadow-md">{mutation.isPending ? (existing ? 'Saving…' : 'Adding…') : (existing ? 'Save' : 'Add')}</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AddGroomingSalonModal({ onClose, existing }: { onClose: () => void; existing?: GroomingSalonRead }) {
+  const queryClient = useQueryClient();
+  const [form, setForm] = useState<GroomingSalonCreate>(
+    existing
+      ? {
+          name: existing.name,
+          area: existing.area,
+          city: existing.city,
+          state: existing.state,
+          address: existing.address,
+          phone: existing.phone,
+          rating_avg: existing.rating_avg,
+          rating_count: existing.rating_count,
+          tint: existing.tint,
+          hero_emoji: existing.hero_emoji,
+        }
+      : {
+          name: '', area: '', city: 'Bengaluru', state: 'KA', address: '', phone: '',
+          rating_avg: 4.5, rating_count: 0, tint: 'from-amber-200 to-amber-400', hero_emoji: '✂️',
+        }
+  );
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [onClose]);
+
+  const mutation = useMutation({
+    mutationFn: existing
+      ? (data: GroomingSalonCreate) => updateGroomingSalon(existing.id, data)
+      : createGroomingSalon,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['grooming-salons'] });
+      toast.success(existing ? 'Salon updated.' : 'Salon added — visible on the Grooming page now.');
+      onClose();
+    },
+    onError: (err: Error) => toast.error(err.message || `Could not ${existing ? 'update' : 'add'} salon.`),
+  });
+
+  const onSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.name.trim() || !form.area.trim() || !form.address.trim() || !form.phone.trim()) {
+      toast.error('Name, area, address, and phone are required.');
+      return;
+    }
+    mutation.mutate({
+      name: form.name.trim(),
+      area: form.area.trim(),
+      city: (form.city || '').trim() || 'Bengaluru',
+      state: (form.state || '').trim() || 'KA',
+      address: form.address.trim(),
+      phone: form.phone.trim(),
+      rating_avg: form.rating_avg ?? 4.5,
+      rating_count: form.rating_count ?? 0,
+      tint: (form.tint || '').trim() || 'from-amber-200 to-amber-400',
+      hero_emoji: (form.hero_emoji || '').trim() || '✂️',
+    });
+  };
+
+  const star = <span className="text-red-500">*</span>;
+  return (
+    <div role="dialog" aria-modal="true" className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50" onClick={onClose}>
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+        <div className="p-6 sm:p-8">
+          <div className="flex items-start justify-between gap-4 mb-1">
+            <div>
+              <p className="text-[11px] font-semibold tracking-[0.3em] text-accent-600 uppercase mb-1">Salons · Bangalore</p>
+              <h2 className="text-2xl font-extrabold text-warm-900">{existing ? 'Edit salon' : 'Add a salon'}</h2>
+            </div>
+            <button type="button" onClick={onClose} aria-label="Close" className="p-2 rounded-full text-warm-700 hover:text-warm-900 hover:bg-warm-100 transition-colors">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.25} d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+          </div>
+          <div className="h-0.5 w-12 bg-accent-400 rounded-full mb-5" />
+          <form onSubmit={onSubmit} className="space-y-4">
+            <label className="block">
+              <span className="block text-sm font-semibold text-warm-900 mb-1">Salon name {star}</span>
+              <input type="text" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="e.g. Pawsh Paws Grooming Studio" className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors" />
+            </label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <label className="block">
+                <span className="block text-sm font-semibold text-warm-900 mb-1">Area {star}</span>
+                <select required value={form.area} onChange={(e) => setForm({ ...form, area: e.target.value })} className={`w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors bg-white ${form.area ? 'text-warm-900' : 'text-warm-400'}`}>
+                  <option value="" disabled>Pick an area</option>
+                  {BANGALORE_NEIGHBOURHOODS.map((n) => <option key={n} value={n} className="text-warm-900">{n}</option>)}
+                </select>
+              </label>
+              <label className="block">
+                <span className="block text-sm font-semibold text-warm-900 mb-1">City</span>
+                <input type="text" value={form.city ?? ''} onChange={(e) => setForm({ ...form, city: e.target.value })} placeholder="Bengaluru" className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors" />
+              </label>
+            </div>
+            <label className="block">
+              <span className="block text-sm font-semibold text-warm-900 mb-1">Address {star}</span>
+              <textarea required rows={2} value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} placeholder="Street, area, city, PIN" className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors resize-y" />
+            </label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <label className="block">
+                <span className="block text-sm font-semibold text-warm-900 mb-1">Phone {star}</span>
+                <input type="tel" required value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="+91 80 ..." className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors" />
+              </label>
+              <label className="block">
+                <span className="block text-sm font-semibold text-warm-900 mb-1">Hero emoji</span>
+                <input type="text" value={form.hero_emoji ?? ''} onChange={(e) => setForm({ ...form, hero_emoji: e.target.value })} placeholder="✂️" className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors" />
+              </label>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <label className="block">
+                <span className="block text-sm font-semibold text-warm-900 mb-1">Avg rating (0–5)</span>
+                <input type="number" min={0} max={5} step={0.1} value={form.rating_avg ?? 4.5} onChange={(e) => setForm({ ...form, rating_avg: Number(e.target.value) })} className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors" />
+              </label>
+              <label className="block">
+                <span className="block text-sm font-semibold text-warm-900 mb-1">Review count</span>
+                <input type="number" min={0} value={form.rating_count ?? 0} onChange={(e) => setForm({ ...form, rating_count: Number(e.target.value) })} className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors" />
+              </label>
+            </div>
+            <div className="pt-2 flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
+              <button type="button" onClick={onClose} className="px-5 py-2 rounded-full border-2 border-warm-300 text-warm-700 hover:bg-warm-100 text-sm font-semibold transition-colors">Cancel</button>
+              <button type="submit" disabled={mutation.isPending} className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full bg-accent-400 hover:bg-accent-300 disabled:opacity-60 disabled:cursor-not-allowed text-warm-900 text-sm font-bold tracking-[0.15em] uppercase ring-2 ring-accent-300/50 hover:ring-accent-200 transition-all shadow-md">{mutation.isPending ? (existing ? 'Saving…' : 'Adding…') : (existing ? 'Save' : 'Add')}</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+type ModalState =
+  | { kind: ListingKind; action: 'add' | 'edit' | 'remove' }
+  | { kind: 'hospital'; action: 'edit-form'; existing: HospitalRead }
+  | { kind: 'park';     action: 'edit-form'; existing: ParkRead }
+  | { kind: 'swimming'; action: 'edit-form'; existing: SwimSchoolRead }
+  | { kind: 'grooming'; action: 'edit-form'; existing: GroomingSalonRead };
+
+function AddListingsSection() {
+  const [openModal, setOpenModal] = useState<ModalState | null>(null);
+
+  const handleClick = (kind: ListingKind, action: ListingAction) => {
+    setOpenModal({ kind, action });
   };
 
   const renderRow = (cards: ListingCard[]) => (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
       {cards.map(({ label, emoji, kind, action, tint }) => (
         <button
           key={`${action}-${kind}`}
           type="button"
           onClick={() => handleClick(kind, action)}
-          className="group rounded-2xl border-2 border-primary-100 bg-white overflow-hidden hover:border-primary-300 hover:shadow-md transition-all flex flex-col text-left"
+          className="group rounded-xl border-2 border-primary-100 bg-white hover:border-primary-300 hover:shadow-sm transition-all flex items-center gap-3 px-3 py-2 text-left"
         >
-          <div className={`aspect-[4/2] bg-gradient-to-br ${tint} flex items-center justify-center text-5xl`}>
-            <span aria-hidden="true">{emoji}</span>
-          </div>
-          <div className="p-4 flex items-center justify-between gap-2">
-            <span className="text-sm font-bold text-warm-900 group-hover:text-primary-700 transition-colors">
-              {label}
-            </span>
-            <span className={`${action === 'remove' ? 'text-red-400 group-hover:text-red-600' : 'text-warm-400 group-hover:text-primary-600'} transition-colors`}>
-              {action === 'remove' ? (
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M1 7h22M9 7V4a2 2 0 012-2h2a2 2 0 012 2v3" />
-                </svg>
-              ) : (
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
-                </svg>
-              )}
-            </span>
-          </div>
+          <span
+            aria-hidden="true"
+            className={`shrink-0 w-9 h-9 rounded-lg bg-gradient-to-br ${tint} flex items-center justify-center text-base`}
+          >
+            {emoji}
+          </span>
+          <span className="flex-1 min-w-0 text-sm font-semibold text-warm-900 group-hover:text-primary-700 transition-colors truncate">
+            {label}
+          </span>
+          <span className={`shrink-0 ${
+            action === 'remove'
+              ? 'text-red-400 group-hover:text-red-600'
+              : action === 'edit'
+              ? 'text-primary-400 group-hover:text-primary-700'
+              : 'text-warm-400 group-hover:text-primary-600'
+          } transition-colors`}>
+            {action === 'remove' ? (
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M1 7h22M9 7V4a2 2 0 012-2h2a2 2 0 012 2v3" />
+              </svg>
+            ) : action === 'edit' ? (
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+            ) : (
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
+              </svg>
+            )}
+          </span>
         </button>
       ))}
     </div>
@@ -424,14 +1032,168 @@ function AddListingsSection() {
 
       <div className="space-y-4">
         {renderRow(ADD_LISTING_CARDS)}
+        {renderRow(EDIT_LISTING_CARDS)}
         {renderRow(REMOVE_LISTING_CARDS)}
       </div>
 
-      {openModal?.kind === 'hospital' && openModal.action === 'add' && (
+      {openModal?.action === 'add' && openModal.kind === 'hospital' && (
         <AddHospitalModal onClose={() => setOpenModal(null)} />
       )}
-      {openModal?.kind === 'hospital' && openModal.action === 'remove' && (
-        <RemoveHospitalModal onClose={() => setOpenModal(null)} />
+      {openModal?.action === 'add' && openModal.kind === 'park' && (
+        <AddParkModal onClose={() => setOpenModal(null)} />
+      )}
+      {openModal?.action === 'add' && openModal.kind === 'swimming' && (
+        <AddSwimSchoolModal onClose={() => setOpenModal(null)} />
+      )}
+      {openModal?.action === 'add' && openModal.kind === 'grooming' && (
+        <AddGroomingSalonModal onClose={() => setOpenModal(null)} />
+      )}
+
+      {openModal?.action === 'edit' && openModal.kind === 'hospital' && (
+        <GenericPickModal
+          onClose={() => setOpenModal(null)}
+          onPick={(item) => setOpenModal({ kind: 'hospital', action: 'edit-form', existing: item })}
+          title="Pick a hospital to edit"
+          eyebrow="Vet Care · Bangalore"
+          emptyMessage="No hospitals to edit."
+          loadingLabel="Loading hospitals…"
+          errorLabel="Could not load hospitals. Please close and try again."
+          queryKey={['hospitals']}
+          fetchItems={listHospitals}
+          getId={(h) => h.id}
+          getPrimary={(h) => h.name}
+          getSecondary={(h) => h.locality}
+        />
+      )}
+      {openModal?.action === 'edit' && openModal.kind === 'park' && (
+        <GenericPickModal
+          onClose={() => setOpenModal(null)}
+          onPick={(item) => setOpenModal({ kind: 'park', action: 'edit-form', existing: item })}
+          title="Pick a park to edit"
+          eyebrow="Outdoors · Bangalore"
+          emptyMessage="No parks to edit."
+          loadingLabel="Loading parks…"
+          errorLabel="Could not load parks. Please close and try again."
+          queryKey={['parks']}
+          fetchItems={listParks}
+          getId={(p) => p.id}
+          getPrimary={(p) => p.name}
+          getSecondary={(p) => p.locality}
+        />
+      )}
+      {openModal?.action === 'edit' && openModal.kind === 'swimming' && (
+        <GenericPickModal
+          onClose={() => setOpenModal(null)}
+          onPick={(item) => setOpenModal({ kind: 'swimming', action: 'edit-form', existing: item })}
+          title="Pick a swim school to edit"
+          eyebrow="Aquatic · Bangalore"
+          emptyMessage="No swim schools to edit."
+          loadingLabel="Loading swim schools…"
+          errorLabel="Could not load swim schools. Please close and try again."
+          queryKey={['swim-schools']}
+          fetchItems={listSwimSchools}
+          getId={(s) => s.id}
+          getPrimary={(s) => s.name}
+          getSecondary={(s) => s.locality}
+        />
+      )}
+      {openModal?.action === 'edit' && openModal.kind === 'grooming' && (
+        <GenericPickModal
+          onClose={() => setOpenModal(null)}
+          onPick={(item) => setOpenModal({ kind: 'grooming', action: 'edit-form', existing: item })}
+          title="Pick a salon to edit"
+          eyebrow="Salons · Bangalore"
+          emptyMessage="No salons to edit."
+          loadingLabel="Loading salons…"
+          errorLabel="Could not load salons. Please close and try again."
+          queryKey={['grooming-salons']}
+          fetchItems={listGroomingSalons}
+          getId={(s) => s.id}
+          getPrimary={(s) => s.name}
+          getSecondary={(s) => `${s.area}, ${s.city}`}
+        />
+      )}
+
+      {openModal?.action === 'edit-form' && openModal.kind === 'hospital' && (
+        <AddHospitalModal onClose={() => setOpenModal(null)} existing={openModal.existing} />
+      )}
+      {openModal?.action === 'edit-form' && openModal.kind === 'park' && (
+        <AddParkModal onClose={() => setOpenModal(null)} existing={openModal.existing} />
+      )}
+      {openModal?.action === 'edit-form' && openModal.kind === 'swimming' && (
+        <AddSwimSchoolModal onClose={() => setOpenModal(null)} existing={openModal.existing} />
+      )}
+      {openModal?.action === 'edit-form' && openModal.kind === 'grooming' && (
+        <AddGroomingSalonModal onClose={() => setOpenModal(null)} existing={openModal.existing} />
+      )}
+
+      {openModal?.action === 'remove' && openModal.kind === 'hospital' && (
+        <GenericRemoveModal
+          onClose={() => setOpenModal(null)}
+          title="Remove a hospital"
+          eyebrow="Vet Care · Bangalore"
+          successMessage="Hospital removed."
+          emptyMessage="No hospitals to remove."
+          loadingLabel="Loading hospitals…"
+          errorLabel="Could not load hospitals. Please close and try again."
+          queryKey={['hospitals']}
+          fetchItems={listHospitals}
+          deleteItem={deleteHospital}
+          getId={(h) => h.id}
+          getPrimary={(h) => h.name}
+          getSecondary={(h) => h.locality}
+        />
+      )}
+      {openModal?.action === 'remove' && openModal.kind === 'park' && (
+        <GenericRemoveModal
+          onClose={() => setOpenModal(null)}
+          title="Remove a park"
+          eyebrow="Outdoors · Bangalore"
+          successMessage="Park removed."
+          emptyMessage="No parks to remove."
+          loadingLabel="Loading parks…"
+          errorLabel="Could not load parks. Please close and try again."
+          queryKey={['parks']}
+          fetchItems={listParks}
+          deleteItem={deletePark}
+          getId={(p) => p.id}
+          getPrimary={(p) => p.name}
+          getSecondary={(p) => p.locality}
+        />
+      )}
+      {openModal?.action === 'remove' && openModal.kind === 'swimming' && (
+        <GenericRemoveModal
+          onClose={() => setOpenModal(null)}
+          title="Remove a swim school"
+          eyebrow="Aquatic · Bangalore"
+          successMessage="Swim school removed."
+          emptyMessage="No swim schools to remove."
+          loadingLabel="Loading swim schools…"
+          errorLabel="Could not load swim schools. Please close and try again."
+          queryKey={['swim-schools']}
+          fetchItems={listSwimSchools}
+          deleteItem={deleteSwimSchool}
+          getId={(s) => s.id}
+          getPrimary={(s) => s.name}
+          getSecondary={(s) => s.locality}
+        />
+      )}
+      {openModal?.action === 'remove' && openModal.kind === 'grooming' && (
+        <GenericRemoveModal
+          onClose={() => setOpenModal(null)}
+          title="Remove a salon"
+          eyebrow="Salons · Bangalore"
+          successMessage="Salon removed."
+          emptyMessage="No salons to remove."
+          loadingLabel="Loading salons…"
+          errorLabel="Could not load salons. Please close and try again."
+          queryKey={['grooming-salons']}
+          fetchItems={listGroomingSalons}
+          deleteItem={deleteGroomingSalon}
+          getId={(s) => s.id}
+          getPrimary={(s) => s.name}
+          getSecondary={(s) => `${s.area}, ${s.city}`}
+        />
       )}
     </section>
   );

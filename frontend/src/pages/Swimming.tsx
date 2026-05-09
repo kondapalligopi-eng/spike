@@ -1,4 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { listSwimSchools, type SwimSchoolRead } from '@/api/swimSchools';
 import { toast } from '@/store/toastStore';
 
 const BANGALORE_NEIGHBOURHOODS = [
@@ -27,108 +29,23 @@ type SwimSpot = {
   highlights: string[];
 };
 
-const SPOTS: SwimSpot[] = [
-  {
-    name: 'Indiranagar Aquatic Pet Centre',
-    locality: 'Indiranagar, Bengaluru',
-    rating: 5,
-    image: '/swim/swim1.jpg',
-    address: '12, 100 Feet Rd, Indiranagar, Bengaluru 560038',
-    hours: '7 am to 9 pm',
-    cost: '₹600 per 30-min session',
-    poolType: 'Heated indoor pool',
-    highlights: [
-      'Climate-controlled, pH-balanced water at 28-30°C',
-      'Certified canine swim coaches with small-batch sessions',
-      'Life-jacket rental and post-swim towel-dry included',
-      'Suitable for all breeds, including brachycephalic dogs',
-    ],
-  },
-  {
-    name: 'Whitefield Splash Academy',
-    locality: 'Whitefield, Bengaluru',
-    rating: 5,
-    image: '/swim/swim2.jpg',
-    address: 'Forum Value Mall area, Whitefield, Bengaluru 560066',
-    hours: '6:30 am to 8 pm',
-    cost: '₹500 per 30-min session',
-    poolType: 'Outdoor heated pool',
-    highlights: [
-      'Year-round heated water for outdoor swim sessions',
-      'Hydrotherapy programs for senior dogs and post-surgery recovery',
-      'On-site rest area with shaded benches for owners',
-      'Large pool with shallow zone for first-time swimmers',
-    ],
-  },
-  {
-    name: 'HSR Canine Swim Club',
-    locality: 'HSR Layout, Bengaluru',
-    rating: 4,
-    image: '/swim/swim3.jpg',
-    address: '24th Main Rd, HSR Layout, Bengaluru 560102',
-    hours: '7 am to 8:30 pm',
-    cost: '₹550 per 30-min session',
-    poolType: 'Heated indoor pool',
-    highlights: [
-      'Group play sessions on weekends',
-      'Underwater treadmill for rehabilitation',
-      'Parking available for members',
-      'On-site pet groomer for post-swim cleanup',
-    ],
-  },
-  {
-    name: 'Sarjapur Splash & Paddle',
-    locality: 'Sarjapur Road, Bengaluru',
-    rating: 4,
-    image: '/swim/swim4.jpg',
-    address: 'Sarjapur Main Rd, near Wipro Gate, Bengaluru 560035',
-    hours: '6 am to 9 pm',
-    cost: '₹650 per 30-min session',
-    poolType: 'Heated indoor pool',
-    highlights: [
-      'Spacious pool with separate beginner and advanced lanes',
-      'Trainers experienced with rescue and adopted dogs',
-      'Cafe on-site for owners',
-      'Open-swim hours every Saturday',
-    ],
-  },
-  {
-    name: 'Koramangala Pet Pool Club',
-    locality: 'Koramangala, Bengaluru',
-    rating: 4,
-    image: '/swim/swim5.jpg',
-    address: '5th Block, Koramangala, Bengaluru 560095',
-    hours: '7 am to 8 pm',
-    cost: '₹600 per 30-min session',
-    poolType: 'Heated indoor pool',
-    highlights: [
-      'Solo and group sessions available',
-      'Compact but well-equipped facility',
-      'Easy access from BTM, HSR, and Indiranagar',
-      'Specialised programs for puppies under 6 months',
-    ],
-  },
-  {
-    name: 'Domlur Aquatic Hub',
-    locality: 'Domlur, Bengaluru',
-    rating: 4,
-    image: '/swim/swim6.jpg',
-    address: 'KGA Road, Domlur, Bengaluru 560071',
-    hours: '6:30 am to 9 pm',
-    cost: '₹550 per 30-min session',
-    poolType: 'Heated indoor pool',
-    highlights: [
-      'Vet on call for hydrotherapy referrals',
-      '24x7 emergency consult line',
-      'Towel-dry and brush-out post-swim',
-      'Subscription packages with monthly discounts',
-    ],
-  },
-];
+// Swim schools now live in the database — see backend/scripts/seed_swim_schools.py
+// for the seed data and frontend/src/api/swimSchools.ts for the local mock store.
 
-const POOL_LOCALITIES = Array.from(
-  new Set(SPOTS.map((s) => s.locality.split(',')[0].trim())),
-).sort();
+function apiToSpot(s: SwimSchoolRead): SwimSpot {
+  return {
+    name: s.name,
+    locality: s.locality,
+    rating: s.rating,
+    image: s.image_url ?? '',
+    address: s.address,
+    hours: s.hours ?? '',
+    cost: s.cost ?? '',
+    poolType: s.pool_type ?? '',
+    highlights: s.highlights ?? [],
+  };
+}
+
 
 function PawRating({ value, max = 5 }: { value: number; max?: number }) {
   return (
@@ -206,6 +123,21 @@ export function Swimming() {
   const [activeCity, setActiveCity] = useState<string | null>(null);
   const [selectedSpot, setSelectedSpot] = useState<SwimSpot | null>(null);
 
+  const swimSchoolsQuery = useQuery({
+    queryKey: ['swim-schools'],
+    queryFn: listSwimSchools,
+    staleTime: 30_000,
+  });
+  const allSpots = useMemo<SwimSpot[]>(
+    () => (swimSchoolsQuery.data ?? []).map(apiToSpot),
+    [swimSchoolsQuery.data],
+  );
+  const POOL_LOCALITIES = useMemo(
+    () =>
+      Array.from(new Set(allSpots.map((s) => s.locality.split(',')[0].trim()))).sort(),
+    [allSpots],
+  );
+
   const fetchResults = (e?: React.FormEvent) => {
     e?.preventDefault();
     setAppliedQuery(query.trim());
@@ -282,7 +214,7 @@ export function Swimming() {
     }
   };
 
-  const visibleSpots = SPOTS.filter((s) => {
+  const visibleSpots = allSpots.filter((s) => {
     if (
       appliedQuery &&
       !`${s.name} ${s.locality}`.toLowerCase().includes(appliedQuery.toLowerCase())

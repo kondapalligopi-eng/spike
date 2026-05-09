@@ -27,5 +27,14 @@ python scripts/bootstrap_admin.py || echo "[bootstrap_admin] non-fatal failure �
 echo "Seeding default hospitals (idempotent — only runs if table is empty)..."
 python scripts/seed_hospitals.py || echo "[seed_hospitals] non-fatal failure — continuing"
 
+echo "Seeding default parks (idempotent)..."
+python scripts/seed_parks.py || echo "[seed_parks] non-fatal failure — continuing"
+
+echo "Seeding default swim schools (idempotent)..."
+python scripts/seed_swim_schools.py || echo "[seed_swim_schools] non-fatal failure — continuing"
+
+echo "Seeding default grooming salons (idempotent)..."
+python scripts/seed_grooming_salons.py || echo "[seed_grooming_salons] non-fatal failure — continuing"
+
 echo "Starting FastAPI on port ${PORT:-8000}..."
 exec uvicorn app.main:app --host 0.0.0.0 --port "${PORT:-8000}" --workers 1

@@ -178,6 +178,32 @@ export async function createHospital(data: HospitalCreate): Promise<HospitalRead
   return response.data;
 }
 
+export async function updateHospital(id: string, data: HospitalCreate): Promise<HospitalRead> {
+  if (USE_MOCK) {
+    await delay(250);
+    const store = readMockStore();
+    const idx = store.findIndex((h) => h.id === id);
+    if (idx === -1) throw new Error('Hospital not found');
+    const now = new Date().toISOString();
+    const updated: HospitalRead = {
+      ...store[idx],
+      name: data.name,
+      locality: data.locality,
+      address: data.address,
+      phone: data.phone,
+      specialties: data.specialties?.trim() || null,
+      rating: data.rating?.trim() || null,
+      website: data.website?.trim() || null,
+      updated_at: now,
+    };
+    store[idx] = updated;
+    writeMockStore(store);
+    return updated;
+  }
+  const response = await apiClient.put<HospitalRead>(`/hospitals/${id}`, data);
+  return response.data;
+}
+
 export async function deleteHospital(id: string): Promise<void> {
   if (USE_MOCK) {
     await delay(200);
