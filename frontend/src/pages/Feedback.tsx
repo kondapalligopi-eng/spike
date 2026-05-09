@@ -27,7 +27,7 @@ export function Feedback() {
     setSubmitting(true);
     try {
       const response = await fetch(
-        'https://formsubmit.co/ajax/support@hispike.in',
+        'https://formsubmit.co/ajax/267799cdb3e1f5ab88dbf80bc8e9e283',
         {
           method: 'POST',
           headers: {
