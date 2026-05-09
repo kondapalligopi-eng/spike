@@ -73,6 +73,22 @@ export function OurStory() {
               </li>
             ))}
           </ul>
+
+          <div className="rounded-2xl border-2 border-primary-100 bg-white p-5 mt-8">
+            <p className="text-[11px] font-semibold tracking-[0.25em] text-accent-600 uppercase mb-1.5">
+              Get in touch
+            </p>
+            <p className="text-sm text-warm-700 leading-relaxed">
+              Questions, feedback, or want to partner with us? Email{' '}
+              <a
+                href="mailto:support@hispike.in"
+                className="text-primary-700 font-semibold hover:underline"
+              >
+                support@hispike.in
+              </a>{' '}
+              — we usually reply within a day.
+            </p>
+          </div>
         </div>
       </section>
     </div>

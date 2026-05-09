@@ -134,8 +134,8 @@ export function Grooming() {
 
   const submitSalonListing = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.name.trim() || !form.locality || !form.address.trim()) {
-      toast.error('Salon name, locality, and address are required.');
+    if (!form.name.trim() || !form.locality || !form.address.trim() || !form.phone.trim()) {
+      toast.error('Salon name, locality, address, and phone are required.');
       return;
     }
     setSubmitting(true);
@@ -436,7 +436,7 @@ export function Grooming() {
 
               <form onSubmit={submitSalonListing} className="space-y-4">
                 <label className="block">
-                  <span className="block text-sm font-semibold text-warm-900 mb-1">Salon name *</span>
+                  <span className="block text-sm font-semibold text-warm-900 mb-1">Salon name <span className="text-red-500">*</span></span>
                   <input
                     type="text"
                     required
@@ -448,7 +448,7 @@ export function Grooming() {
                 </label>
 
                 <label className="block">
-                  <span className="block text-sm font-semibold text-warm-900 mb-1">Locality *</span>
+                  <span className="block text-sm font-semibold text-warm-900 mb-1">Locality <span className="text-red-500">*</span></span>
                   <select
                     required
                     value={form.locality}
@@ -469,7 +469,7 @@ export function Grooming() {
                 </label>
 
                 <label className="block">
-                  <span className="block text-sm font-semibold text-warm-900 mb-1">Full address *</span>
+                  <span className="block text-sm font-semibold text-warm-900 mb-1">Full address <span className="text-red-500">*</span></span>
                   <textarea
                     required
                     rows={2}
@@ -507,9 +507,10 @@ export function Grooming() {
                   </label>
 
                   <label className="block">
-                    <span className="block text-sm font-semibold text-warm-900 mb-1">Phone</span>
+                    <span className="block text-sm font-semibold text-warm-900 mb-1">Phone <span className="text-red-500">*</span></span>
                     <input
                       type="tel"
+                      required
                       value={form.phone}
                       onChange={(e) => setForm({ ...form, phone: e.target.value })}
                       placeholder="+91 80 ..."
@@ -546,6 +547,13 @@ export function Grooming() {
                   </button>
                 </div>
               </form>
+              <p className="text-xs text-warm-500 text-center mt-5">
+                Issues with the form? Email{' '}
+                <a className="text-primary-700 font-semibold hover:underline" href="mailto:support@hispike.in">
+                  support@hispike.in
+                </a>
+                .
+              </p>
             </div>
           </div>
         </div>

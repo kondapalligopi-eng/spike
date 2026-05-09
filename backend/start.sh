@@ -24,5 +24,8 @@ echo "Bootstrapping admin user (idempotent)..."
 # kill the API — if the seed fails, log it and keep starting uvicorn.
 python scripts/bootstrap_admin.py || echo "[bootstrap_admin] non-fatal failure — continuing"
 
+echo "Seeding default hospitals (idempotent — only runs if table is empty)..."
+python scripts/seed_hospitals.py || echo "[seed_hospitals] non-fatal failure — continuing"
+
 echo "Starting FastAPI on port ${PORT:-8000}..."
 exec uvicorn app.main:app --host 0.0.0.0 --port "${PORT:-8000}" --workers 1

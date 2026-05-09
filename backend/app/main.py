@@ -9,7 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app.config import settings
-from app.routers import auth, users, dogs, adoptions, breeds
+from app.routers import auth, users, dogs, adoptions, breeds, hospitals
 
 
 @asynccontextmanager
@@ -105,3 +105,4 @@ app.include_router(users.router, prefix=API_PREFIX)
 app.include_router(dogs.router, prefix=API_PREFIX)
 app.include_router(adoptions.router, prefix=API_PREFIX)
 app.include_router(breeds.router, prefix=API_PREFIX)
+app.include_router(hospitals.router, prefix=API_PREFIX)
