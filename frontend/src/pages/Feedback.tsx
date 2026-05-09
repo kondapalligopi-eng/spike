@@ -90,7 +90,7 @@ export function Feedback() {
             <form onSubmit={submitFeedback} className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <label className="block">
-                  <span className="block text-sm font-semibold text-warm-900 mb-1">Your name *</span>
+                  <span className="block text-sm font-semibold text-warm-900 mb-1">Your name <span className="text-red-500">*</span></span>
                   <input
                     type="text"
                     required
@@ -101,7 +101,7 @@ export function Feedback() {
                   />
                 </label>
                 <label className="block">
-                  <span className="block text-sm font-semibold text-warm-900 mb-1">Email *</span>
+                  <span className="block text-sm font-semibold text-warm-900 mb-1">Email <span className="text-red-500">*</span></span>
                   <input
                     type="email"
                     required
@@ -114,7 +114,7 @@ export function Feedback() {
               </div>
 
               <label className="block">
-                <span className="block text-sm font-semibold text-warm-900 mb-1">Topic *</span>
+                <span className="block text-sm font-semibold text-warm-900 mb-1">Topic <span className="text-red-500">*</span></span>
                 <select
                   required
                   value={form.topic}
@@ -131,7 +131,7 @@ export function Feedback() {
               </label>
 
               <label className="block">
-                <span className="block text-sm font-semibold text-warm-900 mb-1">Your message *</span>
+                <span className="block text-sm font-semibold text-warm-900 mb-1">Your message <span className="text-red-500">*</span></span>
                 <textarea
                   required
                   rows={6}

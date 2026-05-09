@@ -1,4 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { listHospitals, type HospitalRead } from '@/api/hospitals';
 import { toast } from '@/store/toastStore';
 
 type Hospital = {
@@ -11,63 +13,10 @@ type Hospital = {
   website?: string;
 };
 
-// Real Bengaluru pet hospitals. Phone / address sourced from each clinic's
-// official website where available — verify before going live as numbers
-// change. Ratings are approximate (publicly visible on Google / Justdial).
-const HOSPITALS: Hospital[] = [
-  {
-    name: 'SKS Veterinary Hospital',
-    locality: 'Indiranagar',
-    address: '17, Service Rd, Geethanjali Layout, HAL 3rd Stage, New Tippasandra, Bengaluru 560075',
-    specialties: 'General, Surgery, Diagnostics, Grooming',
-    rating: '4.7',
-    website: 'https://www.skspethospital.com/indira-nagar/',
-  },
-  {
-    name: 'V-Care Pet Polyclinic',
-    locality: 'Koramangala',
-    address: 'No. 15, 1st Main, 1st Block, near Kabab Magic, Koramangala, Bengaluru',
-    specialties: 'General, Dentistry, Vaccination',
-    rating: '4.6',
-    phone: '+918147006342',
-    website: 'http://www.vcarepetpolyclinic.com/',
-  },
-  {
-    name: 'V-Care Pet Polyclinic',
-    locality: 'Whitefield',
-    address: 'Opposite CSI Church, Whitefield, Bengaluru 560066',
-    specialties: 'General, Surgery, Pet Supplies',
-    rating: '4.6',
-    phone: '+918147006341',
-    website: 'http://www.vcarepetpolyclinic.com/',
-  },
-  {
-    name: 'Vetic Pet Clinic',
-    locality: 'HSR Layout',
-    address: '1070, Ground Floor, MM Heights, 24th Main Rd, near HSR Layout Police Station, Bengaluru',
-    specialties: '24x7 Care, General, Diagnostics',
-    rating: '4.8',
-    website: 'https://vetic.in/clinics/bengaluru/hsr-bengaluru',
-  },
-  {
-    name: 'Dr. Doodley Pet Hospital',
-    locality: 'Jayanagar',
-    address: 'No. 18, 1356, 4th T Block East, 32nd E Cross Road, Jayanagar, Bengaluru 560041',
-    specialties: 'General, Surgery, Emergency',
-    rating: '4.7',
-    phone: '+919902356133',
-    website: 'https://doodley.in/',
-  },
-  {
-    name: 'Cessna Lifeline Veterinary Hospital',
-    locality: 'Domlur',
-    address: 'No. 148, Near Fiat Showroom, HCBS Amarjyothi Layout, KGA Road, Domlur, Bengaluru 560071',
-    specialties: 'Multispecialty, Emergency, Surgery, Boarding',
-    rating: '4.8',
-    phone: '+917676365365',
-    website: 'https://cessnalifeline.com/',
-  },
-];
+// All hospitals now live in the database (or the localStorage mock store
+// in dev). The in-page seed used to live here — it has been moved into
+// backend/scripts/seed_hospitals.py and frontend/src/api/hospitals.ts so
+// admins can add and delete via the API.
 
 // +918147006342 -> +91 81470 06342 (3-digit country code + 5/5 split).
 // Falls back to the raw value for any other format.
@@ -121,22 +70,23 @@ function PaginationControls({ currentPage, totalPages, onChange }: PaginationPro
   );
 }
 
-// Derive filter lists from the actual HOSPITALS data so dropdowns and chip
-// rows only show options that at least one hospital actually has.
-const SPECIALTIES = [
-  'All Specialties',
-  ...Array.from(
-    new Set(HOSPITALS.flatMap((h) => h.specialties.split(',').map((s) => s.trim()))),
-  ).sort(),
-];
+// Normalise an API HospitalRead into the local Hospital shape (null → '').
+function normaliseApiHospital(h: HospitalRead): Hospital {
+  return {
+    name: h.name,
+    locality: h.locality,
+    address: h.address,
+    specialties: h.specialties ?? '',
+    rating: h.rating ?? '',
+    phone: h.phone ?? undefined,
+    website: h.website ?? undefined,
+  };
+}
 
-const LOCATIONS = [
-  'All Locations',
-  ...Array.from(new Set(HOSPITALS.map((h) => h.locality))).sort(),
-];
-
-// City chip row is the same set as LOCATIONS minus the "All Locations" entry.
-const CITIES = LOCATIONS.slice(1);
+// Filter dropdown defaults — used both as labels and as sentinel "no filter"
+// values so we can compare against them cheaply.
+const ALL_SPECIALTIES = 'All Specialties';
+const ALL_LOCATIONS = 'All Locations';
 
 // Comprehensive list of Bangalore neighbourhoods used by the
 // "List your hospital" registration form. Broader than CITIES (which is
@@ -196,10 +146,45 @@ const BANGALORE_NEIGHBOURHOODS = [
 
 export function Hospital() {
   const [search, setSearch] = useState('');
-  const [specialty, setSpecialty] = useState(SPECIALTIES[0]);
-  const [location, setLocation] = useState(LOCATIONS[0]);
+  const [specialty, setSpecialty] = useState(ALL_SPECIALTIES);
+  const [location, setLocation] = useState(ALL_LOCATIONS);
   const [activeCity, setActiveCity] = useState<string | null>(null);
-  const [applied, setApplied] = useState({ search: '', specialty: SPECIALTIES[0], location: LOCATIONS[0] });
+  const [applied, setApplied] = useState({ search: '', specialty: ALL_SPECIALTIES, location: ALL_LOCATIONS });
+
+  // Admin-added hospitals from the API. Fails open — if the request errors,
+  // we just show the hardcoded seed list with a one-line warning.
+  const adminHospitalsQuery = useQuery({
+    queryKey: ['hospitals'],
+    queryFn: listHospitals,
+    staleTime: 30_000,
+  });
+
+  const allHospitals = useMemo(
+    () => (adminHospitalsQuery.data ?? []).map(normaliseApiHospital),
+    [adminHospitalsQuery.data],
+  );
+
+  // Filter dropdowns + chip row are derived from the combined list so admin-
+  // added hospitals contribute their own specialties / localities to the UI.
+  const SPECIALTIES = useMemo(
+    () => [
+      ALL_SPECIALTIES,
+      ...Array.from(
+        new Set(
+          allHospitals
+            .flatMap((h) => h.specialties.split(','))
+            .map((s) => s.trim())
+            .filter(Boolean),
+        ),
+      ).sort(),
+    ],
+    [allHospitals],
+  );
+  const LOCATIONS = useMemo(
+    () => [ALL_LOCATIONS, ...Array.from(new Set(allHospitals.map((h) => h.locality))).sort()],
+    [allHospitals],
+  );
+  const CITIES = useMemo(() => LOCATIONS.slice(1), [LOCATIONS]);
 
   const applySearch = (e?: React.FormEvent) => {
     e?.preventDefault();
@@ -208,10 +193,10 @@ export function Hospital() {
 
   const resetFilters = () => {
     setSearch('');
-    setSpecialty(SPECIALTIES[0]);
-    setLocation(LOCATIONS[0]);
+    setSpecialty(ALL_SPECIALTIES);
+    setLocation(ALL_LOCATIONS);
     setActiveCity(null);
-    setApplied({ search: '', specialty: SPECIALTIES[0], location: LOCATIONS[0] });
+    setApplied({ search: '', specialty: ALL_SPECIALTIES, location: ALL_LOCATIONS });
   };
 
   // List-your-hospital modal
@@ -238,8 +223,8 @@ export function Hospital() {
 
   const submitHospitalListing = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.name.trim() || !form.locality || !form.address.trim()) {
-      toast.error('Hospital name, locality, and address are required.');
+    if (!form.name.trim() || !form.locality || !form.address.trim() || !form.phone.trim()) {
+      toast.error('Hospital name, locality, address, and phone are required.');
       return;
     }
     setSubmitting(true);
@@ -292,11 +277,11 @@ export function Hospital() {
     setCurrentPage(1);
   }, [applied, activeCity]);
 
-  const filteredHospitals = HOSPITALS.filter((h) => {
+  const filteredHospitals = allHospitals.filter((h) => {
     const q = applied.search.toLowerCase();
     if (q && !`${h.name} ${h.locality} ${h.specialties}`.toLowerCase().includes(q)) return false;
-    if (applied.specialty !== SPECIALTIES[0] && !h.specialties.toLowerCase().includes(applied.specialty.toLowerCase())) return false;
-    if (applied.location !== LOCATIONS[0] && !h.locality.toLowerCase().includes(applied.location.toLowerCase())) return false;
+    if (applied.specialty !== ALL_SPECIALTIES && !h.specialties.toLowerCase().includes(applied.specialty.toLowerCase())) return false;
+    if (applied.location !== ALL_LOCATIONS && !h.locality.toLowerCase().includes(applied.location.toLowerCase())) return false;
     if (activeCity && !h.locality.toLowerCase().includes(activeCity.toLowerCase())) return false;
     return true;
   });
@@ -639,7 +624,7 @@ export function Hospital() {
 
               <form onSubmit={submitHospitalListing} className="space-y-4">
                 <label className="block">
-                  <span className="block text-sm font-semibold text-warm-900 mb-1">Hospital name *</span>
+                  <span className="block text-sm font-semibold text-warm-900 mb-1">Hospital name <span className="text-red-500">*</span></span>
                   <input
                     type="text"
                     required
@@ -651,7 +636,7 @@ export function Hospital() {
                 </label>
 
                 <label className="block">
-                  <span className="block text-sm font-semibold text-warm-900 mb-1">Locality *</span>
+                  <span className="block text-sm font-semibold text-warm-900 mb-1">Locality <span className="text-red-500">*</span></span>
                   <select
                     required
                     value={form.locality}
@@ -672,7 +657,7 @@ export function Hospital() {
                 </label>
 
                 <label className="block">
-                  <span className="block text-sm font-semibold text-warm-900 mb-1">Full address *</span>
+                  <span className="block text-sm font-semibold text-warm-900 mb-1">Full address <span className="text-red-500">*</span></span>
                   <textarea
                     required
                     rows={2}
@@ -699,9 +684,10 @@ export function Hospital() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <label className="block">
-                    <span className="block text-sm font-semibold text-warm-900 mb-1">Phone</span>
+                    <span className="block text-sm font-semibold text-warm-900 mb-1">Phone <span className="text-red-500">*</span></span>
                     <input
                       type="tel"
+                      required
                       value={form.phone}
                       onChange={(e) => setForm({ ...form, phone: e.target.value })}
                       placeholder="+91 ..."
@@ -738,6 +724,13 @@ export function Hospital() {
                   </button>
                 </div>
               </form>
+              <p className="text-xs text-warm-500 text-center mt-5">
+                Issues with the form? Email{' '}
+                <a className="text-primary-700 font-semibold hover:underline" href="mailto:support@hispike.in">
+                  support@hispike.in
+                </a>
+                .
+              </p>
             </div>
           </div>
         </div>

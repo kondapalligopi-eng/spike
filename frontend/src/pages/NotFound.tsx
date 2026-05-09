@@ -35,6 +35,15 @@ export function NotFound() {
             Browse Dogs 🐕
           </Link>
         </div>
+        <p className="mt-10 text-sm text-warm-500">
+          Still stuck?{' '}
+          <a
+            href="mailto:support@hispike.in"
+            className="text-primary-700 font-semibold hover:underline"
+          >
+            support@hispike.in
+          </a>
+        </p>
       </div>
     </div>
   );

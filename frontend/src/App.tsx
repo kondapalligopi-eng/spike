@@ -9,7 +9,6 @@ import { Login } from '@/pages/Login';
 import { Register } from '@/pages/Register';
 import { Profile } from '@/pages/Profile';
 import { MyDogs } from '@/pages/MyDogs';
-import { NewDog } from '@/pages/NewDog';
 import { Adoptions } from '@/pages/Adoptions';
 import { Admin } from '@/pages/Admin';
 import { Swimming } from '@/pages/Swimming';
@@ -62,14 +61,6 @@ export const routes: RouteRecord[] = [
             element: (
               <ProtectedRoute>
                 <MyDogs />
-              </ProtectedRoute>
-            ),
-          },
-          {
-            path: 'my-dogs/new',
-            element: (
-              <ProtectedRoute>
-                <NewDog />
               </ProtectedRoute>
             ),
           },

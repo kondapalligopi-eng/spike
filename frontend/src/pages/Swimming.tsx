@@ -227,6 +227,7 @@ export function Swimming() {
     poolType: '',
     hours: '',
     cost: '',
+    phone: '',
     website: '',
   });
 
@@ -241,8 +242,8 @@ export function Swimming() {
 
   const submitSwimListing = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.name.trim() || !form.locality || !form.address.trim()) {
-      toast.error('Swim school name, locality, and address are required.');
+    if (!form.name.trim() || !form.locality || !form.address.trim() || !form.phone.trim()) {
+      toast.error('Swim school name, locality, address, and phone are required.');
       return;
     }
     setSubmitting(true);
@@ -265,13 +266,14 @@ export function Swimming() {
             'Pool type': form.poolType.trim() || '(not provided)',
             'Open hours': form.hours.trim() || '(not provided)',
             Cost: form.cost.trim() || '(not provided)',
+            Phone: form.phone.trim(),
             Website: form.website.trim() || '(not provided)',
           }),
         },
       );
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       setRegisterOpen(false);
-      setForm({ name: '', locality: '', address: '', poolType: '', hours: '', cost: '', website: '' });
+      setForm({ name: '', locality: '', address: '', poolType: '', hours: '', cost: '', phone: '', website: '' });
       toast.success('Thanks! Your swim school submission has been received.');
     } catch {
       toast.error('Could not submit right now. Please try again in a moment.');
@@ -699,7 +701,7 @@ export function Swimming() {
 
               <form onSubmit={submitSwimListing} className="space-y-4">
                 <label className="block">
-                  <span className="block text-sm font-semibold text-warm-900 mb-1">Swim school name *</span>
+                  <span className="block text-sm font-semibold text-warm-900 mb-1">Swim school name <span className="text-red-500">*</span></span>
                   <input
                     type="text"
                     required
@@ -711,7 +713,7 @@ export function Swimming() {
                 </label>
 
                 <label className="block">
-                  <span className="block text-sm font-semibold text-warm-900 mb-1">Locality *</span>
+                  <span className="block text-sm font-semibold text-warm-900 mb-1">Locality <span className="text-red-500">*</span></span>
                   <select
                     required
                     value={form.locality}
@@ -732,7 +734,7 @@ export function Swimming() {
                 </label>
 
                 <label className="block">
-                  <span className="block text-sm font-semibold text-warm-900 mb-1">Full address *</span>
+                  <span className="block text-sm font-semibold text-warm-900 mb-1">Full address <span className="text-red-500">*</span></span>
                   <textarea
                     required
                     rows={2}
@@ -778,16 +780,30 @@ export function Swimming() {
                   </label>
                 </div>
 
-                <label className="block">
-                  <span className="block text-sm font-semibold text-warm-900 mb-1">Website</span>
-                  <input
-                    type="url"
-                    value={form.website}
-                    onChange={(e) => setForm({ ...form, website: e.target.value })}
-                    placeholder="https://..."
-                    className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors"
-                  />
-                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <label className="block">
+                    <span className="block text-sm font-semibold text-warm-900 mb-1">Phone <span className="text-red-500">*</span></span>
+                    <input
+                      type="tel"
+                      required
+                      value={form.phone}
+                      onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                      placeholder="+91 ..."
+                      className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors"
+                    />
+                  </label>
+
+                  <label className="block">
+                    <span className="block text-sm font-semibold text-warm-900 mb-1">Website</span>
+                    <input
+                      type="url"
+                      value={form.website}
+                      onChange={(e) => setForm({ ...form, website: e.target.value })}
+                      placeholder="https://..."
+                      className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors"
+                    />
+                  </label>
+                </div>
 
                 <div className="pt-2 flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
                   <button
@@ -806,6 +822,13 @@ export function Swimming() {
                   </button>
                 </div>
               </form>
+              <p className="text-xs text-warm-500 text-center mt-5">
+                Issues with the form? Email{' '}
+                <a className="text-primary-700 font-semibold hover:underline" href="mailto:support@hispike.in">
+                  support@hispike.in
+                </a>
+                .
+              </p>
             </div>
           </div>
         </div>

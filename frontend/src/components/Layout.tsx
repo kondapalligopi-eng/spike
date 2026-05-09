@@ -90,12 +90,19 @@ export function Layout() {
                 </SocialIcon>
               </div>
 
+              <p className="text-[11px] font-semibold tracking-[0.25em] text-accent-600 uppercase mb-1.5">
+                Got a question?
+              </p>
               <a
-                href="#"
-                className="text-sm text-primary-700 font-medium underline hover:text-primary-800"
+                href="mailto:support@hispike.in"
+                className="inline-flex items-center gap-2 text-sm text-primary-700 font-semibold hover:text-primary-800 hover:underline"
               >
-                See all ways to contact us
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                support@hispike.in
               </a>
+              <p className="text-xs text-warm-500 mt-1">We usually reply within a day.</p>
             </div>
 
             {/* Link columns */}
