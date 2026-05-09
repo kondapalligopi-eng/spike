@@ -1,4 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { listParks, type ParkRead } from '@/api/parks';
 import { toast } from '@/store/toastStore';
 
 // Comprehensive list of Bangalore neighbourhoods used by the
@@ -18,65 +20,44 @@ const BANGALORE_NEIGHBOURHOODS = [
 ];
 
 type ParkSpot = {
+  id: string;
   name: string;
   locality: string;
   rating: number;
   image: string;
+  address: string;
+  hours: string;
+  cost: string;
+  offLeash: string;
+  features: string;
+  phone: string;
+  website: string;
+  highlights: string[];
 };
 
-const INFO_ROWS = [
-  { icon: '📍', label: 'Address', value: 'Kasturba Road, Sampangi Rama Nagar, Bengaluru, Karnataka 560001', link: true },
-  { icon: '🕐', label: 'Open Times', value: '5 am to 8 pm' },
-  { icon: '₹', label: 'Cost', value: 'Free to use, may need to pay for parking' },
-  { icon: '🐕', label: 'Off-Leash', value: 'Yes, in designated areas only' },
-];
+// Info-card rows are derived per-park from the API data (see detailInfoRows
+// inside the component). Highlights come from spot.highlights.
 
-const HIGHLIGHTS = [
-  'Neighborhood park with on and off-leash dog play areas',
-  'Unfenced, grass surface',
-  'Restrooms, a playground, and a community center are also located in the park',
-  'Street parking only',
-  'Popular spot to socialize with other dog owners and creatives',
-];
+// Parks now live in the database — see backend/scripts/seed_parks.py for
+// the seed data and frontend/src/api/parks.ts for the local mock store.
 
-const SPOTS: ParkSpot[] = [
-  {
-    name: 'Cubbon Park',
-    locality: 'Sampangi Rama Nagar, Bengaluru',
-    rating: 5,
-    image: '/parks/cubbon-park.jpg',
-  },
-  {
-    name: 'Lalbagh Botanical Garden',
-    locality: 'Mavalli, Bengaluru',
-    rating: 5,
-    image: '/parks/lalbagh.jpg',
-  },
-  {
-    name: 'Agara Lake Park',
-    locality: 'HSR Layout, Bengaluru',
-    rating: 4,
-    image: '/parks/agara.jpg',
-  },
-  {
-    name: 'Indiranagar Defence Colony Park',
-    locality: 'Indiranagar, Bengaluru',
-    rating: 4,
-    image: '/parks/indiranagar.jpg',
-  },
-  {
-    name: 'Bellandur Lake Park',
-    locality: 'Bellandur, Bengaluru',
-    rating: 4,
-    image: '/parks/bellandur.jpg',
-  },
-  {
-    name: 'Whitefield Memorial Park',
-    locality: 'Whitefield, Bengaluru',
-    rating: 4,
-    image: '/parks/whitefield.jpg',
-  },
-];
+function apiToSpot(p: ParkRead): ParkSpot {
+  return {
+    id: p.id,
+    name: p.name,
+    locality: p.locality,
+    rating: p.rating,
+    image: p.image_url ?? '',
+    address: p.address ?? '',
+    hours: p.hours ?? '',
+    cost: p.cost ?? '',
+    offLeash: p.off_leash ?? '',
+    features: p.features ?? '',
+    phone: p.phone ?? '',
+    website: p.website ?? '',
+    highlights: p.highlights ?? [],
+  };
+}
 
 function PawRating({ value, max = 5 }: { value: number; max?: number }) {
   // Reworked paw print — 4 toe pads in an arc above a larger heel pad,
@@ -155,11 +136,7 @@ function PawRatingDark({ value, max = 5 }: { value: number; max?: number }) {
   );
 }
 
-// Derive locality filter list from the actual SPOTS data so the dropdown
-// and chip row only show areas where at least one park is listed.
-const PARK_LOCALITIES = Array.from(
-  new Set(SPOTS.map((s) => s.locality.split(',')[0].trim())),
-).sort();
+// PARK_LOCALITIES is now derived inside the component from the fetched list.
 
 export function Park() {
   const [query, setQuery] = useState('');
@@ -167,6 +144,23 @@ export function Park() {
   const [locationFilter, setLocationFilter] = useState('');
   const [activeCity, setActiveCity] = useState<string | null>(null);
   const [selectedSpot, setSelectedSpot] = useState<ParkSpot | null>(null);
+
+  // Fetch parks from the API (mock store in dev). Falls open if the
+  // request errors — the page just shows an empty list.
+  const parksQuery = useQuery({
+    queryKey: ['parks'],
+    queryFn: listParks,
+    staleTime: 30_000,
+  });
+  const allSpots = useMemo<ParkSpot[]>(
+    () => (parksQuery.data ?? []).map(apiToSpot),
+    [parksQuery.data],
+  );
+  const PARK_LOCALITIES = useMemo(
+    () =>
+      Array.from(new Set(allSpots.map((s) => s.locality.split(',')[0].trim()))).sort(),
+    [allSpots],
+  );
 
   const fetchResults = (e?: React.FormEvent) => {
     e?.preventDefault();
@@ -180,7 +174,7 @@ export function Park() {
     setActiveCity(null);
   };
 
-  const visibleSpots = SPOTS.filter((s) => {
+  const visibleSpots = allSpots.filter((s) => {
     if (
       appliedQuery &&
       !`${s.name} ${s.locality}`.toLowerCase().includes(appliedQuery.toLowerCase())
@@ -275,12 +269,16 @@ export function Park() {
     window.scrollTo({ top: 0, behavior: 'auto' });
   }, [selectedSpot]);
 
-  const detailInfoRows = (spot: ParkSpot) => [
-    { ...INFO_ROWS[0], value: `${spot.locality} — ${INFO_ROWS[0].value.split(',').slice(-2).join(',').trim()}` },
-    INFO_ROWS[1],
-    INFO_ROWS[2],
-    INFO_ROWS[3],
-  ];
+  const detailInfoRows = (spot: ParkSpot) =>
+    [
+      spot.address && { icon: '📍', label: 'Address', value: spot.address, link: true as const },
+      spot.hours && { icon: '🕐', label: 'Open Times', value: spot.hours, link: false as const },
+      spot.cost && { icon: '₹', label: 'Cost', value: spot.cost, link: false as const },
+      spot.offLeash && { icon: '🐕', label: 'Off-Leash', value: spot.offLeash, link: false as const },
+      spot.features && { icon: '🌳', label: 'Features', value: spot.features, link: false as const },
+      spot.phone && { icon: '📞', label: 'Phone', value: spot.phone, link: false as const },
+      spot.website && { icon: '🌐', label: 'Website', value: spot.website, link: false as const },
+    ].filter(Boolean) as { icon: string; label: string; value: string; link: boolean }[];
 
   return (
     <div className="bg-white">
@@ -479,7 +477,7 @@ export function Park() {
                   applies (emoji 🐾 has fixed OS colours). Matches the
                   PawRating accent so the page reads as one palette. */}
               <ul className="space-y-3 mb-10">
-                {HIGHLIGHTS.map((h) => (
+                {selectedSpot.highlights.map((h) => (
                   <li key={h} className="flex items-start gap-3 text-warm-800">
                     <svg aria-hidden="true" className="mt-1 w-4 h-4 text-accent-500 shrink-0" fill="currentColor" viewBox="0 0 24 24">
                       <ellipse cx="5.5" cy="11" rx="2" ry="2.6" />

@@ -54,6 +54,35 @@ async def create_hospital(
     return HospitalRead.model_validate(hospital)
 
 
+@router.put(
+    "/{hospital_id}",
+    response_model=HospitalRead,
+    summary="Update a hospital (admin only)",
+)
+async def update_hospital(
+    hospital_id: uuid.UUID,
+    payload: HospitalCreate,
+    db: AsyncSession = Depends(get_db),
+    _admin: User = Depends(require_admin),
+) -> HospitalRead:
+    result = await db.execute(select(Hospital).where(Hospital.id == hospital_id))
+    hospital = result.scalar_one_or_none()
+    if hospital is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Hospital not found"
+        )
+    hospital.name = payload.name.strip()
+    hospital.locality = payload.locality.strip()
+    hospital.address = payload.address.strip()
+    hospital.phone = payload.phone.strip()
+    hospital.specialties = (payload.specialties or "").strip() or None
+    hospital.rating = (payload.rating or "").strip() or None
+    hospital.website = (payload.website or "").strip() or None
+    await db.flush()
+    await db.refresh(hospital)
+    return HospitalRead.model_validate(hospital)
+
+
 @router.delete(
     "/{hospital_id}",
     status_code=status.HTTP_204_NO_CONTENT,
