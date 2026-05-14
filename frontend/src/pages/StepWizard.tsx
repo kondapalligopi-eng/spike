@@ -136,49 +136,67 @@ export function StepWizard() {
               </div>
 
               {/* Vertical step list */}
-              <ol className="relative space-y-5">
-                <span
-                  aria-hidden="true"
-                  className="absolute left-[15px] top-3 bottom-3 w-px bg-white/20"
-                />
+              <ol className="space-y-2">
                 {STEPS.map((s, i) => {
                   const completed = done || i < stepIndex;
                   const current = !done && i === stepIndex;
                   return (
-                    <li key={s.field} className="relative flex items-start gap-3">
+                    <li key={s.field} className="relative">
                       <div
-                        className={`relative shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-extrabold transition-all duration-300 ring-4 ${
-                          completed
-                            ? 'bg-accent-400 text-warm-900 ring-accent-400/30'
-                            : current
-                            ? 'bg-white text-primary-700 ring-white/40 scale-110'
-                            : 'bg-white/10 text-white/50 ring-transparent'
+                        className={`flex items-center gap-4 px-3 py-3 rounded-2xl transition-all duration-300 ${
+                          current
+                            ? 'bg-white/15 ring-1 ring-white/25 backdrop-blur-sm shadow-lg'
+                            : ''
                         }`}
                       >
-                        {completed ? (
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                          </svg>
-                        ) : (
-                          <span aria-hidden="true">{s.icon}</span>
+                        <div
+                          className={`shrink-0 w-11 h-11 rounded-xl flex items-center justify-center transition-all duration-300 ${
+                            completed
+                              ? 'bg-gradient-to-br from-accent-400 to-accent-300 text-warm-900 shadow-md shadow-accent-400/30'
+                              : current
+                              ? 'bg-white text-primary-700 ring-4 ring-accent-300/40 scale-105'
+                              : 'bg-white/10 text-white/40 ring-1 ring-white/10'
+                          }`}
+                        >
+                          {completed ? (
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                            </svg>
+                          ) : (
+                            <StepIcon path={s.iconPath} className="w-5 h-5" />
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p
+                            className={`text-[10px] font-bold tracking-[0.25em] uppercase ${
+                              current
+                                ? 'text-accent-300'
+                                : completed
+                                ? 'text-white/60'
+                                : 'text-white/35'
+                            }`}
+                          >
+                            Step {i + 1}
+                          </p>
+                          <p
+                            className={`text-sm font-bold leading-tight transition-colors ${
+                              current
+                                ? 'text-white'
+                                : completed
+                                ? 'text-white/85'
+                                : 'text-white/45'
+                            }`}
+                          >
+                            {s.label}
+                          </p>
+                        </div>
+                        {current && (
+                          <span aria-hidden="true" className="shrink-0 w-1.5 h-6 rounded-full bg-accent-400" />
                         )}
                       </div>
-                      <div className="pt-0.5">
-                        <p
-                          className={`text-[10px] font-bold tracking-[0.25em] uppercase ${
-                            current ? 'text-accent-300' : completed ? 'text-white/70' : 'text-white/40'
-                          }`}
-                        >
-                          Step {i + 1}
-                        </p>
-                        <p
-                          className={`text-sm font-semibold leading-tight transition-colors ${
-                            current ? 'text-white' : completed ? 'text-white/80' : 'text-white/50'
-                          }`}
-                        >
-                          {s.label}
-                        </p>
-                      </div>
+                      {i < STEPS.length - 1 && (
+                        <div className="ml-7 h-2 w-px bg-white/15" />
+                      )}
                     </li>
                   );
                 })}
