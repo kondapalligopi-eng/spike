@@ -22,6 +22,7 @@ import { Newsroom } from '@/pages/Newsroom';
 import { Blog } from '@/pages/Blog';
 import { Careers } from '@/pages/Careers';
 import { Feedback } from '@/pages/Feedback';
+import { StepWizard } from '@/pages/StepWizard';
 import { NotFound } from '@/pages/NotFound';
 
 export const routes: RouteRecord[] = [
