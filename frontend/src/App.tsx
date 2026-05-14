@@ -48,7 +48,6 @@ export const routes: RouteRecord[] = [
           { path: 'blog', Component: Blog },
           { path: 'careers', Component: Careers },
           { path: 'feedback', Component: Feedback },
-          { path: 'wizard', Component: StepWizard },
           {
             path: 'profile',
             element: (
