@@ -137,16 +137,36 @@ export function StepWizard() {
               </span>
             </div>
 
-            {/* Centered emoji + step label */}
+            {/* All 3 images side-by-side — current one large + highlighted */}
             <div className="absolute inset-0 flex flex-col items-center justify-center pt-3">
-              <span
-                key={stepIndex + (done ? '-d' : '')}
-                aria-hidden="true"
-                className="text-6xl sm:text-7xl drop-shadow-lg animate-fade-in"
-              >
-                {done ? '✨' : step.emoji}
-              </span>
-              <p className="mt-2 text-[11px] font-bold tracking-[0.3em] uppercase text-white/95">
+              <div className="flex items-center justify-center gap-3 sm:gap-4 mb-2">
+                {STEPS.map((s, i) => {
+                  const current = !done && i === stepIndex;
+                  const past = i < stepIndex || done;
+                  return (
+                    <div
+                      key={s.field}
+                      className={`flex items-center justify-center rounded-full backdrop-blur-sm transition-all duration-500 ease-out ${
+                        current
+                          ? 'w-20 h-20 sm:w-24 sm:h-24 bg-white/25 ring-4 ring-white/40 shadow-2xl scale-100'
+                          : past
+                          ? 'w-12 h-12 bg-white/15 opacity-80 scale-90'
+                          : 'w-12 h-12 bg-white/10 opacity-40 scale-90'
+                      }`}
+                    >
+                      <span
+                        aria-hidden="true"
+                        className={`drop-shadow-lg transition-all duration-500 ${
+                          current ? 'text-5xl sm:text-6xl' : 'text-2xl'
+                        }`}
+                      >
+                        {s.emoji}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+              <p className="mt-1 text-[11px] font-bold tracking-[0.3em] uppercase text-white/95">
                 {done ? 'All done' : step.label}
               </p>
             </div>
