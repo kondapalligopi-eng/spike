@@ -90,8 +90,15 @@ async def unhandled_exception_handler(
 # ---------------------------------------------------------------------------
 
 
-@app.get("/health", tags=["health"], summary="Service health check")
+@app.api_route(
+    "/health",
+    methods=["GET", "HEAD"],
+    tags=["health"],
+    summary="Service health check",
+)
 async def health_check() -> dict[str, str]:
+    # HEAD is supported so default-HEAD monitors (UptimeRobot, etc.) get a
+    # 200 instead of a 405. FastAPI auto-strips the body on HEAD responses.
     return {"status": "ok", "environment": settings.ENVIRONMENT}
 
 

@@ -446,7 +446,17 @@ export function Swimming() {
             </>
           ) : (
             <>
-          {visibleSpots.length === 0 ? (
+          {swimSchoolsQuery.isLoading && allSpots.length === 0 ? (
+            <div className="max-w-md mx-auto text-center py-12">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary-100 flex items-center justify-center text-3xl animate-pulse">
+                🐾
+              </div>
+              <h3 className="text-lg font-bold text-warm-900 mb-2">Loading swim schools…</h3>
+              <p className="text-sm text-warm-600">
+                Waking up our directory. This can take a few seconds on the first visit.
+              </p>
+            </div>
+          ) : visibleSpots.length === 0 ? (
             <div className="max-w-md mx-auto text-center py-12">
               <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-warm-100 flex items-center justify-center text-3xl">
                 🐾
