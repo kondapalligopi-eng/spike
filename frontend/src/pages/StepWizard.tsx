@@ -272,9 +272,9 @@ export function StepWizard() {
                 <div className="flex items-center gap-3 mb-2">
                   <span
                     aria-hidden="true"
-                    className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-100 to-primary-200 ring-1 ring-primary-200 flex items-center justify-center text-xl"
+                    className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-100 to-primary-200 ring-1 ring-primary-200 flex items-center justify-center text-primary-700"
                   >
-                    {step.icon}
+                    <StepIcon path={step.iconPath} className="w-5 h-5" />
                   </span>
                   <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-warm-900 leading-tight">
                     {step.question}
