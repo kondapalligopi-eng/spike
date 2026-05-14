@@ -222,7 +222,9 @@ export function StepWizard() {
                   <dl className="text-left max-w-sm mx-auto rounded-2xl border-2 border-primary-100 bg-primary-50/50 divide-y divide-primary-100 overflow-hidden mb-8">
                     {STEPS.map((s) => (
                       <div key={s.field} className="px-5 py-3 flex items-center gap-3">
-                        <span aria-hidden="true" className="text-lg shrink-0">{s.icon}</span>
+                        <span className="w-8 h-8 rounded-lg bg-primary-100 text-primary-700 flex items-center justify-center shrink-0">
+                          <StepIcon path={s.iconPath} className="w-4 h-4" />
+                        </span>
                         <div className="flex-1 min-w-0">
                           <dt className="text-[10px] font-bold tracking-[0.2em] uppercase text-primary-700">
                             {s.label}
