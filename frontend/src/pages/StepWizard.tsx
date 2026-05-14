@@ -150,7 +150,7 @@ export function StepWizard() {
                         }`}
                       >
                         <div
-                          className={`shrink-0 w-11 h-11 rounded-xl flex items-center justify-center transition-all duration-300 ${
+                          className={`shrink-0 w-11 h-11 rounded-full flex items-center justify-center transition-all duration-300 ${
                             completed
                               ? 'bg-gradient-to-br from-accent-400 to-accent-300 text-warm-900 shadow-md shadow-accent-400/30'
                               : current
