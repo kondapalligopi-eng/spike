@@ -1,152 +1,9 @@
-import { useState } from 'react';
-
-type Product = {
-  brand: string;
-  name: string;
-  image: string;
-  emoji: string;
-  rating: number;
-  reviews: number;
-  price: number;
-  perUnit: string;
-  listPrice?: number;
-  salePrice?: number;
-  savePct?: number;
-  sponsored?: boolean;
-  deal?: boolean;
-  lifestage?: string;
-  form?: string;
-};
-
-const BRANDS = [
-  'Royal Canin',
-  'Royal Canin Veterinary Diet',
-  'Pedigree',
-  'ACANA',
-];
+import { useMemo, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { listPetFoods, type PetFoodRead } from '@/api/petFoods';
 
 const LIFESTAGES = ['Puppy', 'Adult', 'Senior', 'All Lifestages'];
 const FOOD_FORMS = ['Dry Food', 'Wet Food', 'Freeze-Dried', 'Raw', 'Treats'];
-
-const PRODUCTS: Product[] = [
-  {
-    brand: 'Royal Canin',
-    name: 'Size Health Nutrition Medium Adult Dry Dog Food, 7-kg bag',
-    image: '/supplies-1.jpg',
-    emoji: '🥫',
-    rating: 4.7,
-    reviews: 8098,
-    price: 2499,
-    perUnit: '₹360/kg',
-    listPrice: 2599,
-    salePrice: 1599,
-    savePct: 35,
-    sponsored: true,
-    lifestage: 'Adult',
-    form: 'Dry Food',
-  },
-  {
-    brand: 'Royal Canin',
-    name: 'Size Health Nutrition Medium Puppy Dry Dog Food, 14-kg bag',
-    image: '/supplies-2.jpg',
-    emoji: '🥫',
-    rating: 4.7,
-    reviews: 8098,
-    price: 3999,
-    perUnit: '₹290/kg',
-    salePrice: 1999,
-    savePct: 50,
-    sponsored: true,
-    lifestage: 'Puppy',
-    form: 'Dry Food',
-  },
-  {
-    brand: 'Pedigree',
-    name: 'Complete Nutrition Grilled Steak & Vegetable Flavor Dog Kibble Adult Dry Dog Food, 20-kg bag',
-    image: '/supplies-3.jpg',
-    emoji: '🥩',
-    rating: 4.7,
-    reviews: 9772,
-    price: 2599,
-    perUnit: '₹130/kg',
-    salePrice: 2199,
-    savePct: 15,
-    sponsored: true,
-    lifestage: 'Adult',
-    form: 'Dry Food',
-  },
-  {
-    brand: 'Royal Canin Veterinary Diet',
-    name: 'Gastrointestinal Low Fat Dry Dog Food, 8-kg bag',
-    image: '/supplies-4.jpg',
-    emoji: '🍖',
-    rating: 4.6,
-    reviews: 3123,
-    price: 11299,
-    perUnit: '₹800/kg',
-    salePrice: 9599,
-    savePct: 35,
-    sponsored: true,
-    lifestage: 'All Lifestages',
-    form: 'Dry Food',
-  },
-  {
-    brand: 'ACANA',
-    name: 'Singles Limited Ingredient Salmon & Pumpkin Recipe Dry Dog Food, 11-kg bag',
-    image: '/supplies-5.jpg',
-    emoji: '🐟',
-    rating: 4.5,
-    reviews: 5612,
-    price: 3349,
-    perUnit: '₹260/kg',
-    salePrice: 2699,
-    savePct: 20,
-    deal: true,
-    lifestage: 'Adult',
-    form: 'Dry Food',
-  },
-  {
-    brand: 'Pedigree',
-    name: 'Choice Cuts in Gravy with Beef & Country Stew Adult Wet Dog Food, 600-g cans',
-    image: '/supplies-6.jpg',
-    emoji: '🐕',
-    rating: 4.6,
-    reviews: 11420,
-    price: 1899,
-    perUnit: '₹140/kg',
-    lifestage: 'Adult',
-    form: 'Wet Food',
-  },
-  {
-    brand: 'Royal Canin',
-    name: 'Aging Care 12+ Small Senior Dry Dog Food, 6-kg bag',
-    image: '/supplies-7.jpg',
-    emoji: '🐶',
-    rating: 4.8,
-    reviews: 6240,
-    price: 5199,
-    perUnit: '₹380/kg',
-    salePrice: 4399,
-    savePct: 15,
-    lifestage: 'Senior',
-    form: 'Dry Food',
-  },
-  {
-    brand: 'ACANA',
-    name: 'Wholesome Grains Free-Run Chicken & Pumpkin Recipe Treats',
-    image: '/supplies-8.jpg',
-    emoji: '🍗',
-    rating: 4.7,
-    reviews: 8800,
-    price: 1099,
-    perUnit: '—',
-    salePrice: 799,
-    savePct: 20,
-    deal: true,
-    lifestage: 'All Lifestages',
-    form: 'Treats',
-  },
-];
 
 function Stars({ value }: { value: number }) {
   return (
@@ -221,7 +78,7 @@ function FilterSection({
   );
 }
 
-function ProductCard({ product }: { product: Product }) {
+function ProductCard({ product }: { product: PetFoodRead }) {
   return (
     <article className="bg-white flex flex-col">
       {/* Image area */}
@@ -231,12 +88,14 @@ function ProductCard({ product }: { product: Product }) {
             Deal
           </span>
         )}
-        <img
-          src={product.image}
-          alt=""
-          className="absolute inset-0 w-full h-full object-contain p-4"
-          onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
-        />
+        {product.image_url && (
+          <img
+            src={product.image_url}
+            alt=""
+            className="absolute inset-0 w-full h-full object-contain p-4"
+            onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+          />
+        )}
         {/* Fallback */}
         <div className="absolute inset-0 flex items-center justify-center text-7xl bg-gradient-to-br from-primary-50 to-accent-50">
           {product.emoji}
@@ -266,17 +125,17 @@ function ProductCard({ product }: { product: Product }) {
         <span className="text-red-600 font-bold">
           ₹{product.price.toLocaleString('en-IN')}
         </span>
-        <span className="text-xs text-warm-500 ml-1">({product.perUnit})</span>
-        {product.listPrice && (
-          <span className="text-xs text-warm-500 line-through ml-2">₹{product.listPrice.toLocaleString('en-IN')}</span>
+        <span className="text-xs text-warm-500 ml-1">({product.per_unit})</span>
+        {product.list_price && (
+          <span className="text-xs text-warm-500 line-through ml-2">₹{product.list_price.toLocaleString('en-IN')}</span>
         )}
       </div>
 
-      {product.salePrice && (
+      {product.sale_price && (
         <p className="text-xs mb-2">
-          <span className="text-red-600 font-bold text-sm">₹{product.salePrice.toLocaleString('en-IN')}</span>{' '}
+          <span className="text-red-600 font-bold text-sm">₹{product.sale_price.toLocaleString('en-IN')}</span>{' '}
           <span className="text-warm-700">
-            Save {product.savePct}% today with Autoship, 5% off future orders
+            Save {product.save_pct}% today with Autoship, 5% off future orders
           </span>
         </p>
       )}
@@ -311,6 +170,18 @@ export function PetSupplies() {
   const [selectedStages, setSelectedStages] = useState<Set<string>>(new Set());
   const [selectedForms, setSelectedForms] = useState<Set<string>>(new Set());
 
+  const { data: products, isLoading, isError } = useQuery({
+    queryKey: ['pet-foods'],
+    queryFn: listPetFoods,
+  });
+
+  // Brand list is derived from data so admin-added brands appear in the filter.
+  const brands = useMemo(() => {
+    const set = new Set<string>();
+    (products ?? []).forEach((p) => set.add(p.brand));
+    return Array.from(set).sort((a, b) => a.localeCompare(b));
+  }, [products]);
+
   const toggle = (set: Set<string>, item: string, setState: (s: Set<string>) => void) => {
     const next = new Set(set);
     if (next.has(item)) next.delete(item);
@@ -318,7 +189,7 @@ export function PetSupplies() {
     setState(next);
   };
 
-  const visibleProducts = PRODUCTS.filter((p) => {
+  const visibleProducts = (products ?? []).filter((p) => {
     if (selectedBrands.size > 0 && !selectedBrands.has(p.brand)) return false;
     if (selectedStages.size > 0 && (!p.lifestage || !selectedStages.has(p.lifestage))) return false;
     if (selectedForms.size > 0 && (!p.form || !selectedForms.has(p.form))) return false;
@@ -360,7 +231,7 @@ export function PetSupplies() {
           <aside>
             <FilterSection
               title="Brand"
-              items={BRANDS}
+              items={brands}
               selected={selectedBrands}
               onToggle={(i) => toggle(selectedBrands, i, setSelectedBrands)}
             />
@@ -389,14 +260,22 @@ export function PetSupplies() {
                 <option>Customer Rating</option>
               </select>
             </div>
-            {visibleProducts.length === 0 ? (
+            {isLoading ? (
+              <div className="border border-dashed border-warm-300 rounded-md p-10 text-center text-sm text-warm-500">
+                Loading products…
+              </div>
+            ) : isError ? (
+              <div className="border border-dashed border-red-300 rounded-md p-10 text-center text-sm text-red-600">
+                Could not load products. Please refresh the page.
+              </div>
+            ) : visibleProducts.length === 0 ? (
               <div className="border border-dashed border-warm-300 rounded-md p-10 text-center text-sm text-warm-500">
                 No products match the selected filters.
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {visibleProducts.map((p) => (
-                  <ProductCard key={p.name} product={p} />
+                  <ProductCard key={p.id} product={p} />
                 ))}
               </div>
             )}
