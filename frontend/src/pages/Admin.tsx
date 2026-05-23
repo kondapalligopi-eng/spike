@@ -1318,6 +1318,22 @@ function AddListingsSection() {
           getSecondary={(s) => `${s.area}, ${s.city}`}
         />
       )}
+      {openModal?.action === 'edit' && openModal.kind === 'food' && (
+        <GenericPickModal
+          onClose={() => setOpenModal(null)}
+          onPick={(item) => setOpenModal({ kind: 'food', action: 'edit-form', existing: item })}
+          title="Pick a product to edit"
+          eyebrow="Shop · Bangalore"
+          emptyMessage="No products to edit."
+          loadingLabel="Loading products…"
+          errorLabel="Could not load products. Please close and try again."
+          queryKey={['pet-foods']}
+          fetchItems={listPetFoods}
+          getId={(p) => p.id}
+          getPrimary={(p) => `${p.brand} — ${p.name}`}
+          getSecondary={(p) => `₹${p.price.toLocaleString('en-IN')}${p.per_unit && p.per_unit !== '—' ? ` (${p.per_unit})` : ''}`}
+        />
+      )}
 
       {openModal?.action === 'edit-form' && openModal.kind === 'hospital' && (
         <AddHospitalModal onClose={() => setOpenModal(null)} existing={openModal.existing} />
