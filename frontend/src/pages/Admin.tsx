@@ -32,6 +32,14 @@ import {
   type GroomingSalonCreate,
   type GroomingSalonRead,
 } from '@/api/groomingSalons';
+import {
+  createPetFood,
+  deletePetFood,
+  listPetFoods,
+  updatePetFood,
+  type PetFoodCreate,
+  type PetFoodRead,
+} from '@/api/petFoods';
 import { toast } from '@/store/toastStore';
 import {
   getRangedStats,
