@@ -1419,6 +1419,23 @@ function AddListingsSection() {
           getSecondary={(s) => `${s.area}, ${s.city}`}
         />
       )}
+      {openModal?.action === 'remove' && openModal.kind === 'food' && (
+        <GenericRemoveModal
+          onClose={() => setOpenModal(null)}
+          title="Remove a pet food product"
+          eyebrow="Shop · Bangalore"
+          successMessage="Pet food removed."
+          emptyMessage="No products to remove."
+          loadingLabel="Loading products…"
+          errorLabel="Could not load products. Please close and try again."
+          queryKey={['pet-foods']}
+          fetchItems={listPetFoods}
+          deleteItem={deletePetFood}
+          getId={(p) => p.id}
+          getPrimary={(p) => `${p.brand} — ${p.name}`}
+          getSecondary={(p) => `₹${p.price.toLocaleString('en-IN')}${p.per_unit && p.per_unit !== '—' ? ` (${p.per_unit})` : ''}`}
+        />
+      )}
     </section>
   );
 }
