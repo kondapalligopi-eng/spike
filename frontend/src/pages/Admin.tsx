@@ -1347,6 +1347,9 @@ function AddListingsSection() {
       {openModal?.action === 'edit-form' && openModal.kind === 'grooming' && (
         <AddGroomingSalonModal onClose={() => setOpenModal(null)} existing={openModal.existing} />
       )}
+      {openModal?.action === 'edit-form' && openModal.kind === 'food' && (
+        <AddPetFoodModal onClose={() => setOpenModal(null)} existing={openModal.existing} />
+      )}
 
       {openModal?.action === 'remove' && openModal.kind === 'hospital' && (
         <GenericRemoveModal
