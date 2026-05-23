@@ -1250,6 +1250,9 @@ function AddListingsSection() {
       {openModal?.action === 'add' && openModal.kind === 'grooming' && (
         <AddGroomingSalonModal onClose={() => setOpenModal(null)} />
       )}
+      {openModal?.action === 'add' && openModal.kind === 'food' && (
+        <AddPetFoodModal onClose={() => setOpenModal(null)} />
+      )}
 
       {openModal?.action === 'edit' && openModal.kind === 'hospital' && (
         <GenericPickModal
