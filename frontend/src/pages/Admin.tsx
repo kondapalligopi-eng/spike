@@ -974,12 +974,200 @@ function AddGroomingSalonModal({ onClose, existing }: { onClose: () => void; exi
   );
 }
 
+function AddPetFoodModal({ onClose, existing }: { onClose: () => void; existing?: PetFoodRead }) {
+  const queryClient = useQueryClient();
+  const [form, setForm] = useState<PetFoodCreate>(
+    existing
+      ? {
+          brand: existing.brand,
+          name: existing.name,
+          image_url: existing.image_url ?? '',
+          emoji: existing.emoji,
+          rating: existing.rating,
+          reviews: existing.reviews,
+          price: existing.price,
+          per_unit: existing.per_unit,
+          list_price: existing.list_price,
+          sale_price: existing.sale_price,
+          save_pct: existing.save_pct,
+          sponsored: existing.sponsored,
+          deal: existing.deal,
+          lifestage: existing.lifestage ?? '',
+          form: existing.form ?? '',
+        }
+      : {
+          brand: '', name: '', image_url: '', emoji: '🥫',
+          rating: 4.5, reviews: 0, price: 0, per_unit: '',
+          list_price: null, sale_price: null, save_pct: null,
+          sponsored: false, deal: false, lifestage: '', form: '',
+        }
+  );
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [onClose]);
+
+  const mutation = useMutation({
+    mutationFn: existing
+      ? (data: PetFoodCreate) => updatePetFood(existing.id, data)
+      : createPetFood,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['pet-foods'] });
+      toast.success(existing ? 'Pet food updated.' : 'Pet food added — visible on Pet Supplies now.');
+      onClose();
+    },
+    onError: (err: Error) => toast.error(err.message || `Could not ${existing ? 'update' : 'add'} pet food.`),
+  });
+
+  const onSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.brand.trim() || !form.name.trim() || form.price <= 0) {
+      toast.error('Brand, product name, and a price greater than zero are required.');
+      return;
+    }
+    mutation.mutate({
+      brand: form.brand.trim(),
+      name: form.name.trim(),
+      image_url: form.image_url?.trim() || null,
+      emoji: (form.emoji ?? '🥫').trim() || '🥫',
+      rating: form.rating,
+      reviews: form.reviews,
+      price: form.price,
+      per_unit: form.per_unit?.trim() || '—',
+      list_price: form.list_price && form.list_price > 0 ? form.list_price : null,
+      sale_price: form.sale_price && form.sale_price > 0 ? form.sale_price : null,
+      save_pct: form.save_pct && form.save_pct > 0 ? form.save_pct : null,
+      sponsored: form.sponsored,
+      deal: form.deal,
+      lifestage: form.lifestage?.trim() || null,
+      form: form.form?.trim() || null,
+    });
+  };
+
+  const star = <span className="text-red-500">*</span>;
+  const inputCls = 'w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors';
+  return (
+    <div role="dialog" aria-modal="true" className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50" onClick={onClose}>
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+        <div className="p-6 sm:p-8">
+          <div className="flex items-start justify-between gap-4 mb-1">
+            <div>
+              <p className="text-[11px] font-semibold tracking-[0.3em] text-accent-600 uppercase mb-1">Shop · Bangalore</p>
+              <h2 className="text-2xl font-extrabold text-warm-900">{existing ? 'Edit pet food' : 'Add a pet food product'}</h2>
+            </div>
+            <button type="button" onClick={onClose} aria-label="Close" className="p-2 rounded-full text-warm-700 hover:text-warm-900 hover:bg-warm-100 transition-colors">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.25} d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+          </div>
+          <div className="h-0.5 w-12 bg-accent-400 rounded-full mb-5" />
+          <form onSubmit={onSubmit} className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-[1fr_80px] gap-4">
+              <label className="block">
+                <span className="block text-sm font-semibold text-warm-900 mb-1">Brand {star}</span>
+                <input type="text" required value={form.brand} onChange={(e) => setForm({ ...form, brand: e.target.value })} placeholder="e.g. Royal Canin" className={inputCls} />
+              </label>
+              <label className="block">
+                <span className="block text-sm font-semibold text-warm-900 mb-1">Emoji</span>
+                <input type="text" value={form.emoji ?? ''} onChange={(e) => setForm({ ...form, emoji: e.target.value })} placeholder="🥫" className={`${inputCls} text-center text-lg`} />
+              </label>
+            </div>
+
+            <label className="block">
+              <span className="block text-sm font-semibold text-warm-900 mb-1">Product name / description {star}</span>
+              <textarea required rows={2} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="e.g. Size Health Nutrition Medium Adult Dry Dog Food, 7-kg bag" className={`${inputCls} resize-y`} />
+            </label>
+
+            <label className="block">
+              <span className="block text-sm font-semibold text-warm-900 mb-1">Image URL</span>
+              <input type="text" value={form.image_url ?? ''} onChange={(e) => setForm({ ...form, image_url: e.target.value })} placeholder="/supplies-9.jpg or https://..." className={inputCls} />
+              <span className="block text-xs text-warm-500 mt-1">Leave blank to fall back to the emoji card.</span>
+            </label>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <label className="block">
+                <span className="block text-sm font-semibold text-warm-900 mb-1">Price (₹) {star}</span>
+                <input type="number" required min={1} value={form.price || ''} onChange={(e) => setForm({ ...form, price: Number(e.target.value) })} placeholder="2499" className={inputCls} />
+              </label>
+              <label className="block">
+                <span className="block text-sm font-semibold text-warm-900 mb-1">Per-unit label</span>
+                <input type="text" value={form.per_unit} onChange={(e) => setForm({ ...form, per_unit: e.target.value })} placeholder="₹360/kg" className={inputCls} />
+              </label>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <label className="block">
+                <span className="block text-sm font-semibold text-warm-900 mb-1">List price (₹)</span>
+                <input type="number" min={0} value={form.list_price ?? ''} onChange={(e) => setForm({ ...form, list_price: e.target.value === '' ? null : Number(e.target.value) })} placeholder="2599" className={inputCls} />
+              </label>
+              <label className="block">
+                <span className="block text-sm font-semibold text-warm-900 mb-1">Autoship price (₹)</span>
+                <input type="number" min={0} value={form.sale_price ?? ''} onChange={(e) => setForm({ ...form, sale_price: e.target.value === '' ? null : Number(e.target.value) })} placeholder="1599" className={inputCls} />
+              </label>
+              <label className="block">
+                <span className="block text-sm font-semibold text-warm-900 mb-1">Save %</span>
+                <input type="number" min={0} max={100} value={form.save_pct ?? ''} onChange={(e) => setForm({ ...form, save_pct: e.target.value === '' ? null : Number(e.target.value) })} placeholder="35" className={inputCls} />
+              </label>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <label className="block">
+                <span className="block text-sm font-semibold text-warm-900 mb-1">Rating (0–5)</span>
+                <input type="number" min={0} max={5} step={0.1} value={form.rating} onChange={(e) => setForm({ ...form, rating: Number(e.target.value) })} className={inputCls} />
+              </label>
+              <label className="block">
+                <span className="block text-sm font-semibold text-warm-900 mb-1">Review count</span>
+                <input type="number" min={0} value={form.reviews} onChange={(e) => setForm({ ...form, reviews: Number(e.target.value) })} placeholder="8098" className={inputCls} />
+              </label>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <label className="block">
+                <span className="block text-sm font-semibold text-warm-900 mb-1">Lifestage</span>
+                <select value={form.lifestage ?? ''} onChange={(e) => setForm({ ...form, lifestage: e.target.value })} className={`${inputCls} bg-white ${form.lifestage ? 'text-warm-900' : 'text-warm-400'}`}>
+                  <option value="">— Not specified —</option>
+                  {PET_FOOD_LIFESTAGES.map((l) => <option key={l} value={l} className="text-warm-900">{l}</option>)}
+                </select>
+              </label>
+              <label className="block">
+                <span className="block text-sm font-semibold text-warm-900 mb-1">Food form</span>
+                <select value={form.form ?? ''} onChange={(e) => setForm({ ...form, form: e.target.value })} className={`${inputCls} bg-white ${form.form ? 'text-warm-900' : 'text-warm-400'}`}>
+                  <option value="">— Not specified —</option>
+                  {PET_FOOD_FORMS.map((f) => <option key={f} value={f} className="text-warm-900">{f}</option>)}
+                </select>
+              </label>
+            </div>
+
+            <div className="flex flex-wrap gap-4 pt-1">
+              <label className="inline-flex items-center gap-2 text-sm text-warm-800 cursor-pointer">
+                <input type="checkbox" checked={form.sponsored} onChange={(e) => setForm({ ...form, sponsored: e.target.checked })} className="w-4 h-4 accent-primary-600 cursor-pointer" />
+                Sponsored
+              </label>
+              <label className="inline-flex items-center gap-2 text-sm text-warm-800 cursor-pointer">
+                <input type="checkbox" checked={form.deal} onChange={(e) => setForm({ ...form, deal: e.target.checked })} className="w-4 h-4 accent-primary-600 cursor-pointer" />
+                Show "Deal" badge
+              </label>
+            </div>
+
+            <div className="pt-2 flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
+              <button type="button" onClick={onClose} className="px-5 py-2 rounded-full border-2 border-warm-300 text-warm-700 hover:bg-warm-100 text-sm font-semibold transition-colors">Cancel</button>
+              <button type="submit" disabled={mutation.isPending} className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full bg-accent-400 hover:bg-accent-300 disabled:opacity-60 disabled:cursor-not-allowed text-warm-900 text-sm font-bold tracking-[0.15em] uppercase ring-2 ring-accent-300/50 hover:ring-accent-200 transition-all shadow-md">{mutation.isPending ? (existing ? 'Saving…' : 'Adding…') : (existing ? 'Save' : 'Add')}</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 type ModalState =
   | { kind: ListingKind; action: 'add' | 'edit' | 'remove' }
   | { kind: 'hospital'; action: 'edit-form'; existing: HospitalRead }
   | { kind: 'park';     action: 'edit-form'; existing: ParkRead }
   | { kind: 'swimming'; action: 'edit-form'; existing: SwimSchoolRead }
-  | { kind: 'grooming'; action: 'edit-form'; existing: GroomingSalonRead };
+  | { kind: 'grooming'; action: 'edit-form'; existing: GroomingSalonRead }
+  | { kind: 'food';     action: 'edit-form'; existing: PetFoodRead };
 
 function AddListingsSection() {
   const [openModal, setOpenModal] = useState<ModalState | null>(null);
