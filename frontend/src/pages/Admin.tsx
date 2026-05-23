@@ -62,7 +62,7 @@ const BANGALORE_NEIGHBOURHOODS = [
   'Yeshwantpur',
 ];
 
-type ListingKind = 'hospital' | 'park' | 'swimming' | 'grooming';
+type ListingKind = 'hospital' | 'park' | 'swimming' | 'grooming' | 'food';
 type ListingAction = 'add' | 'edit' | 'remove';
 type ListingCard = { label: string; emoji: string; tint: string; kind: ListingKind; action: ListingAction };
 
@@ -71,6 +71,7 @@ const ADD_LISTING_CARDS: ListingCard[] = [
   { label: 'Add Park',        emoji: '🌳',  tint: 'from-emerald-200 to-emerald-400', kind: 'park',     action: 'add' },
   { label: 'Add Swim School', emoji: '🐕💦', tint: 'from-sky-200 to-sky-400',         kind: 'swimming', action: 'add' },
   { label: 'Add Grooming',    emoji: '✂️',  tint: 'from-amber-200 to-amber-400',     kind: 'grooming', action: 'add' },
+  { label: 'Add Pet Food',    emoji: '🥫',  tint: 'from-orange-200 to-orange-400',   kind: 'food',     action: 'add' },
 ];
 
 const EDIT_LISTING_CARDS: ListingCard[] = [
@@ -78,6 +79,7 @@ const EDIT_LISTING_CARDS: ListingCard[] = [
   { label: 'Edit Park',        emoji: '🌳',  tint: 'from-emerald-100 to-emerald-200', kind: 'park',     action: 'edit' },
   { label: 'Edit Swim School', emoji: '🐕💦', tint: 'from-sky-100 to-sky-200',         kind: 'swimming', action: 'edit' },
   { label: 'Edit Grooming',    emoji: '✂️',  tint: 'from-amber-100 to-amber-200',     kind: 'grooming', action: 'edit' },
+  { label: 'Edit Pet Food',    emoji: '🥫',  tint: 'from-orange-100 to-orange-200',   kind: 'food',     action: 'edit' },
 ];
 
 const REMOVE_LISTING_CARDS: ListingCard[] = [
@@ -85,7 +87,11 @@ const REMOVE_LISTING_CARDS: ListingCard[] = [
   { label: 'Remove Park',        emoji: '🌳',  tint: 'from-emerald-50 to-emerald-100', kind: 'park',     action: 'remove' },
   { label: 'Remove Swim School', emoji: '🐕💦', tint: 'from-sky-50 to-sky-100',         kind: 'swimming', action: 'remove' },
   { label: 'Remove Grooming',    emoji: '✂️',  tint: 'from-amber-50 to-amber-100',     kind: 'grooming', action: 'remove' },
+  { label: 'Remove Pet Food',    emoji: '🥫',  tint: 'from-orange-50 to-orange-100',   kind: 'food',     action: 'remove' },
 ];
+
+const PET_FOOD_LIFESTAGES = ['Puppy', 'Adult', 'Senior', 'All Lifestages'];
+const PET_FOOD_FORMS = ['Dry Food', 'Wet Food', 'Freeze-Dried', 'Raw', 'Treats'];
 
 function AddHospitalModal({ onClose, existing }: { onClose: () => void; existing?: HospitalRead }) {
   const queryClient = useQueryClient();
