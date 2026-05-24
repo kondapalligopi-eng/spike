@@ -52,6 +52,7 @@ async def create_grooming_salon(
         rating_count=payload.rating_count,
         tint=payload.tint.strip() or "from-amber-200 to-amber-400",
         hero_emoji=payload.hero_emoji.strip() or "✂️",
+        hours=(payload.hours or "").strip() or None,
     )
     db.add(salon)
     await db.flush()
