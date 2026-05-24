@@ -204,7 +204,7 @@ function AddHospitalModal({ onClose, existing }: { onClose: () => void; existing
           </div>
           <div className="h-0.5 w-12 bg-accent-400 rounded-full mb-5" />
 
-          <form onSubmit={onSubmit} className="space-y-4">
+          <form onSubmit={onSubmit} onKeyDown={suppressEnterSubmit} className="space-y-4">
             <label className="block">
               <span className="block text-sm font-semibold text-warm-900 mb-1">Hospital name {requiredAsterisk}</span>
               <input
@@ -656,7 +656,7 @@ function AddParkModal({ onClose, existing }: { onClose: () => void; existing?: P
             </button>
           </div>
           <div className="h-0.5 w-12 bg-accent-400 rounded-full mb-5" />
-          <form onSubmit={onSubmit} className="space-y-4">
+          <form onSubmit={onSubmit} onKeyDown={suppressEnterSubmit} className="space-y-4">
             <label className="block">
               <span className="block text-sm font-semibold text-warm-900 mb-1">Park name {star}</span>
               <input type="text" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="e.g. Cubbon Park" className={inputCls} />
@@ -804,7 +804,7 @@ function AddSwimSchoolModal({ onClose, existing }: { onClose: () => void; existi
             </button>
           </div>
           <div className="h-0.5 w-12 bg-accent-400 rounded-full mb-5" />
-          <form onSubmit={onSubmit} className="space-y-4">
+          <form onSubmit={onSubmit} onKeyDown={suppressEnterSubmit} className="space-y-4">
             <label className="block">
               <span className="block text-sm font-semibold text-warm-900 mb-1">Swim school name {star}</span>
               <input type="text" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="e.g. Indiranagar Aquatic Pet Centre" className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors" />
@@ -932,7 +932,7 @@ function AddGroomingSalonModal({ onClose, existing }: { onClose: () => void; exi
             </button>
           </div>
           <div className="h-0.5 w-12 bg-accent-400 rounded-full mb-5" />
-          <form onSubmit={onSubmit} className="space-y-4">
+          <form onSubmit={onSubmit} onKeyDown={suppressEnterSubmit} className="space-y-4">
             <label className="block">
               <span className="block text-sm font-semibold text-warm-900 mb-1">Salon name {star}</span>
               <input type="text" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="e.g. Pawsh Paws Grooming Studio" className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors" />
@@ -1073,7 +1073,7 @@ function AddPetFoodModal({ onClose, existing }: { onClose: () => void; existing?
             </button>
           </div>
           <div className="h-0.5 w-12 bg-accent-400 rounded-full mb-5" />
-          <form onSubmit={onSubmit} className="space-y-4">
+          <form onSubmit={onSubmit} onKeyDown={suppressEnterSubmit} className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-[1fr_80px] gap-4">
               <label className="block">
                 <span className="block text-sm font-semibold text-warm-900 mb-1">Brand {star}</span>
