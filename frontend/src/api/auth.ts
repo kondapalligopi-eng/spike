@@ -24,7 +24,7 @@ export async function login(credentials: LoginCredentials): Promise<AuthResponse
   // Backend /auth/login accepts JSON {email, password} and returns
   // {access_token, refresh_token, token_type} — no user. Fetch the
   // user separately so the AuthResponse contract this function returns
-  // (access_token + token_type + user) still holds.
+  // (access_token + refresh_token + token_type + user) still holds.
   const tokenResp = await apiClient.post<{
     access_token: string;
     refresh_token: string;
@@ -40,6 +40,7 @@ export async function login(credentials: LoginCredentials): Promise<AuthResponse
 
   return {
     access_token: tokenResp.data.access_token,
+    refresh_token: tokenResp.data.refresh_token,
     token_type: tokenResp.data.token_type,
     user: userResp.data,
   };
@@ -80,17 +81,25 @@ export async function register(data: RegisterData): Promise<AuthResponse> {
   return login({ email: data.email, password: data.password });
 }
 
-export async function refreshToken(): Promise<AuthResponse> {
+// Low-level refresh: takes a refresh token string, returns just a new access
+// token. Used by the axios 401 interceptor; not coupled to AuthResponse.
+export async function refreshAccessToken(
+  refreshTokenValue: string,
+): Promise<{ access_token: string; token_type: string }> {
   if (USE_MOCK) {
-    await delay(200);
+    await delay(150);
     if (!mockCurrentUser) throw new Error('Not authenticated');
     return {
       access_token: 'mock-jwt-token-' + mockCurrentUser.id,
       token_type: 'bearer',
-      user: mockCurrentUser,
     };
   }
-  const response = await apiClient.post<AuthResponse>('/auth/refresh');
+  const response = await apiClient.post<{ access_token: string; token_type: string }>(
+    '/auth/refresh',
+    { refresh_token: refreshTokenValue },
+    // Skip our 401 interceptor for this call — failure here means truly expired.
+    { headers: { 'X-Skip-Auth-Refresh': '1' } },
+  );
   return response.data;
 }
 

@@ -16,18 +16,9 @@ function Stars({ value }: { value: number }) {
   );
 }
 
-// Convert a GroomingSalonRead from the API into the rich GroomingSalonData
-// shape the detail page expects. Fields that the admin-add form doesn't
-// capture (services, reviews, per-day hours) get sensible defaults.
-const DEFAULT_HOURS_FALLBACK = [
-  { day: 'Mon', hours: '8am – 8pm' },
-  { day: 'Tue', hours: '8am – 8pm' },
-  { day: 'Wed', hours: '8am – 8pm' },
-  { day: 'Thu', hours: '8am – 8pm' },
-  { day: 'Fri', hours: '8am – 8pm' },
-  { day: 'Sat', hours: '8am – 9pm' },
-  { day: 'Sun', hours: '9am – 6pm' },
-];
+// Default single-line hours used when the admin didn't enter anything for
+// an API-fed salon (or for any static seed missing the field).
+const DEFAULT_HOURS_FALLBACK = '8 am to 8 pm, daily';
 
 function areaToSlug(area: string): string {
   return area.toLowerCase().trim().replace(/\s+/g, '-');
@@ -51,7 +42,7 @@ function apiToSalonData(api: GroomingSalonRead): GroomingSalonData {
     address: api.address,
     phone: api.phone,
     openTodayUntil: '8pm',
-    hours: DEFAULT_HOURS_FALLBACK,
+    hours: api.hours ?? DEFAULT_HOURS_FALLBACK,
     mapLabel: [api.area.toUpperCase()],
     tint: api.tint,
     heroEmoji: api.hero_emoji,
@@ -178,18 +169,8 @@ export function GroomingSalon() {
             <div className="flex items-start gap-4 px-5 py-4 flex-1">
               <div className="w-10 h-10 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center text-lg font-bold shrink-0">🕐</div>
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-semibold tracking-[0.2em] text-primary-700 uppercase mb-1">Open Hours</p>
-                <p className="text-xs text-primary-700 font-semibold mb-2">
-                  Open today until {salon.openTodayUntil}
-                </p>
-                <dl className="text-sm space-y-1">
-                  {salon.hours.map((h) => (
-                    <div key={h.day} className="flex justify-between text-warm-700">
-                      <dt className="font-medium">{h.day}</dt>
-                      <dd className="text-warm-600">{h.hours}</dd>
-                    </div>
-                  ))}
-                </dl>
+                <p className="text-xs font-semibold tracking-[0.2em] text-primary-700 uppercase mb-0.5">Open Hours</p>
+                <p className="text-sm text-warm-800">{salon.hours}</p>
               </div>
             </div>
 

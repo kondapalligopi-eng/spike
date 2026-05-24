@@ -3,6 +3,8 @@ import { Outlet } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { CloudflareAnalytics } from './CloudflareAnalytics';
+import { useAuthStore } from '@/store/authStore';
+import { startSessionManager, stopSessionManager } from '@/lib/sessionManager';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -37,6 +39,16 @@ export function RootShell() {
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Proactive token refresh: restart whenever the access token rotates
+  // (initial login, silent refresh, manual refresh) so the next deadline is
+  // always scheduled against the freshest exp claim.
+  const accessToken = useAuthStore((s) => s.token);
+  useEffect(() => {
+    if (accessToken) startSessionManager();
+    else stopSessionManager();
+    return () => stopSessionManager();
+  }, [accessToken]);
 
   return (
     <QueryClientProvider client={queryClient}>

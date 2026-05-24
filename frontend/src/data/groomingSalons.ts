@@ -22,7 +22,7 @@ export type GroomingSalonData = {
   address: string;
   phone: string;
   openTodayUntil: string;
-  hours: { day: string; hours: string }[];
+  hours: string;
   mapLabel: string[];
   tint: string;
   heroEmoji: string;
@@ -31,15 +31,7 @@ export type GroomingSalonData = {
   reviews: SalonReview[];
 };
 
-const DEFAULT_HOURS = [
-  { day: 'Mon', hours: '8am – 8pm' },
-  { day: 'Tue', hours: '8am – 8pm' },
-  { day: 'Wed', hours: '8am – 8pm' },
-  { day: 'Thu', hours: '8am – 8pm' },
-  { day: 'Fri', hours: '8am – 8pm' },
-  { day: 'Sat', hours: '8am – 9pm' },
-  { day: 'Sun', hours: '9am – 6pm' },
-];
+const DEFAULT_HOURS = '8 am to 8 pm, daily';
 
 const DEFAULT_SERVICES: SalonService[] = [
   {

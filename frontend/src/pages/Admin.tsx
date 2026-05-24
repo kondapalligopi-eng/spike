@@ -40,6 +40,11 @@ import {
   type PetFoodCreate,
   type PetFoodRead,
 } from '@/api/petFoods';
+import {
+  listSiteSettings,
+  updateSiteSetting,
+  type SiteSettingKey,
+} from '@/api/siteSettings';
 import { toast } from '@/store/toastStore';
 import {
   getRangedStats,
@@ -92,6 +97,17 @@ const REMOVE_LISTING_CARDS: ListingCard[] = [
 
 const PET_FOOD_LIFESTAGES = ['Puppy', 'Adult', 'Senior', 'All Lifestages'];
 const PET_FOOD_FORMS = ['Dry Food', 'Wet Food', 'Freeze-Dried', 'Raw', 'Treats'];
+
+// Pressing Enter inside a single-line <input> would otherwise submit the
+// form — in Edit mode every required field is pre-filled, so an accidental
+// Enter mid-typing fires the mutation and closes the modal. Suppress that
+// here while still letting Enter add newlines in <textarea> and still
+// letting the explicit submit button work.
+function suppressEnterSubmit(e: React.KeyboardEvent<HTMLFormElement>) {
+  if (e.key === 'Enter' && e.target instanceof HTMLInputElement) {
+    e.preventDefault();
+  }
+}
 
 function AddHospitalModal({ onClose, existing }: { onClose: () => void; existing?: HospitalRead }) {
   const queryClient = useQueryClient();
@@ -164,7 +180,7 @@ function AddHospitalModal({ onClose, existing }: { onClose: () => void; existing
       aria-modal="true"
       aria-labelledby="add-hospital-title"
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
-      onClick={onClose}
+      onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div
         className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto"
@@ -193,7 +209,7 @@ function AddHospitalModal({ onClose, existing }: { onClose: () => void; existing
           </div>
           <div className="h-0.5 w-12 bg-accent-400 rounded-full mb-5" />
 
-          <form onSubmit={onSubmit} className="space-y-4">
+          <form onSubmit={onSubmit} onKeyDown={suppressEnterSubmit} className="space-y-4">
             <label className="block">
               <span className="block text-sm font-semibold text-warm-900 mb-1">Hospital name {requiredAsterisk}</span>
               <input
@@ -368,7 +384,7 @@ function GenericPickModal<T>({
       role="dialog"
       aria-modal="true"
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
-      onClick={onClose}
+      onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div
         className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-hidden flex flex-col"
@@ -487,7 +503,7 @@ function GenericRemoveModal<T>({
       role="dialog"
       aria-modal="true"
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
-      onClick={onClose}
+      onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div
         className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-hidden flex flex-col"
@@ -632,7 +648,7 @@ function AddParkModal({ onClose, existing }: { onClose: () => void; existing?: P
   const star = <span className="text-red-500">*</span>;
   const inputCls = 'w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors';
   return (
-    <div role="dialog" aria-modal="true" className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50" onClick={onClose}>
+    <div role="dialog" aria-modal="true" className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50" onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}>
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
         <div className="p-6 sm:p-8">
           <div className="flex items-start justify-between gap-4 mb-1">
@@ -645,7 +661,7 @@ function AddParkModal({ onClose, existing }: { onClose: () => void; existing?: P
             </button>
           </div>
           <div className="h-0.5 w-12 bg-accent-400 rounded-full mb-5" />
-          <form onSubmit={onSubmit} className="space-y-4">
+          <form onSubmit={onSubmit} onKeyDown={suppressEnterSubmit} className="space-y-4">
             <label className="block">
               <span className="block text-sm font-semibold text-warm-900 mb-1">Park name {star}</span>
               <input type="text" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="e.g. Cubbon Park" className={inputCls} />
@@ -780,7 +796,7 @@ function AddSwimSchoolModal({ onClose, existing }: { onClose: () => void; existi
 
   const star = <span className="text-red-500">*</span>;
   return (
-    <div role="dialog" aria-modal="true" className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50" onClick={onClose}>
+    <div role="dialog" aria-modal="true" className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50" onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}>
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
         <div className="p-6 sm:p-8">
           <div className="flex items-start justify-between gap-4 mb-1">
@@ -793,7 +809,7 @@ function AddSwimSchoolModal({ onClose, existing }: { onClose: () => void; existi
             </button>
           </div>
           <div className="h-0.5 w-12 bg-accent-400 rounded-full mb-5" />
-          <form onSubmit={onSubmit} className="space-y-4">
+          <form onSubmit={onSubmit} onKeyDown={suppressEnterSubmit} className="space-y-4">
             <label className="block">
               <span className="block text-sm font-semibold text-warm-900 mb-1">Swim school name {star}</span>
               <input type="text" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="e.g. Indiranagar Aquatic Pet Centre" className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors" />
@@ -861,10 +877,12 @@ function AddGroomingSalonModal({ onClose, existing }: { onClose: () => void; exi
           rating_count: existing.rating_count,
           tint: existing.tint,
           hero_emoji: existing.hero_emoji,
+          hours: existing.hours ?? '',
         }
       : {
           name: '', area: '', city: 'Bengaluru', state: 'KA', address: '', phone: '',
           rating_avg: 4.5, rating_count: 0, tint: 'from-amber-200 to-amber-400', hero_emoji: '✂️',
+          hours: '',
         }
   );
 
@@ -903,12 +921,13 @@ function AddGroomingSalonModal({ onClose, existing }: { onClose: () => void; exi
       rating_count: form.rating_count ?? 0,
       tint: (form.tint || '').trim() || 'from-amber-200 to-amber-400',
       hero_emoji: (form.hero_emoji || '').trim() || '✂️',
+      hours: (form.hours || '').trim() || null,
     });
   };
 
   const star = <span className="text-red-500">*</span>;
   return (
-    <div role="dialog" aria-modal="true" className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50" onClick={onClose}>
+    <div role="dialog" aria-modal="true" className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50" onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}>
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
         <div className="p-6 sm:p-8">
           <div className="flex items-start justify-between gap-4 mb-1">
@@ -921,7 +940,7 @@ function AddGroomingSalonModal({ onClose, existing }: { onClose: () => void; exi
             </button>
           </div>
           <div className="h-0.5 w-12 bg-accent-400 rounded-full mb-5" />
-          <form onSubmit={onSubmit} className="space-y-4">
+          <form onSubmit={onSubmit} onKeyDown={suppressEnterSubmit} className="space-y-4">
             <label className="block">
               <span className="block text-sm font-semibold text-warm-900 mb-1">Salon name {star}</span>
               <input type="text" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="e.g. Pawsh Paws Grooming Studio" className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors" />
@@ -963,6 +982,10 @@ function AddGroomingSalonModal({ onClose, existing }: { onClose: () => void; exi
                 <input type="number" min={0} value={form.rating_count ?? 0} onChange={(e) => setForm({ ...form, rating_count: Number(e.target.value) })} className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors" />
               </label>
             </div>
+            <label className="block">
+              <span className="block text-sm font-semibold text-warm-900 mb-1">Open hours</span>
+              <input type="text" value={form.hours ?? ''} onChange={(e) => setForm({ ...form, hours: e.target.value })} placeholder="e.g. 8 am to 9 pm, daily" className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors" />
+            </label>
             <div className="pt-2 flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
               <button type="button" onClick={onClose} className="px-5 py-2 rounded-full border-2 border-warm-300 text-warm-700 hover:bg-warm-100 text-sm font-semibold transition-colors">Cancel</button>
               <button type="submit" disabled={mutation.isPending} className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full bg-accent-400 hover:bg-accent-300 disabled:opacity-60 disabled:cursor-not-allowed text-warm-900 text-sm font-bold tracking-[0.15em] uppercase ring-2 ring-accent-300/50 hover:ring-accent-200 transition-all shadow-md">{mutation.isPending ? (existing ? 'Saving…' : 'Adding…') : (existing ? 'Save' : 'Add')}</button>
@@ -1049,7 +1072,7 @@ function AddPetFoodModal({ onClose, existing }: { onClose: () => void; existing?
   const star = <span className="text-red-500">*</span>;
   const inputCls = 'w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors';
   return (
-    <div role="dialog" aria-modal="true" className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50" onClick={onClose}>
+    <div role="dialog" aria-modal="true" className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50" onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}>
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
         <div className="p-6 sm:p-8">
           <div className="flex items-start justify-between gap-4 mb-1">
@@ -1062,7 +1085,7 @@ function AddPetFoodModal({ onClose, existing }: { onClose: () => void; existing?
             </button>
           </div>
           <div className="h-0.5 w-12 bg-accent-400 rounded-full mb-5" />
-          <form onSubmit={onSubmit} className="space-y-4">
+          <form onSubmit={onSubmit} onKeyDown={suppressEnterSubmit} className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-[1fr_80px] gap-4">
               <label className="block">
                 <span className="block text-sm font-semibold text-warm-900 mb-1">Brand {star}</span>
@@ -1654,6 +1677,101 @@ function VisitsSection() {
   );
 }
 
+type VisibilityToggle = {
+  key: SiteSettingKey;
+  label: string;
+  description: string;
+};
+
+const VISIBILITY_TOGGLES: VisibilityToggle[] = [
+  {
+    key: 'pet_supplies_enabled',
+    label: 'Pet Supplies',
+    description:
+      'When off, /pet-supplies shows a "Launching soon" splash instead of the catalogue. Tab and home circle stay visible as teasers.',
+  },
+];
+
+function SiteVisibilitySection() {
+  const queryClient = useQueryClient();
+  const { data: settings, isLoading, isError } = useQuery({
+    queryKey: ['site-settings'],
+    queryFn: listSiteSettings,
+  });
+
+  const mutation = useMutation({
+    mutationFn: ({ key, enabled }: { key: SiteSettingKey; enabled: boolean }) =>
+      updateSiteSetting(key, enabled),
+    onSuccess: (row) => {
+      queryClient.invalidateQueries({ queryKey: ['site-settings'] });
+      toast.success(`${row.key.replace(/_/g, ' ')} is now ${row.enabled ? 'Live' : 'Coming Soon'}.`);
+    },
+    onError: (err: Error) => toast.error(err.message || 'Could not update setting.'),
+  });
+
+  return (
+    <section className="mb-10">
+      <div className="mb-4">
+        <p className="text-[11px] font-semibold tracking-[0.3em] text-accent-600 uppercase mb-1">
+          Visibility
+        </p>
+        <h2 className="text-xl font-bold text-warm-900">Service visibility</h2>
+        <p className="text-sm text-warm-500 mt-1">
+          Flip a service to <span className="font-semibold">Coming Soon</span> to swap its detail page for a launch splash.
+        </p>
+      </div>
+
+      <div className="rounded-2xl border-2 border-primary-100 bg-white divide-y divide-warm-200 overflow-hidden">
+        {isLoading ? (
+          <p className="text-sm text-warm-500 px-5 py-6 text-center">Loading settings…</p>
+        ) : isError ? (
+          <p className="text-sm text-red-600 px-5 py-6 text-center">Could not load settings.</p>
+        ) : (
+          VISIBILITY_TOGGLES.map(({ key, label, description }) => {
+            const row = settings?.find((s) => s.key === key);
+            const enabled = row ? row.enabled : true;
+            const pending = mutation.isPending && mutation.variables?.key === key;
+            return (
+              <div key={key} className="flex items-center justify-between gap-4 px-5 py-4">
+                <div className="min-w-0 flex-1">
+                  <p className="text-base font-bold text-warm-900">{label}</p>
+                  <p className="text-xs text-warm-500 mt-0.5 leading-relaxed">{description}</p>
+                </div>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={enabled}
+                  disabled={pending}
+                  onClick={() => mutation.mutate({ key, enabled: !enabled })}
+                  className={`shrink-0 inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-colors ${
+                    enabled
+                      ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'
+                      : 'bg-warm-100 text-warm-600 hover:bg-warm-200'
+                  } disabled:opacity-60 disabled:cursor-not-allowed`}
+                >
+                  <span
+                    aria-hidden="true"
+                    className={`relative inline-block w-9 h-5 rounded-full transition-colors ${
+                      enabled ? 'bg-emerald-500' : 'bg-warm-400'
+                    }`}
+                  >
+                    <span
+                      className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-all ${
+                        enabled ? 'left-[18px]' : 'left-0.5'
+                      }`}
+                    />
+                  </span>
+                  {pending ? 'Saving…' : enabled ? 'Live' : 'Coming Soon'}
+                </button>
+              </div>
+            );
+          })
+        )}
+      </div>
+    </section>
+  );
+}
+
 export function Admin() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -1663,6 +1781,7 @@ export function Admin() {
       </div>
 
       <AddListingsSection />
+      <SiteVisibilitySection />
       <VisitsSection />
     </div>
   );

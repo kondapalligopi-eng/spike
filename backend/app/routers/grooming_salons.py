@@ -52,6 +52,7 @@ async def create_grooming_salon(
         rating_count=payload.rating_count,
         tint=payload.tint.strip() or "from-amber-200 to-amber-400",
         hero_emoji=payload.hero_emoji.strip() or "✂️",
+        hours=(payload.hours or "").strip() or None,
     )
     db.add(salon)
     await db.flush()
@@ -88,6 +89,7 @@ async def update_grooming_salon(
     salon.rating_count = payload.rating_count
     salon.tint = payload.tint.strip() or "from-amber-200 to-amber-400"
     salon.hero_emoji = payload.hero_emoji.strip() or "✂️"
+    salon.hours = (payload.hours or "").strip() or None
     await db.flush()
     await db.refresh(salon)
     return GroomingSalonRead.model_validate(salon)

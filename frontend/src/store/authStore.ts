@@ -5,8 +5,10 @@ import type { User } from '@/types';
 interface AuthState {
   user: User | null;
   token: string | null;
+  refreshToken: string | null;
   isAuthenticated: boolean;
-  login: (token: string, user: User) => void;
+  login: (token: string, user: User, refreshToken?: string | null) => void;
+  setTokens: (accessToken: string, refreshToken?: string | null) => void;
   logout: () => void;
   setUser: (user: User) => void;
 }
@@ -16,17 +18,36 @@ export const useAuthStore = create<AuthState>()(
     (set) => ({
       user: null,
       token: null,
+      refreshToken: null,
       isAuthenticated: false,
 
-      login: (token: string, user: User) => {
+      login: (token: string, user: User, refreshToken?: string | null) => {
         localStorage.setItem('auth_token', token);
-        set({ token, user, isAuthenticated: true });
+        if (refreshToken) {
+          localStorage.setItem('auth_refresh_token', refreshToken);
+        } else {
+          localStorage.removeItem('auth_refresh_token');
+        }
+        set({ token, refreshToken: refreshToken ?? null, user, isAuthenticated: true });
+      },
+
+      setTokens: (accessToken: string, refreshToken?: string | null) => {
+        localStorage.setItem('auth_token', accessToken);
+        if (refreshToken !== undefined) {
+          if (refreshToken) localStorage.setItem('auth_refresh_token', refreshToken);
+          else localStorage.removeItem('auth_refresh_token');
+        }
+        set((state) => ({
+          token: accessToken,
+          refreshToken: refreshToken !== undefined ? refreshToken ?? null : state.refreshToken,
+        }));
       },
 
       logout: () => {
         localStorage.removeItem('auth_token');
+        localStorage.removeItem('auth_refresh_token');
         localStorage.removeItem('auth_user');
-        set({ token: null, user: null, isAuthenticated: false });
+        set({ token: null, refreshToken: null, user: null, isAuthenticated: false });
       },
 
       setUser: (user: User) => {
@@ -37,14 +58,14 @@ export const useAuthStore = create<AuthState>()(
       name: 'auth-storage',
       partialize: (state) => ({
         token: state.token,
+        refreshToken: state.refreshToken,
         user: state.user,
         isAuthenticated: state.isAuthenticated,
       }),
       onRehydrateStorage: () => (state) => {
-        // Sync token to localStorage for axios interceptor
-        if (state?.token) {
-          localStorage.setItem('auth_token', state.token);
-        }
+        // Sync tokens to localStorage for axios interceptor on a fresh tab.
+        if (state?.token) localStorage.setItem('auth_token', state.token);
+        if (state?.refreshToken) localStorage.setItem('auth_refresh_token', state.refreshToken);
       },
     }
   )
