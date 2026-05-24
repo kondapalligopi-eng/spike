@@ -8,7 +8,10 @@ export const apiClient = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 30000,
+  // 60s to absorb Render free-tier cold starts (the backend sleeps after
+  // ~15 min idle and takes 30–60s to wake on the next hit). 30s wasn't
+  // enough — POSTs from the admin form were timing out as "Network Error".
+  timeout: 60000,
 });
 
 // Request interceptor: attach Authorization header from localStorage
