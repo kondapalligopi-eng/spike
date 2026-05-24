@@ -78,10 +78,18 @@ export function GroomingSalon() {
 
   const salon = useMemo<GroomingSalonData | undefined>(() => {
     if (!slug) return undefined;
+    // Look up the API list first so an admin-added salon whose name-slug
+    // happens to clash with a static area-slug still resolves to the
+    // admin's record (e.g. /grooming/whitefield used to always win the
+    // static "Furry Tale Grooming" even when an admin added a different
+    // Whitefield salon).
+    const apiByName = apiQuery.data?.find((s) => nameToSlug(s.name, s.id) === slug);
+    if (apiByName) return apiToSalonData(apiByName);
     const fromStatic = getSalon(slug);
     if (fromStatic) return fromStatic;
-    const apiHit = apiQuery.data?.find((s) => areaToSlug(s.area) === slug);
-    return apiHit ? apiToSalonData(apiHit) : undefined;
+    // Legacy fallback: very old slugs that used area-only.
+    const apiByArea = apiQuery.data?.find((s) => areaToSlug(s.area) === slug);
+    return apiByArea ? apiToSalonData(apiByArea) : undefined;
   }, [slug, apiQuery.data]);
 
   if (apiQuery.isLoading && !salon) {
