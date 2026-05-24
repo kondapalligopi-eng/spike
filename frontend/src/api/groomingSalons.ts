@@ -4,18 +4,6 @@ const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
 const MOCK_KEY = 'hispike_mock_grooming_salons';
 const MOCK_SEEDED_KEY = 'hispike_mock_grooming_salons_seeded';
 
-export type HoursEntry = { day: string; hours: string };
-
-export const DEFAULT_HOURS: HoursEntry[] = [
-  { day: 'Mon', hours: '8am – 8pm' },
-  { day: 'Tue', hours: '8am – 8pm' },
-  { day: 'Wed', hours: '8am – 8pm' },
-  { day: 'Thu', hours: '8am – 8pm' },
-  { day: 'Fri', hours: '8am – 8pm' },
-  { day: 'Sat', hours: '8am – 9pm' },
-  { day: 'Sun', hours: '9am – 6pm' },
-];
-
 export type GroomingSalonRead = {
   id: string;
   name: string;
@@ -28,8 +16,7 @@ export type GroomingSalonRead = {
   rating_count: number;
   tint: string;
   hero_emoji: string;
-  hours: HoursEntry[];
-  open_today_until: string | null;
+  hours: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -45,8 +32,7 @@ export type GroomingSalonCreate = {
   rating_count?: number;
   tint?: string;
   hero_emoji?: string;
-  hours?: HoursEntry[];
-  open_today_until?: string | null;
+  hours?: string | null;
 };
 
 const DEFAULTS: Omit<GroomingSalonRead, 'id' | 'created_at' | 'updated_at'>[] = [
@@ -61,8 +47,7 @@ const DEFAULTS: Omit<GroomingSalonRead, 'id' | 'created_at' | 'updated_at'>[] = 
     rating_count: 242,
     tint: 'from-amber-200 to-amber-400',
     hero_emoji: '✂️',
-    hours: DEFAULT_HOURS,
-    open_today_until: '8pm',
+    hours: '8 am to 8 pm, daily',
   },
   {
     name: 'Wagging Tails Pet Spa',
@@ -75,8 +60,7 @@ const DEFAULTS: Omit<GroomingSalonRead, 'id' | 'created_at' | 'updated_at'>[] = 
     rating_count: 215,
     tint: 'from-rose-200 to-rose-400',
     hero_emoji: '🛁',
-    hours: DEFAULT_HOURS,
-    open_today_until: '9pm',
+    hours: '9 am to 9 pm, daily',
   },
   {
     name: 'Snip & Snout Pet Salon',
@@ -89,8 +73,7 @@ const DEFAULTS: Omit<GroomingSalonRead, 'id' | 'created_at' | 'updated_at'>[] = 
     rating_count: 182,
     tint: 'from-emerald-200 to-emerald-500',
     hero_emoji: '💅',
-    hours: DEFAULT_HOURS,
-    open_today_until: '9pm',
+    hours: '8 am to 9 pm, daily',
   },
   {
     name: 'The Furry Tale Grooming',
@@ -103,8 +86,7 @@ const DEFAULTS: Omit<GroomingSalonRead, 'id' | 'created_at' | 'updated_at'>[] = 
     rating_count: 163,
     tint: 'from-sky-200 to-sky-500',
     hero_emoji: '✂️',
-    hours: DEFAULT_HOURS,
-    open_today_until: '8pm',
+    hours: '8 am to 8 pm, daily',
   },
 ];
 
@@ -179,8 +161,7 @@ export async function createGroomingSalon(data: GroomingSalonCreate): Promise<Gr
       rating_count: data.rating_count ?? 0,
       tint: data.tint || 'from-amber-200 to-amber-400',
       hero_emoji: data.hero_emoji || '✂️',
-      hours: data.hours && data.hours.length > 0 ? data.hours : DEFAULT_HOURS,
-      open_today_until: data.open_today_until ?? null,
+      hours: data.hours?.trim() || null,
       created_at: now,
       updated_at: now,
     };
@@ -212,8 +193,7 @@ export async function updateGroomingSalon(id: string, data: GroomingSalonCreate)
       rating_count: data.rating_count ?? store[idx].rating_count,
       tint: data.tint || store[idx].tint,
       hero_emoji: data.hero_emoji || store[idx].hero_emoji,
-      hours: data.hours && data.hours.length > 0 ? data.hours : store[idx].hours,
-      open_today_until: data.open_today_until ?? store[idx].open_today_until,
+      hours: data.hours?.trim() || store[idx].hours,
       updated_at: now,
     };
     store[idx] = updated;
