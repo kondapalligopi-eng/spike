@@ -39,7 +39,7 @@ export function Login() {
   const mutation = useMutation({
     mutationFn: login,
     onSuccess: (data) => {
-      storeLogin(data.access_token, data.user);
+      storeLogin(data.access_token, data.user, data.refresh_token);
       toast.success(`Welcome back, ${data.user.full_name}!`);
       navigate(redirectTo, { replace: true });
     },
