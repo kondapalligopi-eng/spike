@@ -1773,6 +1773,18 @@ function SiteVisibilitySection() {
 }
 
 export function Admin() {
+  // Warm the backend the moment the admin lands here. Render free-tier
+  // services sleep after ~15 min idle; the first request after sleep takes
+  // 30–60s to wake up, which used to surface as "Network Error" on the
+  // very first Add/Edit submit. Hitting /health here means by the time the
+  // admin opens a modal and submits, the dyno is already warm.
+  useEffect(() => {
+    const apiBase = import.meta.env.VITE_API_URL ?? 'http://localhost:8000';
+    fetch(`${apiBase}/health`, { method: 'GET', cache: 'no-store' }).catch(() => {
+      // Best-effort — failure here doesn't block the admin UI.
+    });
+  }, []);
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       <div className="mb-8">

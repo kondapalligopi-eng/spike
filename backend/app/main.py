@@ -66,7 +66,25 @@ async def validation_exception_handler(
     return JSONResponse(
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
         content={"detail": "Validation error", "errors": details},
+        headers=_cors_headers_for(request),
     )
+
+
+def _cors_headers_for(request: Request) -> dict[str, str]:
+    # CORSMiddleware-generated headers don't always reach responses produced
+    # by exception handlers (they short-circuit the normal middleware path).
+    # Without these headers the browser blocks the 500 response and the
+    # frontend sees "Network Error" instead of the real detail — making
+    # debugging much harder. Mirror the allowed-origin check here so error
+    # responses are visible to the frontend on whitelisted origins.
+    origin = request.headers.get("origin")
+    if origin and origin in settings.CORS_ORIGINS:
+        return {
+            "access-control-allow-origin": origin,
+            "access-control-allow-credentials": "true",
+            "vary": "Origin",
+        }
+    return {}
 
 
 @app.exception_handler(Exception)
@@ -78,10 +96,12 @@ async def unhandled_exception_handler(
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             content={"detail": "An unexpected error occurred"},
+            headers=_cors_headers_for(request),
         )
     return JSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         content={"detail": str(exc)},
+        headers=_cors_headers_for(request),
     )
 
 
