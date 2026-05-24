@@ -212,6 +212,8 @@ export async function updateGroomingSalon(id: string, data: GroomingSalonCreate)
       rating_count: data.rating_count ?? store[idx].rating_count,
       tint: data.tint || store[idx].tint,
       hero_emoji: data.hero_emoji || store[idx].hero_emoji,
+      hours: data.hours && data.hours.length > 0 ? data.hours : store[idx].hours,
+      open_today_until: data.open_today_until ?? store[idx].open_today_until,
       updated_at: now,
     };
     store[idx] = updated;
