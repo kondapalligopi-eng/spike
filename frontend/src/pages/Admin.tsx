@@ -977,6 +977,10 @@ function AddGroomingSalonModal({ onClose, existing }: { onClose: () => void; exi
                 <input type="number" min={0} value={form.rating_count ?? 0} onChange={(e) => setForm({ ...form, rating_count: Number(e.target.value) })} className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors" />
               </label>
             </div>
+            <label className="block">
+              <span className="block text-sm font-semibold text-warm-900 mb-1">Open hours</span>
+              <input type="text" value={form.hours ?? ''} onChange={(e) => setForm({ ...form, hours: e.target.value })} placeholder="e.g. 8 am to 9 pm, daily" className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors" />
+            </label>
             <div className="pt-2 flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
               <button type="button" onClick={onClose} className="px-5 py-2 rounded-full border-2 border-warm-300 text-warm-700 hover:bg-warm-100 text-sm font-semibold transition-colors">Cancel</button>
               <button type="submit" disabled={mutation.isPending} className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full bg-accent-400 hover:bg-accent-300 disabled:opacity-60 disabled:cursor-not-allowed text-warm-900 text-sm font-bold tracking-[0.15em] uppercase ring-2 ring-accent-300/50 hover:ring-accent-200 transition-all shadow-md">{mutation.isPending ? (existing ? 'Saving…' : 'Adding…') : (existing ? 'Save' : 'Add')}</button>
