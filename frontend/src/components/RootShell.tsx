@@ -40,6 +40,16 @@ export function RootShell() {
     setMounted(true);
   }, []);
 
+  // Proactive token refresh: restart whenever the access token rotates
+  // (initial login, silent refresh, manual refresh) so the next deadline is
+  // always scheduled against the freshest exp claim.
+  const accessToken = useAuthStore((s) => s.token);
+  useEffect(() => {
+    if (accessToken) startSessionManager();
+    else stopSessionManager();
+    return () => stopSessionManager();
+  }, [accessToken]);
+
   return (
     <QueryClientProvider client={queryClient}>
       <CloudflareAnalytics />
