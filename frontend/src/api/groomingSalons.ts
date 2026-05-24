@@ -61,6 +61,8 @@ const DEFAULTS: Omit<GroomingSalonRead, 'id' | 'created_at' | 'updated_at'>[] = 
     rating_count: 242,
     tint: 'from-amber-200 to-amber-400',
     hero_emoji: '✂️',
+    hours: DEFAULT_HOURS,
+    open_today_until: '8pm',
   },
   {
     name: 'Wagging Tails Pet Spa',
