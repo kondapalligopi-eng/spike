@@ -103,6 +103,8 @@ const DEFAULTS: Omit<GroomingSalonRead, 'id' | 'created_at' | 'updated_at'>[] = 
     rating_count: 163,
     tint: 'from-sky-200 to-sky-500',
     hero_emoji: '✂️',
+    hours: DEFAULT_HOURS,
+    open_today_until: '8pm',
   },
 ];
 
