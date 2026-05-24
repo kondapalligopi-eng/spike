@@ -1677,6 +1677,101 @@ function VisitsSection() {
   );
 }
 
+type VisibilityToggle = {
+  key: SiteSettingKey;
+  label: string;
+  description: string;
+};
+
+const VISIBILITY_TOGGLES: VisibilityToggle[] = [
+  {
+    key: 'pet_supplies_enabled',
+    label: 'Pet Supplies',
+    description:
+      'When off, /pet-supplies shows a "Launching soon" splash instead of the catalogue. Tab and home circle stay visible as teasers.',
+  },
+];
+
+function SiteVisibilitySection() {
+  const queryClient = useQueryClient();
+  const { data: settings, isLoading, isError } = useQuery({
+    queryKey: ['site-settings'],
+    queryFn: listSiteSettings,
+  });
+
+  const mutation = useMutation({
+    mutationFn: ({ key, enabled }: { key: SiteSettingKey; enabled: boolean }) =>
+      updateSiteSetting(key, enabled),
+    onSuccess: (row) => {
+      queryClient.invalidateQueries({ queryKey: ['site-settings'] });
+      toast.success(`${row.key.replace(/_/g, ' ')} is now ${row.enabled ? 'Live' : 'Coming Soon'}.`);
+    },
+    onError: (err: Error) => toast.error(err.message || 'Could not update setting.'),
+  });
+
+  return (
+    <section className="mb-10">
+      <div className="mb-4">
+        <p className="text-[11px] font-semibold tracking-[0.3em] text-accent-600 uppercase mb-1">
+          Visibility
+        </p>
+        <h2 className="text-xl font-bold text-warm-900">Service visibility</h2>
+        <p className="text-sm text-warm-500 mt-1">
+          Flip a service to <span className="font-semibold">Coming Soon</span> to swap its detail page for a launch splash.
+        </p>
+      </div>
+
+      <div className="rounded-2xl border-2 border-primary-100 bg-white divide-y divide-warm-200 overflow-hidden">
+        {isLoading ? (
+          <p className="text-sm text-warm-500 px-5 py-6 text-center">Loading settings…</p>
+        ) : isError ? (
+          <p className="text-sm text-red-600 px-5 py-6 text-center">Could not load settings.</p>
+        ) : (
+          VISIBILITY_TOGGLES.map(({ key, label, description }) => {
+            const row = settings?.find((s) => s.key === key);
+            const enabled = row ? row.enabled : true;
+            const pending = mutation.isPending && mutation.variables?.key === key;
+            return (
+              <div key={key} className="flex items-center justify-between gap-4 px-5 py-4">
+                <div className="min-w-0 flex-1">
+                  <p className="text-base font-bold text-warm-900">{label}</p>
+                  <p className="text-xs text-warm-500 mt-0.5 leading-relaxed">{description}</p>
+                </div>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={enabled}
+                  disabled={pending}
+                  onClick={() => mutation.mutate({ key, enabled: !enabled })}
+                  className={`shrink-0 inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-colors ${
+                    enabled
+                      ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'
+                      : 'bg-warm-100 text-warm-600 hover:bg-warm-200'
+                  } disabled:opacity-60 disabled:cursor-not-allowed`}
+                >
+                  <span
+                    aria-hidden="true"
+                    className={`relative inline-block w-9 h-5 rounded-full transition-colors ${
+                      enabled ? 'bg-emerald-500' : 'bg-warm-400'
+                    }`}
+                  >
+                    <span
+                      className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-all ${
+                        enabled ? 'left-[18px]' : 'left-0.5'
+                      }`}
+                    />
+                  </span>
+                  {pending ? 'Saving…' : enabled ? 'Live' : 'Coming Soon'}
+                </button>
+              </div>
+            );
+          })
+        )}
+      </div>
+    </section>
+  );
+}
+
 export function Admin() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -1686,6 +1781,7 @@ export function Admin() {
       </div>
 
       <AddListingsSection />
+      <SiteVisibilitySection />
       <VisitsSection />
     </div>
   );
