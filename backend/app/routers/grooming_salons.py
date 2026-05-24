@@ -88,8 +88,6 @@ async def update_grooming_salon(
     salon.rating_count = payload.rating_count
     salon.tint = payload.tint.strip() or "from-amber-200 to-amber-400"
     salon.hero_emoji = payload.hero_emoji.strip() or "✂️"
-    salon.hours = [h.model_dump() for h in payload.hours]
-    salon.open_today_until = (payload.open_today_until or "").strip() or None
     await db.flush()
     await db.refresh(salon)
     return GroomingSalonRead.model_validate(salon)
