@@ -75,6 +75,8 @@ const DEFAULTS: Omit<GroomingSalonRead, 'id' | 'created_at' | 'updated_at'>[] = 
     rating_count: 215,
     tint: 'from-rose-200 to-rose-400',
     hero_emoji: '🛁',
+    hours: DEFAULT_HOURS,
+    open_today_until: '9pm',
   },
   {
     name: 'Snip & Snout Pet Salon',
