@@ -169,18 +169,8 @@ export function GroomingSalon() {
             <div className="flex items-start gap-4 px-5 py-4 flex-1">
               <div className="w-10 h-10 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center text-lg font-bold shrink-0">🕐</div>
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-semibold tracking-[0.2em] text-primary-700 uppercase mb-1">Open Hours</p>
-                <p className="text-xs text-primary-700 font-semibold mb-2">
-                  Open today until {salon.openTodayUntil}
-                </p>
-                <dl className="text-sm space-y-1">
-                  {salon.hours.map((h) => (
-                    <div key={h.day} className="flex justify-between text-warm-700">
-                      <dt className="font-medium">{h.day}</dt>
-                      <dd className="text-warm-600">{h.hours}</dd>
-                    </div>
-                  ))}
-                </dl>
+                <p className="text-xs font-semibold tracking-[0.2em] text-primary-700 uppercase mb-0.5">Open Hours</p>
+                <p className="text-sm text-warm-800">{salon.hours}</p>
               </div>
             </div>
 
