@@ -24,6 +24,19 @@ function areaToSlug(area: string): string {
   return area.toLowerCase().trim().replace(/\s+/g, '-');
 }
 
+// Mirrors Grooming.tsx::nameToSlug so a list-page tile's slug round-trips
+// to a matching detail-page lookup.
+function nameToSlug(name: string, id?: string): string {
+  const base = name
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-');
+  if (!base) return id ? id.slice(0, 8) : 'salon';
+  return base;
+}
+
 function apiToSalonData(api: GroomingSalonRead): GroomingSalonData {
   // Synthesize a rating distribution that produces the stored avg/count.
   // We put rating_count at the floor of rating_avg (rounded) and zero
@@ -65,10 +78,18 @@ export function GroomingSalon() {
 
   const salon = useMemo<GroomingSalonData | undefined>(() => {
     if (!slug) return undefined;
+    // Look up the API list first so an admin-added salon whose name-slug
+    // happens to clash with a static area-slug still resolves to the
+    // admin's record (e.g. /grooming/whitefield used to always win the
+    // static "Furry Tale Grooming" even when an admin added a different
+    // Whitefield salon).
+    const apiByName = apiQuery.data?.find((s) => nameToSlug(s.name, s.id) === slug);
+    if (apiByName) return apiToSalonData(apiByName);
     const fromStatic = getSalon(slug);
     if (fromStatic) return fromStatic;
-    const apiHit = apiQuery.data?.find((s) => areaToSlug(s.area) === slug);
-    return apiHit ? apiToSalonData(apiHit) : undefined;
+    // Legacy fallback: very old slugs that used area-only.
+    const apiByArea = apiQuery.data?.find((s) => areaToSlug(s.area) === slug);
+    return apiByArea ? apiToSalonData(apiByArea) : undefined;
   }, [slug, apiQuery.data]);
 
   if (apiQuery.isLoading && !salon) {

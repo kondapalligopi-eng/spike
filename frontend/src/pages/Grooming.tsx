@@ -4,13 +4,20 @@ import { useQuery } from '@tanstack/react-query';
 import { listGroomingSalons, type GroomingSalonRead } from '@/api/groomingSalons';
 import { toast } from '@/store/toastStore';
 
-// Convert "HSR Layout" → "hsr-layout" so the listing tile's slug matches the
-// existing /grooming/:slug detail-page routes for the seeded salons. Salons
-// added by admin in new areas will produce new slugs that won't match any
-// existing detail page — those clicks land on the salon-not-found state,
-// which is the right behaviour for a salon we have no detail data for.
-function areaToSlug(area: string): string {
-  return area.toLowerCase().trim().replace(/\s+/g, '-');
+// Static (seeded) salons use bespoke area-based slugs hardcoded in
+// data/groomingSalons.ts. API-fed salons (admin-added) need a slug derived
+// from the *name* — area alone collides when multiple salons share a
+// neighbourhood, which would route every click to the static seed. Falls
+// back to a UUID prefix on the unlikely case two admin salons share a name.
+function nameToSlug(name: string, id?: string): string {
+  const base = name
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-');
+  if (!base) return id ? id.slice(0, 8) : 'salon';
+  return base;
 }
 
 type SalonTile = {
@@ -27,7 +34,7 @@ type SalonTile = {
 
 function apiToTile(s: GroomingSalonRead): SalonTile {
   return {
-    slug: areaToSlug(s.area),
+    slug: nameToSlug(s.name, s.id),
     name: s.name,
     area: s.area,
     city: s.city,
