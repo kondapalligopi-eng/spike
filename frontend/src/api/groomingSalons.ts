@@ -4,6 +4,18 @@ const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
 const MOCK_KEY = 'hispike_mock_grooming_salons';
 const MOCK_SEEDED_KEY = 'hispike_mock_grooming_salons_seeded';
 
+export type HoursEntry = { day: string; hours: string };
+
+export const DEFAULT_HOURS: HoursEntry[] = [
+  { day: 'Mon', hours: '8am – 8pm' },
+  { day: 'Tue', hours: '8am – 8pm' },
+  { day: 'Wed', hours: '8am – 8pm' },
+  { day: 'Thu', hours: '8am – 8pm' },
+  { day: 'Fri', hours: '8am – 8pm' },
+  { day: 'Sat', hours: '8am – 9pm' },
+  { day: 'Sun', hours: '9am – 6pm' },
+];
+
 export type GroomingSalonRead = {
   id: string;
   name: string;
@@ -16,6 +28,8 @@ export type GroomingSalonRead = {
   rating_count: number;
   tint: string;
   hero_emoji: string;
+  hours: HoursEntry[];
+  open_today_until: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -31,6 +45,8 @@ export type GroomingSalonCreate = {
   rating_count?: number;
   tint?: string;
   hero_emoji?: string;
+  hours?: HoursEntry[];
+  open_today_until?: string | null;
 };
 
 const DEFAULTS: Omit<GroomingSalonRead, 'id' | 'created_at' | 'updated_at'>[] = [
