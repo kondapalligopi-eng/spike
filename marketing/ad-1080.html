@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>HiSpike — Social Ad (1080×1080)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Bebas+Neue&display=swap">
+  <style>
+    :root {
+      --primary-900: #1e3a8a;
+      --primary-800: #1e40af;
+      --primary-700: #1d4ed8;
+      --primary-600: #2563eb;
+      --primary-100: #dbeafe;
+      --accent-400: #facc15;
+      --accent-300: #fde047;
+      --accent-600: #ca8a04;
+      --warm-50:  #fafaf9;
+      --warm-900: #1c1917;
+    }
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #111;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    .stage {
+      width: 1080px;
+      height: 1080px;
+      position: relative;
+      overflow: hidden;
+      background:
+        linear-gradient(135deg,
+          var(--primary-900) 0%,
+          var(--primary-800) 45%,
+          var(--primary-600) 100%);
+      box-shadow: 0 30px 80px rgba(0,0,0,.5);
+    }
+    /* Pawprint pattern overlay — same SVG as the site hero */
+    .pattern {
+      position: absolute;
+      inset: 0;
+      opacity: 0.10;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'><g fill='white'><path d='M14 18a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm18 0a3 3 0 1 1 0 6 3 3 0 0 1 0-6zM18 8a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm10 0a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm-5 10a6 6 0 0 0-5.3 8.9l-.5 3.3c-.2 1.4.9 2.6 2.3 2.6h7a2.3 2.3 0 0 0 2.3-2.6l-.5-3.3A6 6 0 0 0 23 18z'/></g></svg>");
+      background-size: 160px 160px;
+    }
+    /* Soft yellow glow bottom-right for warmth */
+    .glow {
+      position: absolute;
+      width: 700px;
+      height: 700px;
+      right: -200px;
+      bottom: -250px;
+      border-radius: 50%;
+      background: radial-gradient(closest-side, rgba(250,204,21,.28), rgba(250,204,21,0));
+      filter: blur(10px);
+    }
+
+    /* Header strip */
+    .header {
+      position: absolute;
+      top: 56px;
+      left: 64px;
+      right: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .wordmark {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .paw-badge {
+      width: 60px;
+      height: 60px;
+      border-radius: 16px;
+      background: rgba(255,255,255,.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      backdrop-filter: blur(8px);
+    }
+    .brand {
+      font-family: 'Bebas Neue', 'Inter', sans-serif;
+      font-size: 44px;
+      letter-spacing: 0.08em;
+      line-height: 1;
+      color: #fff;
+    }
+    .brand .hi { color: #fff; }
+    .brand .spike { color: var(--accent-300); }
+
+    .pill {
+      background: rgba(255,255,255,.12);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      padding: 10px 18px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.20);
+    }
+
+    /* Main copy block */
+    .main {
+      position: absolute;
+      top: 230px;
+      left: 64px;
+      right: 64px;
+    }
+    .eyebrow {
+      color: var(--accent-300);
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 0.36em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    h1 {
+      font-family: 'Inter', sans-serif;
+      font-weight: 900;
+      font-size: 92px;
+      line-height: 1.02;
+      letter-spacing: -0.025em;
+      margin: 0 0 26px 0;
+    }
+    h1 .yellow { color: var(--accent-300); }
+    .sub {
+      font-size: 26px;
+      line-height: 1.4;
+      color: rgba(255,255,255,.92);
+      max-width: 820px;
+      margin: 0;
+    }
+    .underline {
+      width: 140px;
+      height: 6px;
+      background: var(--accent-400);
+      border-radius: 999px;
+      margin: 22px 0 0 0;
+    }
+
+    /* Services row */
+    .services {
+      position: absolute;
+      bottom: 240px;
+      left: 64px;
+      right: 64px;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 18px;
+    }
+    .svc {
+      background: rgba(255,255,255,.10);
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: 18px;
+      padding: 22px 12px 18px;
+      text-align: center;
+      backdrop-filter: blur(6px);
+    }
+    .svc .icon {
+      font-size: 44px;
+      line-height: 1;
+      margin-bottom: 14px;
+    }
+    .svc .label {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: #fff;
+    }
+
+    /* Footer CTA */
+    .footer {
+      position: absolute;
+      bottom: 64px;
+      left: 64px;
+      right: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .cta {
+      background: var(--accent-400);
+      color: var(--warm-900);
+      font-weight: 900;
+      font-size: 26px;
+      letter-spacing: 0.04em;
+      padding: 22px 36px;
+      border-radius: 999px;
+      box-shadow: 0 14px 30px rgba(250,204,21,.35);
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .cta .arrow {
+      display: inline-block;
+      transform: translateY(-1px);
+    }
+    .city {
+      color: rgba(255,255,255,.85);
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      text-align: right;
+    }
+    .city .pin { color: var(--accent-300); margin-right: 6px; }
+
+    /* Print / export friendly */
+    @media print {
+      html, body { background: transparent; }
+      .stage { box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="stage" id="stage">
+    <div class="pattern"></div>
+    <div class="glow"></div>
+
+    <div class="header">
+      <div class="wordmark">
+        <div class="paw-badge">🐾</div>
+        <div class="brand"><span class="hi">Hi</span><span class="spike">Spike</span></div>
+      </div>
+      <div class="pill">Bengaluru</div>
+    </div>
+
+    <div class="main">
+      <div class="eyebrow">All-In-One Pet Care</div>
+      <h1>Everything your <span class="yellow">dog</span> needs.<br/>One platform.</h1>
+      <p class="sub">
+        Vets, dog parks, swim lessons, grooming, and premium pet supplies —
+        verified, local to Bengaluru, and just a tap away.
+      </p>
+      <div class="underline"></div>
+    </div>
+
+    <div class="services">
+      <div class="svc"><div class="icon">🏥</div><div class="label">Vets</div></div>
+      <div class="svc"><div class="icon">🌳</div><div class="label">Parks</div></div>
+      <div class="svc"><div class="icon">🏊</div><div class="label">Swim</div></div>
+      <div class="svc"><div class="icon">✂️</div><div class="label">Grooming</div></div>
+      <div class="svc"><div class="icon">🥫</div><div class="label">Supplies</div></div>
+    </div>
+
+    <div class="footer">
+      <div class="cta">Visit hispike.in <span class="arrow">→</span></div>
+      <div class="city"><span class="pin">📍</span>Indiranagar · Koramangala · HSR · Whitefield · Jayanagar</div>
+    </div>
+  </div>
+</body>
+</html>
