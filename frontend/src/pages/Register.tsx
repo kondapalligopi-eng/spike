@@ -60,7 +60,7 @@ export function Register() {
   const mutation = useMutation({
     mutationFn: registerApi,
     onSuccess: (data) => {
-      storeLogin(data.access_token, data.user);
+      storeLogin(data.access_token, data.user, data.refresh_token);
       toast.success(`Welcome to HiSpike, ${data.user.full_name}!`);
       navigate(redirectTo, { replace: true });
     },
