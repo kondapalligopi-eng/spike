@@ -34,7 +34,7 @@ type SalonTile = {
 
 function apiToTile(s: GroomingSalonRead): SalonTile {
   return {
-    slug: areaToSlug(s.area),
+    slug: nameToSlug(s.name, s.id),
     name: s.name,
     area: s.area,
     city: s.city,
