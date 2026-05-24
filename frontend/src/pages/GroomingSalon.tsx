@@ -16,18 +16,9 @@ function Stars({ value }: { value: number }) {
   );
 }
 
-// Convert a GroomingSalonRead from the API into the rich GroomingSalonData
-// shape the detail page expects. Fields that the admin-add form doesn't
-// capture (services, reviews, per-day hours) get sensible defaults.
-const DEFAULT_HOURS_FALLBACK = [
-  { day: 'Mon', hours: '8am – 8pm' },
-  { day: 'Tue', hours: '8am – 8pm' },
-  { day: 'Wed', hours: '8am – 8pm' },
-  { day: 'Thu', hours: '8am – 8pm' },
-  { day: 'Fri', hours: '8am – 8pm' },
-  { day: 'Sat', hours: '8am – 9pm' },
-  { day: 'Sun', hours: '9am – 6pm' },
-];
+// Default single-line hours used when the admin didn't enter anything for
+// an API-fed salon (or for any static seed missing the field).
+const DEFAULT_HOURS_FALLBACK = '8 am to 8 pm, daily';
 
 function areaToSlug(area: string): string {
   return area.toLowerCase().trim().replace(/\s+/g, '-');
@@ -50,8 +41,8 @@ function apiToSalonData(api: GroomingSalonRead): GroomingSalonData {
     state: api.state,
     address: api.address,
     phone: api.phone,
-    openTodayUntil: api.open_today_until ?? '8pm',
-    hours: api.hours && api.hours.length > 0 ? api.hours : DEFAULT_HOURS_FALLBACK,
+    openTodayUntil: '8pm',
+    hours: api.hours ?? DEFAULT_HOURS_FALLBACK,
     mapLabel: [api.area.toUpperCase()],
     tint: api.tint,
     heroEmoji: api.hero_emoji,
