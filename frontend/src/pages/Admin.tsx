@@ -872,10 +872,12 @@ function AddGroomingSalonModal({ onClose, existing }: { onClose: () => void; exi
           rating_count: existing.rating_count,
           tint: existing.tint,
           hero_emoji: existing.hero_emoji,
+          hours: existing.hours ?? '',
         }
       : {
           name: '', area: '', city: 'Bengaluru', state: 'KA', address: '', phone: '',
           rating_avg: 4.5, rating_count: 0, tint: 'from-amber-200 to-amber-400', hero_emoji: '✂️',
+          hours: '',
         }
   );
 
