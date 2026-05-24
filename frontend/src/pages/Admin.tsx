@@ -916,6 +916,7 @@ function AddGroomingSalonModal({ onClose, existing }: { onClose: () => void; exi
       rating_count: form.rating_count ?? 0,
       tint: (form.tint || '').trim() || 'from-amber-200 to-amber-400',
       hero_emoji: (form.hero_emoji || '').trim() || '✂️',
+      hours: (form.hours || '').trim() || null,
     });
   };
 
