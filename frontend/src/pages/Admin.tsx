@@ -93,6 +93,17 @@ const REMOVE_LISTING_CARDS: ListingCard[] = [
 const PET_FOOD_LIFESTAGES = ['Puppy', 'Adult', 'Senior', 'All Lifestages'];
 const PET_FOOD_FORMS = ['Dry Food', 'Wet Food', 'Freeze-Dried', 'Raw', 'Treats'];
 
+// Pressing Enter inside a single-line <input> would otherwise submit the
+// form — in Edit mode every required field is pre-filled, so an accidental
+// Enter mid-typing fires the mutation and closes the modal. Suppress that
+// here while still letting Enter add newlines in <textarea> and still
+// letting the explicit submit button work.
+function suppressEnterSubmit(e: React.KeyboardEvent<HTMLFormElement>) {
+  if (e.key === 'Enter' && e.target instanceof HTMLInputElement) {
+    e.preventDefault();
+  }
+}
+
 function AddHospitalModal({ onClose, existing }: { onClose: () => void; existing?: HospitalRead }) {
   const queryClient = useQueryClient();
   const [form, setForm] = useState<HospitalCreate>(
