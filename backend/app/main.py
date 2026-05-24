@@ -66,6 +66,7 @@ async def validation_exception_handler(
     return JSONResponse(
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
         content={"detail": "Validation error", "errors": details},
+        headers=_cors_headers_for(request),
     )
 
 
