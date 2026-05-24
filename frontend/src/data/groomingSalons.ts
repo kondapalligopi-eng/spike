@@ -22,7 +22,7 @@ export type GroomingSalonData = {
   address: string;
   phone: string;
   openTodayUntil: string;
-  hours: { day: string; hours: string }[];
+  hours: string;
   mapLabel: string[];
   tint: string;
   heroEmoji: string;
