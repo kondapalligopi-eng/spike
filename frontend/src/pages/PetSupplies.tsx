@@ -245,6 +245,10 @@ export function PetSupplies() {
     return true;
   });
 
+  if (!isLive) {
+    return <ComingSoon />;
+  }
+
   return (
     <div className="bg-white">
       <section className="relative overflow-hidden bg-gradient-to-r from-primary-900 via-primary-800 to-primary-600 text-white">
