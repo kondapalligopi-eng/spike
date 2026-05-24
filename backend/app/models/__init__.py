@@ -6,6 +6,7 @@ from app.models.park import Park
 from app.models.swim_school import SwimSchool
 from app.models.grooming_salon import GroomingSalon
 from app.models.pet_food import PetFood
+from app.models.site_setting import SiteSetting
 
 __all__ = [
     "User",
@@ -21,4 +22,5 @@ __all__ = [
     "SwimSchool",
     "GroomingSalon",
     "PetFood",
+    "SiteSetting",
 ]
