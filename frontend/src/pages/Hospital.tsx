@@ -176,12 +176,16 @@ export function Hospital() {
             .map((s) => s.trim())
             .filter(Boolean),
         ),
-      ).sort(),
+      ).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' })),
     ],
     [allHospitals],
   );
   const LOCATIONS = useMemo(
-    () => [ALL_LOCATIONS, ...Array.from(new Set(allHospitals.map((h) => h.locality))).sort()],
+    () => [
+      ALL_LOCATIONS,
+      ...Array.from(new Set(allHospitals.map((h) => h.locality)))
+        .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' })),
+    ],
     [allHospitals],
   );
   const CITIES = useMemo(() => LOCATIONS.slice(1), [LOCATIONS]);
