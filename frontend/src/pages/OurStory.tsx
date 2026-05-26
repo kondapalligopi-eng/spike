@@ -121,14 +121,29 @@ export function OurStory() {
           <h2 className="text-xl font-bold text-warm-900 pt-6">What we believe</h2>
           <ul className="space-y-3">
             {[
-              "Pet care should be local. National chains can't tell you which clinic stays open after 9pm in HSR.",
-              "Reviews should be honest. We don't run paid placements that bury bad experiences.",
-              'Verification matters. Every vet, salon, and trainer is checked before they appear in our directory.',
-              "Dogs come first. If a service provider isn't treating animals well, they don't belong here.",
-            ].map((point) => (
-              <li key={point} className="flex items-start gap-3">
-                <span className="mt-1 w-2 h-2 rounded-full bg-accent-400 shrink-0" />
-                <span>{point}</span>
+              {
+                title: 'Local always wins.',
+                body: "Pet care is hyperlocal — no national chain can tell you which clinic stays open past 9 pm in your part of town. We can.",
+              },
+              {
+                title: 'Reviews you can trust.',
+                body: "No paid placements, no promoted listings, no quietly buried complaints. What real dog parents in the city say, you get to read.",
+              },
+              {
+                title: 'Verified, not scraped.',
+                body: "Every vet, salon, swim coach, and trainer here is vetted by us before going live — credentials checked, facilities visited.",
+              },
+              {
+                title: 'Dogs come first, always.',
+                body: "If a provider isn't treating animals with care, no amount of listing revenue keeps them on this platform.",
+              },
+            ].map(({ title, body }) => (
+              <li key={title} className="flex items-start gap-3">
+                <span className="mt-1.5 w-2 h-2 rounded-full bg-accent-400 shrink-0" />
+                <span>
+                  <span className="font-semibold text-warm-900">{title}</span>{' '}
+                  {body}
+                </span>
               </li>
             ))}
           </ul>
