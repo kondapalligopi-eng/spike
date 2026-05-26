@@ -318,5 +318,52 @@
       <div class="cta">Visit hispike.in <span class="arrow">→</span></div>
     </div>
   </div>
+  <!-- Download-as-PNG button. Captures only the .stage div so the
+       button itself never ends up in the image. Drop in WhatsApp Status,
+       Instagram, etc. -->
+  <button
+    id="hispike-download-btn"
+    type="button"
+    style="position:fixed;bottom:24px;right:24px;z-index:9999;padding:14px 22px;border:0;border-radius:999px;background:#facc15;color:#1c1917;font:700 14px/1 Inter,system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;box-shadow:0 14px 30px rgba(0,0,0,.35);cursor:pointer;"
+  >📥 Download PNG</button>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script>
+    document.getElementById('hispike-download-btn').addEventListener('click', async function () {
+      const btn = this;
+      const stage = document.querySelector('.stage');
+      if (!stage) return;
+      const original = btn.textContent;
+      btn.textContent = 'Rendering…';
+      btn.disabled = true;
+      try {
+        // Wait for the Google Fonts (Inter, Bebas Neue) to be fully loaded
+        // before snapshotting, otherwise the captured PNG uses fallback fonts.
+        if (document.fonts && document.fonts.ready) await document.fonts.ready;
+        const w = stage.offsetWidth;
+        const h = stage.offsetHeight;
+        const canvas = await html2canvas(stage, {
+          backgroundColor: '#1e3a8a',
+          scale: 1,
+          useCORS: true,
+          allowTaint: false,
+          width: w,
+          height: h,
+          windowWidth: w,
+          windowHeight: h,
+        });
+        const link = document.createElement('a');
+        link.download = 'hispike-ad-1080x1080.png';
+        link.href = canvas.toDataURL('image/png');
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+      } catch (e) {
+        alert('Could not generate the PNG: ' + e.message);
+      } finally {
+        btn.textContent = original;
+        btn.disabled = false;
+      }
+    });
+  </script>
 </body>
 </html>
