@@ -176,17 +176,19 @@ export function Park() {
     setActiveCity(null);
   };
 
-  const visibleSpots = allSpots.filter((s) => {
-    if (
-      appliedQuery &&
-      !`${s.name} ${s.locality}`.toLowerCase().includes(appliedQuery.toLowerCase())
-    )
-      return false;
-    const area = s.locality.split(',')[0].trim();
-    if (locationFilter && area !== locationFilter) return false;
-    if (activeCity && area !== activeCity) return false;
-    return true;
-  });
+  const visibleSpots = allSpots
+    .filter((s) => {
+      if (
+        appliedQuery &&
+        !`${s.name} ${s.locality}`.toLowerCase().includes(appliedQuery.toLowerCase())
+      )
+        return false;
+      const area = s.locality.split(',')[0].trim();
+      if (locationFilter && area !== locationFilter) return false;
+      if (activeCity && area !== activeCity) return false;
+      return true;
+    })
+    .sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
 
   // List-your-park modal
   const [registerOpen, setRegisterOpen] = useState(false);
