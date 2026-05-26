@@ -130,7 +130,10 @@ export function Grooming() {
     [salonsQuery.data],
   );
   const SALON_LOCALITIES = useMemo(
-    () => Array.from(new Set(allSalons.map((s) => s.area))).sort(),
+    () =>
+      Array.from(new Set(allSalons.map((s) => s.area))).sort((a, b) =>
+        a.localeCompare(b, undefined, { sensitivity: 'base' }),
+      ),
     [allSalons],
   );
 
