@@ -281,14 +281,16 @@ export function Hospital() {
     setCurrentPage(1);
   }, [applied, activeCity]);
 
-  const filteredHospitals = allHospitals.filter((h) => {
-    const q = applied.search.toLowerCase();
-    if (q && !`${h.name} ${h.locality} ${h.specialties}`.toLowerCase().includes(q)) return false;
-    if (applied.specialty !== ALL_SPECIALTIES && !h.specialties.toLowerCase().includes(applied.specialty.toLowerCase())) return false;
-    if (applied.location !== ALL_LOCATIONS && !h.locality.toLowerCase().includes(applied.location.toLowerCase())) return false;
-    if (activeCity && !h.locality.toLowerCase().includes(activeCity.toLowerCase())) return false;
-    return true;
-  });
+  const filteredHospitals = allHospitals
+    .filter((h) => {
+      const q = applied.search.toLowerCase();
+      if (q && !`${h.name} ${h.locality} ${h.specialties}`.toLowerCase().includes(q)) return false;
+      if (applied.specialty !== ALL_SPECIALTIES && !h.specialties.toLowerCase().includes(applied.specialty.toLowerCase())) return false;
+      if (applied.location !== ALL_LOCATIONS && !h.locality.toLowerCase().includes(applied.location.toLowerCase())) return false;
+      if (activeCity && !h.locality.toLowerCase().includes(activeCity.toLowerCase())) return false;
+      return true;
+    })
+    .sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
 
   const totalPages = Math.max(1, Math.ceil(filteredHospitals.length / PAGE_SIZE));
   const safeCurrentPage = Math.min(currentPage, totalPages);
