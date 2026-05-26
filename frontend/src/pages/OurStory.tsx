@@ -28,16 +28,36 @@ export function OurStory() {
             </p>
           </div>
           <div className="relative justify-self-center md:justify-self-end shrink-0">
-            {/* Soft warm halo behind the polaroid so it lifts off the dark hero. */}
+            {/* Soft warm halo plus a deeper dark wash to imply a surface
+                underneath the polaroid. Together they give the card a real
+                sense of resting on something rather than floating. */}
             <div
               aria-hidden="true"
-              className="absolute -inset-8 bg-accent-400/40 rounded-[2.5rem] blur-2xl"
+              className="absolute -inset-10 bg-accent-400/35 rounded-[3rem] blur-3xl"
+            />
+            <div
+              aria-hidden="true"
+              className="absolute -inset-6 translate-y-4 bg-warm-900/55 rounded-[2.5rem] blur-2xl"
             />
 
-            {/* Polaroid card — thick white frame, narrower top/sides, taller
-                bottom margin where the signature lives. Slight tilt for the
-                photographed-and-pinned feel. */}
-            <div className="relative -rotate-2 hover:rotate-0 transition-transform duration-300 bg-white pt-3 px-3 pb-12 sm:pt-4 sm:px-4 sm:pb-14 rounded-md shadow-2xl ring-1 ring-warm-200">
+            {/* Second polaroid peeking from behind — adds the stacked, casual
+                "scattered photos" feel and a layer of depth. */}
+            <div
+              aria-hidden="true"
+              className="absolute inset-0 rotate-6 translate-x-3 translate-y-2 bg-white pt-3 px-3 pb-12 sm:pt-4 sm:px-4 sm:pb-14 rounded-md shadow-xl ring-1 ring-warm-300/60"
+            >
+              <div className="w-56 sm:w-64 md:w-72 lg:w-80 h-auto aspect-[4/3] bg-gradient-to-br from-warm-200 to-warm-100 rounded-sm" />
+            </div>
+
+            {/* Foreground polaroid — heavier custom shadow so it visibly
+                sits on top of the back card and the halos behind. */}
+            <div
+              className="relative -rotate-2 hover:rotate-0 transition-transform duration-300 bg-white pt-3 px-3 pb-12 sm:pt-4 sm:px-4 sm:pb-14 rounded-md ring-1 ring-warm-200"
+              style={{
+                boxShadow:
+                  '0 30px 60px -20px rgba(0,0,0,0.55), 0 18px 30px -12px rgba(0,0,0,0.35)',
+              }}
+            >
               <img
                 src="/spike/spike.jpg"
                 alt="Spike — a black Labrador resting in a Bengaluru park"
