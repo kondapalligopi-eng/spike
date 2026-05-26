@@ -200,7 +200,15 @@ export function PetSupplies() {
   });
 
   if (!isLive) {
-    return <ComingSoon />;
+    return (
+      <ComingSoon
+        emoji="🛒"
+        eyebrow="Shop · Bangalore"
+        title="Pet Supplies is launching soon"
+        body="We're hand-picking trusted brands — Royal Canin, Pedigree, ACANA — and building hyperlocal delivery across Bengaluru. Check back soon."
+        notifySubject="Pet Supplies launches"
+      />
+    );
   }
 
   return (
