@@ -94,10 +94,8 @@ export function OurStory() {
             We launched HiSpike in 2026 to put every part of caring for a
             dog into one place — one platform, verified listings, honest
             reviews, and providers we've actually walked through the door
-            of. Built proudly in Bengaluru, for the neighbourhoods we know
-            best: Indiranagar, Koramangala, HSR Layout, Whitefield,
-            Jayanagar, and every street in between where a tail's still
-            wagging.
+            of. Built proudly in Bengaluru, for every neighbourhood across
+            the city where a tail's still wagging.
           </p>
         </div>
       </section>
