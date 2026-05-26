@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { AuthTransitionOverlay } from './AuthTransitionOverlay';
 
 type DrawerItem = { label: string; to: string };
 
