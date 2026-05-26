@@ -135,7 +135,7 @@ export function OurStory() {
               },
               {
                 title: 'Dogs come first, always.',
-                body: "If a provider isn't treating animals with care, no amount of listing revenue keeps them on this platform.",
+                body: "If a provider isn't treating pets with care, no amount of listing revenue keeps them on this platform.",
               },
             ].map(({ title, body }) => (
               <li key={title} className="flex items-start gap-3">
