@@ -11,19 +11,36 @@ export function OurStory() {
             backgroundSize: '120px 120px',
           }}
         />
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-6">
-          <span aria-hidden="true" className="text-4xl sm:text-5xl drop-shadow">🐾</span>
-          <div className="flex-1">
-            <p className="text-[11px] sm:text-xs font-semibold tracking-[0.3em] text-accent-400 uppercase mb-1">
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 grid grid-cols-1 md:grid-cols-[1fr_auto] items-center gap-8 md:gap-12">
+          <div>
+            <p className="text-[11px] sm:text-xs font-semibold tracking-[0.3em] text-accent-400 uppercase mb-2">
               About · HiSpike
             </p>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight leading-tight">
-              Our Story
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight">
+              Built by dog parents,<br className="hidden sm:inline" /> for dog parents.
             </h1>
-            <div className="mt-2 h-0.5 w-16 bg-accent-400 rounded-full" />
-            <p className="mt-2 text-sm text-primary-100/90 max-w-2xl">
-              Built in Bengaluru, by dog parents, for dog parents.
+            <div className="mt-3 h-1 w-16 bg-accent-400 rounded-full" />
+            <p className="mt-4 text-base sm:text-lg text-primary-100/95 max-w-xl">
+              Meet <span className="font-semibold text-white">Spike</span> — the
+              black Lab who started it all. HiSpike is named after him, and
+              built so every dog parent in Bengaluru gets the kind of care
+              we kept wishing for him.
             </p>
+          </div>
+          <div className="relative justify-self-center md:justify-self-end shrink-0">
+            <div
+              aria-hidden="true"
+              className="absolute -inset-2 bg-accent-400/30 rounded-3xl rotate-3 blur-sm"
+            />
+            <img
+              src="/spike/spike.jpg"
+              alt="Spike — a black Labrador resting in a Bengaluru park"
+              loading="lazy"
+              className="relative w-56 sm:w-64 md:w-72 lg:w-80 h-auto aspect-[4/3] object-cover rounded-3xl shadow-2xl ring-4 ring-white/20"
+            />
+            <span className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-accent-400 text-warm-900 text-[10px] font-extrabold tracking-[0.25em] uppercase px-3 py-1 rounded-full shadow-md">
+              Spike · est. our boy
+            </span>
           </div>
         </div>
       </section>
