@@ -83,16 +83,21 @@ export function OurStory() {
       <section className="bg-primary-50">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-6 text-warm-800 leading-relaxed">
           <p>
-            HiSpike began with a simple frustration. Finding a trusted vet, a
-            decent dog park, a salon that doesn't shave a Pomeranian like a
-            Poodle — every search meant five tabs, ten reviews, and a phone
-            call to a friend who'd just adopted.
+            HiSpike began with a simple idea: caring for a dog in Bengaluru
+            shouldn't feel like a research project. Finding a trusted vet
+            for a midnight emergency, a dog park that's actually open after
+            the rain, a groomer who won't shave a Pomeranian like a Poodle
+            — every search used to mean five tabs, ten conflicting reviews,
+            and a hopeful WhatsApp to whichever friend had just adopted.
           </p>
           <p>
-            We started HiSpike in 2024 to put every part of caring for a dog
-            in one place. One platform. Real listings. Real reviews. Built
-            specifically for Bengaluru — Indiranagar, Koramangala, HSR
-            Layout, Whitefield, Jayanagar, and the neighbourhoods in between.
+            We launched HiSpike in 2026 to put every part of caring for a
+            dog into one place — one platform, verified listings, honest
+            reviews, and providers we've actually walked through the door
+            of. Built proudly in Bengaluru, for the neighbourhoods we know
+            best: Indiranagar, Koramangala, HSR Layout, Whitefield,
+            Jayanagar, and every street in between where a tail's still
+            wagging.
           </p>
         </div>
       </section>
