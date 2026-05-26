@@ -7,6 +7,7 @@ import { useMutation } from '@tanstack/react-query';
 import { login } from '@/api/auth';
 import { useAuth } from '@/hooks/useAuth';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { AuthTransitionOverlay } from '@/components/AuthTransitionOverlay';
 import { toast } from '@/store/toastStore';
 
 const loginSchema = z.object({
