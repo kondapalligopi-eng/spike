@@ -26,9 +26,6 @@ const FOOTER_COLUMNS: { heading: string; links: { label: string; href: string; e
       { label: 'Give us your Feedback', href: '/feedback' },
     ],
   },
-  // Intentionally blank third column — preserves the 4-column footer
-  // grid (logo / col1 / col2 / col3) while leaving room to fill later.
-  { heading: '', links: [] },
 ];
 
 function SocialIcon({ label, children, href = '#' }: { label: string; children: React.ReactNode; href?: string }) {
