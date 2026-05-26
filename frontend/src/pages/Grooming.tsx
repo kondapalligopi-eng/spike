@@ -149,16 +149,18 @@ export function Grooming() {
     setActiveCity(null);
   };
 
-  const visibleSalons = allSalons.filter((s) => {
-    if (
-      appliedQuery &&
-      !`${s.name} ${s.area}`.toLowerCase().includes(appliedQuery.toLowerCase())
-    )
-      return false;
-    if (locationFilter && s.area !== locationFilter) return false;
-    if (activeCity && s.area !== activeCity) return false;
-    return true;
-  });
+  const visibleSalons = allSalons
+    .filter((s) => {
+      if (
+        appliedQuery &&
+        !`${s.name} ${s.area}`.toLowerCase().includes(appliedQuery.toLowerCase())
+      )
+        return false;
+      if (locationFilter && s.area !== locationFilter) return false;
+      if (activeCity && s.area !== activeCity) return false;
+      return true;
+    })
+    .sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
 
   const [registerOpen, setRegisterOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
