@@ -134,7 +134,9 @@ export function Swimming() {
   );
   const POOL_LOCALITIES = useMemo(
     () =>
-      Array.from(new Set(allSpots.map((s) => s.locality.split(',')[0].trim()))).sort(),
+      Array.from(new Set(allSpots.map((s) => s.locality.split(',')[0].trim()))).sort(
+        (a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }),
+      ),
     [allSpots],
   );
 
