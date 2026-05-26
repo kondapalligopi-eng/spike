@@ -177,7 +177,7 @@ export function Home() {
               {
                 emoji: '🐾',
                 title: 'All in one place',
-                body: 'Vets, parks, swimming, grooming, supplies, and adoptions — no more juggling ten apps.',
+                body: 'Vets, parks, swimming, grooming, and supplies — no more juggling ten apps.',
               },
               {
                 emoji: '⭐',

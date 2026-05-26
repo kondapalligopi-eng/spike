@@ -134,7 +134,9 @@ export function Swimming() {
   );
   const POOL_LOCALITIES = useMemo(
     () =>
-      Array.from(new Set(allSpots.map((s) => s.locality.split(',')[0].trim()))).sort(),
+      Array.from(new Set(allSpots.map((s) => s.locality.split(',')[0].trim()))).sort(
+        (a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }),
+      ),
     [allSpots],
   );
 
@@ -214,17 +216,19 @@ export function Swimming() {
     }
   };
 
-  const visibleSpots = allSpots.filter((s) => {
-    if (
-      appliedQuery &&
-      !`${s.name} ${s.locality}`.toLowerCase().includes(appliedQuery.toLowerCase())
-    )
-      return false;
-    const area = s.locality.split(',')[0].trim();
-    if (locationFilter && area !== locationFilter) return false;
-    if (activeCity && area !== activeCity) return false;
-    return true;
-  });
+  const visibleSpots = allSpots
+    .filter((s) => {
+      if (
+        appliedQuery &&
+        !`${s.name} ${s.locality}`.toLowerCase().includes(appliedQuery.toLowerCase())
+      )
+        return false;
+      const area = s.locality.split(',')[0].trim();
+      if (locationFilter && area !== locationFilter) return false;
+      if (activeCity && area !== activeCity) return false;
+      return true;
+    })
+    .sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
 
   const PAGE_SIZE = 8;
   const [currentPage, setCurrentPage] = useState(1);

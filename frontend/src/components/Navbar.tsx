@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { AuthTransitionOverlay } from './AuthTransitionOverlay';
 
 type DrawerItem = { label: string; to: string };
 
@@ -102,11 +103,23 @@ export function Navbar() {
     navigate(to);
   };
 
+  const [signingOut, setSigningOut] = useState(false);
+
   const handleLogout = () => {
-    logout();
+    // Logout is essentially instant (just clears localStorage), but without
+    // any visual cue users tap "Sign Out" twice or wonder if it worked.
+    // Hold the overlay briefly so the spinner registers before the route
+    // change, then navigate home.
+    setSigningOut(true);
     setUserMenuOpen(false);
     setDrawerOpen(false);
-    navigate('/');
+    window.setTimeout(() => {
+      logout();
+      navigate('/');
+      // Give the home route a beat to render before clearing the overlay,
+      // otherwise the user sees a flash of the authenticated navbar state.
+      window.setTimeout(() => setSigningOut(false), 200);
+    }, 400);
   };
 
   const closeDrawer = () => setDrawerOpen(false);
@@ -120,6 +133,7 @@ export function Navbar() {
 
   return (
     <>
+      {signingOut && <AuthTransitionOverlay message="Signing you out…" />}
       <header className="sticky top-0 z-50 bg-white border-b border-warm-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Top row: hamburger + centered logo + right icons */}

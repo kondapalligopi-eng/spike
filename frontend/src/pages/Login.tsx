@@ -7,6 +7,7 @@ import { useMutation } from '@tanstack/react-query';
 import { login } from '@/api/auth';
 import { useAuth } from '@/hooks/useAuth';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { AuthTransitionOverlay } from '@/components/AuthTransitionOverlay';
 import { toast } from '@/store/toastStore';
 
 const loginSchema = z.object({
@@ -54,13 +55,14 @@ export function Login() {
 
   return (
     <div className="bg-warm-50 flex items-center justify-center px-4 py-12">
+      {mutation.isPending && <AuthTransitionOverlay message="Signing you in…" />}
       <div className="w-full max-w-md">
         {/* Card */}
         <div className="bg-white rounded-3xl shadow-xl border border-warm-200 p-8">
           {/* Logo */}
           <div className="text-center mb-8">
-            <Link to="/" className="inline-flex items-center gap-2 text-2xl font-bold text-warm-900">
-              <img src="/logo.png?v=2" alt="HiSpike" className="h-8 w-8 object-contain" /> HiSpike
+            <Link to="/" aria-label="HiSpike — Home" className="inline-flex items-center justify-center hover:opacity-80 transition-opacity">
+              <img src="/logo.png?v=2" alt="HiSpike" className="h-14 w-14 object-contain" />
             </Link>
             <h1 className="text-3xl font-extrabold text-warm-900 mt-4 mb-2">Welcome back</h1>
             <p className="text-warm-500">Sign in to your account</p>
