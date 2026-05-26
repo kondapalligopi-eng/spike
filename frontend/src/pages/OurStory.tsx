@@ -30,17 +30,24 @@ export function OurStory() {
           <div className="relative justify-self-center md:justify-self-end shrink-0">
             <div
               aria-hidden="true"
-              className="absolute -inset-2 bg-accent-400/30 rounded-3xl rotate-3 blur-sm"
+              className="absolute -inset-3 bg-gradient-to-br from-accent-400/40 via-accent-300/30 to-transparent rounded-[2rem] rotate-2 blur-lg"
             />
-            <img
-              src="/spike/spike.jpg"
-              alt="Spike — a black Labrador resting in a Bengaluru park"
-              loading="lazy"
-              className="relative w-56 sm:w-64 md:w-72 lg:w-80 h-auto aspect-[4/3] object-cover rounded-3xl shadow-2xl ring-4 ring-white/20"
-            />
-            <span className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-accent-400 text-warm-900 text-[10px] font-extrabold tracking-[0.25em] uppercase px-3 py-1 rounded-full shadow-md">
-              Spike · est. our boy
-            </span>
+            <div className="relative w-56 sm:w-64 md:w-72 lg:w-80 rounded-3xl overflow-hidden shadow-2xl ring-1 ring-white/20">
+              <img
+                src="/spike/spike.jpg"
+                alt="Spike — a black Labrador resting in a Bengaluru park"
+                loading="lazy"
+                className="block w-full h-auto aspect-[4/3] object-cover"
+              />
+              {/* Subtle gradient so the name reads cleanly off the photo. */}
+              <div
+                aria-hidden="true"
+                className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/55 to-transparent"
+              />
+              <span className="absolute bottom-3 left-4 text-white font-extrabold text-xl tracking-wide drop-shadow-md">
+                Spike
+              </span>
+            </div>
           </div>
         </div>
       </section>
