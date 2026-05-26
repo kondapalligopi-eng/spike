@@ -55,6 +55,7 @@ export function Login() {
 
   return (
     <div className="bg-warm-50 flex items-center justify-center px-4 py-12">
+      {mutation.isPending && <AuthTransitionOverlay message="Signing you in…" />}
       <div className="w-full max-w-md">
         {/* Card */}
         <div className="bg-white rounded-3xl shadow-xl border border-warm-200 p-8">
