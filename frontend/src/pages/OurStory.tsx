@@ -28,25 +28,40 @@ export function OurStory() {
             </p>
           </div>
           <div className="relative justify-self-center md:justify-self-end shrink-0">
+            {/* Layered background glows — a soft accent halo behind a brighter
+                rotating square, so the photo pops off the dark hero. */}
             <div
               aria-hidden="true"
-              className="absolute -inset-3 bg-gradient-to-br from-accent-400/40 via-accent-300/30 to-transparent rounded-[2rem] rotate-2 blur-lg"
+              className="absolute -inset-8 bg-accent-400/50 rounded-[2.5rem] blur-2xl"
             />
-            <div className="relative w-56 sm:w-64 md:w-72 lg:w-80 rounded-3xl overflow-hidden shadow-2xl ring-1 ring-white/20">
+            <div
+              aria-hidden="true"
+              className="absolute -inset-4 bg-gradient-to-br from-accent-400 via-accent-300 to-primary-300 rounded-[2rem] rotate-3 shadow-2xl"
+            />
+
+            <div className="relative w-56 sm:w-64 md:w-72 lg:w-80 rounded-3xl overflow-hidden shadow-2xl ring-2 ring-white/40">
               <img
                 src="/spike/spike.jpg"
                 alt="Spike — a black Labrador resting in a Bengaluru park"
                 loading="lazy"
                 className="block w-full h-auto aspect-[4/3] object-cover"
               />
-              {/* Subtle gradient so the name reads cleanly off the photo. */}
+
+              {/* Gradient + name plate — the yellow underline + glowing
+                  background make SPIKE the focal point of the card. */}
               <div
                 aria-hidden="true"
-                className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/55 to-transparent"
+                className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/75 via-black/40 to-transparent"
               />
-              <span className="absolute bottom-3 left-4 text-white font-extrabold text-xl tracking-wide drop-shadow-md">
-                Spike
-              </span>
+              <div className="absolute bottom-3 left-4">
+                <span className="relative inline-block text-white font-extrabold text-2xl sm:text-3xl tracking-wider drop-shadow-[0_2px_6px_rgba(0,0,0,0.55)]">
+                  <span
+                    aria-hidden="true"
+                    className="absolute inset-x-0 bottom-1 h-2.5 bg-accent-400/85 rounded-sm -z-0"
+                  />
+                  <span className="relative z-10">SPIKE</span>
+                </span>
+              </div>
             </div>
           </div>
         </div>
