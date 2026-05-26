@@ -28,44 +28,33 @@ export function OurStory() {
             </p>
           </div>
           <div className="relative justify-self-center md:justify-self-end shrink-0">
-            {/* Layered background glows — a soft accent halo behind a brighter
-                rotating square, so the photo pops off the dark hero. */}
+            {/* Soft warm halo behind the polaroid so it lifts off the dark hero. */}
             <div
               aria-hidden="true"
-              className="absolute -inset-8 bg-accent-400/50 rounded-[2.5rem] blur-2xl"
-            />
-            <div
-              aria-hidden="true"
-              className="absolute -inset-4 bg-gradient-to-br from-accent-400 via-accent-300 to-primary-300 rounded-[2rem] rotate-3 shadow-2xl"
+              className="absolute -inset-8 bg-accent-400/40 rounded-[2.5rem] blur-2xl"
             />
 
-            <div className="relative w-56 sm:w-64 md:w-72 lg:w-80 rounded-3xl overflow-hidden shadow-2xl ring-2 ring-white/40">
+            {/* Polaroid card — thick white frame, narrower top/sides, taller
+                bottom margin where the signature lives. Slight tilt for the
+                photographed-and-pinned feel. */}
+            <div className="relative -rotate-2 hover:rotate-0 transition-transform duration-300 bg-white pt-3 px-3 pb-12 sm:pt-4 sm:px-4 sm:pb-14 rounded-md shadow-2xl ring-1 ring-warm-200">
               <img
                 src="/spike/spike.jpg"
                 alt="Spike — a black Labrador resting in a Bengaluru park"
                 loading="lazy"
-                className="block w-full h-auto aspect-[4/3] object-cover"
+                className="block w-56 sm:w-64 md:w-72 lg:w-80 h-auto aspect-[4/3] object-cover"
               />
-
-              {/* Gradient + name plate — the yellow underline + glowing
-                  background make SPIKE the focal point of the card. */}
-              <div
-                aria-hidden="true"
-                className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/75 via-black/40 to-transparent"
-              />
-              <div className="absolute bottom-3 left-4">
-                <span className="relative inline-block">
-                  {/* Full yellow tag behind the letters — turns SPIKE into
-                      a high-contrast label that pops off the dark photo. */}
-                  <span
-                    aria-hidden="true"
-                    className="absolute -inset-x-2 inset-y-0 bg-accent-400 rounded-md shadow-md"
-                  />
-                  <span className="relative z-10 px-1 text-warm-900 font-extrabold text-2xl sm:text-3xl tracking-wider">
-                    SPIKE
-                  </span>
-                </span>
-              </div>
+              {/* Handwritten signature in the bottom margin of the polaroid. */}
+              <p
+                className="absolute bottom-3 left-0 right-0 text-center text-warm-900 leading-none"
+                style={{
+                  fontFamily: "'Caveat', cursive",
+                  fontSize: 'clamp(2.25rem, 5vw, 2.75rem)',
+                  fontWeight: 700,
+                }}
+              >
+                Spike <span aria-hidden="true" className="text-accent-500">🐾</span>
+              </p>
             </div>
           </div>
         </div>
