@@ -102,11 +102,23 @@ export function Navbar() {
     navigate(to);
   };
 
+  const [signingOut, setSigningOut] = useState(false);
+
   const handleLogout = () => {
-    logout();
+    // Logout is essentially instant (just clears localStorage), but without
+    // any visual cue users tap "Sign Out" twice or wonder if it worked.
+    // Hold the overlay briefly so the spinner registers before the route
+    // change, then navigate home.
+    setSigningOut(true);
     setUserMenuOpen(false);
     setDrawerOpen(false);
-    navigate('/');
+    window.setTimeout(() => {
+      logout();
+      navigate('/');
+      // Give the home route a beat to render before clearing the overlay,
+      // otherwise the user sees a flash of the authenticated navbar state.
+      window.setTimeout(() => setSigningOut(false), 200);
+    }, 400);
   };
 
   const closeDrawer = () => setDrawerOpen(false);
