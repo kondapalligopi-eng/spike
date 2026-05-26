@@ -125,6 +125,38 @@ export function Layout() {
                 </ul>
               </div>
             ))}
+
+            {/* Spike polaroid in the 4th footer column — same handwritten
+                tag as the About page hero, just smaller. Links to /about so
+                "who is Spike?" is one click away from anywhere on the site. */}
+            <div className="flex items-start justify-center md:justify-end">
+              <a
+                href="/about"
+                aria-label="Meet Spike — read our story"
+                className="group relative -rotate-2 hover:rotate-0 transition-transform duration-300 bg-white pt-2 px-2 pb-9 rounded-md ring-1 ring-warm-200"
+                style={{
+                  boxShadow:
+                    '0 14px 30px -10px rgba(0,0,0,0.30), 0 6px 14px -6px rgba(0,0,0,0.20)',
+                }}
+              >
+                <img
+                  src="/spike/spike.jpg"
+                  alt="Spike — a black Labrador"
+                  loading="lazy"
+                  className="block w-32 h-auto aspect-[4/3] object-cover"
+                />
+                <p
+                  className="absolute bottom-1.5 left-0 right-0 text-center text-warm-900 leading-none"
+                  style={{
+                    fontFamily: "'Caveat', cursive",
+                    fontSize: '1.4rem',
+                    fontWeight: 700,
+                  }}
+                >
+                  Spike <span aria-hidden="true" className="text-accent-500">🐾</span>
+                </p>
+              </a>
+            </div>
           </div>
 
           {/* Bottom strip */}
