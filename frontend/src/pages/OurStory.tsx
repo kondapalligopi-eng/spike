@@ -42,8 +42,64 @@ export function OurStory() {
             specifically for Bengaluru — Indiranagar, Koramangala, HSR
             Layout, Whitefield, Jayanagar, and the neighbourhoods in between.
           </p>
+        </div>
+      </section>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4">
+      {/* Meet Spike — the dog the platform is named after. */}
+      <section className="bg-white">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-14 sm:py-16">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-12 items-center">
+            <div className="relative">
+              <div className="absolute -inset-3 bg-gradient-to-br from-accent-200 to-primary-200 rounded-3xl rotate-2 opacity-70" aria-hidden="true" />
+              <img
+                src="/spike/spike.jpg"
+                alt="Spike — a black Labrador resting in a Bengaluru park"
+                loading="lazy"
+                className="relative rounded-3xl shadow-lg w-full h-auto object-cover aspect-[4/3]"
+              />
+              <span className="absolute -bottom-3 -right-3 bg-warm-900 text-white text-[10px] font-bold tracking-[0.25em] uppercase px-3 py-1.5 rounded-full shadow-md">
+                Our boy
+              </span>
+            </div>
+
+            <div>
+              <p className="text-[11px] font-semibold tracking-[0.3em] text-accent-600 uppercase mb-2">
+                Meet Spike
+              </p>
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-warm-900 leading-tight mb-3">
+                The dog who started it all
+              </h2>
+              <div className="h-0.5 w-12 bg-accent-400 rounded-full mb-5" />
+              <div className="space-y-4 text-warm-800 leading-relaxed">
+                <p>
+                  This is <span className="font-semibold">Spike</span> — a
+                  black Lab who's spent most of his life shuttling between
+                  Whitefield's dog parks, Indiranagar's vets, and any patch
+                  of grass with a breeze. He's the reason this platform
+                  exists, and the <span className="font-bold text-primary-700">H</span> and{' '}
+                  <span className="font-bold text-accent-600">S</span> in
+                  the HiSpike logo.
+                </p>
+                <p>
+                  Caring for Spike meant juggling clinic phone numbers,
+                  scattered Google reviews, last-minute grooming
+                  appointments, and one truly bad swimming lesson. We built
+                  HiSpike so the next dog parent in Bengaluru doesn't have
+                  to do the same scavenger hunt.
+                </p>
+                <p className="text-sm text-warm-600 italic">
+                  Spike's job description today: chief taste-tester of every
+                  vet, park, and salon we add to the directory.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-primary-50">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-6 text-warm-800 leading-relaxed">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {[
               { stat: '5', label: 'Services in one place' },
               { stat: '40+', label: 'Bengaluru neighbourhoods' },
