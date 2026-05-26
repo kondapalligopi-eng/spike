@@ -54,12 +54,16 @@ export function OurStory() {
                 className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/75 via-black/40 to-transparent"
               />
               <div className="absolute bottom-3 left-4">
-                <span className="relative inline-block text-white font-extrabold text-2xl sm:text-3xl tracking-wider drop-shadow-[0_2px_6px_rgba(0,0,0,0.55)]">
+                <span className="relative inline-block">
+                  {/* Full yellow tag behind the letters — turns SPIKE into
+                      a high-contrast label that pops off the dark photo. */}
                   <span
                     aria-hidden="true"
-                    className="absolute inset-x-0 bottom-1 h-2.5 bg-accent-400/85 rounded-sm -z-0"
+                    className="absolute -inset-x-2 inset-y-0 bg-accent-400 rounded-md shadow-md"
                   />
-                  <span className="relative z-10">SPIKE</span>
+                  <span className="relative z-10 px-1 text-warm-900 font-extrabold text-2xl sm:text-3xl tracking-wider">
+                    SPIKE
+                  </span>
                 </span>
               </div>
             </div>
