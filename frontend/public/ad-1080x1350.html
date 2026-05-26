@@ -173,8 +173,11 @@
       btn.disabled = true;
       try {
         if (document.fonts && document.fonts.ready) await document.fonts.ready;
+        const w = stage.offsetWidth;
+        const h = stage.offsetHeight;
         const canvas = await html2canvas(stage, {
-          backgroundColor: null, scale: 1, useCORS: true, allowTaint: false,
+          backgroundColor: '#1e3a8a', scale: 1, useCORS: true, allowTaint: false,
+          width: w, height: h, windowWidth: w, windowHeight: h,
         });
         const link = document.createElement('a');
         link.download = 'hispike-ad-1080x1350.png';
