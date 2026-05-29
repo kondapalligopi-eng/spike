@@ -75,7 +75,7 @@ const BANGALORE_NEIGHBOURHOODS = [
 ];
 
 type ListingKind = 'hospital' | 'park' | 'swimming' | 'grooming' | 'food';
-type ListingAction = 'add' | 'edit' | 'remove';
+type ListingAction = 'add' | 'edit' | 'remove' | 'import';
 type ListingCard = { label: string; emoji: string; tint: string; kind: ListingKind; action: ListingAction };
 
 const ADD_LISTING_CARDS: ListingCard[] = [
