@@ -215,7 +215,7 @@ export function Swimming() {
       );
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       setRegisterOpen(false);
-      setForm({ name: '', locality: '', address: '', poolType: '', hours: '', cost: '', phone: '', website: '' });
+      setForm({ name: '', locality: '', address: '', poolType: '', hours: '', cost: '', phone: '', email: '', website: '' });
       toast.success('Thanks! Your swim school submission has been received.');
     } catch {
       toast.error('Could not submit right now. Please try again in a moment.');
