@@ -24,6 +24,8 @@ class GroomingSalon(UUIDBase):
     )
     hero_emoji: Mapped[str] = mapped_column(String(20), nullable=False, default="✂️")
     hours: Mapped[str | None] = mapped_column(String(120), nullable=True)
+    email: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    website: Mapped[str | None] = mapped_column(String(500), nullable=True)
 
     def __repr__(self) -> str:
         return f"<GroomingSalon id={self.id} name={self.name}>"

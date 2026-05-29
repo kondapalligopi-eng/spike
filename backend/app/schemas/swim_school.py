@@ -15,6 +15,9 @@ class SwimSchoolBase(BaseModel):
     hours: str | None = Field(None, max_length=255)
     cost: str | None = Field(None, max_length=255)
     pool_type: str | None = Field(None, max_length=255)
+    phone: str | None = Field(None, max_length=40)
+    email: str | None = Field(None, max_length=255)
+    website: str | None = Field(None, max_length=500)
     highlights: list[str] = Field(default_factory=list)
 
 

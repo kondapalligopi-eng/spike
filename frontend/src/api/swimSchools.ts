@@ -14,6 +14,9 @@ export type SwimSchoolRead = {
   hours: string | null;
   cost: string | null;
   pool_type: string | null;
+  phone: string | null;
+  email: string | null;
+  website: string | null;
   highlights: string[];
   created_at: string;
   updated_at: string;
@@ -28,10 +31,13 @@ export type SwimSchoolCreate = {
   hours?: string;
   cost?: string;
   pool_type?: string;
+  phone?: string;
+  email?: string;
+  website?: string;
   highlights?: string[];
 };
 
-const DEFAULTS: Omit<SwimSchoolRead, 'id' | 'created_at' | 'updated_at'>[] = [
+const DEFAULTS: Omit<SwimSchoolRead, 'id' | 'created_at' | 'updated_at' | 'phone' | 'email' | 'website'>[] = [
   {
     name: 'Indiranagar Aquatic Pet Centre',
     locality: 'Indiranagar, Bengaluru',
@@ -142,7 +148,7 @@ function seedMockStoreIfEmpty(): void {
   const now = new Date().toISOString();
   const seeded = DEFAULTS.map((s, i) => {
     const ts = new Date(Date.now() - (DEFAULTS.length - i) * 1000).toISOString();
-    return { ...s, id: makeId(), created_at: ts, updated_at: now } satisfies SwimSchoolRead;
+    return { ...s, phone: null, email: null, website: null, id: makeId(), created_at: ts, updated_at: now } satisfies SwimSchoolRead;
   });
   try {
     localStorage.setItem(MOCK_KEY, JSON.stringify(seeded));
@@ -199,6 +205,9 @@ export async function createSwimSchool(data: SwimSchoolCreate): Promise<SwimScho
       hours: data.hours?.trim() || null,
       cost: data.cost?.trim() || null,
       pool_type: data.pool_type?.trim() || null,
+      phone: data.phone?.trim() || null,
+      email: data.email?.trim() || null,
+      website: data.website?.trim() || null,
       highlights: (data.highlights ?? []).map((h) => h.trim()).filter(Boolean),
       created_at: now,
       updated_at: now,
@@ -229,6 +238,9 @@ export async function updateSwimSchool(id: string, data: SwimSchoolCreate): Prom
       hours: data.hours?.trim() || null,
       cost: data.cost?.trim() || null,
       pool_type: data.pool_type?.trim() || null,
+      phone: data.phone?.trim() || null,
+      email: data.email?.trim() || null,
+      website: data.website?.trim() || null,
       highlights: (data.highlights ?? []).map((h) => h.trim()).filter(Boolean),
       updated_at: now,
     };

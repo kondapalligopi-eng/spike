@@ -11,6 +11,8 @@ type Hospital = {
   rating: string;
   phone?: string;
   website?: string;
+  hours?: string;
+  email?: string;
 };
 
 // All hospitals now live in the database (or the localStorage mock store
@@ -80,6 +82,8 @@ function normaliseApiHospital(h: HospitalRead): Hospital {
     rating: h.rating ?? '',
     phone: h.phone ?? undefined,
     website: h.website ?? undefined,
+    hours: h.hours ?? undefined,
+    email: h.email ?? undefined,
   };
 }
 
@@ -529,13 +533,32 @@ export function Hospital() {
                   {h.phone && (
                     <a
                       href={`tel:${h.phone}`}
-                      className="inline-flex items-center gap-1.5 mb-3 text-sm font-semibold text-primary-700 hover:text-primary-800 hover:underline transition-colors"
+                      className="inline-flex items-center gap-1.5 mb-2 text-sm font-semibold text-primary-700 hover:text-primary-800 hover:underline transition-colors"
                     >
                       <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M6.6 10.8a15.1 15.1 0 006.6 6.6l2.2-2.2a1 1 0 011-.25 11.4 11.4 0 003.6.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.45.57 3.6a1 1 0 01-.25 1l-2.22 2.2z" />
                       </svg>
                       {formatPhone(h.phone)}
                     </a>
+                  )}
+                  {h.email && (
+                    <a
+                      href={`mailto:${h.email}`}
+                      className="inline-flex items-center gap-1.5 mb-2 text-sm font-semibold text-primary-700 hover:text-primary-800 hover:underline transition-colors break-all"
+                    >
+                      <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      </svg>
+                      {h.email}
+                    </a>
+                  )}
+                  {h.hours && (
+                    <p className="inline-flex items-center gap-1.5 mb-2 text-sm text-warm-600">
+                      <svg className="w-4 h-4 shrink-0 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      {h.hours}
+                    </p>
                   )}
                   <p className="text-sm text-warm-600 mb-4">{h.specialties}</p>
                   <div className="mt-auto flex gap-2">

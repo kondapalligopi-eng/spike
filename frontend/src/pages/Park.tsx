@@ -31,6 +31,7 @@ type ParkSpot = {
   offLeash: string;
   features: string;
   phone: string;
+  email: string;
   website: string;
   highlights: string[];
 };
@@ -54,6 +55,7 @@ function apiToSpot(p: ParkRead): ParkSpot {
     offLeash: p.off_leash ?? '',
     features: p.features ?? '',
     phone: p.phone ?? '',
+    email: p.email ?? '',
     website: p.website ?? '',
     highlights: p.highlights ?? [],
   };
@@ -281,6 +283,7 @@ export function Park() {
       spot.offLeash && { icon: '🐕', label: 'Off-Leash', value: spot.offLeash, link: false as const },
       spot.features && { icon: '🌳', label: 'Features', value: spot.features, link: false as const },
       spot.phone && { icon: '📞', label: 'Phone', value: spot.phone, link: false as const },
+      spot.email && { icon: '✉️', label: 'Email', value: spot.email, link: false as const },
       spot.website && { icon: '🌐', label: 'Website', value: spot.website, link: false as const },
     ].filter(Boolean) as { icon: string; label: string; value: string; link: boolean }[];
 

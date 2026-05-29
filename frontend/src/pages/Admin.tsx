@@ -121,6 +121,8 @@ function AddHospitalModal({ onClose, existing }: { onClose: () => void; existing
           specialties: existing.specialties ?? '',
           rating: existing.rating ?? '',
           website: existing.website ?? '',
+          hours: existing.hours ?? '',
+          email: existing.email ?? '',
         }
       : {
           name: '',
@@ -130,6 +132,8 @@ function AddHospitalModal({ onClose, existing }: { onClose: () => void; existing
           specialties: '',
           rating: '',
           website: '',
+          hours: '',
+          email: '',
         }
   );
 
@@ -169,6 +173,8 @@ function AddHospitalModal({ onClose, existing }: { onClose: () => void; existing
       specialties: form.specialties?.trim() || undefined,
       rating: form.rating?.trim() || undefined,
       website: form.website?.trim() || undefined,
+      hours: form.hours?.trim() || undefined,
+      email: form.email?.trim() || undefined,
     });
   };
 
@@ -282,6 +288,29 @@ function AddHospitalModal({ onClose, existing }: { onClose: () => void; existing
                   value={form.rating ?? ''}
                   onChange={(e) => setForm({ ...form, rating: e.target.value })}
                   placeholder="e.g. 4.7"
+                  className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors"
+                />
+              </label>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <label className="block">
+                <span className="block text-sm font-semibold text-warm-900 mb-1">Open hours</span>
+                <input
+                  type="text"
+                  value={form.hours ?? ''}
+                  onChange={(e) => setForm({ ...form, hours: e.target.value })}
+                  placeholder="e.g. 9 am to 9 pm, daily"
+                  className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors"
+                />
+              </label>
+              <label className="block">
+                <span className="block text-sm font-semibold text-warm-900 mb-1">Email</span>
+                <input
+                  type="email"
+                  value={form.email ?? ''}
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                  placeholder="clinic@example.com"
                   className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors"
                 />
               </label>
@@ -591,13 +620,14 @@ function AddParkModal({ onClose, existing }: { onClose: () => void; existing?: P
           off_leash: existing.off_leash ?? '',
           features: existing.features ?? '',
           phone: existing.phone ?? '',
+          email: existing.email ?? '',
           website: existing.website ?? '',
           highlights: existing.highlights ?? [],
         }
       : {
           name: '', locality: '', rating: 4, image_url: '',
           address: '', hours: '', cost: '', off_leash: '',
-          features: '', phone: '', website: '', highlights: [],
+          features: '', phone: '', email: '', website: '', highlights: [],
         }
   );
   const [highlightsText, setHighlightsText] = useState(
@@ -640,6 +670,7 @@ function AddParkModal({ onClose, existing }: { onClose: () => void; existing?: P
       off_leash: form.off_leash?.trim() || undefined,
       features: form.features?.trim() || undefined,
       phone: form.phone?.trim() || undefined,
+      email: form.email?.trim() || undefined,
       website: form.website?.trim() || undefined,
       highlights,
     });
@@ -699,10 +730,14 @@ function AddParkModal({ onClose, existing }: { onClose: () => void; existing?: P
                 <input type="tel" value={form.phone ?? ''} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="+91 ..." className={inputCls} />
               </label>
               <label className="block">
-                <span className="block text-sm font-semibold text-warm-900 mb-1">Website</span>
-                <input type="url" value={form.website ?? ''} onChange={(e) => setForm({ ...form, website: e.target.value })} placeholder="https://..." className={inputCls} />
+                <span className="block text-sm font-semibold text-warm-900 mb-1">Email</span>
+                <input type="email" value={form.email ?? ''} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="park@example.com" className={inputCls} />
               </label>
             </div>
+            <label className="block">
+              <span className="block text-sm font-semibold text-warm-900 mb-1">Website</span>
+              <input type="url" value={form.website ?? ''} onChange={(e) => setForm({ ...form, website: e.target.value })} placeholder="https://..." className={inputCls} />
+            </label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <label className="block">
                 <span className="block text-sm font-semibold text-warm-900 mb-1">Rating (1–5)</span>
@@ -742,11 +777,14 @@ function AddSwimSchoolModal({ onClose, existing }: { onClose: () => void; existi
           hours: existing.hours ?? '',
           cost: existing.cost ?? '',
           pool_type: existing.pool_type ?? '',
+          phone: existing.phone ?? '',
+          email: existing.email ?? '',
+          website: existing.website ?? '',
           highlights: existing.highlights ?? [],
         }
       : {
           name: '', locality: '', rating: 4, image_url: '', address: '',
-          hours: '', cost: '', pool_type: '', highlights: [],
+          hours: '', cost: '', pool_type: '', phone: '', email: '', website: '', highlights: [],
         }
   );
   const [highlightsText, setHighlightsText] = useState(
@@ -790,6 +828,9 @@ function AddSwimSchoolModal({ onClose, existing }: { onClose: () => void; existi
       hours: form.hours?.trim() || undefined,
       cost: form.cost?.trim() || undefined,
       pool_type: form.pool_type?.trim() || undefined,
+      phone: form.phone?.trim() || undefined,
+      email: form.email?.trim() || undefined,
+      website: form.website?.trim() || undefined,
       highlights,
     });
   };
@@ -846,6 +887,20 @@ function AddSwimSchoolModal({ onClose, existing }: { onClose: () => void; existi
               <span className="block text-sm font-semibold text-warm-900 mb-1">Pool type</span>
               <input type="text" value={form.pool_type ?? ''} onChange={(e) => setForm({ ...form, pool_type: e.target.value })} placeholder="e.g. Heated indoor pool" className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors" />
             </label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <label className="block">
+                <span className="block text-sm font-semibold text-warm-900 mb-1">Phone</span>
+                <input type="tel" value={form.phone ?? ''} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="+91 ..." className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors" />
+              </label>
+              <label className="block">
+                <span className="block text-sm font-semibold text-warm-900 mb-1">Email</span>
+                <input type="email" value={form.email ?? ''} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="pool@example.com" className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors" />
+              </label>
+            </div>
+            <label className="block">
+              <span className="block text-sm font-semibold text-warm-900 mb-1">Website</span>
+              <input type="url" value={form.website ?? ''} onChange={(e) => setForm({ ...form, website: e.target.value })} placeholder="https://..." className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors" />
+            </label>
             <label className="block">
               <span className="block text-sm font-semibold text-warm-900 mb-1">Highlights</span>
               <textarea rows={4} value={highlightsText} onChange={(e) => setHighlightsText(e.target.value)} placeholder="One per line, e.g. Heated pool" className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors resize-y" />
@@ -878,11 +933,13 @@ function AddGroomingSalonModal({ onClose, existing }: { onClose: () => void; exi
           tint: existing.tint,
           hero_emoji: existing.hero_emoji,
           hours: existing.hours ?? '',
+          email: existing.email ?? '',
+          website: existing.website ?? '',
         }
       : {
           name: '', area: '', city: 'Bengaluru', state: 'KA', address: '', phone: '',
           rating_avg: 4.5, rating_count: 0, tint: 'from-amber-200 to-amber-400', hero_emoji: '✂️',
-          hours: '',
+          hours: '', email: '', website: '',
         }
   );
 
@@ -922,6 +979,8 @@ function AddGroomingSalonModal({ onClose, existing }: { onClose: () => void; exi
       tint: (form.tint || '').trim() || 'from-amber-200 to-amber-400',
       hero_emoji: (form.hero_emoji || '').trim() || '✂️',
       hours: (form.hours || '').trim() || null,
+      email: (form.email || '').trim() || null,
+      website: (form.website || '').trim() || null,
     });
   };
 
@@ -986,6 +1045,16 @@ function AddGroomingSalonModal({ onClose, existing }: { onClose: () => void; exi
               <span className="block text-sm font-semibold text-warm-900 mb-1">Open hours</span>
               <input type="text" value={form.hours ?? ''} onChange={(e) => setForm({ ...form, hours: e.target.value })} placeholder="e.g. 8 am to 9 pm, daily" className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors" />
             </label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <label className="block">
+                <span className="block text-sm font-semibold text-warm-900 mb-1">Email</span>
+                <input type="email" value={form.email ?? ''} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="salon@example.com" className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors" />
+              </label>
+              <label className="block">
+                <span className="block text-sm font-semibold text-warm-900 mb-1">Website</span>
+                <input type="url" value={form.website ?? ''} onChange={(e) => setForm({ ...form, website: e.target.value })} placeholder="https://..." className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors" />
+              </label>
+            </div>
             <div className="pt-2 flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
               <button type="button" onClick={onClose} className="px-5 py-2 rounded-full border-2 border-warm-300 text-warm-700 hover:bg-warm-100 text-sm font-semibold transition-colors">Cancel</button>
               <button type="submit" disabled={mutation.isPending} className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full bg-accent-400 hover:bg-accent-300 disabled:opacity-60 disabled:cursor-not-allowed text-warm-900 text-sm font-bold tracking-[0.15em] uppercase ring-2 ring-accent-300/50 hover:ring-accent-200 transition-all shadow-md">{mutation.isPending ? (existing ? 'Saving…' : 'Adding…') : (existing ? 'Save' : 'Add')}</button>

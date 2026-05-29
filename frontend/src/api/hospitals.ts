@@ -7,7 +7,7 @@ const MOCK_SEEDED_KEY = 'hispike_mock_hospitals_seeded';
 // Default hospitals — kept in sync with backend/scripts/seed_hospitals.py.
 // In mock mode the store is auto-seeded with these on first read so the
 // admin's add/delete experience matches production.
-const DEFAULT_HOSPITALS: Omit<HospitalRead, 'id' | 'created_at' | 'updated_at'>[] = [
+const DEFAULT_HOSPITALS: Omit<HospitalRead, 'id' | 'created_at' | 'updated_at' | 'hours' | 'email'>[] = [
   {
     name: 'SKS Veterinary Hospital',
     locality: 'Indiranagar',
@@ -73,6 +73,8 @@ export type HospitalRead = {
   specialties: string | null;
   rating: string | null;
   website: string | null;
+  hours: string | null;
+  email: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -85,6 +87,8 @@ export type HospitalCreate = {
   specialties?: string;
   rating?: string;
   website?: string;
+  hours?: string;
+  email?: string;
 };
 
 function makeId(): string {
@@ -104,6 +108,8 @@ function seedMockStoreIfEmpty(): void {
     const ts = new Date(Date.now() - (DEFAULT_HOSPITALS.length - i) * 1000).toISOString();
     return {
       ...h,
+      hours: null,
+      email: null,
       id: makeId(),
       created_at: ts,
       updated_at: now,
@@ -166,6 +172,8 @@ export async function createHospital(data: HospitalCreate): Promise<HospitalRead
       specialties: data.specialties?.trim() || null,
       rating: data.rating?.trim() || null,
       website: data.website?.trim() || null,
+      hours: data.hours?.trim() || null,
+      email: data.email?.trim() || null,
       created_at: now,
       updated_at: now,
     };
@@ -194,6 +202,8 @@ export async function updateHospital(id: string, data: HospitalCreate): Promise<
       specialties: data.specialties?.trim() || null,
       rating: data.rating?.trim() || null,
       website: data.website?.trim() || null,
+      hours: data.hours?.trim() || null,
+      email: data.email?.trim() || null,
       updated_at: now,
     };
     store[idx] = updated;
