@@ -828,6 +828,9 @@ function AddSwimSchoolModal({ onClose, existing }: { onClose: () => void; existi
       hours: form.hours?.trim() || undefined,
       cost: form.cost?.trim() || undefined,
       pool_type: form.pool_type?.trim() || undefined,
+      phone: form.phone?.trim() || undefined,
+      email: form.email?.trim() || undefined,
+      website: form.website?.trim() || undefined,
       highlights,
     });
   };
