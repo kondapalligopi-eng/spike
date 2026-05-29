@@ -106,7 +106,7 @@ function seedMockStoreIfEmpty(): void {
   const now = new Date().toISOString();
   const seeded = DEFAULTS.map((s, i) => {
     const ts = new Date(Date.now() - (DEFAULTS.length - i) * 1000).toISOString();
-    return { ...s, id: makeId(), created_at: ts, updated_at: now } satisfies GroomingSalonRead;
+    return { ...s, email: null, website: null, id: makeId(), created_at: ts, updated_at: now } satisfies GroomingSalonRead;
   });
   try {
     localStorage.setItem(MOCK_KEY, JSON.stringify(seeded));
