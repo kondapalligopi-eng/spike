@@ -283,6 +283,7 @@ export function Park() {
       spot.offLeash && { icon: '🐕', label: 'Off-Leash', value: spot.offLeash, link: false as const },
       spot.features && { icon: '🌳', label: 'Features', value: spot.features, link: false as const },
       spot.phone && { icon: '📞', label: 'Phone', value: spot.phone, link: false as const },
+      spot.email && { icon: '✉️', label: 'Email', value: spot.email, link: false as const },
       spot.website && { icon: '🌐', label: 'Website', value: spot.website, link: false as const },
     ].filter(Boolean) as { icon: string; label: string; value: string; link: boolean }[];
 
