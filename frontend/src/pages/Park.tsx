@@ -802,6 +802,17 @@ export function Park() {
                 </div>
 
                 <label className="block">
+                  <span className="block text-sm font-semibold text-warm-900 mb-1">Email</span>
+                  <input
+                    type="email"
+                    value={form.email}
+                    onChange={(e) => setForm({ ...form, email: e.target.value })}
+                    placeholder="park@example.com"
+                    className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors"
+                  />
+                </label>
+
+                <label className="block">
                   <span className="block text-sm font-semibold text-warm-900 mb-1">Website</span>
                   <input
                     type="url"
