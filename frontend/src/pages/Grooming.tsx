@@ -212,6 +212,7 @@ export function Grooming() {
             'Services offered': form.services.trim() || '(not provided)',
             'Open hours': form.hours.trim() || '(not provided)',
             Phone: form.phone.trim() || '(not provided)',
+            Email: form.email.trim() || '(not provided)',
             Website: form.website.trim() || '(not provided)',
           }),
         },
