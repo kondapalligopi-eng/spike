@@ -17,6 +17,8 @@ export type GroomingSalonRead = {
   tint: string;
   hero_emoji: string;
   hours: string | null;
+  email: string | null;
+  website: string | null;
   created_at: string;
   updated_at: string;
 };
