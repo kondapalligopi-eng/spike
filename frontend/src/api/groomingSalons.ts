@@ -202,6 +202,7 @@ export async function updateGroomingSalon(id: string, data: GroomingSalonCreate)
       rating_count: data.rating_count ?? store[idx].rating_count,
       tint: data.tint || store[idx].tint,
       hero_emoji: data.hero_emoji || store[idx].hero_emoji,
+      image_url: data.image_url?.trim() || store[idx].image_url,
       hours: data.hours?.trim() || store[idx].hours,
       email: data.email?.trim() || store[idx].email,
       website: data.website?.trim() || store[idx].website,
