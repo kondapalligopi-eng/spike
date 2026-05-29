@@ -7,6 +7,7 @@ from app.models.swim_school import SwimSchool
 from app.models.grooming_salon import GroomingSalon
 from app.models.pet_food import PetFood
 from app.models.site_setting import SiteSetting
+from app.models.submission import Submission
 
 __all__ = [
     "User",
