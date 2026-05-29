@@ -23,6 +23,7 @@ class GroomingSalon(UUIDBase):
         String(120), nullable=False, default="from-amber-200 to-amber-400"
     )
     hero_emoji: Mapped[str] = mapped_column(String(20), nullable=False, default="✂️")
+    image_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
     hours: Mapped[str | None] = mapped_column(String(120), nullable=True)
     email: Mapped[str | None] = mapped_column(String(255), nullable=True)
     website: Mapped[str | None] = mapped_column(String(500), nullable=True)
