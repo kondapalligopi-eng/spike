@@ -202,6 +202,8 @@ export async function updateHospital(id: string, data: HospitalCreate): Promise<
       specialties: data.specialties?.trim() || null,
       rating: data.rating?.trim() || null,
       website: data.website?.trim() || null,
+      hours: data.hours?.trim() || null,
+      email: data.email?.trim() || null,
       updated_at: now,
     };
     store[idx] = updated;
