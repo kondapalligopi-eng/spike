@@ -219,7 +219,7 @@ export function Grooming() {
       );
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       setRegisterOpen(false);
-      setForm({ name: '', locality: '', address: '', services: '', hours: '', phone: '', website: '' });
+      setForm({ name: '', locality: '', address: '', services: '', hours: '', phone: '', email: '', website: '' });
       toast.success('Thanks! Your salon submission has been received.');
     } catch {
       toast.error('Could not submit right now. Please try again in a moment.');
