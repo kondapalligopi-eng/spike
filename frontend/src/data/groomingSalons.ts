@@ -23,6 +23,7 @@ export type GroomingSalonData = {
   phone: string;
   email?: string;
   website?: string;
+  ratingAvg?: number;
   openTodayUntil: string;
   hours: string;
   mapLabel: string[];
