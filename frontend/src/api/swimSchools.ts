@@ -238,6 +238,9 @@ export async function updateSwimSchool(id: string, data: SwimSchoolCreate): Prom
       hours: data.hours?.trim() || null,
       cost: data.cost?.trim() || null,
       pool_type: data.pool_type?.trim() || null,
+      phone: data.phone?.trim() || null,
+      email: data.email?.trim() || null,
+      website: data.website?.trim() || null,
       highlights: (data.highlights ?? []).map((h) => h.trim()).filter(Boolean),
       updated_at: now,
     };
