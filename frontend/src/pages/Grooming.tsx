@@ -415,8 +415,18 @@ export function Grooming() {
                     className="rounded-md overflow-hidden bg-white shadow-sm hover:shadow-md transition-shadow group cursor-pointer flex flex-col"
                   >
                     <div className={`relative aspect-square bg-gradient-to-br ${salon.tint} flex items-center justify-center`}>
-                      <span className="text-6xl drop-shadow-sm">{salon.heroEmoji}🐕</span>
-                      <div className="absolute left-3 bottom-3 w-12 h-12 rounded-full bg-red-600 text-white flex flex-col items-center justify-center text-center shadow-md border-2 border-white">
+                      {salon.image ? (
+                        <img
+                          src={salon.image}
+                          alt={salon.name}
+                          loading="lazy"
+                          className="absolute inset-0 w-full h-full object-cover"
+                          onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                        />
+                      ) : (
+                        <span className="text-6xl drop-shadow-sm">{salon.heroEmoji}🐕</span>
+                      )}
+                      <div className="absolute left-3 bottom-3 w-12 h-12 rounded-full bg-red-600 text-white flex flex-col items-center justify-center text-center shadow-md border-2 border-white z-10">
                         <span className="text-[7px] font-bold leading-tight tracking-wider">GROOM</span>
                         <span className="text-base leading-none my-0.5">✂️</span>
                         <span className="text-[7px] font-bold leading-tight tracking-wider">SALON</span>
