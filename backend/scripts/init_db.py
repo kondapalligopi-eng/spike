@@ -54,6 +54,7 @@ SCHEMA_PATCHES: list[str] = [
     "ALTER TABLE swim_schools ADD COLUMN IF NOT EXISTS website VARCHAR(500)",
     "ALTER TABLE grooming_salons ADD COLUMN IF NOT EXISTS email VARCHAR(255)",
     "ALTER TABLE grooming_salons ADD COLUMN IF NOT EXISTS website VARCHAR(500)",
+    "ALTER TABLE grooming_salons ADD COLUMN IF NOT EXISTS image_url VARCHAR(500)",
 ]
 
 
