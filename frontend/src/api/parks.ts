@@ -160,6 +160,7 @@ export async function updatePark(id: string, data: ParkCreate): Promise<ParkRead
       off_leash: data.off_leash?.trim() || null,
       features: data.features?.trim() || null,
       phone: data.phone?.trim() || null,
+      email: data.email?.trim() || null,
       website: data.website?.trim() || null,
       highlights: (data.highlights ?? []).map((h) => h.trim()).filter(Boolean),
       updated_at: now,
