@@ -238,38 +238,20 @@ export function Hospital() {
       return;
     }
     setSubmitting(true);
-
-    // No backend endpoint for hospital listings yet — route submissions
-    // through FormSubmit's AJAX endpoint which forwards the form data as
-    // an email to support@hispike.in. First submission triggers a one-time
-    // activation email to that mailbox; once it's clicked, all subsequent
-    // submissions deliver automatically. When a real backend ships,
-    // replace this fetch with the proper POST.
+    // Submissions are stored in the backend and reviewed in /admin
+    // (the old FormSubmit email integration was silently dropped by the
+    // mail host). Admin re-enters approved listings via the Add form.
     try {
-      const response = await fetch(
-        'https://formsubmit.co/ajax/support@hispike.in',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-          },
-          body: JSON.stringify({
-            _subject: `New HiSpike hospital listing: ${form.name.trim()}`,
-            _template: 'table',
-            _captcha: 'false',
-            'Hospital name': form.name.trim(),
-            Locality: form.locality,
-            Address: form.address.trim(),
-            Specialties: form.specialties.trim() || '(not provided)',
-            Phone: form.phone.trim() || '(not provided)',
-            Email: form.email.trim() || '(not provided)',
-            'Open hours': form.hours.trim() || '(not provided)',
-            Website: form.website.trim() || '(not provided)',
-          }),
-        },
-      );
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      await createSubmission('hospital', {
+        'Hospital name': form.name.trim(),
+        Locality: form.locality,
+        Address: form.address.trim(),
+        Specialties: form.specialties.trim() || '(not provided)',
+        Phone: form.phone.trim() || '(not provided)',
+        Email: form.email.trim() || '(not provided)',
+        'Open hours': form.hours.trim() || '(not provided)',
+        Website: form.website.trim() || '(not provided)',
+      });
       setRegisterOpen(false);
       setForm({ name: '', locality: '', address: '', specialties: '', phone: '', email: '', website: '', hours: '' });
       toast.success('Thanks! Your hospital submission has been received.');
