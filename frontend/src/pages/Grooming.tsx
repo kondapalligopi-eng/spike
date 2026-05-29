@@ -173,6 +173,7 @@ export function Grooming() {
     services: '',
     hours: '',
     phone: '',
+    email: '',
     website: '',
   });
 
