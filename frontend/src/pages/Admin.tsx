@@ -1457,6 +1457,59 @@ const IMPORT_CONFIGS: Record<ImportConfig['kind'], ImportConfig> = {
       return created.name;
     },
   },
+  grooming: {
+    kind: 'grooming',
+    title: 'Bulk import grooming salons',
+    eyebrow: 'Salons · Bangalore',
+    templateFile: 'hispike-grooming-salons-template.xlsx',
+    columns: [
+      { header: 'Name', required: true },
+      { header: 'Area', required: true },
+      { header: 'City' },
+      { header: 'Address', required: true },
+      { header: 'Phone', required: true },
+      { header: 'Rating', hint: '0–5, e.g. 4.7' },
+      { header: 'Open hours' },
+      { header: 'Email' },
+      { header: 'Website' },
+      { header: 'Image URL' },
+    ],
+    sample: {
+      Name: 'Pawsh Paws Grooming Studio',
+      Area: 'Indiranagar',
+      City: 'Bengaluru',
+      Address: '100 Feet Rd, HAL 2nd Stage, Indiranagar, Bengaluru 560038',
+      Phone: '+91 80 4123 1816',
+      Rating: '4.7',
+      'Open hours': '8 am to 9 pm, daily',
+      Email: 'hello@pawshpaws.in',
+      Website: 'https://example.com',
+      'Image URL': '/groom/groom1.jpg',
+    },
+    queryKey: ['grooming-salons'],
+    importRow: async (row) => {
+      const ratingRaw = (row['Rating'] ?? '').trim();
+      let ratingAvg = 4.5;
+      if (ratingRaw) {
+        const n = Number(ratingRaw);
+        if (Number.isNaN(n)) throw new Error(`Rating "${ratingRaw}" is not a number`);
+        ratingAvg = Math.max(0, Math.min(5, n));
+      }
+      const created = await createGroomingSalon({
+        name: reqCell(row, 'Name'),
+        area: reqCell(row, 'Area'),
+        city: optCell(row, 'City') ?? 'Bengaluru',
+        address: reqCell(row, 'Address'),
+        phone: reqCell(row, 'Phone'),
+        rating_avg: ratingAvg,
+        hours: optCell(row, 'Open hours'),
+        email: optCell(row, 'Email'),
+        website: optCell(row, 'Website'),
+        image_url: optCell(row, 'Image URL'),
+      });
+      return created.name;
+    },
+  },
 };
 
 type ImportResult = { row: number; ok: boolean; label?: string; error?: string };
