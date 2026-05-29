@@ -11,6 +11,8 @@ type Hospital = {
   rating: string;
   phone?: string;
   website?: string;
+  hours?: string;
+  email?: string;
 };
 
 // All hospitals now live in the database (or the localStorage mock store
