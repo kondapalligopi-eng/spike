@@ -31,6 +31,7 @@ type ParkSpot = {
   offLeash: string;
   features: string;
   phone: string;
+  email: string;
   website: string;
   highlights: string[];
 };
