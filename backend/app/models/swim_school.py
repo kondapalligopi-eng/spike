@@ -19,6 +19,9 @@ class SwimSchool(UUIDBase):
     hours: Mapped[str | None] = mapped_column(String(255), nullable=True)
     cost: Mapped[str | None] = mapped_column(String(255), nullable=True)
     pool_type: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    phone: Mapped[str | None] = mapped_column(String(40), nullable=True)
+    email: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    website: Mapped[str | None] = mapped_column(String(500), nullable=True)
     highlights: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
 
     def __repr__(self) -> str:
