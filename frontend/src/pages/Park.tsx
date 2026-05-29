@@ -202,6 +202,7 @@ export function Park() {
     features: '',
     hours: '',
     phone: '',
+    email: '',
     website: '',
   });
 
