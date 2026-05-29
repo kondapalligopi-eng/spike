@@ -14,6 +14,8 @@ class HospitalBase(BaseModel):
     specialties: str | None = Field(None, max_length=500)
     rating: str | None = Field(None, max_length=8)
     website: str | None = Field(None, max_length=500)
+    hours: str | None = Field(None, max_length=120)
+    email: str | None = Field(None, max_length=255)
 
 
 class HospitalCreate(HospitalBase):
