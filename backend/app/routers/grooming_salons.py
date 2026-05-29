@@ -52,6 +52,7 @@ async def create_grooming_salon(
         rating_count=payload.rating_count,
         tint=payload.tint.strip() or "from-amber-200 to-amber-400",
         hero_emoji=payload.hero_emoji.strip() or "✂️",
+        image_url=(payload.image_url or "").strip() or None,
         hours=(payload.hours or "").strip() or None,
         email=(payload.email or "").strip() or None,
         website=(payload.website or "").strip() or None,
