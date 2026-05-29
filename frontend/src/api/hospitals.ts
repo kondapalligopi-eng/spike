@@ -108,6 +108,8 @@ function seedMockStoreIfEmpty(): void {
     const ts = new Date(Date.now() - (DEFAULT_HOSPITALS.length - i) * 1000).toISOString();
     return {
       ...h,
+      hours: null,
+      email: null,
       id: makeId(),
       created_at: ts,
       updated_at: now,
