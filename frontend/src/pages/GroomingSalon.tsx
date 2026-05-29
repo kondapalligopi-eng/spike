@@ -189,6 +189,38 @@ export function GroomingSalon() {
               </div>
             </div>
 
+            {salon.email && (
+              <div className="flex items-start gap-4 px-5 py-4 border-b border-primary-100">
+                <div className="w-10 h-10 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center text-lg font-bold shrink-0">✉️</div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-semibold tracking-[0.2em] text-primary-700 uppercase mb-0.5">Email</p>
+                  <a
+                    href={`mailto:${salon.email}`}
+                    className="text-sm text-warm-800 hover:text-primary-700 transition-colors break-all"
+                  >
+                    {salon.email}
+                  </a>
+                </div>
+              </div>
+            )}
+
+            {salon.website && (
+              <div className="flex items-start gap-4 px-5 py-4 border-b border-primary-100">
+                <div className="w-10 h-10 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center text-lg font-bold shrink-0">🌐</div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-semibold tracking-[0.2em] text-primary-700 uppercase mb-0.5">Website</p>
+                  <a
+                    href={salon.website}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-warm-800 hover:text-primary-700 hover:underline transition-colors break-all"
+                  >
+                    {salon.website}
+                  </a>
+                </div>
+              </div>
+            )}
+
             <div className="flex items-start gap-4 px-5 py-4 flex-1">
               <div className="w-10 h-10 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center text-lg font-bold shrink-0">🕐</div>
               <div className="flex-1 min-w-0">
