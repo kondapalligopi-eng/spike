@@ -121,6 +121,8 @@ function AddHospitalModal({ onClose, existing }: { onClose: () => void; existing
           specialties: existing.specialties ?? '',
           rating: existing.rating ?? '',
           website: existing.website ?? '',
+          hours: existing.hours ?? '',
+          email: existing.email ?? '',
         }
       : {
           name: '',
@@ -130,6 +132,8 @@ function AddHospitalModal({ onClose, existing }: { onClose: () => void; existing
           specialties: '',
           rating: '',
           website: '',
+          hours: '',
+          email: '',
         }
   );
 
