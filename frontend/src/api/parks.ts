@@ -34,6 +34,7 @@ export type ParkCreate = {
   off_leash?: string;
   features?: string;
   phone?: string;
+  email?: string;
   website?: string;
   highlights?: string[];
 };
