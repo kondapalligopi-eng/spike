@@ -48,6 +48,7 @@ async def create_park(
         off_leash=(payload.off_leash or "").strip() or None,
         features=(payload.features or "").strip() or None,
         phone=(payload.phone or "").strip() or None,
+        email=(payload.email or "").strip() or None,
         website=(payload.website or "").strip() or None,
         highlights=[h.strip() for h in (payload.highlights or []) if h.strip()],
     )
