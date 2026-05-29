@@ -263,13 +263,15 @@ export function Hospital() {
             Address: form.address.trim(),
             Specialties: form.specialties.trim() || '(not provided)',
             Phone: form.phone.trim() || '(not provided)',
+            Email: form.email.trim() || '(not provided)',
+            'Open hours': form.hours.trim() || '(not provided)',
             Website: form.website.trim() || '(not provided)',
           }),
         },
       );
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       setRegisterOpen(false);
-      setForm({ name: '', locality: '', address: '', specialties: '', phone: '', website: '' });
+      setForm({ name: '', locality: '', address: '', specialties: '', phone: '', email: '', website: '', hours: '' });
       toast.success('Thanks! Your hospital submission has been received.');
     } catch {
       toast.error('Could not submit right now. Please try again in a moment.');
