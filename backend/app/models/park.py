@@ -21,6 +21,7 @@ class Park(UUIDBase):
     off_leash: Mapped[str | None] = mapped_column(String(255), nullable=True)
     features: Mapped[str | None] = mapped_column(String(500), nullable=True)
     phone: Mapped[str | None] = mapped_column(String(40), nullable=True)
+    email: Mapped[str | None] = mapped_column(String(255), nullable=True)
     website: Mapped[str | None] = mapped_column(String(500), nullable=True)
     highlights: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
 
