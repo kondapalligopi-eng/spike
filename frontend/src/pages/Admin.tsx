@@ -933,11 +933,13 @@ function AddGroomingSalonModal({ onClose, existing }: { onClose: () => void; exi
           tint: existing.tint,
           hero_emoji: existing.hero_emoji,
           hours: existing.hours ?? '',
+          email: existing.email ?? '',
+          website: existing.website ?? '',
         }
       : {
           name: '', area: '', city: 'Bengaluru', state: 'KA', address: '', phone: '',
           rating_avg: 4.5, rating_count: 0, tint: 'from-amber-200 to-amber-400', hero_emoji: '✂️',
-          hours: '',
+          hours: '', email: '', website: '',
         }
   );
 
