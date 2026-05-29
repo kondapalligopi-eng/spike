@@ -887,6 +887,20 @@ function AddSwimSchoolModal({ onClose, existing }: { onClose: () => void; existi
               <span className="block text-sm font-semibold text-warm-900 mb-1">Pool type</span>
               <input type="text" value={form.pool_type ?? ''} onChange={(e) => setForm({ ...form, pool_type: e.target.value })} placeholder="e.g. Heated indoor pool" className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors" />
             </label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <label className="block">
+                <span className="block text-sm font-semibold text-warm-900 mb-1">Phone</span>
+                <input type="tel" value={form.phone ?? ''} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="+91 ..." className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors" />
+              </label>
+              <label className="block">
+                <span className="block text-sm font-semibold text-warm-900 mb-1">Email</span>
+                <input type="email" value={form.email ?? ''} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="pool@example.com" className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors" />
+              </label>
+            </div>
+            <label className="block">
+              <span className="block text-sm font-semibold text-warm-900 mb-1">Website</span>
+              <input type="url" value={form.website ?? ''} onChange={(e) => setForm({ ...form, website: e.target.value })} placeholder="https://..." className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors" />
+            </label>
             <label className="block">
               <span className="block text-sm font-semibold text-warm-900 mb-1">Highlights</span>
               <textarea rows={4} value={highlightsText} onChange={(e) => setHighlightsText(e.target.value)} placeholder="One per line, e.g. Heated pool" className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors resize-y" />
