@@ -7,7 +7,7 @@ const MOCK_SEEDED_KEY = 'hispike_mock_hospitals_seeded';
 // Default hospitals — kept in sync with backend/scripts/seed_hospitals.py.
 // In mock mode the store is auto-seeded with these on first read so the
 // admin's add/delete experience matches production.
-const DEFAULT_HOSPITALS: Omit<HospitalRead, 'id' | 'created_at' | 'updated_at'>[] = [
+const DEFAULT_HOSPITALS: Omit<HospitalRead, 'id' | 'created_at' | 'updated_at' | 'hours' | 'email'>[] = [
   {
     name: 'SKS Veterinary Hospital',
     locality: 'Indiranagar',
