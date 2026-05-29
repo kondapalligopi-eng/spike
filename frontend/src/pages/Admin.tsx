@@ -932,6 +932,7 @@ function AddGroomingSalonModal({ onClose, existing }: { onClose: () => void; exi
           rating_count: existing.rating_count,
           tint: existing.tint,
           hero_emoji: existing.hero_emoji,
+          image_url: existing.image_url ?? '',
           hours: existing.hours ?? '',
           email: existing.email ?? '',
           website: existing.website ?? '',
@@ -939,7 +940,7 @@ function AddGroomingSalonModal({ onClose, existing }: { onClose: () => void; exi
       : {
           name: '', area: '', city: 'Bengaluru', state: 'KA', address: '', phone: '',
           rating_avg: 4.5, rating_count: 0, tint: 'from-amber-200 to-amber-400', hero_emoji: '✂️',
-          hours: '', email: '', website: '',
+          image_url: '', hours: '', email: '', website: '',
         }
   );
 
@@ -978,6 +979,7 @@ function AddGroomingSalonModal({ onClose, existing }: { onClose: () => void; exi
       rating_count: form.rating_count ?? 0,
       tint: (form.tint || '').trim() || 'from-amber-200 to-amber-400',
       hero_emoji: (form.hero_emoji || '').trim() || '✂️',
+      image_url: (form.image_url || '').trim() || null,
       hours: (form.hours || '').trim() || null,
       email: (form.email || '').trim() || null,
       website: (form.website || '').trim() || null,
@@ -1027,20 +1029,14 @@ function AddGroomingSalonModal({ onClose, existing }: { onClose: () => void; exi
                 <input type="tel" required value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="+91 80 ..." className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors" />
               </label>
               <label className="block">
-                <span className="block text-sm font-semibold text-warm-900 mb-1">Hero emoji</span>
-                <input type="text" value={form.hero_emoji ?? ''} onChange={(e) => setForm({ ...form, hero_emoji: e.target.value })} placeholder="✂️" className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors" />
-              </label>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <label className="block">
                 <span className="block text-sm font-semibold text-warm-900 mb-1">Avg rating (0–5)</span>
                 <input type="number" min={0} max={5} step={0.1} value={form.rating_avg ?? 4.5} onChange={(e) => setForm({ ...form, rating_avg: Number(e.target.value) })} className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors" />
               </label>
-              <label className="block">
-                <span className="block text-sm font-semibold text-warm-900 mb-1">Review count</span>
-                <input type="number" min={0} value={form.rating_count ?? 0} onChange={(e) => setForm({ ...form, rating_count: Number(e.target.value) })} className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors" />
-              </label>
             </div>
+            <label className="block">
+              <span className="block text-sm font-semibold text-warm-900 mb-1">Image URL</span>
+              <input type="text" value={form.image_url ?? ''} onChange={(e) => setForm({ ...form, image_url: e.target.value })} placeholder="/groom/your-salon.jpg" className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors" />
+            </label>
             <label className="block">
               <span className="block text-sm font-semibold text-warm-900 mb-1">Open hours</span>
               <input type="text" value={form.hours ?? ''} onChange={(e) => setForm({ ...form, hours: e.target.value })} placeholder="e.g. 8 am to 9 pm, daily" className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors" />

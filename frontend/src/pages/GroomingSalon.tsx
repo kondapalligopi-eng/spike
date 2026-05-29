@@ -56,6 +56,7 @@ function apiToSalonData(api: GroomingSalonRead): GroomingSalonData {
     phone: api.phone,
     email: api.email ?? undefined,
     website: api.website ?? undefined,
+    ratingAvg: api.rating_avg,
     openTodayUntil: '8pm',
     hours: api.hours ?? DEFAULT_HOURS_FALLBACK,
     mapLabel: [api.area.toUpperCase()],
@@ -124,7 +125,7 @@ export function GroomingSalon() {
     ? (
         salon.ratingDistribution.reduce((sum, r) => sum + r.stars * r.count, 0) / totalReviews
       ).toFixed(1)
-    : '0.0';
+    : (salon.ratingAvg ?? 0).toFixed(1);
 
   return (
     <div className="bg-white">
@@ -154,7 +155,6 @@ export function GroomingSalon() {
           <div className="inline-flex items-center gap-2 self-start px-3 py-1.5 rounded-full bg-accent-50 ring-1 ring-accent-300 text-accent-700 text-sm font-bold shrink-0">
             <Stars value={Math.round(Number(avgRating))} />
             <span>{avgRating}</span>
-            <span className="text-warm-500 font-normal">· {totalReviews} reviews</span>
           </div>
         </div>
 

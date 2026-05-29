@@ -16,6 +16,7 @@ export type GroomingSalonRead = {
   rating_count: number;
   tint: string;
   hero_emoji: string;
+  image_url: string | null;
   hours: string | null;
   email: string | null;
   website: string | null;
@@ -34,12 +35,13 @@ export type GroomingSalonCreate = {
   rating_count?: number;
   tint?: string;
   hero_emoji?: string;
+  image_url?: string | null;
   hours?: string | null;
   email?: string | null;
   website?: string | null;
 };
 
-const DEFAULTS: Omit<GroomingSalonRead, 'id' | 'created_at' | 'updated_at' | 'email' | 'website'>[] = [
+const DEFAULTS: Omit<GroomingSalonRead, 'id' | 'created_at' | 'updated_at' | 'email' | 'website' | 'image_url'>[] = [
   {
     name: 'Pawsh Paws Grooming Studio',
     area: 'Indiranagar',
@@ -106,7 +108,7 @@ function seedMockStoreIfEmpty(): void {
   const now = new Date().toISOString();
   const seeded = DEFAULTS.map((s, i) => {
     const ts = new Date(Date.now() - (DEFAULTS.length - i) * 1000).toISOString();
-    return { ...s, email: null, website: null, id: makeId(), created_at: ts, updated_at: now } satisfies GroomingSalonRead;
+    return { ...s, image_url: null, email: null, website: null, id: makeId(), created_at: ts, updated_at: now } satisfies GroomingSalonRead;
   });
   try {
     localStorage.setItem(MOCK_KEY, JSON.stringify(seeded));
@@ -165,6 +167,7 @@ export async function createGroomingSalon(data: GroomingSalonCreate): Promise<Gr
       rating_count: data.rating_count ?? 0,
       tint: data.tint || 'from-amber-200 to-amber-400',
       hero_emoji: data.hero_emoji || '✂️',
+      image_url: data.image_url?.trim() || null,
       hours: data.hours?.trim() || null,
       email: data.email?.trim() || null,
       website: data.website?.trim() || null,
@@ -199,6 +202,7 @@ export async function updateGroomingSalon(id: string, data: GroomingSalonCreate)
       rating_count: data.rating_count ?? store[idx].rating_count,
       tint: data.tint || store[idx].tint,
       hero_emoji: data.hero_emoji || store[idx].hero_emoji,
+      image_url: data.image_url?.trim() || store[idx].image_url,
       hours: data.hours?.trim() || store[idx].hours,
       email: data.email?.trim() || store[idx].email,
       website: data.website?.trim() || store[idx].website,
