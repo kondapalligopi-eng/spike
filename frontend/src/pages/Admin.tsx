@@ -670,6 +670,7 @@ function AddParkModal({ onClose, existing }: { onClose: () => void; existing?: P
       off_leash: form.off_leash?.trim() || undefined,
       features: form.features?.trim() || undefined,
       phone: form.phone?.trim() || undefined,
+      email: form.email?.trim() || undefined,
       website: form.website?.trim() || undefined,
       highlights,
     });
