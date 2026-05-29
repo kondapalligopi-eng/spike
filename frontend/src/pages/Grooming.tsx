@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { listGroomingSalons, type GroomingSalonRead } from '@/api/groomingSalons';
+import { createSubmission } from '@/api/submissions';
 import { toast } from '@/store/toastStore';
 
 // Static (seeded) salons use bespoke area-based slugs hardcoded in
