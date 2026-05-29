@@ -200,6 +200,8 @@ export async function updateGroomingSalon(id: string, data: GroomingSalonCreate)
       tint: data.tint || store[idx].tint,
       hero_emoji: data.hero_emoji || store[idx].hero_emoji,
       hours: data.hours?.trim() || store[idx].hours,
+      email: data.email?.trim() || store[idx].email,
+      website: data.website?.trim() || store[idx].website,
       updated_at: now,
     };
     store[idx] = updated;
