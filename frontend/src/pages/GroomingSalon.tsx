@@ -155,7 +155,6 @@ export function GroomingSalon() {
           <div className="inline-flex items-center gap-2 self-start px-3 py-1.5 rounded-full bg-accent-50 ring-1 ring-accent-300 text-accent-700 text-sm font-bold shrink-0">
             <Stars value={Math.round(Number(avgRating))} />
             <span>{avgRating}</span>
-            <span className="text-warm-500 font-normal">· {totalReviews} reviews</span>
           </div>
         </div>
 
