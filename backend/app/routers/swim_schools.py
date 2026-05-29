@@ -84,6 +84,9 @@ async def update_swim_school(
     school.hours = (payload.hours or "").strip() or None
     school.cost = (payload.cost or "").strip() or None
     school.pool_type = (payload.pool_type or "").strip() or None
+    school.phone = (payload.phone or "").strip() or None
+    school.email = (payload.email or "").strip() or None
+    school.website = (payload.website or "").strip() or None
     school.highlights = [h.strip() for h in (payload.highlights or []) if h.strip()]
     await db.flush()
     await db.refresh(school)
