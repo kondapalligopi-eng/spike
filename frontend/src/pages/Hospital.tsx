@@ -82,6 +82,8 @@ function normaliseApiHospital(h: HospitalRead): Hospital {
     rating: h.rating ?? '',
     phone: h.phone ?? undefined,
     website: h.website ?? undefined,
+    hours: h.hours ?? undefined,
+    email: h.email ?? undefined,
   };
 }
 
