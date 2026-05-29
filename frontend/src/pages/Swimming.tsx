@@ -751,16 +751,27 @@ export function Swimming() {
                   </label>
 
                   <label className="block">
-                    <span className="block text-sm font-semibold text-warm-900 mb-1">Website</span>
+                    <span className="block text-sm font-semibold text-warm-900 mb-1">Email</span>
                     <input
-                      type="url"
-                      value={form.website}
-                      onChange={(e) => setForm({ ...form, website: e.target.value })}
-                      placeholder="https://..."
+                      type="email"
+                      value={form.email}
+                      onChange={(e) => setForm({ ...form, email: e.target.value })}
+                      placeholder="pool@example.com"
                       className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors"
                     />
                   </label>
                 </div>
+
+                <label className="block">
+                  <span className="block text-sm font-semibold text-warm-900 mb-1">Website</span>
+                  <input
+                    type="url"
+                    value={form.website}
+                    onChange={(e) => setForm({ ...form, website: e.target.value })}
+                    placeholder="https://..."
+                    className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors"
+                  />
+                </label>
 
                 <div className="pt-2 flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
                   <button
