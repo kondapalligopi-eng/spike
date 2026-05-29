@@ -173,6 +173,8 @@ function AddHospitalModal({ onClose, existing }: { onClose: () => void; existing
       specialties: form.specialties?.trim() || undefined,
       rating: form.rating?.trim() || undefined,
       website: form.website?.trim() || undefined,
+      hours: form.hours?.trim() || undefined,
+      email: form.email?.trim() || undefined,
     });
   };
 
