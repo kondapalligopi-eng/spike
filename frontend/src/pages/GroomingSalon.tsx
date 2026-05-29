@@ -125,7 +125,7 @@ export function GroomingSalon() {
     ? (
         salon.ratingDistribution.reduce((sum, r) => sum + r.stars * r.count, 0) / totalReviews
       ).toFixed(1)
-    : '0.0';
+    : (salon.ratingAvg ?? 0).toFixed(1);
 
   return (
     <div className="bg-white">
