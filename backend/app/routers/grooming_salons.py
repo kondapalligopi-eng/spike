@@ -92,6 +92,7 @@ async def update_grooming_salon(
     salon.rating_count = payload.rating_count
     salon.tint = payload.tint.strip() or "from-amber-200 to-amber-400"
     salon.hero_emoji = payload.hero_emoji.strip() or "✂️"
+    salon.image_url = (payload.image_url or "").strip() or None
     salon.hours = (payload.hours or "").strip() or None
     salon.email = (payload.email or "").strip() or None
     salon.website = (payload.website or "").strip() or None
