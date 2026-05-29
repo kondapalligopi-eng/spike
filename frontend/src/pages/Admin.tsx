@@ -108,6 +108,7 @@ const IMPORT_LISTING_CARDS: ListingCard[] = [
   { label: 'Import Hospitals',    emoji: '🏥',  tint: 'from-rose-100 to-rose-300',       kind: 'hospital', action: 'import' },
   { label: 'Import Parks',        emoji: '🌳',  tint: 'from-emerald-100 to-emerald-300', kind: 'park',     action: 'import' },
   { label: 'Import Swim Schools', emoji: '🐕💦', tint: 'from-sky-100 to-sky-300',         kind: 'swimming', action: 'import' },
+  { label: 'Import Grooming',     emoji: '✂️',  tint: 'from-amber-100 to-amber-300',     kind: 'grooming', action: 'import' },
 ];
 
 const PET_FOOD_LIFESTAGES = ['Puppy', 'Adult', 'Senior', 'All Lifestages'];
