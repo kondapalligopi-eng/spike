@@ -410,7 +410,10 @@ export function Swimming() {
                   { icon: '🕐', label: 'Open Times', value: selectedSpot.hours },
                   { icon: '₹', label: 'Cost', value: selectedSpot.cost },
                   { icon: '🌊', label: 'Pool Type', value: selectedSpot.poolType },
-                ].map((row, idx, arr) => (
+                  { icon: '📞', label: 'Phone', value: selectedSpot.phone },
+                  { icon: '✉️', label: 'Email', value: selectedSpot.email },
+                  { icon: '🌐', label: 'Website', value: selectedSpot.website },
+                ].filter((row) => row.value).map((row, idx, arr) => (
                   <div
                     key={row.label}
                     className={`flex items-start gap-4 px-5 py-4 ${idx < arr.length - 1 ? 'border-b border-primary-100' : ''}`}
