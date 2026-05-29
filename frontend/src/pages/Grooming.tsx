@@ -28,6 +28,7 @@ type SalonTile = {
   address: string;
   tint: string;
   heroEmoji: string;
+  image: string;
   avg: number;
   total: number;
 };
