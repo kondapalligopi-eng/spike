@@ -730,10 +730,14 @@ function AddParkModal({ onClose, existing }: { onClose: () => void; existing?: P
                 <input type="tel" value={form.phone ?? ''} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="+91 ..." className={inputCls} />
               </label>
               <label className="block">
-                <span className="block text-sm font-semibold text-warm-900 mb-1">Website</span>
-                <input type="url" value={form.website ?? ''} onChange={(e) => setForm({ ...form, website: e.target.value })} placeholder="https://..." className={inputCls} />
+                <span className="block text-sm font-semibold text-warm-900 mb-1">Email</span>
+                <input type="email" value={form.email ?? ''} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="park@example.com" className={inputCls} />
               </label>
             </div>
+            <label className="block">
+              <span className="block text-sm font-semibold text-warm-900 mb-1">Website</span>
+              <input type="url" value={form.website ?? ''} onChange={(e) => setForm({ ...form, website: e.target.value })} placeholder="https://..." className={inputCls} />
+            </label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <label className="block">
                 <span className="block text-sm font-semibold text-warm-900 mb-1">Rating (1–5)</span>
