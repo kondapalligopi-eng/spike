@@ -102,6 +102,14 @@ const REMOVE_LISTING_CARDS: ListingCard[] = [
   { label: 'Remove Pet Food',    emoji: '🥫',  tint: 'from-orange-50 to-orange-100',   kind: 'food',     action: 'remove' },
 ];
 
+// Bulk Excel import is only offered for the three directory types with the
+// most rows to enter. Add/Edit/Remove above stay the per-item path.
+const IMPORT_LISTING_CARDS: ListingCard[] = [
+  { label: 'Import Hospitals',    emoji: '🏥',  tint: 'from-rose-100 to-rose-300',       kind: 'hospital', action: 'import' },
+  { label: 'Import Parks',        emoji: '🌳',  tint: 'from-emerald-100 to-emerald-300', kind: 'park',     action: 'import' },
+  { label: 'Import Swim Schools', emoji: '🐕💦', tint: 'from-sky-100 to-sky-300',         kind: 'swimming', action: 'import' },
+];
+
 const PET_FOOD_LIFESTAGES = ['Puppy', 'Adult', 'Senior', 'All Lifestages'];
 const PET_FOOD_FORMS = ['Dry Food', 'Wet Food', 'Freeze-Dried', 'Raw', 'Treats'];
 
