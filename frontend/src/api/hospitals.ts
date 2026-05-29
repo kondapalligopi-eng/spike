@@ -172,6 +172,8 @@ export async function createHospital(data: HospitalCreate): Promise<HospitalRead
       specialties: data.specialties?.trim() || null,
       rating: data.rating?.trim() || null,
       website: data.website?.trim() || null,
+      hours: data.hours?.trim() || null,
+      email: data.email?.trim() || null,
       created_at: now,
       updated_at: now,
     };
