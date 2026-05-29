@@ -1749,7 +1749,7 @@ function AddListingsSection() {
         {renderRow(IMPORT_LISTING_CARDS)}
       </div>
 
-      {openModal?.action === 'import' && (openModal.kind === 'hospital' || openModal.kind === 'park' || openModal.kind === 'swimming') && (
+      {openModal?.action === 'import' && (openModal.kind === 'hospital' || openModal.kind === 'park' || openModal.kind === 'swimming' || openModal.kind === 'grooming') && (
         <ImportExcelModal config={IMPORT_CONFIGS[openModal.kind]} onClose={() => setOpenModal(null)} />
       )}
 
