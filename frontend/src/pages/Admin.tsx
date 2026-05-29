@@ -2003,6 +2003,7 @@ export function Admin() {
         <p className="text-warm-500">Site activity at a glance</p>
       </div>
 
+      <SubmissionsSection />
       <AddListingsSection />
       <SiteVisibilitySection />
       <VisitsSection />
