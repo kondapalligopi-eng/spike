@@ -168,6 +168,7 @@ export function Swimming() {
     hours: '',
     cost: '',
     phone: '',
+    email: '',
     website: '',
   });
 
