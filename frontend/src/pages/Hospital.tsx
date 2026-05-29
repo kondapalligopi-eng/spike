@@ -216,7 +216,9 @@ export function Hospital() {
     address: '',
     specialties: '',
     phone: '',
+    email: '',
     website: '',
+    hours: '',
   });
 
   // Close modal on ESC
