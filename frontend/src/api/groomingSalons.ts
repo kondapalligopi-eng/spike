@@ -16,6 +16,7 @@ export type GroomingSalonRead = {
   rating_count: number;
   tint: string;
   hero_emoji: string;
+  image_url: string | null;
   hours: string | null;
   email: string | null;
   website: string | null;
