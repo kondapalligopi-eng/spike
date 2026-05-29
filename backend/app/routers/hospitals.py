@@ -80,6 +80,8 @@ async def update_hospital(
     hospital.specialties = (payload.specialties or "").strip() or None
     hospital.rating = (payload.rating or "").strip() or None
     hospital.website = (payload.website or "").strip() or None
+    hospital.hours = (payload.hours or "").strip() or None
+    hospital.email = (payload.email or "").strip() or None
     await db.flush()
     await db.refresh(hospital)
     return HospitalRead.model_validate(hospital)
