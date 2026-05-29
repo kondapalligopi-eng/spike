@@ -438,7 +438,6 @@ export function Grooming() {
                       </h3>
                       <div className="text-[11px] mb-1 flex items-center gap-2">
                         <PawRating value={salon.avg} />
-                        <span className="text-white/80 text-[10px]">· {salon.total} reviews</span>
                       </div>
                       <p className="text-[11px] text-white/90 font-medium leading-tight">
                         {salon.area}, {salon.city}
