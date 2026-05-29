@@ -1642,6 +1642,8 @@ function AddListingsSection() {
               ? 'text-red-400 group-hover:text-red-600'
               : action === 'edit'
               ? 'text-primary-400 group-hover:text-primary-700'
+              : action === 'import'
+              ? 'text-emerald-500 group-hover:text-emerald-700'
               : 'text-warm-400 group-hover:text-primary-600'
           } transition-colors`}>
             {action === 'remove' ? (
@@ -1651,6 +1653,10 @@ function AddListingsSection() {
             ) : action === 'edit' ? (
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+            ) : action === 'import' ? (
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3" />
               </svg>
             ) : (
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
