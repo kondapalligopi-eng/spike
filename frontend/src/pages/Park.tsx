@@ -55,6 +55,7 @@ function apiToSpot(p: ParkRead): ParkSpot {
     offLeash: p.off_leash ?? '',
     features: p.features ?? '',
     phone: p.phone ?? '',
+    email: p.email ?? '',
     website: p.website ?? '',
     highlights: p.highlights ?? [],
   };
