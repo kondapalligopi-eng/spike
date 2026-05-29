@@ -620,13 +620,14 @@ function AddParkModal({ onClose, existing }: { onClose: () => void; existing?: P
           off_leash: existing.off_leash ?? '',
           features: existing.features ?? '',
           phone: existing.phone ?? '',
+          email: existing.email ?? '',
           website: existing.website ?? '',
           highlights: existing.highlights ?? [],
         }
       : {
           name: '', locality: '', rating: 4, image_url: '',
           address: '', hours: '', cost: '', off_leash: '',
-          features: '', phone: '', website: '', highlights: [],
+          features: '', phone: '', email: '', website: '', highlights: [],
         }
   );
   const [highlightsText, setHighlightsText] = useState(
