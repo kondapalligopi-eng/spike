@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { listGroomingSalons, type GroomingSalonRead } from '@/api/groomingSalons';
+import { createSubmission } from '@/api/submissions';
 import { toast } from '@/store/toastStore';
 
 // Static (seeded) salons use bespoke area-based slugs hardcoded in
@@ -194,30 +195,16 @@ export function Grooming() {
     }
     setSubmitting(true);
     try {
-      const response = await fetch(
-        'https://formsubmit.co/ajax/support@hispike.in',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-          },
-          body: JSON.stringify({
-            _subject: `New HiSpike grooming salon listing: ${form.name.trim()}`,
-            _template: 'table',
-            _captcha: 'false',
-            'Salon name': form.name.trim(),
-            Locality: form.locality,
-            Address: form.address.trim(),
-            'Services offered': form.services.trim() || '(not provided)',
-            'Open hours': form.hours.trim() || '(not provided)',
-            Phone: form.phone.trim() || '(not provided)',
-            Email: form.email.trim() || '(not provided)',
-            Website: form.website.trim() || '(not provided)',
-          }),
-        },
-      );
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      await createSubmission('grooming', {
+        'Salon name': form.name.trim(),
+        Locality: form.locality,
+        Address: form.address.trim(),
+        'Services offered': form.services.trim() || '(not provided)',
+        'Open hours': form.hours.trim() || '(not provided)',
+        Phone: form.phone.trim() || '(not provided)',
+        Email: form.email.trim() || '(not provided)',
+        Website: form.website.trim() || '(not provided)',
+      });
       setRegisterOpen(false);
       setForm({ name: '', locality: '', address: '', services: '', hours: '', phone: '', email: '', website: '' });
       toast.success('Thanks! Your salon submission has been received.');

@@ -45,6 +45,12 @@ import {
   updateSiteSetting,
   type SiteSettingKey,
 } from '@/api/siteSettings';
+import {
+  listSubmissions,
+  setSubmissionHandled,
+  deleteSubmission,
+  type SubmissionRead,
+} from '@/api/submissions';
 import { toast } from '@/store/toastStore';
 import {
   getRangedStats,
@@ -1837,6 +1843,146 @@ function SiteVisibilitySection() {
   );
 }
 
+const SUBMISSION_KIND_META: Record<SubmissionRead['kind'], { label: string; badge: string }> = {
+  feedback: { label: 'Feedback',     badge: 'bg-primary-100 text-primary-700' },
+  hospital: { label: 'Hospital',     badge: 'bg-rose-100 text-rose-700' },
+  park:     { label: 'Park',         badge: 'bg-emerald-100 text-emerald-700' },
+  swimming: { label: 'Swim School',  badge: 'bg-sky-100 text-sky-700' },
+  grooming: { label: 'Grooming',     badge: 'bg-amber-100 text-amber-700' },
+};
+
+function SubmissionsSection() {
+  const queryClient = useQueryClient();
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['submissions'],
+    queryFn: listSubmissions,
+    refetchInterval: 60_000,
+  });
+
+  const [confirmId, setConfirmId] = useState<string | null>(null);
+
+  const handledMutation = useMutation({
+    mutationFn: ({ id, handled }: { id: string; handled: boolean }) =>
+      setSubmissionHandled(id, handled),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['submissions'] }),
+    onError: (err: Error) => toast.error(err.message || 'Could not update submission.'),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: deleteSubmission,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['submissions'] });
+      toast.success('Submission removed.');
+      setConfirmId(null);
+    },
+    onError: (err: Error) => toast.error(err.message || 'Could not remove submission.'),
+  });
+
+  const submissions = data ?? [];
+  const pendingCount = submissions.filter((s) => !s.handled).length;
+
+  const handleDelete = (id: string) => {
+    if (confirmId !== id) {
+      setConfirmId(id);
+      return;
+    }
+    deleteMutation.mutate(id);
+  };
+
+  return (
+    <section className="mb-10">
+      <div className="mb-4">
+        <p className="text-[11px] font-semibold tracking-[0.3em] text-accent-600 uppercase mb-1">
+          Inbox
+        </p>
+        <h2 className="text-xl font-bold text-warm-900">
+          Form submissions
+          {pendingCount > 0 && (
+            <span className="ml-2 align-middle text-xs font-bold text-white bg-red-600 rounded-full px-2 py-0.5">
+              {pendingCount} new
+            </span>
+          )}
+        </h2>
+        <p className="text-sm text-warm-500 mt-1">
+          Feedback and "list your …" requests submitted from the public site. Review,
+          then re-enter approved listings via the Add forms above.
+        </p>
+      </div>
+
+      {isLoading ? (
+        <p className="text-sm text-warm-500 py-6">Loading submissions…</p>
+      ) : isError ? (
+        <p className="text-sm text-red-600 py-6">Could not load submissions. Refresh to retry.</p>
+      ) : submissions.length === 0 ? (
+        <div className="rounded-2xl border-2 border-dashed border-warm-300 p-8 text-center text-sm text-warm-500">
+          No submissions yet. New feedback and listing requests will appear here.
+        </div>
+      ) : (
+        <ul className="space-y-3">
+          {submissions.map((s) => {
+            const meta = SUBMISSION_KIND_META[s.kind] ?? { label: s.kind, badge: 'bg-warm-100 text-warm-700' };
+            const staged = confirmId === s.id;
+            return (
+              <li
+                key={s.id}
+                className={`rounded-2xl border-2 bg-white p-4 sm:p-5 transition-colors ${
+                  s.handled ? 'border-warm-200 opacity-70' : 'border-primary-100'
+                }`}
+              >
+                <div className="flex items-start justify-between gap-3 mb-3">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className={`text-[10px] font-bold tracking-[0.18em] uppercase px-2.5 py-1 rounded-full ${meta.badge}`}>
+                      {meta.label}
+                    </span>
+                    {s.handled && (
+                      <span className="text-[10px] font-bold tracking-[0.18em] uppercase px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700">
+                        ✓ Handled
+                      </span>
+                    )}
+                    <span className="text-xs text-warm-500">
+                      {formatDateTime(new Date(s.created_at))}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => handledMutation.mutate({ id: s.id, handled: !s.handled })}
+                      disabled={handledMutation.isPending}
+                      className="px-3 py-1.5 rounded-full border-2 border-warm-300 bg-white text-warm-700 text-xs font-bold uppercase tracking-wider hover:border-primary-500 hover:text-primary-700 transition-colors disabled:opacity-60"
+                    >
+                      {s.handled ? 'Mark unhandled' : 'Mark handled'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDelete(s.id)}
+                      disabled={deleteMutation.isPending && staged}
+                      className={`px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-colors ${
+                        staged
+                          ? 'bg-red-600 text-white hover:bg-red-700 disabled:opacity-60'
+                          : 'border-2 border-warm-300 bg-white text-warm-700 hover:border-red-500 hover:text-red-600'
+                      }`}
+                    >
+                      {deleteMutation.isPending && staged ? 'Removing…' : staged ? 'Confirm' : 'Remove'}
+                    </button>
+                  </div>
+                </div>
+                <dl className="grid grid-cols-1 sm:grid-cols-[160px_1fr] gap-x-4 gap-y-1.5 text-sm">
+                  {Object.entries(s.data).map(([key, value]) => (
+                    <div key={key} className="contents">
+                      <dt className="font-semibold text-warm-500">{key}</dt>
+                      <dd className="text-warm-900 break-words">{value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </section>
+  );
+}
+
 export function Admin() {
   // Warm the backend the moment the admin lands here. Render free-tier
   // services sleep after ~15 min idle; the first request after sleep takes
@@ -1857,6 +2003,7 @@ export function Admin() {
         <p className="text-warm-500">Site activity at a glance</p>
       </div>
 
+      <SubmissionsSection />
       <AddListingsSection />
       <SiteVisibilitySection />
       <VisitsSection />

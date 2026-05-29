@@ -9,7 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app.config import settings
-from app.routers import auth, users, dogs, adoptions, breeds, hospitals, parks, swim_schools, grooming_salons, pet_foods, site_settings
+from app.routers import auth, users, dogs, adoptions, breeds, hospitals, parks, swim_schools, grooming_salons, pet_foods, site_settings, submissions
 
 
 @asynccontextmanager
@@ -138,3 +138,4 @@ app.include_router(swim_schools.router, prefix=API_PREFIX)
 app.include_router(grooming_salons.router, prefix=API_PREFIX)
 app.include_router(pet_foods.router, prefix=API_PREFIX)
 app.include_router(site_settings.router, prefix=API_PREFIX)
+app.include_router(submissions.router, prefix=API_PREFIX)
