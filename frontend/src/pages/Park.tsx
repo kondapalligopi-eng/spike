@@ -241,6 +241,7 @@ export function Park() {
             'Features / amenities': form.features.trim() || '(not provided)',
             'Open hours': form.hours.trim() || '(not provided)',
             Phone: form.phone.trim(),
+            Email: form.email.trim() || '(not provided)',
             Website: form.website.trim() || '(not provided)',
           }),
         },
