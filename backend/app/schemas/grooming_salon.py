@@ -18,6 +18,8 @@ class GroomingSalonBase(BaseModel):
     tint: str = Field("from-amber-200 to-amber-400", max_length=120)
     hero_emoji: str = Field("✂️", max_length=20)
     hours: str | None = Field(None, max_length=120)
+    email: str | None = Field(None, max_length=255)
+    website: str | None = Field(None, max_length=500)
 
 
 class GroomingSalonCreate(GroomingSalonBase):
