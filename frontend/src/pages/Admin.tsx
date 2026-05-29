@@ -58,6 +58,7 @@ import {
   type RangedVisitStats,
   type VisitStats,
 } from '@/lib/visitTracker';
+import { readSheetRows, downloadTemplate, type SheetRow } from '@/lib/spreadsheet';
 
 const BANGALORE_NEIGHBOURHOODS = [
   'Banashankari', 'Banaswadi', 'Basavanagudi', 'Bellandur', 'Bommanahalli',
@@ -74,7 +75,7 @@ const BANGALORE_NEIGHBOURHOODS = [
 ];
 
 type ListingKind = 'hospital' | 'park' | 'swimming' | 'grooming' | 'food';
-type ListingAction = 'add' | 'edit' | 'remove';
+type ListingAction = 'add' | 'edit' | 'remove' | 'import';
 type ListingCard = { label: string; emoji: string; tint: string; kind: ListingKind; action: ListingAction };
 
 const ADD_LISTING_CARDS: ListingCard[] = [
@@ -99,6 +100,15 @@ const REMOVE_LISTING_CARDS: ListingCard[] = [
   { label: 'Remove Swim School', emoji: '🐕💦', tint: 'from-sky-50 to-sky-100',         kind: 'swimming', action: 'remove' },
   { label: 'Remove Grooming',    emoji: '✂️',  tint: 'from-amber-50 to-amber-100',     kind: 'grooming', action: 'remove' },
   { label: 'Remove Pet Food',    emoji: '🥫',  tint: 'from-orange-50 to-orange-100',   kind: 'food',     action: 'remove' },
+];
+
+// Bulk Excel import is only offered for the three directory types with the
+// most rows to enter. Add/Edit/Remove above stay the per-item path.
+const IMPORT_LISTING_CARDS: ListingCard[] = [
+  { label: 'Import Hospitals',    emoji: '🏥',  tint: 'from-rose-100 to-rose-300',       kind: 'hospital', action: 'import' },
+  { label: 'Import Parks',        emoji: '🌳',  tint: 'from-emerald-100 to-emerald-300', kind: 'park',     action: 'import' },
+  { label: 'Import Swim Schools', emoji: '🐕💦', tint: 'from-sky-100 to-sky-300',         kind: 'swimming', action: 'import' },
+  { label: 'Import Grooming',     emoji: '✂️',  tint: 'from-amber-100 to-amber-300',     kind: 'grooming', action: 'import' },
 ];
 
 const PET_FOOD_LIFESTAGES = ['Puppy', 'Adult', 'Senior', 'All Lifestages'];
@@ -1255,8 +1265,401 @@ function AddPetFoodModal({ onClose, existing }: { onClose: () => void; existing?
   );
 }
 
+// ---------------------------------------------------------------------------
+// Bulk Excel import (Hospital / Park / Swim School)
+// ---------------------------------------------------------------------------
+
+type ImportColumn = { header: string; required?: boolean; hint?: string };
+
+type ImportConfig = {
+  kind: 'hospital' | 'park' | 'swimming' | 'grooming';
+  title: string;
+  eyebrow: string;
+  templateFile: string;
+  columns: ImportColumn[];
+  sample: Record<string, string>;
+  queryKey: readonly unknown[];
+  // Validate one sheet row and create it. Throws Error(message) on a bad row;
+  // returns a short label (the created item's name) on success.
+  importRow: (row: SheetRow) => Promise<string>;
+};
+
+function reqCell(row: SheetRow, key: string): string {
+  const v = (row[key] ?? '').trim();
+  if (!v) throw new Error(`Missing required "${key}"`);
+  return v;
+}
+function optCell(row: SheetRow, key: string): string | undefined {
+  const v = (row[key] ?? '').trim();
+  return v || undefined;
+}
+function parseRating(row: SheetRow): number {
+  const raw = (row['Rating'] ?? '').trim();
+  if (!raw) return 4;
+  const n = Number(raw);
+  if (Number.isNaN(n)) throw new Error(`Rating "${raw}" is not a number`);
+  return Math.max(1, Math.min(5, Math.round(n)));
+}
+function parseHighlights(row: SheetRow): string[] {
+  return (row['Highlights'] ?? '')
+    .split('|')
+    .map((h) => h.trim())
+    .filter(Boolean);
+}
+
+const IMPORT_CONFIGS: Record<ImportConfig['kind'], ImportConfig> = {
+  hospital: {
+    kind: 'hospital',
+    title: 'Bulk import hospitals',
+    eyebrow: 'Vet Care · Bangalore',
+    templateFile: 'hispike-hospitals-template.xlsx',
+    columns: [
+      { header: 'Name', required: true },
+      { header: 'Locality', required: true },
+      { header: 'Address', required: true },
+      { header: 'Phone', required: true },
+      { header: 'Specialties', hint: 'comma-separated' },
+      { header: 'Rating', hint: 'e.g. 4.7' },
+      { header: 'Email' },
+      { header: 'Open hours' },
+      { header: 'Website' },
+    ],
+    sample: {
+      Name: 'SKS Veterinary Hospital',
+      Locality: 'Indiranagar',
+      Address: '17 Service Rd, HAL 3rd Stage, Bengaluru 560075',
+      Phone: '+91 80 4000 0000',
+      Specialties: 'General, Surgery, Diagnostics',
+      Rating: '4.7',
+      Email: 'care@sksvet.in',
+      'Open hours': '9 am to 9 pm, daily',
+      Website: 'https://example.com',
+    },
+    queryKey: ['hospitals'],
+    importRow: async (row) => {
+      const created = await createHospital({
+        name: reqCell(row, 'Name'),
+        locality: reqCell(row, 'Locality'),
+        address: reqCell(row, 'Address'),
+        phone: reqCell(row, 'Phone'),
+        specialties: optCell(row, 'Specialties'),
+        rating: optCell(row, 'Rating'),
+        email: optCell(row, 'Email'),
+        hours: optCell(row, 'Open hours'),
+        website: optCell(row, 'Website'),
+      });
+      return created.name;
+    },
+  },
+  park: {
+    kind: 'park',
+    title: 'Bulk import parks',
+    eyebrow: 'Outdoors · Bangalore',
+    templateFile: 'hispike-parks-template.xlsx',
+    columns: [
+      { header: 'Name', required: true },
+      { header: 'Locality', required: true },
+      { header: 'Address', required: true },
+      { header: 'Rating', hint: '1–5' },
+      { header: 'Cost' },
+      { header: 'Off-leash' },
+      { header: 'Features', hint: 'comma-separated' },
+      { header: 'Open hours' },
+      { header: 'Phone' },
+      { header: 'Email' },
+      { header: 'Website' },
+      { header: 'Image URL' },
+      { header: 'Highlights', hint: 'separate with |' },
+    ],
+    sample: {
+      Name: 'Cubbon Park',
+      Locality: 'Sampangi Rama Nagar, Bengaluru',
+      Address: 'Kasturba Road, Bengaluru 560001',
+      Rating: '5',
+      Cost: 'Free to use',
+      'Off-leash': 'Yes, in designated areas',
+      Features: 'Walking trails, Playground, Restrooms',
+      'Open hours': '5 am to 8 pm',
+      Phone: '+91 80 1234 5678',
+      Email: 'info@cubbonpark.in',
+      Website: 'https://example.com',
+      'Image URL': '/parks/cubbon-park.jpg',
+      Highlights: 'Off-leash zone in the morning|Shaded benches|Street parking',
+    },
+    queryKey: ['parks'],
+    importRow: async (row) => {
+      const created = await createPark({
+        name: reqCell(row, 'Name'),
+        locality: reqCell(row, 'Locality'),
+        address: reqCell(row, 'Address'),
+        rating: parseRating(row),
+        cost: optCell(row, 'Cost'),
+        off_leash: optCell(row, 'Off-leash'),
+        features: optCell(row, 'Features'),
+        hours: optCell(row, 'Open hours'),
+        phone: optCell(row, 'Phone'),
+        email: optCell(row, 'Email'),
+        website: optCell(row, 'Website'),
+        image_url: optCell(row, 'Image URL'),
+        highlights: parseHighlights(row),
+      });
+      return created.name;
+    },
+  },
+  swimming: {
+    kind: 'swimming',
+    title: 'Bulk import swim schools',
+    eyebrow: 'Aquatic · Bangalore',
+    templateFile: 'hispike-swim-schools-template.xlsx',
+    columns: [
+      { header: 'Name', required: true },
+      { header: 'Locality', required: true },
+      { header: 'Address', required: true },
+      { header: 'Rating', hint: '1–5' },
+      { header: 'Pool type' },
+      { header: 'Cost' },
+      { header: 'Open hours' },
+      { header: 'Phone' },
+      { header: 'Email' },
+      { header: 'Website' },
+      { header: 'Image URL' },
+      { header: 'Highlights', hint: 'separate with |' },
+    ],
+    sample: {
+      Name: 'Indiranagar Aquatic Pet Centre',
+      Locality: 'Indiranagar, Bengaluru',
+      Address: '12, 100 Feet Rd, Indiranagar, Bengaluru 560038',
+      Rating: '5',
+      'Pool type': 'Heated indoor pool',
+      Cost: '₹600 per 30-min session',
+      'Open hours': '7 am to 9 pm',
+      Phone: '+91 80 4123 1816',
+      Email: 'swim@example.in',
+      Website: 'https://example.com',
+      'Image URL': '/swim/swim1.jpg',
+      Highlights: 'Certified coaches|Life-jacket rental|Small-batch sessions',
+    },
+    queryKey: ['swim-schools'],
+    importRow: async (row) => {
+      const created = await createSwimSchool({
+        name: reqCell(row, 'Name'),
+        locality: reqCell(row, 'Locality'),
+        address: reqCell(row, 'Address'),
+        rating: parseRating(row),
+        pool_type: optCell(row, 'Pool type'),
+        cost: optCell(row, 'Cost'),
+        hours: optCell(row, 'Open hours'),
+        phone: optCell(row, 'Phone'),
+        email: optCell(row, 'Email'),
+        website: optCell(row, 'Website'),
+        image_url: optCell(row, 'Image URL'),
+        highlights: parseHighlights(row),
+      });
+      return created.name;
+    },
+  },
+  grooming: {
+    kind: 'grooming',
+    title: 'Bulk import grooming salons',
+    eyebrow: 'Salons · Bangalore',
+    templateFile: 'hispike-grooming-salons-template.xlsx',
+    columns: [
+      { header: 'Name', required: true },
+      { header: 'Area', required: true },
+      { header: 'City' },
+      { header: 'Address', required: true },
+      { header: 'Phone', required: true },
+      { header: 'Rating', hint: '0–5, e.g. 4.7' },
+      { header: 'Open hours' },
+      { header: 'Email' },
+      { header: 'Website' },
+      { header: 'Image URL' },
+    ],
+    sample: {
+      Name: 'Pawsh Paws Grooming Studio',
+      Area: 'Indiranagar',
+      City: 'Bengaluru',
+      Address: '100 Feet Rd, HAL 2nd Stage, Indiranagar, Bengaluru 560038',
+      Phone: '+91 80 4123 1816',
+      Rating: '4.7',
+      'Open hours': '8 am to 9 pm, daily',
+      Email: 'hello@pawshpaws.in',
+      Website: 'https://example.com',
+      'Image URL': '/groom/groom1.jpg',
+    },
+    queryKey: ['grooming-salons'],
+    importRow: async (row) => {
+      const ratingRaw = (row['Rating'] ?? '').trim();
+      let ratingAvg = 4.5;
+      if (ratingRaw) {
+        const n = Number(ratingRaw);
+        if (Number.isNaN(n)) throw new Error(`Rating "${ratingRaw}" is not a number`);
+        ratingAvg = Math.max(0, Math.min(5, n));
+      }
+      const created = await createGroomingSalon({
+        name: reqCell(row, 'Name'),
+        area: reqCell(row, 'Area'),
+        city: optCell(row, 'City') ?? 'Bengaluru',
+        address: reqCell(row, 'Address'),
+        phone: reqCell(row, 'Phone'),
+        rating_avg: ratingAvg,
+        hours: optCell(row, 'Open hours'),
+        email: optCell(row, 'Email'),
+        website: optCell(row, 'Website'),
+        image_url: optCell(row, 'Image URL'),
+      });
+      return created.name;
+    },
+  },
+};
+
+type ImportResult = { row: number; ok: boolean; label?: string; error?: string };
+
+function ImportExcelModal({ config, onClose }: { config: ImportConfig; onClose: () => void }) {
+  const queryClient = useQueryClient();
+  const [phase, setPhase] = useState<'idle' | 'running' | 'done'>('idle');
+  const [results, setResults] = useState<ImportResult[]>([]);
+  const [progress, setProgress] = useState({ done: 0, total: 0 });
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape' && phase !== 'running') onClose(); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [onClose, phase]);
+
+  const isBlankRow = (row: SheetRow) => Object.values(row).every((v) => !v || !v.trim());
+
+  const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = ''; // allow re-selecting the same file later
+    if (!file) return;
+    setPhase('running');
+    setResults([]);
+    let rows: SheetRow[];
+    try {
+      rows = (await readSheetRows(file)).filter((r) => !isBlankRow(r));
+    } catch {
+      toast.error('Could not read that file. Make sure it is a valid .xlsx or .csv.');
+      setPhase('idle');
+      return;
+    }
+    if (rows.length === 0) {
+      toast.error('No data rows found in the sheet.');
+      setPhase('idle');
+      return;
+    }
+
+    setProgress({ done: 0, total: rows.length });
+    const collected: ImportResult[] = [];
+    // Sequential — keeps a free-tier backend from being hammered, and makes
+    // the progress counter meaningful.
+    for (let i = 0; i < rows.length; i++) {
+      try {
+        const label = await config.importRow(rows[i]);
+        collected.push({ row: i + 2, ok: true, label }); // +2: header row + 1-indexed
+      } catch (err) {
+        collected.push({ row: i + 2, ok: false, error: err instanceof Error ? err.message : 'Failed' });
+      }
+      setProgress({ done: i + 1, total: rows.length });
+      setResults([...collected]);
+    }
+
+    queryClient.invalidateQueries({ queryKey: config.queryKey });
+    setPhase('done');
+    const ok = collected.filter((r) => r.ok).length;
+    const failed = collected.length - ok;
+    if (failed === 0) toast.success(`Imported all ${ok} rows.`);
+    else toast.error(`Imported ${ok}, ${failed} row${failed === 1 ? '' : 's'} failed — see details.`);
+  };
+
+  const okCount = results.filter((r) => r.ok).length;
+  const failCount = results.filter((r) => !r.ok).length;
+
+  return (
+    <div role="dialog" aria-modal="true" className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50" onMouseDown={(e) => { if (e.target === e.currentTarget && phase !== 'running') onClose(); }}>
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+        <div className="p-6 sm:p-8">
+          <div className="flex items-start justify-between gap-4 mb-1">
+            <div>
+              <p className="text-[11px] font-semibold tracking-[0.3em] text-accent-600 uppercase mb-1">{config.eyebrow}</p>
+              <h2 className="text-2xl font-extrabold text-warm-900">{config.title}</h2>
+            </div>
+            <button type="button" onClick={onClose} disabled={phase === 'running'} aria-label="Close" className="p-2 rounded-full text-warm-700 hover:text-warm-900 hover:bg-warm-100 transition-colors disabled:opacity-40">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.25} d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+          </div>
+          <div className="h-0.5 w-12 bg-accent-400 rounded-full mb-5" />
+
+          <ol className="text-sm text-warm-700 space-y-1.5 mb-5 list-decimal pl-5">
+            <li>Download the template and fill one row per listing.</li>
+            <li>Columns marked <span className="text-red-500 font-semibold">*</span> are required.</li>
+            <li>Upload the saved .xlsx — every row is created and you get a per-row result.</li>
+          </ol>
+
+          <div className="flex flex-wrap items-center gap-3 mb-5">
+            <button
+              type="button"
+              onClick={() => downloadTemplate(config.templateFile, config.columns.map((c) => c.header), config.sample)}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border-2 border-primary-300 text-primary-700 text-sm font-bold tracking-wider uppercase hover:border-primary-500 hover:bg-primary-50 transition-colors"
+            >
+              ⬇ Download template
+            </button>
+            <label className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-accent-400 hover:bg-accent-300 text-warm-900 text-sm font-bold tracking-wider uppercase ring-2 ring-accent-300/50 transition-all shadow-md cursor-pointer ${phase === 'running' ? 'opacity-60 pointer-events-none' : ''}`}>
+              ⬆ Upload .xlsx
+              <input type="file" accept=".xlsx,.xls,.csv" className="hidden" onChange={handleFile} disabled={phase === 'running'} />
+            </label>
+          </div>
+
+          {/* Column reference */}
+          <div className="rounded-xl bg-warm-50 border border-warm-200 p-3 mb-5">
+            <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-warm-500 mb-2">Columns</p>
+            <div className="flex flex-wrap gap-1.5">
+              {config.columns.map((c) => (
+                <span key={c.header} className="inline-flex items-center gap-1 text-xs bg-white border border-warm-200 rounded-md px-2 py-1 text-warm-700">
+                  {c.header}{c.required && <span className="text-red-500 font-bold">*</span>}
+                  {c.hint && <span className="text-warm-400">· {c.hint}</span>}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {phase === 'running' && (
+            <p className="text-sm text-warm-600 mb-3">Importing… {progress.done}/{progress.total}</p>
+          )}
+
+          {results.length > 0 && (
+            <div>
+              <div className="flex items-center gap-3 text-sm font-semibold mb-2">
+                <span className="text-emerald-700">✓ {okCount} added</span>
+                {failCount > 0 && <span className="text-red-600">✕ {failCount} failed</span>}
+              </div>
+              <ul className="max-h-48 overflow-y-auto rounded-xl border border-warm-200 divide-y divide-warm-100 text-sm">
+                {results.map((r) => (
+                  <li key={r.row} className="flex items-start gap-2 px-3 py-2">
+                    <span className={`shrink-0 font-bold ${r.ok ? 'text-emerald-600' : 'text-red-600'}`}>{r.ok ? '✓' : '✕'}</span>
+                    <span className="text-warm-500 shrink-0">Row {r.row}</span>
+                    <span className={`min-w-0 break-words ${r.ok ? 'text-warm-800' : 'text-red-700'}`}>
+                      {r.ok ? r.label : r.error}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          <div className="pt-5 flex justify-end">
+            <button type="button" onClick={onClose} disabled={phase === 'running'} className="px-5 py-2 rounded-full border-2 border-warm-300 text-warm-700 hover:bg-warm-100 text-sm font-semibold transition-colors disabled:opacity-40">
+              {phase === 'done' ? 'Done' : 'Close'}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 type ModalState =
-  | { kind: ListingKind; action: 'add' | 'edit' | 'remove' }
+  | { kind: ListingKind; action: 'add' | 'edit' | 'remove' | 'import' }
   | { kind: 'hospital'; action: 'edit-form'; existing: HospitalRead }
   | { kind: 'park';     action: 'edit-form'; existing: ParkRead }
   | { kind: 'swimming'; action: 'edit-form'; existing: SwimSchoolRead }
@@ -1293,6 +1696,8 @@ function AddListingsSection() {
               ? 'text-red-400 group-hover:text-red-600'
               : action === 'edit'
               ? 'text-primary-400 group-hover:text-primary-700'
+              : action === 'import'
+              ? 'text-emerald-500 group-hover:text-emerald-700'
               : 'text-warm-400 group-hover:text-primary-600'
           } transition-colors`}>
             {action === 'remove' ? (
@@ -1302,6 +1707,10 @@ function AddListingsSection() {
             ) : action === 'edit' ? (
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+            ) : action === 'import' ? (
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3" />
               </svg>
             ) : (
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1331,6 +1740,18 @@ function AddListingsSection() {
         {renderRow(EDIT_LISTING_CARDS)}
         {renderRow(REMOVE_LISTING_CARDS)}
       </div>
+
+      <div className="mt-6 pt-5 border-t border-warm-200">
+        <p className="text-sm font-semibold text-warm-700 mb-3">
+          Bulk import from Excel
+          <span className="ml-2 text-xs font-normal text-warm-500">— add many at once via a spreadsheet</span>
+        </p>
+        {renderRow(IMPORT_LISTING_CARDS)}
+      </div>
+
+      {openModal?.action === 'import' && (openModal.kind === 'hospital' || openModal.kind === 'park' || openModal.kind === 'swimming' || openModal.kind === 'grooming') && (
+        <ImportExcelModal config={IMPORT_CONFIGS[openModal.kind]} onClose={() => setOpenModal(null)} />
+      )}
 
       {openModal?.action === 'add' && openModal.kind === 'hospital' && (
         <AddHospitalModal onClose={() => setOpenModal(null)} />
