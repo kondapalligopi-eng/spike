@@ -45,6 +45,9 @@ function apiToSpot(s: SwimSchoolRead): SwimSpot {
     hours: s.hours ?? '',
     cost: s.cost ?? '',
     poolType: s.pool_type ?? '',
+    phone: s.phone ?? '',
+    email: s.email ?? '',
+    website: s.website ?? '',
     highlights: s.highlights ?? [],
   };
 }
