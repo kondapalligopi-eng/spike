@@ -202,6 +202,7 @@ export function Park() {
     features: '',
     hours: '',
     phone: '',
+    email: '',
     website: '',
   });
 
@@ -223,7 +224,7 @@ export function Park() {
     setSubmitting(true);
     try {
       const response = await fetch(
-        'https://formsubmit.co/ajax/267799cdb3e1f5ab88dbf80bc8e9e283',
+        'https://formsubmit.co/ajax/support@hispike.in',
         {
           method: 'POST',
           headers: {
@@ -240,13 +241,14 @@ export function Park() {
             'Features / amenities': form.features.trim() || '(not provided)',
             'Open hours': form.hours.trim() || '(not provided)',
             Phone: form.phone.trim(),
+            Email: form.email.trim() || '(not provided)',
             Website: form.website.trim() || '(not provided)',
           }),
         },
       );
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       setRegisterOpen(false);
-      setForm({ name: '', locality: '', address: '', features: '', hours: '', phone: '', website: '' });
+      setForm({ name: '', locality: '', address: '', features: '', hours: '', phone: '', email: '', website: '' });
       toast.success('Thanks! Your park submission has been received.');
     } catch {
       toast.error('Could not submit right now. Please try again in a moment.');
@@ -798,6 +800,17 @@ export function Park() {
                     />
                   </label>
                 </div>
+
+                <label className="block">
+                  <span className="block text-sm font-semibold text-warm-900 mb-1">Email</span>
+                  <input
+                    type="email"
+                    value={form.email}
+                    onChange={(e) => setForm({ ...form, email: e.target.value })}
+                    placeholder="park@example.com"
+                    className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors"
+                  />
+                </label>
 
                 <label className="block">
                   <span className="block text-sm font-semibold text-warm-900 mb-1">Website</span>

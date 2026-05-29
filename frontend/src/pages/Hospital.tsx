@@ -216,7 +216,9 @@ export function Hospital() {
     address: '',
     specialties: '',
     phone: '',
+    email: '',
     website: '',
+    hours: '',
   });
 
   // Close modal on ESC
@@ -245,7 +247,7 @@ export function Hospital() {
     // replace this fetch with the proper POST.
     try {
       const response = await fetch(
-        'https://formsubmit.co/ajax/267799cdb3e1f5ab88dbf80bc8e9e283',
+        'https://formsubmit.co/ajax/support@hispike.in',
         {
           method: 'POST',
           headers: {
@@ -261,13 +263,15 @@ export function Hospital() {
             Address: form.address.trim(),
             Specialties: form.specialties.trim() || '(not provided)',
             Phone: form.phone.trim() || '(not provided)',
+            Email: form.email.trim() || '(not provided)',
+            'Open hours': form.hours.trim() || '(not provided)',
             Website: form.website.trim() || '(not provided)',
           }),
         },
       );
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       setRegisterOpen(false);
-      setForm({ name: '', locality: '', address: '', specialties: '', phone: '', website: '' });
+      setForm({ name: '', locality: '', address: '', specialties: '', phone: '', email: '', website: '', hours: '' });
       toast.success('Thanks! Your hospital submission has been received.');
     } catch {
       toast.error('Could not submit right now. Please try again in a moment.');
@@ -730,6 +734,30 @@ export function Hospital() {
                       value={form.phone}
                       onChange={(e) => setForm({ ...form, phone: e.target.value })}
                       placeholder="+91 ..."
+                      className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors"
+                    />
+                  </label>
+
+                  <label className="block">
+                    <span className="block text-sm font-semibold text-warm-900 mb-1">Email</span>
+                    <input
+                      type="email"
+                      value={form.email}
+                      onChange={(e) => setForm({ ...form, email: e.target.value })}
+                      placeholder="clinic@example.com"
+                      className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors"
+                    />
+                  </label>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <label className="block">
+                    <span className="block text-sm font-semibold text-warm-900 mb-1">Open hours</span>
+                    <input
+                      type="text"
+                      value={form.hours}
+                      onChange={(e) => setForm({ ...form, hours: e.target.value })}
+                      placeholder="e.g. 9 am to 9 pm, daily"
                       className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors"
                     />
                   </label>

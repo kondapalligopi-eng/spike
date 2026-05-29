@@ -168,6 +168,7 @@ export function Swimming() {
     hours: '',
     cost: '',
     phone: '',
+    email: '',
     website: '',
   });
 
@@ -189,7 +190,7 @@ export function Swimming() {
     setSubmitting(true);
     try {
       const response = await fetch(
-        'https://formsubmit.co/ajax/267799cdb3e1f5ab88dbf80bc8e9e283',
+        'https://formsubmit.co/ajax/support@hispike.in',
         {
           method: 'POST',
           headers: {
@@ -207,13 +208,14 @@ export function Swimming() {
             'Open hours': form.hours.trim() || '(not provided)',
             Cost: form.cost.trim() || '(not provided)',
             Phone: form.phone.trim(),
+            Email: form.email.trim() || '(not provided)',
             Website: form.website.trim() || '(not provided)',
           }),
         },
       );
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       setRegisterOpen(false);
-      setForm({ name: '', locality: '', address: '', poolType: '', hours: '', cost: '', phone: '', website: '' });
+      setForm({ name: '', locality: '', address: '', poolType: '', hours: '', cost: '', phone: '', email: '', website: '' });
       toast.success('Thanks! Your swim school submission has been received.');
     } catch {
       toast.error('Could not submit right now. Please try again in a moment.');
@@ -749,16 +751,27 @@ export function Swimming() {
                   </label>
 
                   <label className="block">
-                    <span className="block text-sm font-semibold text-warm-900 mb-1">Website</span>
+                    <span className="block text-sm font-semibold text-warm-900 mb-1">Email</span>
                     <input
-                      type="url"
-                      value={form.website}
-                      onChange={(e) => setForm({ ...form, website: e.target.value })}
-                      placeholder="https://..."
+                      type="email"
+                      value={form.email}
+                      onChange={(e) => setForm({ ...form, email: e.target.value })}
+                      placeholder="pool@example.com"
                       className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors"
                     />
                   </label>
                 </div>
+
+                <label className="block">
+                  <span className="block text-sm font-semibold text-warm-900 mb-1">Website</span>
+                  <input
+                    type="url"
+                    value={form.website}
+                    onChange={(e) => setForm({ ...form, website: e.target.value })}
+                    placeholder="https://..."
+                    className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors"
+                  />
+                </label>
 
                 <div className="pt-2 flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
                   <button
