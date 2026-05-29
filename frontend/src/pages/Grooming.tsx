@@ -590,16 +590,29 @@ export function Grooming() {
                   </label>
                 </div>
 
-                <label className="block">
-                  <span className="block text-sm font-semibold text-warm-900 mb-1">Website</span>
-                  <input
-                    type="url"
-                    value={form.website}
-                    onChange={(e) => setForm({ ...form, website: e.target.value })}
-                    placeholder="https://..."
-                    className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors"
-                  />
-                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <label className="block">
+                    <span className="block text-sm font-semibold text-warm-900 mb-1">Email</span>
+                    <input
+                      type="email"
+                      value={form.email}
+                      onChange={(e) => setForm({ ...form, email: e.target.value })}
+                      placeholder="salon@example.com"
+                      className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors"
+                    />
+                  </label>
+
+                  <label className="block">
+                    <span className="block text-sm font-semibold text-warm-900 mb-1">Website</span>
+                    <input
+                      type="url"
+                      value={form.website}
+                      onChange={(e) => setForm({ ...form, website: e.target.value })}
+                      placeholder="https://..."
+                      className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors"
+                    />
+                  </label>
+                </div>
 
                 <div className="pt-2 flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
                   <button
