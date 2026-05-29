@@ -223,30 +223,16 @@ export function Park() {
     }
     setSubmitting(true);
     try {
-      const response = await fetch(
-        'https://formsubmit.co/ajax/support@hispike.in',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-          },
-          body: JSON.stringify({
-            _subject: `New HiSpike park listing: ${form.name.trim()}`,
-            _template: 'table',
-            _captcha: 'false',
-            'Park name': form.name.trim(),
-            Locality: form.locality,
-            Address: form.address.trim(),
-            'Features / amenities': form.features.trim() || '(not provided)',
-            'Open hours': form.hours.trim() || '(not provided)',
-            Phone: form.phone.trim(),
-            Email: form.email.trim() || '(not provided)',
-            Website: form.website.trim() || '(not provided)',
-          }),
-        },
-      );
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      await createSubmission('park', {
+        'Park name': form.name.trim(),
+        Locality: form.locality,
+        Address: form.address.trim(),
+        'Features / amenities': form.features.trim() || '(not provided)',
+        'Open hours': form.hours.trim() || '(not provided)',
+        Phone: form.phone.trim(),
+        Email: form.email.trim() || '(not provided)',
+        Website: form.website.trim() || '(not provided)',
+      });
       setRegisterOpen(false);
       setForm({ name: '', locality: '', address: '', features: '', hours: '', phone: '', email: '', website: '' });
       toast.success('Thanks! Your park submission has been received.');
