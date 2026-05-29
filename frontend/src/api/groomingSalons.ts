@@ -35,6 +35,8 @@ export type GroomingSalonCreate = {
   tint?: string;
   hero_emoji?: string;
   hours?: string | null;
+  email?: string | null;
+  website?: string | null;
 };
 
 const DEFAULTS: Omit<GroomingSalonRead, 'id' | 'created_at' | 'updated_at'>[] = [
