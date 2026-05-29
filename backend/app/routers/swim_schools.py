@@ -48,6 +48,9 @@ async def create_swim_school(
         hours=(payload.hours or "").strip() or None,
         cost=(payload.cost or "").strip() or None,
         pool_type=(payload.pool_type or "").strip() or None,
+        phone=(payload.phone or "").strip() or None,
+        email=(payload.email or "").strip() or None,
+        website=(payload.website or "").strip() or None,
         highlights=[h.strip() for h in (payload.highlights or []) if h.strip()],
     )
     db.add(school)
