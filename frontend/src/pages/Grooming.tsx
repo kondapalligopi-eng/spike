@@ -42,6 +42,7 @@ function apiToTile(s: GroomingSalonRead): SalonTile {
     address: s.address,
     tint: s.tint,
     heroEmoji: s.hero_emoji,
+    image: s.image_url ?? '',
     avg: s.rating_avg,
     total: s.rating_count,
   };
