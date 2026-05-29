@@ -16,6 +16,7 @@ export type ParkRead = {
   off_leash: string | null;
   features: string | null;
   phone: string | null;
+  email: string | null;
   website: string | null;
   highlights: string[];
   created_at: string;
