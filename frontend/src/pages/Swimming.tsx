@@ -26,6 +26,9 @@ type SwimSpot = {
   hours: string;
   cost: string;
   poolType: string;
+  phone: string;
+  email: string;
+  website: string;
   highlights: string[];
 };
 
