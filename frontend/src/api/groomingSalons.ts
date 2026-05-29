@@ -41,7 +41,7 @@ export type GroomingSalonCreate = {
   website?: string | null;
 };
 
-const DEFAULTS: Omit<GroomingSalonRead, 'id' | 'created_at' | 'updated_at' | 'email' | 'website'>[] = [
+const DEFAULTS: Omit<GroomingSalonRead, 'id' | 'created_at' | 'updated_at' | 'email' | 'website' | 'image_url'>[] = [
   {
     name: 'Pawsh Paws Grooming Studio',
     area: 'Indiranagar',
