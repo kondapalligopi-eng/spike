@@ -73,6 +73,8 @@ export type HospitalRead = {
   specialties: string | null;
   rating: string | null;
   website: string | null;
+  hours: string | null;
+  email: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -85,6 +87,8 @@ export type HospitalCreate = {
   specialties?: string;
   rating?: string;
   website?: string;
+  hours?: string;
+  email?: string;
 };
 
 function makeId(): string {
