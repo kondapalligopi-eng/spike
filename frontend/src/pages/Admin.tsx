@@ -1271,7 +1271,7 @@ function AddPetFoodModal({ onClose, existing }: { onClose: () => void; existing?
 type ImportColumn = { header: string; required?: boolean; hint?: string };
 
 type ImportConfig = {
-  kind: 'hospital' | 'park' | 'swimming';
+  kind: 'hospital' | 'park' | 'swimming' | 'grooming';
   title: string;
   eyebrow: string;
   templateFile: string;
