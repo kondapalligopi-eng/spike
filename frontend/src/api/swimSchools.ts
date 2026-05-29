@@ -14,6 +14,9 @@ export type SwimSchoolRead = {
   hours: string | null;
   cost: string | null;
   pool_type: string | null;
+  phone: string | null;
+  email: string | null;
+  website: string | null;
   highlights: string[];
   created_at: string;
   updated_at: string;
@@ -28,10 +31,13 @@ export type SwimSchoolCreate = {
   hours?: string;
   cost?: string;
   pool_type?: string;
+  phone?: string;
+  email?: string;
+  website?: string;
   highlights?: string[];
 };
 
-const DEFAULTS: Omit<SwimSchoolRead, 'id' | 'created_at' | 'updated_at'>[] = [
+const DEFAULTS: Omit<SwimSchoolRead, 'id' | 'created_at' | 'updated_at' | 'phone' | 'email' | 'website'>[] = [
   {
     name: 'Indiranagar Aquatic Pet Centre',
     locality: 'Indiranagar, Bengaluru',
