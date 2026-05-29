@@ -46,6 +46,8 @@ import app.models  # noqa: E402, F401  — registers all models on Base.metadata
 # models evolve; do NOT use this for drops or renames.
 SCHEMA_PATCHES: list[str] = [
     "ALTER TABLE grooming_salons ADD COLUMN IF NOT EXISTS hours VARCHAR(120)",
+    "ALTER TABLE hospitals ADD COLUMN IF NOT EXISTS hours VARCHAR(120)",
+    "ALTER TABLE hospitals ADD COLUMN IF NOT EXISTS email VARCHAR(255)",
 ]
 
 
