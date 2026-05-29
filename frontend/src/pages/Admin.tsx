@@ -777,11 +777,14 @@ function AddSwimSchoolModal({ onClose, existing }: { onClose: () => void; existi
           hours: existing.hours ?? '',
           cost: existing.cost ?? '',
           pool_type: existing.pool_type ?? '',
+          phone: existing.phone ?? '',
+          email: existing.email ?? '',
+          website: existing.website ?? '',
           highlights: existing.highlights ?? [],
         }
       : {
           name: '', locality: '', rating: 4, image_url: '', address: '',
-          hours: '', cost: '', pool_type: '', highlights: [],
+          hours: '', cost: '', pool_type: '', phone: '', email: '', website: '', highlights: [],
         }
   );
   const [highlightsText, setHighlightsText] = useState(
