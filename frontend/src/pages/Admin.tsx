@@ -932,6 +932,7 @@ function AddGroomingSalonModal({ onClose, existing }: { onClose: () => void; exi
           rating_count: existing.rating_count,
           tint: existing.tint,
           hero_emoji: existing.hero_emoji,
+          image_url: existing.image_url ?? '',
           hours: existing.hours ?? '',
           email: existing.email ?? '',
           website: existing.website ?? '',
@@ -939,7 +940,7 @@ function AddGroomingSalonModal({ onClose, existing }: { onClose: () => void; exi
       : {
           name: '', area: '', city: 'Bengaluru', state: 'KA', address: '', phone: '',
           rating_avg: 4.5, rating_count: 0, tint: 'from-amber-200 to-amber-400', hero_emoji: '✂️',
-          hours: '', email: '', website: '',
+          image_url: '', hours: '', email: '', website: '',
         }
   );
 
