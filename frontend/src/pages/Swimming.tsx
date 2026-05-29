@@ -189,31 +189,17 @@ export function Swimming() {
     }
     setSubmitting(true);
     try {
-      const response = await fetch(
-        'https://formsubmit.co/ajax/support@hispike.in',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-          },
-          body: JSON.stringify({
-            _subject: `New HiSpike swim school listing: ${form.name.trim()}`,
-            _template: 'table',
-            _captcha: 'false',
-            'Swim school name': form.name.trim(),
-            Locality: form.locality,
-            Address: form.address.trim(),
-            'Pool type': form.poolType.trim() || '(not provided)',
-            'Open hours': form.hours.trim() || '(not provided)',
-            Cost: form.cost.trim() || '(not provided)',
-            Phone: form.phone.trim(),
-            Email: form.email.trim() || '(not provided)',
-            Website: form.website.trim() || '(not provided)',
-          }),
-        },
-      );
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      await createSubmission('swimming', {
+        'Swim school name': form.name.trim(),
+        Locality: form.locality,
+        Address: form.address.trim(),
+        'Pool type': form.poolType.trim() || '(not provided)',
+        'Open hours': form.hours.trim() || '(not provided)',
+        Cost: form.cost.trim() || '(not provided)',
+        Phone: form.phone.trim(),
+        Email: form.email.trim() || '(not provided)',
+        Website: form.website.trim() || '(not provided)',
+      });
       setRegisterOpen(false);
       setForm({ name: '', locality: '', address: '', poolType: '', hours: '', cost: '', phone: '', email: '', website: '' });
       toast.success('Thanks! Your swim school submission has been received.');
