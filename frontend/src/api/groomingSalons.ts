@@ -166,6 +166,8 @@ export async function createGroomingSalon(data: GroomingSalonCreate): Promise<Gr
       tint: data.tint || 'from-amber-200 to-amber-400',
       hero_emoji: data.hero_emoji || '✂️',
       hours: data.hours?.trim() || null,
+      email: data.email?.trim() || null,
+      website: data.website?.trim() || null,
       created_at: now,
       updated_at: now,
     };
