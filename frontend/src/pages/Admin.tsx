@@ -1687,6 +1687,18 @@ function AddListingsSection() {
         {renderRow(REMOVE_LISTING_CARDS)}
       </div>
 
+      <div className="mt-6 pt-5 border-t border-warm-200">
+        <p className="text-sm font-semibold text-warm-700 mb-3">
+          Bulk import from Excel
+          <span className="ml-2 text-xs font-normal text-warm-500">— add many at once via a spreadsheet</span>
+        </p>
+        {renderRow(IMPORT_LISTING_CARDS)}
+      </div>
+
+      {openModal?.action === 'import' && (openModal.kind === 'hospital' || openModal.kind === 'park' || openModal.kind === 'swimming') && (
+        <ImportExcelModal config={IMPORT_CONFIGS[openModal.kind]} onClose={() => setOpenModal(null)} />
+      )}
+
       {openModal?.action === 'add' && openModal.kind === 'hospital' && (
         <AddHospitalModal onClose={() => setOpenModal(null)} />
       )}
