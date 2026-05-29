@@ -56,6 +56,7 @@ function apiToSalonData(api: GroomingSalonRead): GroomingSalonData {
     phone: api.phone,
     email: api.email ?? undefined,
     website: api.website ?? undefined,
+    ratingAvg: api.rating_avg,
     openTodayUntil: '8pm',
     hours: api.hours ?? DEFAULT_HOURS_FALLBACK,
     mapLabel: [api.area.toUpperCase()],
