@@ -17,6 +17,7 @@ class GroomingSalonBase(BaseModel):
     rating_count: int = Field(0, ge=0)
     tint: str = Field("from-amber-200 to-amber-400", max_length=120)
     hero_emoji: str = Field("✂️", max_length=20)
+    image_url: str | None = Field(None, max_length=500)
     hours: str | None = Field(None, max_length=120)
     email: str | None = Field(None, max_length=255)
     website: str | None = Field(None, max_length=500)
