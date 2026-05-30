@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { PageHead } from './PageHead';
 
 // Shared launching-soon splash. Used by /pet-supplies when the admin
 // toggles it off, and by /newsroom, /blog, /careers which are placeholder
