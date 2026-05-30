@@ -239,6 +239,7 @@ export function PetSupplies() {
         description="Trusted dog food, treats and pet supplies delivered across Bengaluru — Royal Canin, Pedigree, ACANA. Dry food, wet food, treats, and veterinary diets for every life stage."
         path="/pet-supplies"
       />
+      <FaqSchema faqs={SUPPLIES_FAQS} />
       <section className="relative overflow-hidden bg-gradient-to-r from-primary-900 via-primary-800 to-primary-600 text-white">
         <div
           aria-hidden="true"
