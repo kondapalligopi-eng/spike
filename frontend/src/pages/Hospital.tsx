@@ -566,6 +566,14 @@ export function Hospital() {
                       </button>
                     )}
                   </div>
+                  <div className="mt-3 pt-3 border-t border-warm-100 flex justify-end">
+                    <ShareButtons
+                      name={h.name}
+                      url="/hospital"
+                      context={`${h.locality}, Bengaluru`}
+                      variant="compact"
+                    />
+                  </div>
                 </div>
               ))}
           </div>
