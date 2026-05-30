@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { listPetFoods, type PetFoodRead } from '@/api/petFoods';
 import { useSiteSetting } from '@/api/siteSettings';
 import { ComingSoon } from '@/components/ComingSoon';
+import { PageHead } from '@/components/PageHead';
 
 const LIFESTAGES = ['Puppy', 'Adult', 'Senior', 'All Lifestages'];
 const FOOD_FORMS = ['Dry Food', 'Wet Food', 'Freeze-Dried', 'Raw', 'Treats'];
