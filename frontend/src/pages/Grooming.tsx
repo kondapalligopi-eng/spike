@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { listGroomingSalons, type GroomingSalonRead } from '@/api/groomingSalons';
 import { createSubmission } from '@/api/submissions';
 import { toast } from '@/store/toastStore';
+import { PageHead } from '@/components/PageHead';
 
 // Static (seeded) salons use bespoke area-based slugs hardcoded in
 // data/groomingSalons.ts. API-fed salons (admin-added) need a slug derived
