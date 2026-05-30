@@ -193,7 +193,6 @@ export function Hospital() {
     ],
     [allHospitals],
   );
-  const CITIES = useMemo(() => LOCATIONS.slice(1), [LOCATIONS]);
 
   const applySearch = (e?: React.FormEvent) => {
     e?.preventDefault();
