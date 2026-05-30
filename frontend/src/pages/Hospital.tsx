@@ -318,6 +318,7 @@ export function Hospital() {
         description="Find verified vet hospitals and 24×7 emergency pet clinics across Bengaluru — Indiranagar, Koramangala, Whitefield, HSR Layout, Jayanagar, Domlur. Real reviews, neighbourhood-tagged, vetted by HiSpike."
         path="/hospital"
       />
+      <FaqSchema faqs={HOSPITAL_FAQS} />
       {/* Title hero — matches the Home gradient + paw-print language */}
       <section className="relative overflow-hidden bg-gradient-to-r from-primary-900 via-primary-800 to-primary-600 text-white">
         {/* Decorative paw-print pattern */}
