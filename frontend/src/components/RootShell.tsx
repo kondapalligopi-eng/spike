@@ -52,12 +52,14 @@ export function RootShell() {
   }, [accessToken]);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <CloudflareAnalytics />
-      <Outlet />
-      {mounted && import.meta.env.DEV && (
-        <ReactQueryDevtools initialIsOpen={false} />
-      )}
-    </QueryClientProvider>
+    <HelmetProvider>
+      <QueryClientProvider client={queryClient}>
+        <CloudflareAnalytics />
+        <Outlet />
+        {mounted && import.meta.env.DEV && (
+          <ReactQueryDevtools initialIsOpen={false} />
+        )}
+      </QueryClientProvider>
+    </HelmetProvider>
   );
 }
