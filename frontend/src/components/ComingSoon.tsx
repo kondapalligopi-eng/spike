@@ -16,9 +16,12 @@ type ComingSoonProps = {
   body: string;
   /** Subject line for the "Notify me" mailto, e.g. "Pet Supplies launches". */
   notifySubject: string;
+  /** Path used for canonical/og URL — omitted means no SEO head injected
+   *  (used when a parent already sets PageHead, e.g. PetSupplies toggle). */
+  path?: string;
 };
 
-export function ComingSoon({ emoji, eyebrow, title, body, notifySubject }: ComingSoonProps) {
+export function ComingSoon({ emoji, eyebrow, title, body, notifySubject, path }: ComingSoonProps) {
   const mailtoHref = `mailto:support@hispike.in?subject=${encodeURIComponent(
     `Notify me when ${notifySubject}`,
   )}`;
