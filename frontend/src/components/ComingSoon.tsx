@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { PageHead } from './PageHead';
 
 // Shared launching-soon splash. Used by /pet-supplies when the admin
 // toggles it off, and by /newsroom, /blog, /careers which are placeholder
@@ -15,15 +16,25 @@ type ComingSoonProps = {
   body: string;
   /** Subject line for the "Notify me" mailto, e.g. "Pet Supplies launches". */
   notifySubject: string;
+  /** Path used for canonical/og URL — omitted means no SEO head injected
+   *  (used when a parent already sets PageHead, e.g. PetSupplies toggle). */
+  path?: string;
 };
 
-export function ComingSoon({ emoji, eyebrow, title, body, notifySubject }: ComingSoonProps) {
+export function ComingSoon({ emoji, eyebrow, title, body, notifySubject, path }: ComingSoonProps) {
   const mailtoHref = `mailto:support@hispike.in?subject=${encodeURIComponent(
     `Notify me when ${notifySubject}`,
   )}`;
 
   return (
     <div className="bg-white">
+      {path && (
+        <PageHead
+          title={title}
+          description={body}
+          path={path}
+        />
+      )}
       <section className="relative overflow-hidden bg-gradient-to-r from-primary-900 via-primary-800 to-primary-600 text-white">
         <div
           aria-hidden="true"

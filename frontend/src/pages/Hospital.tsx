@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { listHospitals, type HospitalRead } from '@/api/hospitals';
 import { createSubmission } from '@/api/submissions';
 import { toast } from '@/store/toastStore';
+import { PageHead } from '@/components/PageHead';
 
 type Hospital = {
   name: string;
@@ -193,7 +194,6 @@ export function Hospital() {
     ],
     [allHospitals],
   );
-  const CITIES = useMemo(() => LOCATIONS.slice(1), [LOCATIONS]);
 
   const applySearch = (e?: React.FormEvent) => {
     e?.preventDefault();
@@ -292,6 +292,11 @@ export function Hospital() {
 
   return (
     <div className="bg-white">
+      <PageHead
+        title="Trusted Vets & Pet Hospitals in Bengaluru"
+        description="Find verified vet hospitals and 24×7 emergency pet clinics across Bengaluru — Indiranagar, Koramangala, Whitefield, HSR Layout, Jayanagar, Domlur. Real reviews, neighbourhood-tagged, vetted by HiSpike."
+        path="/hospital"
+      />
       {/* Title hero — matches the Home gradient + paw-print language */}
       <section className="relative overflow-hidden bg-gradient-to-r from-primary-900 via-primary-800 to-primary-600 text-white">
         {/* Decorative paw-print pattern */}
@@ -406,31 +411,6 @@ export function Hospital() {
               Clear
             </button>
           </form>
-        </div>
-      </section>
-
-      {/* City chips */}
-      <section className="bg-primary-100 border-b border-warm-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex flex-wrap justify-center gap-3">
-            {CITIES.map((city) => {
-              const active = activeCity === city;
-              return (
-                <button
-                  key={city}
-                  type="button"
-                  onClick={() => setActiveCity(active ? null : city)}
-                  className={`px-5 py-1.5 rounded-full border text-sm font-medium transition-colors ${
-                    active
-                      ? 'bg-primary-700 text-white border-primary-700'
-                      : 'bg-white text-primary-700 border-warm-300 hover:border-primary-600 hover:text-primary-800'
-                  }`}
-                >
-                  {city}
-                </button>
-              );
-            })}
-          </div>
         </div>
       </section>
 

@@ -4,14 +4,18 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>HiSpike — All-In-One Pet Care for Dogs in Bengaluru</title>
-    <meta name="description" content="HiSpike is an all-in-one pet care platform for dogs — trusted veterinarians, dog parks, swim lessons, professional grooming salons, and premium pet supplies in Bengaluru, India." />
+    <!--
+      <title>, <meta name="description">, canonical URL, and the per-page
+      og:/twitter: tags are owned by <PageHead> (src/components/PageHead.tsx)
+      via vite-react-ssg's <Head>. Each route sets its own — keeping them
+      out of this template avoids the SSR-injected Helmet tags being shadowed
+      by static ones later in the document.
+    -->
     <meta name="keywords" content="pet care, dog care, dog grooming, veterinarian, dog park, dog swimming, pet supplies, Bengaluru, India, dogs, HiSpike" />
     <meta name="author" content="HiSpike" />
     <meta name="application-name" content="HiSpike" />
     <meta name="apple-mobile-web-app-title" content="HiSpike" />
     <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
-    <link rel="canonical" href="https://hispike.in/" />
 
     <!--
       Search-engine verification meta tags. Replace the placeholder values with the
@@ -34,19 +38,16 @@
     <link rel="icon" type="image/png" href="/logo.png?v=2" />
     <link rel="apple-touch-icon" href="/logo.png?v=2" />
 
+    <!-- og:type / og:image / twitter:card / twitter:image are site-wide
+         constants. og:title / og:description / og:url / twitter:title /
+         twitter:description / twitter:url are set per-page by <PageHead>. -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://hispike.in/" />
-    <meta property="og:title" content="HiSpike — All-In-One Pet Care for Dogs in Bengaluru" />
-    <meta property="og:description" content="Trusted vets, dog parks, swim lessons, grooming, and premium pet supplies — all in one place." />
     <meta property="og:image" content="https://hispike.in/logo.png?v=2" />
     <meta property="og:image:alt" content="HiSpike logo" />
     <meta property="og:site_name" content="HiSpike" />
     <meta property="og:locale" content="en_IN" />
 
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:url" content="https://hispike.in/" />
-    <meta name="twitter:title" content="HiSpike — All-In-One Pet Care for Dogs in Bengaluru" />
-    <meta name="twitter:description" content="Trusted vets, dog parks, swim lessons, grooming, and premium pet supplies — all in one place." />
     <meta name="twitter:image" content="https://hispike.in/logo.png?v=2" />
     <meta name="twitter:image:alt" content="HiSpike logo" />
 
@@ -70,6 +71,18 @@
       "logo": "https://hispike.in/logo.png?v=2"
     }
     </script>
+    <!--
+      Brand-entity signal — Organization schema is one of the strongest
+      ways to teach Google that "HiSpike" is a distinct business entity
+      (and improve branded-query ranking like searching just "hispike").
+
+      ⚠ TO COMPLETE: once Facebook / Instagram / LinkedIn / X (Twitter) /
+      YouTube pages exist for HiSpike, add their URLs to the `sameAs`
+      array below. `sameAs` is the single most important field for Google
+      linking the brand name to verified profiles across the web. Use the
+      EXACT profile URLs (e.g. "https://www.instagram.com/hispike/"), not
+      placeholders or 404s — fake URLs in sameAs hurt more than help.
+    -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -79,6 +92,8 @@
       "alternateName": "HiSpike Pet Care",
       "url": "https://hispike.in/",
       "logo": "https://hispike.in/logo.png?v=2",
+      "foundingDate": "2026",
+      "slogan": "All-in-one pet care for dogs in Bengaluru",
       "brand": {
         "@type": "Brand",
         "name": "HiSpike"
@@ -94,18 +109,73 @@
         "@type": "City",
         "name": "Bengaluru"
       },
+      "sameAs": [],
       "contactPoint": [
         {
           "@type": "ContactPoint",
-          "email": "hello@hispike.in",
+          "email": "support@hispike.in",
           "contactType": "customer service",
           "areaServed": "IN",
-          "availableLanguage": ["English", "Kannada", "Hindi"]
+          "availableLanguage": ["English", "Kannada", "Hindi", "Telugu"]
+        }
+      ]
+    }
+    </script>
+
+    <!--
+      Per-service schema — tells Google "HiSpike offers these 5 services in
+      Bengaluru" so the service pages are eligible for richer SERP treatment
+      (sitelinks, knowledge-panel service chips) and have a chance at ranking
+      for service-specific local queries like "dog grooming bengaluru".
+    -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Service",
+          "name": "Vet Hospitals in Bengaluru",
+          "serviceType": "Veterinary care",
+          "url": "https://hispike.in/hospital",
+          "provider": { "@type": "Organization", "name": "HiSpike", "url": "https://hispike.in/" },
+          "areaServed": { "@type": "City", "name": "Bengaluru" },
+          "description": "Verified veterinary hospitals and 24×7 emergency pet clinics across Bengaluru — Indiranagar, Koramangala, Whitefield, HSR Layout, Jayanagar, Domlur."
         },
         {
-          "@type": "ContactPoint",
-          "email": "security@hispike.in",
-          "contactType": "security"
+          "@type": "Service",
+          "name": "Dog Parks in Bengaluru",
+          "serviceType": "Dog park directory",
+          "url": "https://hispike.in/park",
+          "provider": { "@type": "Organization", "name": "HiSpike", "url": "https://hispike.in/" },
+          "areaServed": { "@type": "City", "name": "Bengaluru" },
+          "description": "Best dog-friendly parks across Bengaluru with off-leash zones, walking trails, opening hours and amenities."
+        },
+        {
+          "@type": "Service",
+          "name": "Dog Swimming Lessons in Bengaluru",
+          "serviceType": "Canine swimming",
+          "url": "https://hispike.in/swimming",
+          "provider": { "@type": "Organization", "name": "HiSpike", "url": "https://hispike.in/" },
+          "areaServed": { "@type": "City", "name": "Bengaluru" },
+          "description": "Heated indoor pools and certified canine swim coaches across Bengaluru, including hydrotherapy for senior and post-surgery recovery dogs."
+        },
+        {
+          "@type": "Service",
+          "name": "Pet Grooming Salons in Bengaluru",
+          "serviceType": "Pet grooming",
+          "url": "https://hispike.in/grooming",
+          "provider": { "@type": "Organization", "name": "HiSpike", "url": "https://hispike.in/" },
+          "areaServed": { "@type": "City", "name": "Bengaluru" },
+          "description": "Verified dog grooming salons across Bengaluru offering bath & full groom, walk-in touch-ups and breed-specific styling."
+        },
+        {
+          "@type": "Service",
+          "name": "Pet Supplies & Dog Food in Bengaluru",
+          "serviceType": "Pet supplies retail",
+          "url": "https://hispike.in/pet-supplies",
+          "provider": { "@type": "Organization", "name": "HiSpike", "url": "https://hispike.in/" },
+          "areaServed": { "@type": "City", "name": "Bengaluru" },
+          "description": "Premium dog food, treats and pet supplies — Royal Canin, Pedigree, ACANA — across dry, wet, veterinary and life-stage-specific diets."
         }
       ]
     }
@@ -146,8 +216,7 @@
         </section>
         <section>
           <h2>Contact</h2>
-          <p>General enquiries: <a href="mailto:hello@hispike.in">hello@hispike.in</a></p>
-          <p>Security: <a href="mailto:security@hispike.in">security@hispike.in</a></p>
+          <p>Email us at <a href="mailto:support@hispike.in">support@hispike.in</a> — we usually reply within a day.</p>
         </section>
         <p><strong>Please enable JavaScript</strong> to use HiSpike's interactive booking and account features.</p>
       </main>

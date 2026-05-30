@@ -1,6 +1,13 @@
+import { PageHead } from '@/components/PageHead';
+
 export function OurStory() {
   return (
     <div className="bg-white">
+      <PageHead
+        title="About HiSpike — Built by Dog Parents in Bengaluru"
+        description="HiSpike was born in Bengaluru to put every part of caring for a dog in one place — vets, parks, swim coaches, grooming, and supplies. Verified providers, honest reviews. Meet Spike, the Lab who started it all."
+        path="/about"
+      />
       <section className="relative overflow-hidden bg-gradient-to-r from-primary-900 via-primary-800 to-primary-600 text-white">
         <div
           aria-hidden="true"

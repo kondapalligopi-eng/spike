@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { listGroomingSalons, type GroomingSalonRead } from '@/api/groomingSalons';
 import { createSubmission } from '@/api/submissions';
 import { toast } from '@/store/toastStore';
+import { PageHead } from '@/components/PageHead';
 
 // Static (seeded) salons use bespoke area-based slugs hardcoded in
 // data/groomingSalons.ts. API-fed salons (admin-added) need a slug derived
@@ -229,6 +230,11 @@ export function Grooming() {
 
   return (
     <div className="bg-white">
+      <PageHead
+        title="Pet Grooming Salons in Bengaluru"
+        description="Verified dog grooming salons across Bengaluru — Indiranagar, Koramangala, HSR Layout, Whitefield and more. Breed-specific styling, bath & full groom, walk-in touch-ups. Honest reviews and direct booking."
+        path="/grooming"
+      />
       <section className="relative overflow-hidden bg-gradient-to-r from-primary-900 via-primary-800 to-primary-600 text-white">
         <div
           aria-hidden="true"
@@ -322,30 +328,6 @@ export function Grooming() {
               Clear
             </button>
           </form>
-        </div>
-      </section>
-
-      <section className="bg-primary-100 border-b border-warm-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex flex-wrap justify-center gap-3">
-            {SALON_LOCALITIES.map((city) => {
-              const active = activeCity === city;
-              return (
-                <button
-                  key={city}
-                  type="button"
-                  onClick={() => setActiveCity(active ? null : city)}
-                  className={`px-5 py-1.5 rounded-full border text-sm font-medium transition-colors ${
-                    active
-                      ? 'bg-primary-700 text-white border-primary-700'
-                      : 'bg-white text-primary-700 border-warm-300 hover:border-primary-600 hover:text-primary-800'
-                  }`}
-                >
-                  {city}
-                </button>
-              );
-            })}
-          </div>
         </div>
       </section>
 

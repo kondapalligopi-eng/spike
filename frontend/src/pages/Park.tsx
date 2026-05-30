@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { listParks, type ParkRead } from '@/api/parks';
 import { createSubmission } from '@/api/submissions';
 import { toast } from '@/store/toastStore';
+import { PageHead } from '@/components/PageHead';
 
 // Comprehensive list of Bangalore neighbourhoods used by the
 // "List your park" registration form. Same list as the Hospital page.
@@ -278,6 +279,11 @@ export function Park() {
 
   return (
     <div className="bg-white">
+      <PageHead
+        title="Dog-Friendly Parks in Bengaluru"
+        description="Discover the best dog parks across Bengaluru — Cubbon, Lalbagh, Agara Lake, and neighbourhood parks across Indiranagar, Whitefield, HSR Layout, Koramangala and beyond. Off-leash zones, walking trails, opening hours."
+        path="/park"
+      />
       {/* Title hero — same gradient + paw-print + eyebrow language as the
           Hospital page so the brand carries across pages. Only shown on
           the listing view; the detail view has its own back-button header. */}
@@ -383,29 +389,6 @@ export function Park() {
             </div>
           </section>
 
-          <section className="bg-primary-100 border-b border-warm-200">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-              <div className="flex flex-wrap justify-center gap-3">
-                {PARK_LOCALITIES.map((city) => {
-                  const active = activeCity === city;
-                  return (
-                    <button
-                      key={city}
-                      type="button"
-                      onClick={() => setActiveCity(active ? null : city)}
-                      className={`px-5 py-1.5 rounded-full border text-sm font-medium transition-colors ${
-                        active
-                          ? 'bg-primary-700 text-white border-primary-700'
-                          : 'bg-white text-primary-700 border-warm-300 hover:border-primary-600 hover:text-primary-800'
-                      }`}
-                    >
-                      {city}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          </section>
         </>
       )}
 
@@ -489,16 +472,6 @@ export function Park() {
             </>
           ) : (
             <>
-          {/* Title & intro */}
-          <h2 className="text-2xl font-bold text-warm-900 mb-3">
-            Dog Friendly Activities in {appliedQuery || 'Bangalore'}
-          </h2>
-          <p className="text-sm text-warm-600 mb-6 leading-relaxed">
-            Don't leave Fido at home when you're out exploring. Get out and play! Wherever you are in
-            {' '}{appliedQuery || 'Bangalore'}, we can point you towards the nearest off-leash dog park, a great
-            walking trail, and lots of other places to spend the day with your pup.
-          </p>
-
           {/* Spot cards */}
           {parksQuery.isLoading && allSpots.length === 0 ? (
             <div className="max-w-md mx-auto text-center py-12">

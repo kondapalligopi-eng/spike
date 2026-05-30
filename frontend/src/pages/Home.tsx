@@ -1,8 +1,14 @@
 import { Link } from 'react-router-dom';
+import { PageHead } from '@/components/PageHead';
 
 export function Home() {
   return (
     <div className="flex flex-col">
+      <PageHead
+        title="HiSpike — All-In-One Pet Care for Dogs in Bengaluru"
+        description="HiSpike is Bengaluru's all-in-one pet care platform — find trusted vets, dog parks, swim coaches, grooming salons, and premium pet supplies in one place. Verified providers, honest reviews, hyperlocal."
+        path="/"
+      />
       {/* Hero Banner — cinematic wide layout */}
       <section className="relative overflow-hidden bg-gradient-to-r from-primary-900 via-primary-800 to-primary-600 text-white">
         {/* Decorative paw-print pattern (full banner) */}

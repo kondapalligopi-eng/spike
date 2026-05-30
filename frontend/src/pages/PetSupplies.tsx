@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { listPetFoods, type PetFoodRead } from '@/api/petFoods';
 import { useSiteSetting } from '@/api/siteSettings';
 import { ComingSoon } from '@/components/ComingSoon';
+import { PageHead } from '@/components/PageHead';
 
 const LIFESTAGES = ['Puppy', 'Adult', 'Senior', 'All Lifestages'];
 const FOOD_FORMS = ['Dry Food', 'Wet Food', 'Freeze-Dried', 'Raw', 'Treats'];
@@ -213,6 +214,11 @@ export function PetSupplies() {
 
   return (
     <div className="bg-white">
+      <PageHead
+        title="Dog Food & Premium Pet Supplies in Bengaluru"
+        description="Trusted dog food, treats and pet supplies delivered across Bengaluru — Royal Canin, Pedigree, ACANA. Dry food, wet food, treats, and veterinary diets for every life stage."
+        path="/pet-supplies"
+      />
       <section className="relative overflow-hidden bg-gradient-to-r from-primary-900 via-primary-800 to-primary-600 text-white">
         <div
           aria-hidden="true"

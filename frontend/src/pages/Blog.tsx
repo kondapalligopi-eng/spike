@@ -8,6 +8,7 @@ export function Blog() {
       title="The HiSpike Blog is launching soon"
       body="Vet-reviewed advice, neighbourhood guides, and the science of caring for a Bengaluru dog — first posts coming shortly."
       notifySubject="the Blog launches"
+      path="/blog"
     />
   );
 }
