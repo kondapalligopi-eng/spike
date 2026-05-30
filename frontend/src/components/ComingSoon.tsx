@@ -28,6 +28,13 @@ export function ComingSoon({ emoji, eyebrow, title, body, notifySubject, path }:
 
   return (
     <div className="bg-white">
+      {path && (
+        <PageHead
+          title={title}
+          description={body}
+          path={path}
+        />
+      )}
       <section className="relative overflow-hidden bg-gradient-to-r from-primary-900 via-primary-800 to-primary-600 text-white">
         <div
           aria-hidden="true"
