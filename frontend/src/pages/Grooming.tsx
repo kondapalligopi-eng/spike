@@ -230,6 +230,11 @@ export function Grooming() {
 
   return (
     <div className="bg-white">
+      <PageHead
+        title="Pet Grooming Salons in Bengaluru"
+        description="Verified dog grooming salons across Bengaluru — Indiranagar, Koramangala, HSR Layout, Whitefield and more. Breed-specific styling, bath & full groom, walk-in touch-ups. Honest reviews and direct booking."
+        path="/grooming"
+      />
       <section className="relative overflow-hidden bg-gradient-to-r from-primary-900 via-primary-800 to-primary-600 text-white">
         <div
           aria-hidden="true"
