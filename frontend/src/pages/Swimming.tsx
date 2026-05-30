@@ -270,6 +270,7 @@ export function Swimming() {
         description="Heated dog swim pools and certified canine swim coaches across Bengaluru — Indiranagar, Whitefield, HSR Layout, Sarjapur, Koramangala. Hydrotherapy, swim safety, and small-batch sessions for all breeds."
         path="/swimming"
       />
+      <FaqSchema faqs={SWIM_FAQS} />
       {!selectedSpot && (
         <section className="relative overflow-hidden bg-gradient-to-r from-primary-900 via-primary-800 to-primary-600 text-white">
           <div
