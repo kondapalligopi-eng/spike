@@ -305,6 +305,7 @@ export function Park() {
         description="Discover the best dog parks across Bengaluru — Cubbon, Lalbagh, Agara Lake, and neighbourhood parks across Indiranagar, Whitefield, HSR Layout, Koramangala and beyond. Off-leash zones, walking trails, opening hours."
         path="/park"
       />
+      <FaqSchema faqs={PARK_FAQS} />
       {/* Title hero — same gradient + paw-print + eyebrow language as the
           Hospital page so the brand carries across pages. Only shown on
           the listing view; the detail view has its own back-button header. */}
