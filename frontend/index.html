@@ -120,6 +120,65 @@
       ]
     }
     </script>
+
+    <!--
+      Per-service schema — tells Google "HiSpike offers these 5 services in
+      Bengaluru" so the service pages are eligible for richer SERP treatment
+      (sitelinks, knowledge-panel service chips) and have a chance at ranking
+      for service-specific local queries like "dog grooming bengaluru".
+    -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Service",
+          "name": "Vet Hospitals in Bengaluru",
+          "serviceType": "Veterinary care",
+          "url": "https://hispike.in/hospital",
+          "provider": { "@type": "Organization", "name": "HiSpike", "url": "https://hispike.in/" },
+          "areaServed": { "@type": "City", "name": "Bengaluru" },
+          "description": "Verified veterinary hospitals and 24×7 emergency pet clinics across Bengaluru — Indiranagar, Koramangala, Whitefield, HSR Layout, Jayanagar, Domlur."
+        },
+        {
+          "@type": "Service",
+          "name": "Dog Parks in Bengaluru",
+          "serviceType": "Dog park directory",
+          "url": "https://hispike.in/park",
+          "provider": { "@type": "Organization", "name": "HiSpike", "url": "https://hispike.in/" },
+          "areaServed": { "@type": "City", "name": "Bengaluru" },
+          "description": "Best dog-friendly parks across Bengaluru with off-leash zones, walking trails, opening hours and amenities."
+        },
+        {
+          "@type": "Service",
+          "name": "Dog Swimming Lessons in Bengaluru",
+          "serviceType": "Canine swimming",
+          "url": "https://hispike.in/swimming",
+          "provider": { "@type": "Organization", "name": "HiSpike", "url": "https://hispike.in/" },
+          "areaServed": { "@type": "City", "name": "Bengaluru" },
+          "description": "Heated indoor pools and certified canine swim coaches across Bengaluru, including hydrotherapy for senior and post-surgery recovery dogs."
+        },
+        {
+          "@type": "Service",
+          "name": "Pet Grooming Salons in Bengaluru",
+          "serviceType": "Pet grooming",
+          "url": "https://hispike.in/grooming",
+          "provider": { "@type": "Organization", "name": "HiSpike", "url": "https://hispike.in/" },
+          "areaServed": { "@type": "City", "name": "Bengaluru" },
+          "description": "Verified dog grooming salons across Bengaluru offering bath & full groom, walk-in touch-ups and breed-specific styling."
+        },
+        {
+          "@type": "Service",
+          "name": "Pet Supplies & Dog Food in Bengaluru",
+          "serviceType": "Pet supplies retail",
+          "url": "https://hispike.in/pet-supplies",
+          "provider": { "@type": "Organization", "name": "HiSpike", "url": "https://hispike.in/" },
+          "areaServed": { "@type": "City", "name": "Bengaluru" },
+          "description": "Premium dog food, treats and pet supplies — Royal Canin, Pedigree, ACANA — across dry, wet, veterinary and life-stage-specific diets."
+        }
+      ]
+    }
+    </script>
   </head>
   <body>
     <div id="root"></div>
