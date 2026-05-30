@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { getSalon, type GroomingSalonData } from '@/data/groomingSalons';
 import { listGroomingSalons, type GroomingSalonRead } from '@/api/groomingSalons';
+import { ShareButtons } from '@/components/ShareButtons';
 
 function Stars({ value }: { value: number }) {
   return (
