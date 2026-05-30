@@ -420,6 +420,14 @@ export function Park() {
                 <PawRatingDark value={selectedSpot.rating} />
               </div>
 
+              <div className="mb-6">
+                <ShareButtons
+                  name={selectedSpot.name}
+                  url="/park"
+                  context={selectedSpot.locality}
+                />
+              </div>
+
               {/* Info card — softer look than the alternating-row table.
                   Each row is a flex line with a tinted icon disc on the
                   left, label above value on the right. */}
