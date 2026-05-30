@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { listHospitals, type HospitalRead } from '@/api/hospitals';
 import { createSubmission } from '@/api/submissions';
 import { toast } from '@/store/toastStore';
+import { PageHead } from '@/components/PageHead';
 
 type Hospital = {
   name: string;
