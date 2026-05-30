@@ -70,6 +70,18 @@
       "logo": "https://hispike.in/logo.png?v=2"
     }
     </script>
+    <!--
+      Brand-entity signal — Organization schema is one of the strongest
+      ways to teach Google that "HiSpike" is a distinct business entity
+      (and improve branded-query ranking like searching just "hispike").
+
+      ⚠ TO COMPLETE: once Facebook / Instagram / LinkedIn / X (Twitter) /
+      YouTube pages exist for HiSpike, add their URLs to the `sameAs`
+      array below. `sameAs` is the single most important field for Google
+      linking the brand name to verified profiles across the web. Use the
+      EXACT profile URLs (e.g. "https://www.instagram.com/hispike/"), not
+      placeholders or 404s — fake URLs in sameAs hurt more than help.
+    -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -79,6 +91,8 @@
       "alternateName": "HiSpike Pet Care",
       "url": "https://hispike.in/",
       "logo": "https://hispike.in/logo.png?v=2",
+      "foundingDate": "2026",
+      "slogan": "All-in-one pet care for dogs in Bengaluru",
       "brand": {
         "@type": "Brand",
         "name": "HiSpike"
@@ -94,18 +108,14 @@
         "@type": "City",
         "name": "Bengaluru"
       },
+      "sameAs": [],
       "contactPoint": [
         {
           "@type": "ContactPoint",
-          "email": "hello@hispike.in",
+          "email": "support@hispike.in",
           "contactType": "customer service",
           "areaServed": "IN",
           "availableLanguage": ["English", "Kannada", "Hindi"]
-        },
-        {
-          "@type": "ContactPoint",
-          "email": "security@hispike.in",
-          "contactType": "security"
         }
       ]
     }
