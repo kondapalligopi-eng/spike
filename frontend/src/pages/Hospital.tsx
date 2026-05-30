@@ -4,6 +4,7 @@ import { listHospitals, type HospitalRead } from '@/api/hospitals';
 import { createSubmission } from '@/api/submissions';
 import { toast } from '@/store/toastStore';
 import { PageHead } from '@/components/PageHead';
+import { ShareButtons } from '@/components/ShareButtons';
 
 type Hospital = {
   name: string;
