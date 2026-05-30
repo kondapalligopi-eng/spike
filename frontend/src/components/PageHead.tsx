@@ -19,7 +19,7 @@ export function PageHead({ title, description, path }: PageHeadProps) {
   const fullTitle = title.includes('HiSpike') ? title : `${title} | HiSpike`;
   const url = `${SITE_URL}${path.startsWith('/') ? path : `/${path}`}`;
   return (
-    <Helmet>
+    <Head>
       <title>{fullTitle}</title>
       <meta name="description" content={description} />
       <link rel="canonical" href={url} />
@@ -29,6 +29,6 @@ export function PageHead({ title, description, path }: PageHeadProps) {
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:url" content={url} />
-    </Helmet>
+    </Head>
   );
 }
