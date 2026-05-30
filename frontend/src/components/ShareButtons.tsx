@@ -64,16 +64,18 @@ export function ShareButtons({ name, url, context, variant = 'full' }: ShareButt
         type="button"
         onClick={copy}
         aria-label={`Copy link to ${name}`}
-        className={`${baseBtn} border-2 border-warm-300 bg-white text-warm-700 hover:border-primary-500 hover:text-primary-700`}
+        className={`${baseBtn} bg-primary-600 hover:bg-primary-700 text-white shadow-sm`}
         title="Copy link"
       >
         {copied ? (
           <svg aria-hidden="true" className={compact ? 'w-4 h-4' : 'w-3.5 h-3.5'} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
           </svg>
         ) : (
-          <svg aria-hidden="true" className={compact ? 'w-4 h-4' : 'w-3.5 h-3.5'} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 015.656 5.656l-3 3a4 4 0 01-5.656-5.656m-3-3a4 4 0 015.656-5.656l3 3a4 4 0 010 5.656" />
+          // Material-style chain link — two interlocking C-shapes. Reads
+          // clearly at 16px in the compact icon-only variant.
+          <svg aria-hidden="true" className={compact ? 'w-4 h-4' : 'w-3.5 h-3.5'} fill="currentColor" viewBox="0 0 24 24">
+            <path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z" />
           </svg>
         )}
         {!compact && <span>{copied ? 'Copied' : 'Copy link'}</span>}
