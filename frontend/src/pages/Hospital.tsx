@@ -4,6 +4,27 @@ import { listHospitals, type HospitalRead } from '@/api/hospitals';
 import { createSubmission } from '@/api/submissions';
 import { toast } from '@/store/toastStore';
 import { PageHead } from '@/components/PageHead';
+import { ShareButtons } from '@/components/ShareButtons';
+import { FaqSchema, type FaqItem } from '@/components/FaqSchema';
+
+const HOSPITAL_FAQS: FaqItem[] = [
+  {
+    q: 'What are the best 24×7 vet hospitals in Bengaluru?',
+    a: 'Vetic Pet Clinic in HSR Layout and Cessna Lifeline Veterinary Hospital in Domlur both offer round-the-clock emergency care. Browse the HiSpike vet directory for full opening hours and reviews of every listed hospital.',
+  },
+  {
+    q: 'How do I find a vet near my Bengaluru neighbourhood?',
+    a: 'Use the Locations filter on the HiSpike vet listing page to narrow down by neighbourhood — Indiranagar, Koramangala, HSR Layout, Whitefield, Jayanagar, Domlur and more — and each card shows the locality, address, and phone.',
+  },
+  {
+    q: 'How do I book an appointment with a vet on HiSpike?',
+    a: 'Each listing has a "Book" button that links directly to the clinic\'s website, plus a "Call" button to ring them. For walk-in clinics you can just visit during their listed open hours.',
+  },
+  {
+    q: 'Are HiSpike vet listings verified?',
+    a: 'Yes. Every vet hospital, salon, trainer, and swim coach in our directory is checked by HiSpike before being listed — credentials, facilities, and recent reviews. We don\'t run paid placements.',
+  },
+];
 
 type Hospital = {
   name: string;
@@ -297,6 +318,7 @@ export function Hospital() {
         description="Find verified vet hospitals and 24×7 emergency pet clinics across Bengaluru — Indiranagar, Koramangala, Whitefield, HSR Layout, Jayanagar, Domlur. Real reviews, neighbourhood-tagged, vetted by HiSpike."
         path="/hospital"
       />
+      <FaqSchema faqs={HOSPITAL_FAQS} />
       {/* Title hero — matches the Home gradient + paw-print language */}
       <section className="relative overflow-hidden bg-gradient-to-r from-primary-900 via-primary-800 to-primary-600 text-white">
         {/* Decorative paw-print pattern */}
@@ -564,6 +586,14 @@ export function Hospital() {
                         Call
                       </button>
                     )}
+                  </div>
+                  <div className="mt-3 pt-3 border-t border-warm-100 flex justify-end">
+                    <ShareButtons
+                      name={h.name}
+                      url="/hospital"
+                      context={`${h.locality}, Bengaluru`}
+                      variant="compact"
+                    />
                   </div>
                 </div>
               ))}

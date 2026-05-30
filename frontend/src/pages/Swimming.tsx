@@ -4,6 +4,27 @@ import { listSwimSchools, type SwimSchoolRead } from '@/api/swimSchools';
 import { createSubmission } from '@/api/submissions';
 import { toast } from '@/store/toastStore';
 import { PageHead } from '@/components/PageHead';
+import { ShareButtons } from '@/components/ShareButtons';
+import { FaqSchema, type FaqItem } from '@/components/FaqSchema';
+
+const SWIM_FAQS: FaqItem[] = [
+  {
+    q: 'Where can my dog learn to swim in Bengaluru?',
+    a: 'Specialised dog swim schools operate across Bengaluru — Indiranagar Aquatic Pet Centre, Whitefield Splash Academy, HSR Canine Swim Club, Sarjapur Splash & Paddle, Koramangala Pet Pool Club, and Domlur Aquatic Hub. Browse the HiSpike swim directory for verified options near you.',
+  },
+  {
+    q: 'Are there heated dog pools in Bengaluru?',
+    a: 'Yes. Most listed swim schools offer climate-controlled, heated pools (typically 28–30°C) so dogs can swim year-round regardless of monsoon or winter weather.',
+  },
+  {
+    q: 'Is swimming safe for puppies and senior dogs?',
+    a: 'Yes, with the right pool. Many Bengaluru swim schools offer dedicated puppy programs and hydrotherapy for senior or post-surgery dogs. Look for certified canine swim coaches, small-batch sessions, and life-jacket rental.',
+  },
+  {
+    q: 'How much does a dog swim session cost in Bengaluru?',
+    a: 'Typical cost is ₹500–₹650 for a 30-minute session. Monthly subscription packages often come with discounts. Each school\'s listing on HiSpike shows current pricing.',
+  },
+];
 
 const BANGALORE_NEIGHBOURHOODS = [
   'Banashankari', 'Banaswadi', 'Basavanagudi', 'Bellandur', 'Bommanahalli',
@@ -249,6 +270,7 @@ export function Swimming() {
         description="Heated dog swim pools and certified canine swim coaches across Bengaluru — Indiranagar, Whitefield, HSR Layout, Sarjapur, Koramangala. Hydrotherapy, swim safety, and small-batch sessions for all breeds."
         path="/swimming"
       />
+      <FaqSchema faqs={SWIM_FAQS} />
       {!selectedSpot && (
         <section className="relative overflow-hidden bg-gradient-to-r from-primary-900 via-primary-800 to-primary-600 text-white">
           <div
@@ -374,6 +396,14 @@ export function Swimming() {
                   <p className="text-sm text-warm-500 mt-1">📍 {selectedSpot.locality}</p>
                 </div>
                 <PawRatingDark value={selectedSpot.rating} />
+              </div>
+
+              <div className="mb-6">
+                <ShareButtons
+                  name={selectedSpot.name}
+                  url="/swimming"
+                  context={selectedSpot.locality}
+                />
               </div>
 
               <div className="rounded-2xl border-2 border-primary-100 bg-white shadow-sm mb-8 overflow-hidden">

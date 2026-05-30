@@ -4,6 +4,26 @@ import { listPetFoods, type PetFoodRead } from '@/api/petFoods';
 import { useSiteSetting } from '@/api/siteSettings';
 import { ComingSoon } from '@/components/ComingSoon';
 import { PageHead } from '@/components/PageHead';
+import { FaqSchema, type FaqItem } from '@/components/FaqSchema';
+
+const SUPPLIES_FAQS: FaqItem[] = [
+  {
+    q: 'Where to buy Royal Canin dog food in Bengaluru?',
+    a: 'HiSpike\'s Pet Supplies page lists Royal Canin and Royal Canin Veterinary Diet products with hyperlocal Bengaluru delivery — from puppy food to senior care formulas.',
+  },
+  {
+    q: 'What brands of dog food does HiSpike sell?',
+    a: 'We stock trusted brands including Royal Canin, Pedigree, ACANA, and Royal Canin Veterinary Diet — across dry food, wet food, treats, and life-stage-specific diets.',
+  },
+  {
+    q: 'Do you deliver pet food in Bengaluru?',
+    a: 'Yes. Free 1–3 day delivery on first-time orders over ₹500 across Bengaluru. New customers also get ₹500 off when spending ₹4,000 or more.',
+  },
+  {
+    q: 'Can I get veterinary-prescribed diets like gastrointestinal food?',
+    a: 'Yes — we stock Royal Canin Veterinary Diet products including Gastrointestinal Low Fat for dogs with digestive sensitivities. Consult your vet before switching to a prescription diet.',
+  },
+];
 
 const LIFESTAGES = ['Puppy', 'Adult', 'Senior', 'All Lifestages'];
 const FOOD_FORMS = ['Dry Food', 'Wet Food', 'Freeze-Dried', 'Raw', 'Treats'];
@@ -219,6 +239,7 @@ export function PetSupplies() {
         description="Trusted dog food, treats and pet supplies delivered across Bengaluru — Royal Canin, Pedigree, ACANA. Dry food, wet food, treats, and veterinary diets for every life stage."
         path="/pet-supplies"
       />
+      <FaqSchema faqs={SUPPLIES_FAQS} />
       <section className="relative overflow-hidden bg-gradient-to-r from-primary-900 via-primary-800 to-primary-600 text-white">
         <div
           aria-hidden="true"

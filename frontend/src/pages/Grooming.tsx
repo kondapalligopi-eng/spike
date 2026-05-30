@@ -5,6 +5,26 @@ import { listGroomingSalons, type GroomingSalonRead } from '@/api/groomingSalons
 import { createSubmission } from '@/api/submissions';
 import { toast } from '@/store/toastStore';
 import { PageHead } from '@/components/PageHead';
+import { FaqSchema, type FaqItem } from '@/components/FaqSchema';
+
+const GROOMING_FAQS: FaqItem[] = [
+  {
+    q: 'Where can I get my dog groomed in Bengaluru?',
+    a: 'HiSpike lists verified grooming salons across Bengaluru — Pawsh Paws Studio (Indiranagar), Wagging Tails Pet Spa (Koramangala), Snip & Snout (HSR Layout), The Furry Tale (Whitefield), and more.',
+  },
+  {
+    q: 'How often should I groom my dog?',
+    a: 'It depends on coat type. Short-haired breeds typically need a full groom every 8–12 weeks; long-haired breeds (Shih Tzu, Spitz, Golden, Poodle) every 4–6 weeks. Walk-in nail trims and bath touch-ups can happen monthly.',
+  },
+  {
+    q: 'Do Bengaluru groomers do breed-specific styling?',
+    a: 'Yes. Salons like Pawsh Paws and Wagging Tails have academy-trained stylists who specialise in breed-specific cuts for Poodles, Shih Tzus, Spitzes, Goldens, and Indies.',
+  },
+  {
+    q: 'How much does dog grooming cost in Bengaluru?',
+    a: 'A full bath & groom typically runs ₹800–₹2,500 depending on breed, size, and salon. Walk-in services like nail trims or de-shedding are cheaper. Each salon\'s listing shows pricing details.',
+  },
+];
 
 // Static (seeded) salons use bespoke area-based slugs hardcoded in
 // data/groomingSalons.ts. API-fed salons (admin-added) need a slug derived
@@ -235,6 +255,7 @@ export function Grooming() {
         description="Verified dog grooming salons across Bengaluru — Indiranagar, Koramangala, HSR Layout, Whitefield and more. Breed-specific styling, bath & full groom, walk-in touch-ups. Honest reviews and direct booking."
         path="/grooming"
       />
+      <FaqSchema faqs={GROOMING_FAQS} />
       <section className="relative overflow-hidden bg-gradient-to-r from-primary-900 via-primary-800 to-primary-600 text-white">
         <div
           aria-hidden="true"
