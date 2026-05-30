@@ -377,6 +377,14 @@ export function Swimming() {
                 <PawRatingDark value={selectedSpot.rating} />
               </div>
 
+              <div className="mb-6">
+                <ShareButtons
+                  name={selectedSpot.name}
+                  url="/swimming"
+                  context={selectedSpot.locality}
+                />
+              </div>
+
               <div className="rounded-2xl border-2 border-primary-100 bg-white shadow-sm mb-8 overflow-hidden">
                 {[
                   { icon: '📍', label: 'Address', value: selectedSpot.address, link: true },
