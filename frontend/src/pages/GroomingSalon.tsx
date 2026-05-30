@@ -230,20 +230,12 @@ export function GroomingSalon() {
               </div>
             </div>
 
-            <div className="px-5 py-4 bg-primary-50 border-t border-primary-100 space-y-3">
-              <button
-                type="button"
-                className="w-full inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full bg-accent-400 hover:bg-accent-300 text-warm-900 text-sm font-bold tracking-[0.15em] uppercase ring-2 ring-accent-300/50 hover:ring-accent-200 transition-all shadow-md"
-              >
-                Book now
-              </button>
-              <div className="flex justify-center">
-                <ShareButtons
-                  name={salon.name}
-                  url={`/grooming/${salon.slug}`}
-                  context={`${salon.area}, ${salon.city}`}
-                />
-              </div>
+            <div className="px-5 py-4 bg-primary-50 border-t border-primary-100 flex justify-center">
+              <ShareButtons
+                name={salon.name}
+                url={`/grooming/${salon.slug}`}
+                context={`${salon.area}, ${salon.city}`}
+              />
             </div>
           </div>
 
