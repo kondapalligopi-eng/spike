@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { listSwimSchools, type SwimSchoolRead } from '@/api/swimSchools';
 import { createSubmission } from '@/api/submissions';
 import { toast } from '@/store/toastStore';
+import { PageHead } from '@/components/PageHead';
 
 const BANGALORE_NEIGHBOURHOODS = [
   'Banashankari', 'Banaswadi', 'Basavanagudi', 'Bellandur', 'Bommanahalli',
