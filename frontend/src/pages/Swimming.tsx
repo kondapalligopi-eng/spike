@@ -5,6 +5,26 @@ import { createSubmission } from '@/api/submissions';
 import { toast } from '@/store/toastStore';
 import { PageHead } from '@/components/PageHead';
 import { ShareButtons } from '@/components/ShareButtons';
+import { FaqSchema, type FaqItem } from '@/components/FaqSchema';
+
+const SWIM_FAQS: FaqItem[] = [
+  {
+    q: 'Where can my dog learn to swim in Bengaluru?',
+    a: 'Specialised dog swim schools operate across Bengaluru — Indiranagar Aquatic Pet Centre, Whitefield Splash Academy, HSR Canine Swim Club, Sarjapur Splash & Paddle, Koramangala Pet Pool Club, and Domlur Aquatic Hub. Browse the HiSpike swim directory for verified options near you.',
+  },
+  {
+    q: 'Are there heated dog pools in Bengaluru?',
+    a: 'Yes. Most listed swim schools offer climate-controlled, heated pools (typically 28–30°C) so dogs can swim year-round regardless of monsoon or winter weather.',
+  },
+  {
+    q: 'Is swimming safe for puppies and senior dogs?',
+    a: 'Yes, with the right pool. Many Bengaluru swim schools offer dedicated puppy programs and hydrotherapy for senior or post-surgery dogs. Look for certified canine swim coaches, small-batch sessions, and life-jacket rental.',
+  },
+  {
+    q: 'How much does a dog swim session cost in Bengaluru?',
+    a: 'Typical cost is ₹500–₹650 for a 30-minute session. Monthly subscription packages often come with discounts. Each school\'s listing on HiSpike shows current pricing.',
+  },
+];
 
 const BANGALORE_NEIGHBOURHOODS = [
   'Banashankari', 'Banaswadi', 'Basavanagudi', 'Bellandur', 'Bommanahalli',
