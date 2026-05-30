@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { listParks, type ParkRead } from '@/api/parks';
 import { createSubmission } from '@/api/submissions';
 import { toast } from '@/store/toastStore';
+import { PageHead } from '@/components/PageHead';
 
 // Comprehensive list of Bangalore neighbourhoods used by the
 // "List your park" registration form. Same list as the Hospital page.
