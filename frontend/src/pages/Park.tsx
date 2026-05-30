@@ -466,16 +466,6 @@ export function Park() {
             </>
           ) : (
             <>
-          {/* Title & intro */}
-          <h2 className="text-2xl font-bold text-warm-900 mb-3">
-            Dog Friendly Activities in {appliedQuery || 'Bangalore'}
-          </h2>
-          <p className="text-sm text-warm-600 mb-6 leading-relaxed">
-            Don't leave Fido at home when you're out exploring. Get out and play! Wherever you are in
-            {' '}{appliedQuery || 'Bangalore'}, we can point you towards the nearest off-leash dog park, a great
-            walking trail, and lots of other places to spend the day with your pup.
-          </p>
-
           {/* Spot cards */}
           {parksQuery.isLoading && allSpots.length === 0 ? (
             <div className="max-w-md mx-auto text-center py-12">
