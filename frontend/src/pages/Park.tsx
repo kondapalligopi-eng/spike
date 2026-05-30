@@ -5,6 +5,26 @@ import { createSubmission } from '@/api/submissions';
 import { toast } from '@/store/toastStore';
 import { PageHead } from '@/components/PageHead';
 import { ShareButtons } from '@/components/ShareButtons';
+import { FaqSchema, type FaqItem } from '@/components/FaqSchema';
+
+const PARK_FAQS: FaqItem[] = [
+  {
+    q: 'What are the most dog-friendly parks in Bengaluru?',
+    a: 'Cubbon Park, Lalbagh Botanical Garden, and Agara Lake Park are popular dog-friendly choices. Bellandur Lake Park, Indiranagar Defence Colony Park, and Whitefield Memorial Park also have dedicated areas for dogs.',
+  },
+  {
+    q: 'Which Bengaluru parks allow off-leash dogs?',
+    a: 'Several parks have designated off-leash zones — Cubbon Park (in designated areas only), Indiranagar Defence Colony Park, and Whitefield Memorial Park. Others like Agara Lake and Lalbagh are on-leash only. Each park\'s listing shows the policy.',
+  },
+  {
+    q: 'Are dogs allowed in Cubbon Park?',
+    a: 'Yes. Cubbon Park welcomes dogs and has designated off-leash areas. Most Bengaluru dog parents visit early morning (5–8 am) or evenings to avoid peak crowds and afternoon heat.',
+  },
+  {
+    q: 'Is there an entry fee for Bengaluru dog parks?',
+    a: 'Most neighbourhood parks like Cubbon, Agara Lake, and Indiranagar Defence Colony are free. Lalbagh Botanical Garden charges a small ₹20 entry. Each park\'s HiSpike listing shows current cost details.',
+  },
+];
 
 // Comprehensive list of Bangalore neighbourhoods used by the
 // "List your park" registration form. Same list as the Hospital page.
