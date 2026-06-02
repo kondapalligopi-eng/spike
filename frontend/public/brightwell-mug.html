@@ -7,7 +7,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700;9..144,800&family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,ital,wght@9..144,0,600;9..144,0,700;9..144,1,500;9..144,1,600&family=Inter:wght@500;700;800&display=swap">
 
   <style>
     :root {
@@ -19,17 +19,12 @@
       --emerald-500: #1f8a6c;
       --emerald-300: #7bc4ad;
       --amber-500:   #d99e3c;
-      --amber-300:   #f0c87e;
       --line:        #e5dcc4;
     }
     *, *::before, *::after { box-sizing: border-box; }
     html, body { margin: 0; padding: 0; background: #ecece4; color: var(--ink); font-family: 'Inter', system-ui, sans-serif; }
-    .page {
-      max-width: 1200px; margin: 0 auto; padding: 48px 24px 80px;
-    }
-    h1 {
-      font-family: 'Fraunces', serif; font-weight: 700; font-size: 28px; margin: 0 0 6px;
-    }
+    .page { max-width: 1200px; margin: 0 auto; padding: 48px 24px 80px; }
+    h1 { font-family: 'Fraunces', serif; font-weight: 700; font-size: 28px; margin: 0 0 6px; }
     .sub { color: var(--ink-soft); font-size: 14px; margin-bottom: 32px; }
     .section-label {
       display: inline-flex; align-items: center; gap: 8px;
@@ -38,14 +33,8 @@
     }
     .section-label .dot { width: 7px; height: 7px; border-radius: 999px; background: var(--emerald-500); }
 
-    .panel {
-      background: #fff; border: 1px solid var(--line); border-radius: 18px;
-      padding: 28px; margin-bottom: 28px;
-    }
-
-    .actions {
-      display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 22px;
-    }
+    .panel { background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 28px; margin-bottom: 28px; }
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 22px; }
     .btn {
       display: inline-flex; align-items: center; gap: 8px;
       padding: 12px 18px; border-radius: 999px;
@@ -57,63 +46,29 @@
     .btn.ghost { background: transparent; color: var(--ink); border: 1.5px solid var(--ink); }
     .btn:disabled { opacity: 0.55; cursor: progress; }
 
-    /* ---------- PRINT-READY ARTWORK ----------
-       The .stage is the actual print canvas at 2475×1050 (300 DPI for
-       8.25" × 3.5" — the standard 11oz mug wrap area). It's scaled down
-       to fit the screen via transform; html2canvas captures the full
-       intrinsic size, so the downloaded PNG is 2475×1050 at print quality. */
+    /* Print canvas — 2475 × 1050 at 300 DPI = 8.25" × 3.5" (11oz mug wrap). */
     .stage-wrap {
-      width: 100%;
-      /* The stage is 2475px wide. Show at 100% of available container width,
-         then scale via CSS transform. JS sets the right scale on resize. */
-      overflow: hidden;
+      width: 100%; overflow: hidden;
       background:
         repeating-conic-gradient(#eef0eb 0% 25%, transparent 0% 50%) 50% / 24px 24px,
         #fff;
       border: 1px solid var(--line); border-radius: 14px;
       position: relative;
     }
-    .stage {
-      width: 2475px; height: 1050px;
-      transform-origin: top left;
-      position: relative;
-      /* The actual artwork — transparent except the design itself, so prints
-         cleanly on white/cream/coloured mugs. */
-    }
-
+    .stage { width: 2475px; height: 1050px; transform-origin: top left; position: relative; }
     .design {
       position: absolute; inset: 0;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      gap: 32px; padding: 90px;
+      display: flex; align-items: center; justify-content: center;
     }
-    .mark {
-      width: 200px; height: 200px; border-radius: 44px;
-      background: linear-gradient(135deg, var(--emerald-700) 0%, var(--emerald-500) 100%);
-      display: grid; place-items: center;
-      color: var(--cream); font-family: 'Fraunces', serif; font-weight: 700;
-      font-size: 130px; line-height: 1; letter-spacing: -0.02em;
-      box-shadow: 0 30px 50px -30px rgba(15, 91, 72, 0.55);
-    }
-    .wordmark {
-      font-family: 'Fraunces', serif; font-weight: 700;
-      font-size: 130px; line-height: 1; letter-spacing: -0.02em; color: var(--ink);
-      text-align: center;
-    }
-    .wordmark .pharma { color: var(--emerald-700); font-style: italic; font-weight: 500; }
-    .tagline {
-      font-family: 'Fraunces', serif; font-weight: 500; font-style: italic;
-      font-size: 56px; line-height: 1.1; color: var(--ink-soft);
-      text-align: center;
-    }
-    .meta {
-      display: inline-flex; align-items: center; gap: 18px;
-      font-family: 'Inter', sans-serif; font-weight: 600;
-      font-size: 22px; letter-spacing: 0.42em; text-transform: uppercase; color: var(--ink-soft);
-    }
-    .meta .rule { width: 80px; height: 2px; background: var(--amber-500); }
 
-    /* Optional safe-area guideline (print-services usually want a 1/8" bleed).
-       Hidden when exporting via the hideForExport CSS class. */
+    /* Badge SVG sized to the wrap height with generous padding */
+    .badge { width: 1000px; height: 1000px; }
+    .badge text {
+      paint-order: stroke fill;
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* Safe-area guideline */
     .safe-area {
       position: absolute; inset: 60px;
       border: 2px dashed rgba(15, 91, 72, 0.25); border-radius: 12px;
@@ -126,10 +81,8 @@
     }
     .exporting .safe-area, .exporting .ruler { display: none; }
 
-    /* ---------- MUG PREVIEW ---------- */
-    .mug-row {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 18px;
-    }
+    /* Mug previews */
+    .mug-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
     @media (max-width: 720px) { .mug-row { grid-template-columns: 1fr; } }
     .mug-card { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 28px; }
     .mug-card.alt { background: linear-gradient(180deg, var(--cream) 0%, var(--cream-deep) 100%); }
@@ -137,12 +90,9 @@
     .mug-card.dark .mug-label { color: #ddd4ba; }
     .mug-label { font-size: 12px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 18px; }
 
-    .mug {
-      position: relative; width: 280px; height: 270px; margin: 0 auto;
-    }
-    /* Mug body — cylinder seen from front with subtle perspective */
+    .mug { position: relative; width: 300px; height: 280px; margin: 0 auto; }
     .mug-body {
-      position: absolute; left: 20px; top: 0; width: 220px; height: 250px;
+      position: absolute; left: 24px; top: 0; width: 230px; height: 260px;
       background: #ffffff;
       border-radius: 18px 18px 26px 26px / 18px 18px 60px 60px;
       box-shadow:
@@ -151,63 +101,36 @@
         0 30px 40px -28px rgba(0,0,0,0.35);
       overflow: hidden;
     }
-    /* Subtle horizontal curvature highlight */
     .mug-body::before {
       content: ''; position: absolute; inset: 0;
       background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.6) 35%, transparent 70%);
       mix-blend-mode: soft-light;
     }
-    /* Rim (top oval) */
     .mug-body::after {
       content: ''; position: absolute; top: -3px; left: 0; right: 0;
       height: 16px; border-radius: 999px;
       background: rgba(0,0,0,0.08);
     }
-    /* Handle */
     .mug-handle {
-      position: absolute; right: -6px; top: 50px; width: 70px; height: 130px;
+      position: absolute; right: -6px; top: 60px; width: 76px; height: 130px;
       border: 18px solid #ffffff; border-left: 0;
       border-radius: 0 80% 80% 0 / 0 50% 50% 0;
       box-shadow: 0 10px 20px -14px rgba(0,0,0,0.35);
     }
-    /* Design printed on the mug */
-    .mug-print {
-      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-      width: 170px; display: flex; flex-direction: column; align-items: center; gap: 8px;
-    }
-    .mug-print .mark-sm {
-      width: 44px; height: 44px; border-radius: 12px;
-      background: linear-gradient(135deg, var(--emerald-700), var(--emerald-500));
-      display: grid; place-items: center; color: var(--cream);
-      font-family: 'Fraunces', serif; font-weight: 700; font-size: 28px; line-height: 1; letter-spacing: -0.02em;
-    }
-    .mug-print .word-sm {
-      font-family: 'Fraunces', serif; font-weight: 700; font-size: 17px; line-height: 1.1; letter-spacing: -0.01em; color: var(--ink);
-      text-align: center;
-    }
-    .mug-print .word-sm .pharma { color: var(--emerald-700); font-style: italic; font-weight: 500; }
-    .mug-print .tag-sm {
-      font-family: 'Fraunces', serif; font-weight: 500; font-style: italic;
-      font-size: 9.5px; color: var(--ink-soft); text-align: center; line-height: 1.2;
-    }
+    .mug-print { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 190px; }
 
-    /* Variant: cream mug */
+    /* Variants */
     .mug.cream .mug-body { background: var(--cream); }
     .mug.cream .mug-handle { border-color: var(--cream); }
-
-    /* Variant: dark mug — design needs light treatment */
     .mug.dark .mug-body { background: #0c211b; }
     .mug.dark .mug-body::before { background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.18) 35%, transparent 70%); }
     .mug.dark .mug-body::after { background: rgba(0,0,0,0.3); }
     .mug.dark .mug-handle { border-color: #0c211b; }
-    .mug.dark .mug-print .mark-sm { background: linear-gradient(135deg, var(--amber-500), var(--amber-300)); color: #0e2a23; }
-    .mug.dark .mug-print .word-sm { color: var(--cream); }
-    .mug.dark .mug-print .word-sm .pharma { color: var(--amber-300); }
-    .mug.dark .mug-print .tag-sm { color: #a3b5ad; }
+    /* When the mug is dark, swap the badge ink colour via a CSS variable. */
+    .mug.dark { --print-ink: var(--cream); }
+    .mug { --print-ink: var(--emerald-700); }
 
-    .notes {
-      font-size: 13px; color: var(--ink-soft); line-height: 1.55; margin-top: 10px;
-    }
+    .notes { font-size: 13px; color: var(--ink-soft); line-height: 1.55; margin-top: 10px; }
     .notes b { color: var(--ink); }
     .notes ul { margin: 8px 0 0; padding-left: 18px; }
     .notes li { margin-top: 4px; }
@@ -215,9 +138,70 @@
 </head>
 <body>
 
+  <!-- =========================================================
+       Reusable badge as an SVG <symbol>. The scalloped outer
+       path is computed by JS once the page loads (cleaner than
+       hand-writing 24 bezier segments). All strokes/fills inherit
+       `currentColor` so the badge can be reskinned by setting CSS
+       `color:` on its container (emerald on light mugs, cream on dark).
+       ========================================================= -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <symbol id="brightwell-badge" viewBox="0 0 1000 1000">
+        <!-- Outer scalloped ring (filled with current color, white inner cutout) -->
+        <path id="bw-scallop" fill="currentColor" />
+
+        <!-- Inner thin ring (just a stroke) -->
+        <circle cx="500" cy="500" r="340" fill="none" stroke="currentColor" stroke-width="4" />
+
+        <!-- Hidden text paths -->
+        <!-- Top arc: counter-clockwise from left to right across the top.
+             Radius slightly smaller than the inner ring so the type sits
+             just inside it with breathing room. -->
+        <path id="bw-top-arc" d="M 220 500 A 280 280 0 0 1 780 500" fill="none" />
+        <!-- Bottom arc: clockwise from left to right across the bottom so the
+             text reads upright. -->
+        <path id="bw-bottom-arc" d="M 220 540 A 260 260 0 0 0 780 540" fill="none" />
+
+        <!-- Top arc text -->
+        <text font-size="48" font-weight="800" letter-spacing="14" fill="currentColor">
+          <textPath href="#bw-top-arc" startOffset="50%" text-anchor="middle">BRIGHTWELL · PHARMA</textPath>
+        </text>
+
+        <!-- Side stars (5-point) -->
+        <g fill="currentColor">
+          <path transform="translate(195 510) scale(0.7)" d="M0,-26 L7.6,-8 L26,-8 L11.2,3.2 L17,21 L0,10.4 L-17,21 L-11.2,3.2 L-26,-8 L-7.6,-8 Z" />
+          <path transform="translate(805 510) scale(0.7)" d="M0,-26 L7.6,-8 L26,-8 L11.2,3.2 L17,21 L0,10.4 L-17,21 L-11.2,3.2 L-26,-8 L-7.6,-8 Z" />
+        </g>
+
+        <!-- Apothecary mortar & pestle (centre).
+             Uses currentColor strokes/fills so it tints with the badge. -->
+        <g transform="translate(500 510)" fill="none" stroke="currentColor"
+           stroke-width="14" stroke-linecap="round" stroke-linejoin="round">
+          <!-- Pestle: stick with rounded handle, angled top-left to bottom-right -->
+          <line x1="-58" y1="-130" x2="50" y2="-15" stroke-width="22" />
+          <circle cx="-62" cy="-134" r="22" fill="currentColor" stroke="none" />
+          <!-- Mortar bowl (rounded U) -->
+          <path d="M -120 -10 Q -120 100 0 100 Q 120 100 120 -10" fill="none" />
+          <!-- Mortar rim — solid ellipse so the bowl reads as a vessel -->
+          <ellipse cx="0" cy="-10" rx="120" ry="20" fill="currentColor" stroke="none" />
+          <!-- Small steam wisps from the rim for warmth -->
+          <path d="M -42 -42 q -10 -16 0 -32 q 10 -16 0 -32" stroke-width="9" />
+          <path d="M 0 -50 q -10 -16 0 -32 q 10 -16 0 -32" stroke-width="9" />
+          <path d="M 42 -42 q -10 -16 0 -32 q 10 -16 0 -32" stroke-width="9" />
+        </g>
+
+        <!-- Bottom arc italic tagline -->
+        <text font-family="Fraunces, serif" font-size="46" font-style="italic" font-weight="500" letter-spacing="2" fill="currentColor">
+          <textPath href="#bw-bottom-arc" startOffset="50%" text-anchor="middle">Quiet Science · Better Days</textPath>
+        </text>
+      </symbol>
+    </defs>
+  </svg>
+
   <div class="page">
     <h1>Brightwell Pharma — Coffee mug design</h1>
-    <p class="sub">Print-ready artwork at 300 DPI for the standard 11oz mug wrap (8.25" × 3.5"). Preview across mug colours below.</p>
+    <p class="sub">Vintage apothecary badge at 300 DPI for the standard 11oz mug wrap (8.25" × 3.5"). Single emerald ink; prints cleanly on white, cream, or dark mugs.</p>
 
     <!-- ============ PRINT-READY ARTWORK ============ -->
     <span class="section-label"><span class="dot"></span>Print artwork · 2475 × 1050 px · 300 DPI</span>
@@ -229,21 +213,14 @@
       <div class="stage-wrap" id="stage-wrap">
         <div class="stage" id="stage">
           <span class="safe-area"></span>
-          <div class="design">
-            <div class="mark">B</div>
-            <div class="wordmark">Brightwell<span class="pharma"> Pharma</span></div>
-            <div class="tagline">Quiet science. Better days.</div>
-            <div class="meta">
-              <span class="rule"></span>
-              <span>EST. 2009 · BENGALURU</span>
-              <span class="rule"></span>
-            </div>
+          <div class="design" style="color: var(--emerald-700);">
+            <svg class="badge" viewBox="0 0 1000 1000"><use href="#brightwell-badge" /></svg>
           </div>
           <div class="ruler">11oz mug wrap · safe area shown dashed</div>
         </div>
       </div>
       <p class="notes" style="margin-top: 18px;">
-        <b>To order:</b> click <i>Download Print PNG</i>, then upload the file to your mug-printing service (Vistaprint, Printo, Printful, etc.). Pick a white or light cream mug for best contrast.
+        <b>To order:</b> click <i>Download Print PNG</i>, upload the file to your mug printer (Vistaprint, Printo, Printful, Canva, etc.). The PNG is transparent, so the emerald ink prints directly on the mug — no white box around the badge.
       </p>
     </div>
 
@@ -255,10 +232,8 @@
         <div class="mug">
           <div class="mug-handle"></div>
           <div class="mug-body"></div>
-          <div class="mug-print">
-            <div class="mark-sm">B</div>
-            <div class="word-sm">Brightwell<span class="pharma"> Pharma</span></div>
-            <div class="tag-sm">Quiet science. Better days.</div>
+          <div class="mug-print" style="color: var(--print-ink);">
+            <svg viewBox="0 0 1000 1000" width="190" height="190"><use href="#brightwell-badge" /></svg>
           </div>
         </div>
       </div>
@@ -267,45 +242,81 @@
         <div class="mug cream">
           <div class="mug-handle"></div>
           <div class="mug-body"></div>
-          <div class="mug-print">
-            <div class="mark-sm">B</div>
-            <div class="word-sm">Brightwell<span class="pharma"> Pharma</span></div>
-            <div class="tag-sm">Quiet science. Better days.</div>
+          <div class="mug-print" style="color: var(--print-ink);">
+            <svg viewBox="0 0 1000 1000" width="190" height="190"><use href="#brightwell-badge" /></svg>
           </div>
         </div>
       </div>
     </div>
 
     <div class="mug-card dark" style="margin-top: 18px;">
-      <div class="mug-label">Dark mug · use the inverted treatment</div>
+      <div class="mug-label">Dark mug · cream ink</div>
       <div class="mug dark">
         <div class="mug-handle"></div>
         <div class="mug-body"></div>
-        <div class="mug-print">
-          <div class="mark-sm">B</div>
-          <div class="word-sm">Brightwell<span class="pharma"> Pharma</span></div>
-          <div class="tag-sm">Quiet science. Better days.</div>
+        <div class="mug-print" style="color: var(--print-ink);">
+          <svg viewBox="0 0 1000 1000" width="190" height="190"><use href="#brightwell-badge" /></svg>
         </div>
       </div>
       <p class="notes" style="margin-top: 16px; color: #ddd4ba;">
-        On dark mugs the brand mark switches to amber and the wordmark goes cream. If you need this version printed, tell me and I'll add a second Download button that exports the inverted artwork.
+        For a dark mug, ask the printer to render the badge in cream/off-white instead of emerald. Same SVG, just inverted ink — say the word and I'll add a separate Download button that exports the cream variant.
       </p>
     </div>
 
     <p class="notes" style="margin-top: 24px;">
       <b>Print tips:</b>
       <ul>
-        <li>The dashed line is the <i>safe area</i> — keep all text inside it. Anything in the outer 60px (the bleed) may get cut by the printer.</li>
-        <li>The downloaded PNG has a transparent background, so the design prints cleanly on whatever mug colour you choose.</li>
-        <li>Most online services accept 8.25" × 3.5" at 300 DPI. If yours wants a different size, you can resize the PNG without quality loss (it's 2475 × 1050 — comfortably high-res).</li>
-        <li>For a single sided design (visible when right-handed users hold the handle on the right), tell the printer to centre the artwork. The wrap is symmetric.</li>
+        <li>The dashed line is the <i>safe area</i> — keep all artwork inside it. The outer 60px is bleed and may get cut.</li>
+        <li>Single colour (emerald) by design — single-ink prints are cleaner, cheaper, and age better.</li>
+        <li>The artwork is centred on the wrap so it shows correctly with the handle on either side.</li>
+        <li>If your printer wants a different size, the PNG resizes without quality loss (it's 2475 × 1050 at 300 DPI — comfortable headroom).</li>
       </ul>
     </p>
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script>
-    // Scale the stage to fit the visible width without distorting pixel size.
+    // -------- Build the scalloped path for the badge --------
+    // The viewBox is 1000×1000. The badge sits at center (500,500).
+    // baseR = inner valley radius; peakR = outer bump tip radius.
+    // The path describes the OUTLINE that gets filled — so we add a hole
+    // (the inner circle) using the fill-rule="evenodd" trick.
+    (function buildScallop() {
+      const cx = 500, cy = 500;
+      const baseR = 425;   // inner valleys
+      const peakR = 480;   // outer bumps
+      const innerHoleR = 390; // creates the ring effect (white inside)
+      const N = 28;
+      let outer = '';
+      for (let i = 0; i < N; i++) {
+        const a1 = (i / N) * 2 * Math.PI - Math.PI / 2;
+        const a2 = ((i + 1) / N) * 2 * Math.PI - Math.PI / 2;
+        const x1 = cx + baseR * Math.cos(a1);
+        const y1 = cy + baseR * Math.sin(a1);
+        const x2 = cx + baseR * Math.cos(a2);
+        const y2 = cy + baseR * Math.sin(a2);
+        // Quadratic bezier control point placed past the peak so the curve
+        // actually passes through (xPeak, yPeak).
+        const aMid = (a1 + a2) / 2;
+        const xPeak = cx + peakR * Math.cos(aMid);
+        const yPeak = cy + peakR * Math.sin(aMid);
+        const xMid = (x1 + x2) / 2;
+        const yMid = (y1 + y2) / 2;
+        const xC = 2 * xPeak - xMid;
+        const yC = 2 * yPeak - yMid;
+        if (i === 0) outer += 'M ' + x1.toFixed(2) + ' ' + y1.toFixed(2);
+        outer += ' Q ' + xC.toFixed(2) + ' ' + yC.toFixed(2) + ' ' + x2.toFixed(2) + ' ' + y2.toFixed(2);
+      }
+      outer += ' Z';
+      // Inner circle (counter-clockwise to make the hole via fill-rule:evenodd)
+      const hole = 'M ' + (cx + innerHoleR) + ' ' + cy +
+                   ' A ' + innerHoleR + ' ' + innerHoleR + ' 0 1 0 ' + (cx - innerHoleR) + ' ' + cy +
+                   ' A ' + innerHoleR + ' ' + innerHoleR + ' 0 1 0 ' + (cx + innerHoleR) + ' ' + cy + ' Z';
+      document.getElementById('bw-scallop').setAttribute('d', outer + ' ' + hole);
+      document.getElementById('bw-scallop').setAttribute('fill-rule', 'evenodd');
+    })();
+
+    // -------- Scale the print canvas to fit the viewport width --------
     function fitStage() {
       const wrap = document.getElementById('stage-wrap');
       const stage = document.getElementById('stage');
@@ -317,29 +328,24 @@
     window.addEventListener('load', fitStage);
     window.addEventListener('resize', fitStage);
 
-    // Hide / show guides toggle
+    // -------- Toggle the safe-area guides --------
     document.getElementById('toggle-guides').addEventListener('click', function() {
-      document.getElementById('stage').classList.toggle('exporting');
-      this.textContent = document.getElementById('stage').classList.contains('exporting')
-        ? 'Show guides' : 'Hide guides';
+      const stage = document.getElementById('stage');
+      stage.classList.toggle('exporting');
+      this.textContent = stage.classList.contains('exporting') ? 'Show guides' : 'Hide guides';
     });
 
-    // Download as PNG via html2canvas. backgroundColor:null → transparent PNG.
+    // -------- Download as transparent 300 DPI PNG --------
     document.getElementById('download-png').addEventListener('click', async function() {
       const stage = document.getElementById('stage');
       const btn = this;
       const original = btn.textContent;
       btn.textContent = 'Rendering at 300 DPI…';
       btn.disabled = true;
-
-      // Hide guides for the export, then restore.
       const guidesWereVisible = !stage.classList.contains('exporting');
       stage.classList.add('exporting');
-
-      // Reset transform so html2canvas captures the full 2475×1050.
       const prevTransform = stage.style.transform;
       stage.style.transform = 'scale(1)';
-
       try {
         if (document.fonts && document.fonts.ready) await document.fonts.ready;
         const canvas = await html2canvas(stage, {
