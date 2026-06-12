@@ -173,6 +173,7 @@ const BANGALORE_NEIGHBOURHOODS = [
 ];
 
 export function Hospital() {
+  useBackendWarmup();
   const [search, setSearch] = useState('');
   const [specialty, setSpecialty] = useState(ALL_SPECIALTIES);
   const [location, setLocation] = useState(ALL_LOCATIONS);
