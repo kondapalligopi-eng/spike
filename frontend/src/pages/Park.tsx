@@ -165,6 +165,7 @@ function PawRatingDark({ value, max = 5 }: { value: number; max?: number }) {
 // PARK_LOCALITIES is now derived inside the component from the fetched list.
 
 export function Park() {
+  useBackendWarmup();
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [locationFilter, setLocationFilter] = useState('');
