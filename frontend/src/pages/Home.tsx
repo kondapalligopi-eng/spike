@@ -3,6 +3,10 @@ import { PageHead } from '@/components/PageHead';
 import { useBackendWarmup } from '@/lib/warmupBackend';
 
 export function Home() {
+  // Wake the Render dyno the moment any user lands here, so by the time they
+  // click into Hospital / Park / Swimming / Grooming the API is warm. Cheap
+  // win for Google-search visitors who often land on Home first.
+  useBackendWarmup();
   return (
     <div className="flex flex-col">
       <PageHead
