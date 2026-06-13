@@ -63,67 +63,65 @@ export function Home() {
 
         <div aria-hidden="true" className="absolute inset-0 pointer-events-none">
           {[
-            { top: '10%',  left: '5%',  size: 56, rotate: -14, delay: '0s'   },
-            { top: '70%',  left: '11%', size: 40, rotate: 16,  delay: '0.6s' },
-            { top: '22%',  left: '30%', size: 44, rotate: -6,  delay: '1.2s' },
-            { top: '80%',  left: '38%', size: 34, rotate: 22,  delay: '0.3s' },
-            { top: '14%',  left: '58%', size: 38, rotate: -20, delay: '1.5s' },
-            { top: '65%',  left: '62%', size: 50, rotate: 8,   delay: '0.9s' },
-            { top: '28%',  left: '80%', size: 42, rotate: 12,  delay: '1.8s' },
-            { top: '72%',  left: '90%', size: 36, rotate: -10, delay: '0.4s' },
+            { top: '10%',  left: '5%',  size: 56, rotate: -14, delay: 0   },
+            { top: '70%',  left: '11%', size: 40, rotate: 16,  delay: 0.6 },
+            { top: '22%',  left: '30%', size: 44, rotate: -6,  delay: 1.2 },
+            { top: '80%',  left: '38%', size: 34, rotate: 22,  delay: 0.3 },
+            { top: '14%',  left: '58%', size: 38, rotate: -20, delay: 1.5 },
+            { top: '65%',  left: '62%', size: 50, rotate: 8,   delay: 0.9 },
+            { top: '28%',  left: '80%', size: 42, rotate: 12,  delay: 1.8 },
+            { top: '72%',  left: '90%', size: 36, rotate: -10, delay: 0.4 },
           ].map((p, i) => (
-            <svg
+            // Each paw is wrapped with 3 sparkle stars positioned around it,
+            // so the sparkles read as the paw glinting — not as decoration
+            // floating somewhere else on the hero.
+            <div
               key={i}
-              viewBox="0 0 60 60"
-              className="absolute hero-paw-bg"
+              className="absolute"
               style={{
                 top: p.top, left: p.left,
                 width: p.size, height: p.size,
-                transform: `rotate(${p.rotate}deg)`,
-                animationDelay: p.delay,
               }}
             >
-              <g fill="white">
-                <ellipse cx="14" cy="28" rx="5" ry="6.5" />
-                <ellipse cx="46" cy="28" rx="5" ry="6.5" />
-                <ellipse cx="22.5" cy="15" rx="4.5" ry="6" />
-                <ellipse cx="37.5" cy="15" rx="4.5" ry="6" />
-                <path d="M30 30c-7.5 0-12.5 5-12.5 11.25 0 5.5 4.25 8.75 12.5 8.75s12.5-3.25 12.5-8.75c0-6.25-5-11.25-12.5-11.25z" />
-              </g>
-            </svg>
-          ))}
-
-          {/* Sparkles — 4-point stars twinkling out-of-phase with the paws,
-              with a white drop-shadow glow so each pop reads as a glint. */}
-          {[
-            { top: '8%',  left: '14%', size: 10, delay: '0.1s' },
-            { top: '32%', left: '8%',  size: 7,  delay: '1.0s' },
-            { top: '58%', left: '20%', size: 9,  delay: '0.5s' },
-            { top: '88%', left: '28%', size: 6,  delay: '1.4s' },
-            { top: '12%', left: '42%', size: 8,  delay: '0.8s' },
-            { top: '48%', left: '50%', size: 11, delay: '0.2s' },
-            { top: '82%', left: '54%', size: 7,  delay: '1.6s' },
-            { top: '20%', left: '70%', size: 9,  delay: '0.6s' },
-            { top: '55%', left: '78%', size: 8,  delay: '1.2s' },
-            { top: '38%', left: '92%', size: 10, delay: '0.3s' },
-            { top: '88%', left: '85%', size: 6,  delay: '1.8s' },
-            { top: '6%',  left: '88%', size: 8,  delay: '0.4s' },
-          ].map((s, i) => (
-            <svg
-              key={`spark-${i}`}
-              viewBox="0 0 10 10"
-              className="absolute hero-sparkle"
-              style={{
-                top: s.top, left: s.left,
-                width: s.size, height: s.size,
-                animationDelay: s.delay,
-              }}
-            >
-              <path
-                d="M5 0 L5.9 4.1 L10 5 L5.9 5.9 L5 10 L4.1 5.9 L0 5 L4.1 4.1 Z"
-                fill="white"
-              />
-            </svg>
+              <svg
+                viewBox="0 0 60 60"
+                className="hero-paw-bg block w-full h-full"
+                style={{
+                  transform: `rotate(${p.rotate}deg)`,
+                  animationDelay: `${p.delay}s`,
+                }}
+              >
+                <g fill="white">
+                  <ellipse cx="14" cy="28" rx="5" ry="6.5" />
+                  <ellipse cx="46" cy="28" rx="5" ry="6.5" />
+                  <ellipse cx="22.5" cy="15" rx="4.5" ry="6" />
+                  <ellipse cx="37.5" cy="15" rx="4.5" ry="6" />
+                  <path d="M30 30c-7.5 0-12.5 5-12.5 11.25 0 5.5 4.25 8.75 12.5 8.75s12.5-3.25 12.5-8.75c0-6.25-5-11.25-12.5-11.25z" />
+                </g>
+              </svg>
+              {[
+                { top: '-5%',  left: '95%',  scale: 0.32, offset: 0    },
+                { top: '60%',  left: '-10%', scale: 0.28, offset: 0.55 },
+                { top: '100%', left: '50%',  scale: 0.24, offset: 1.05 },
+              ].map((sp, j) => (
+                <svg
+                  key={j}
+                  viewBox="0 0 10 10"
+                  className="absolute hero-sparkle"
+                  style={{
+                    top: sp.top, left: sp.left,
+                    width: p.size * sp.scale,
+                    height: p.size * sp.scale,
+                    animationDelay: `${p.delay + sp.offset}s`,
+                  }}
+                >
+                  <path
+                    d="M5 0 L5.9 4.1 L10 5 L5.9 5.9 L5 10 L4.1 5.9 L0 5 L4.1 4.1 Z"
+                    fill="white"
+                  />
+                </svg>
+              ))}
+            </div>
           ))}
         </div>
 
