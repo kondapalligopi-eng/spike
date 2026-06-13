@@ -77,8 +77,13 @@ export function Home() {
             will-change: transform;
           }
           .hero-trotter-step { display: inline-block; animation: hero-trot-step 0.4s ease-in-out infinite; }
+          @keyframes hero-paw-pulse {
+            0%, 100% { opacity: 0.06; }
+            50%       { opacity: 0.20; }
+          }
+          .hero-paw-bg { animation: hero-paw-pulse 2.6s ease-in-out infinite; will-change: opacity; }
           @media (prefers-reduced-motion: reduce) {
-            .hero-dog-bob, .hero-paw, .hero-trotter, .hero-trotter-step { animation: none !important; }
+            .hero-dog-bob, .hero-paw, .hero-trotter, .hero-trotter-step, .hero-paw-bg { animation: none !important; }
           }
         `}</style>
 
