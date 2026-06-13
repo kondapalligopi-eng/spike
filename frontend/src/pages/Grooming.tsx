@@ -6,6 +6,7 @@ import { createSubmission } from '@/api/submissions';
 import { toast } from '@/store/toastStore';
 import { PageHead } from '@/components/PageHead';
 import { FaqSchema, type FaqItem } from '@/components/FaqSchema';
+import { HeroPaws } from '@/components/HeroPaws';
 import { useBackendWarmup } from '@/lib/warmupBackend';
 
 const GROOMING_FAQS: FaqItem[] = [
