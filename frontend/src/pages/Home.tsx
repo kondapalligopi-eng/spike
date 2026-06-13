@@ -92,6 +92,39 @@ export function Home() {
               </g>
             </svg>
           ))}
+
+          {/* Sparkles — 4-point stars twinkling out-of-phase with the paws,
+              with a white drop-shadow glow so each pop reads as a glint. */}
+          {[
+            { top: '8%',  left: '14%', size: 10, delay: '0.1s' },
+            { top: '32%', left: '8%',  size: 7,  delay: '1.0s' },
+            { top: '58%', left: '20%', size: 9,  delay: '0.5s' },
+            { top: '88%', left: '28%', size: 6,  delay: '1.4s' },
+            { top: '12%', left: '42%', size: 8,  delay: '0.8s' },
+            { top: '48%', left: '50%', size: 11, delay: '0.2s' },
+            { top: '82%', left: '54%', size: 7,  delay: '1.6s' },
+            { top: '20%', left: '70%', size: 9,  delay: '0.6s' },
+            { top: '55%', left: '78%', size: 8,  delay: '1.2s' },
+            { top: '38%', left: '92%', size: 10, delay: '0.3s' },
+            { top: '88%', left: '85%', size: 6,  delay: '1.8s' },
+            { top: '6%',  left: '88%', size: 8,  delay: '0.4s' },
+          ].map((s, i) => (
+            <svg
+              key={`spark-${i}`}
+              viewBox="0 0 10 10"
+              className="absolute hero-sparkle"
+              style={{
+                top: s.top, left: s.left,
+                width: s.size, height: s.size,
+                animationDelay: s.delay,
+              }}
+            >
+              <path
+                d="M5 0 L5.9 4.1 L10 5 L5.9 5.9 L5 10 L4.1 5.9 L0 5 L4.1 4.1 Z"
+                fill="white"
+              />
+            </svg>
+          ))}
         </div>
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-[280px] lg:min-h-[340px] flex items-center">
