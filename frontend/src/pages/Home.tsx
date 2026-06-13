@@ -35,8 +35,10 @@ export function Home() {
 
       {/* Hero Banner — cinematic wide layout */}
       <section className="relative overflow-hidden bg-gradient-to-r from-primary-900 via-primary-800 to-primary-600 text-white">
-        {/* The decorative paw pattern below pulses between 6% and 20% opacity
-            on a ~2.6s loop so the hero feels alive. Honours prefers-reduced-motion. */}
+        {/* Decorative paws — scattered at hand-picked spots instead of a tiled
+            grid so the banner feels organic, not corporate. Each paw pulses
+            between 6% and 20% opacity, with a small per-paw animation-delay
+            so they don't blink in lockstep. Honours prefers-reduced-motion. */}
         <style>{`
           @keyframes hero-paw-pulse {
             0%, 100% { opacity: 0.06; }
@@ -48,21 +50,38 @@ export function Home() {
           }
         `}</style>
 
-        {/* Decorative paw-print pattern (full banner). The Tailwind opacity
-            class is dropped here because the keyframes own opacity.
-            Shape mirrors the paw inside the HI·SPIKE wordmark (and the logo's
-            paw badge): 4 oval toes in an arc on top, a wider rounded pad
-            below — proper paw-print silhouette, not the simplified 4-dot
-            cluster the earlier pattern had. */}
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 hero-paw-bg"
-          style={{
-            backgroundImage:
-              `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'><g fill='white'><ellipse cx='14' cy='28' rx='5' ry='6.5'/><ellipse cx='46' cy='28' rx='5' ry='6.5'/><ellipse cx='22.5' cy='15' rx='4.5' ry='6'/><ellipse cx='37.5' cy='15' rx='4.5' ry='6'/><path d='M30 30c-7.5 0-12.5 5-12.5 11.25 0 5.5 4.25 8.75 12.5 8.75s12.5-3.25 12.5-8.75c0-6.25-5-11.25-12.5-11.25z'/></g></svg>")`,
-            backgroundSize: '90px 90px',
-          }}
-        />
+        <div aria-hidden="true" className="absolute inset-0 pointer-events-none">
+          {[
+            { top: '10%',  left: '5%',  size: 56, rotate: -14, delay: '0s'   },
+            { top: '70%',  left: '11%', size: 40, rotate: 16,  delay: '0.6s' },
+            { top: '22%',  left: '30%', size: 44, rotate: -6,  delay: '1.2s' },
+            { top: '80%',  left: '38%', size: 34, rotate: 22,  delay: '0.3s' },
+            { top: '14%',  left: '58%', size: 38, rotate: -20, delay: '1.5s' },
+            { top: '65%',  left: '62%', size: 50, rotate: 8,   delay: '0.9s' },
+            { top: '28%',  left: '80%', size: 42, rotate: 12,  delay: '1.8s' },
+            { top: '72%',  left: '90%', size: 36, rotate: -10, delay: '0.4s' },
+          ].map((p, i) => (
+            <svg
+              key={i}
+              viewBox="0 0 60 60"
+              className="absolute hero-paw-bg"
+              style={{
+                top: p.top, left: p.left,
+                width: p.size, height: p.size,
+                transform: `rotate(${p.rotate}deg)`,
+                animationDelay: p.delay,
+              }}
+            >
+              <g fill="white">
+                <ellipse cx="14" cy="28" rx="5" ry="6.5" />
+                <ellipse cx="46" cy="28" rx="5" ry="6.5" />
+                <ellipse cx="22.5" cy="15" rx="4.5" ry="6" />
+                <ellipse cx="37.5" cy="15" rx="4.5" ry="6" />
+                <path d="M30 30c-7.5 0-12.5 5-12.5 11.25 0 5.5 4.25 8.75 12.5 8.75s12.5-3.25 12.5-8.75c0-6.25-5-11.25-12.5-11.25z" />
+              </g>
+            </svg>
+          ))}
+        </div>
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-[280px] lg:min-h-[340px] flex items-center">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full py-8 lg:py-10">
