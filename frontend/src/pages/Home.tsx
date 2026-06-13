@@ -90,7 +90,7 @@ export function Home() {
             <div className="hidden lg:flex items-center justify-between gap-6">
               <span
                 aria-hidden="true"
-                className="text-[160px] drop-shadow-2xl select-none leading-none hero-dog-bob"
+                className="text-[160px] drop-shadow-2xl select-none -scale-x-100 leading-none"
               >
                 🐕
               </span>
