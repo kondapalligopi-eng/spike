@@ -45,8 +45,19 @@ export function Home() {
             50%       { opacity: 0.20; }
           }
           .hero-paw-bg { animation: hero-paw-pulse 2.6s ease-in-out infinite; will-change: opacity; }
+          @keyframes hero-sparkle {
+            0%, 100% { opacity: 0;   transform: translate(-50%, -50%) scale(0)   rotate(0deg); }
+            45%      { opacity: 1;   transform: translate(-50%, -50%) scale(1)   rotate(25deg); }
+            55%      { opacity: 0.9; transform: translate(-50%, -50%) scale(1.1) rotate(30deg); }
+          }
+          .hero-sparkle {
+            animation: hero-sparkle 2.2s ease-in-out infinite;
+            will-change: opacity, transform;
+            filter: drop-shadow(0 0 4px rgba(255,255,255,0.9));
+          }
           @media (prefers-reduced-motion: reduce) {
-            .hero-paw-bg { animation: none !important; }
+            .hero-paw-bg, .hero-sparkle { animation: none !important; }
+            .hero-sparkle { opacity: 0.6; }
           }
         `}</style>
 
