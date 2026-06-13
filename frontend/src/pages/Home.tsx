@@ -35,6 +35,53 @@ export function Home() {
 
       {/* Hero Banner — cinematic wide layout */}
       <section className="relative overflow-hidden bg-gradient-to-r from-primary-900 via-primary-800 to-primary-600 text-white">
+        {/* All hero animations live here so the whole effect is one self-
+            contained block. Honours prefers-reduced-motion. The main dog
+            keeps its mirror flip (scaleX(-1)) so it faces the headline; the
+            bob keyframes preserve that flip while adding vertical motion. */}
+        <style>{`
+          @keyframes hero-bob {
+            0%, 100% { transform: scaleX(-1) translateY(0); }
+            50%       { transform: scaleX(-1) translateY(-14px); }
+          }
+          @keyframes hero-tail-wag {
+            0%, 100% { transform: rotate(-6deg); }
+            50%       { transform: rotate(6deg); }
+          }
+          @keyframes hero-paw-rise {
+            0%   { transform: translateY(30px) scale(0.6); opacity: 0; }
+            18%  { opacity: 0.55; }
+            85%  { opacity: 0.55; }
+            100% { transform: translateY(-260px) scale(1.4); opacity: 0; }
+          }
+          @keyframes hero-trot {
+            0%   { transform: translateX(-90px) scaleX(-1); }
+            100% { transform: translateX(110vw)  scaleX(-1); }
+          }
+          @keyframes hero-trot-step {
+            0%, 100% { transform: translateY(0); }
+            50%       { transform: translateY(-4px); }
+          }
+          .hero-dog-bob    { animation: hero-bob 3.2s ease-in-out infinite; transform-origin: center bottom; will-change: transform; }
+          .hero-paw        { position: absolute; bottom: 0; pointer-events: none; user-select: none; color: rgba(255,255,255,0.75); }
+          .hero-paw.p1 { left: 18%; font-size: 24px; animation: hero-paw-rise 7.5s linear infinite; }
+          .hero-paw.p2 { left: 28%; font-size: 18px; animation: hero-paw-rise 8.4s linear infinite; animation-delay: 1.3s; }
+          .hero-paw.p3 { left: 38%; font-size: 28px; animation: hero-paw-rise 6.8s linear infinite; animation-delay: 2.6s; }
+          .hero-paw.p4 { left: 50%; font-size: 20px; animation: hero-paw-rise 7.9s linear infinite; animation-delay: 4.0s; }
+          .hero-paw.p5 { left: 62%; font-size: 26px; animation: hero-paw-rise 8.8s linear infinite; animation-delay: 0.7s; }
+          .hero-paw.p6 { left: 72%; font-size: 19px; animation: hero-paw-rise 6.4s linear infinite; animation-delay: 5.0s; }
+          .hero-trotter {
+            position: absolute; bottom: 6px; left: 0;
+            font-size: 42px; pointer-events: none; user-select: none;
+            animation: hero-trot 22s linear infinite;
+            will-change: transform;
+          }
+          .hero-trotter-step { display: inline-block; animation: hero-trot-step 0.4s ease-in-out infinite; }
+          @media (prefers-reduced-motion: reduce) {
+            .hero-dog-bob, .hero-paw, .hero-trotter, .hero-trotter-step { animation: none !important; }
+          }
+        `}</style>
+
         {/* Decorative paw-print pattern (full banner) */}
         <div
           aria-hidden="true"
@@ -45,6 +92,23 @@ export function Home() {
             backgroundSize: '140px 140px',
           }}
         />
+
+        {/* Drifting paw prints — rise from the bottom and fade out as they
+            pass through the hero. Six staggered timers so it never feels
+            metronomic. Hidden behind the content layer via z-index. */}
+        <div aria-hidden="true" className="absolute inset-0 pointer-events-none">
+          <span className="hero-paw p1">🐾</span>
+          <span className="hero-paw p2">🐾</span>
+          <span className="hero-paw p3">🐾</span>
+          <span className="hero-paw p4">🐾</span>
+          <span className="hero-paw p5">🐾</span>
+          <span className="hero-paw p6">🐾</span>
+        </div>
+
+        {/* A small dog trots across the bottom edge of the hero on a loop. */}
+        <div aria-hidden="true" className="hero-trotter">
+          <span className="hero-trotter-step">🐕</span>
+        </div>
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-[280px] lg:min-h-[340px] flex items-center">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full py-8 lg:py-10">
