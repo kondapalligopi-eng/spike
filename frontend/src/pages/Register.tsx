@@ -101,7 +101,9 @@ export function Register() {
             <p className="text-warm-500">Join thousands of dog lovers</p>
           </div>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          {/* See Login.tsx — method="POST" guards against the SSG hydration
+              race exposing typed credentials in the URL on native submit. */}
+          <form method="POST" action="" onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             {/* Full Name */}
             <div>
               <label htmlFor="full_name" className="block text-sm font-medium text-warm-700 mb-1.5">

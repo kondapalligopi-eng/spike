@@ -68,7 +68,15 @@ export function Login() {
             <p className="text-warm-500">Sign in to your account</p>
           </div>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+          {/* method="POST" + action="" is a defensive belt-and-suspenders for
+              the SSG hydration race: if the user submits BEFORE React has
+              attached the onSubmit handler (the form HTML exists pre-JS), the
+              browser would fall back to its native default — which is GET to
+              the current URL, leaking email & password into the address bar.
+              method="POST" forces credentials into the body instead. action=""
+              points to the same page, which won't accept POST, so the worst
+              case is a wasted round-trip — never a leak. */}
+          <form method="POST" action="" onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             {/* Email */}
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-warm-700 mb-1.5">
