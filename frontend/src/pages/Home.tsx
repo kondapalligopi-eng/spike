@@ -49,13 +49,17 @@ export function Home() {
         `}</style>
 
         {/* Decorative paw-print pattern (full banner). The Tailwind opacity
-            class is dropped here because the keyframes own opacity. */}
+            class is dropped here because the keyframes own opacity.
+            Shape mirrors the paw inside the HI·SPIKE wordmark (and the logo's
+            paw badge): 4 oval toes in an arc on top, a wider rounded pad
+            below — proper paw-print silhouette, not the simplified 4-dot
+            cluster the earlier pattern had. */}
         <div
           aria-hidden="true"
           className="absolute inset-0 hero-paw-bg"
           style={{
             backgroundImage:
-              `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'><g fill='white'><path d='M14 18a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm18 0a3 3 0 1 1 0 6 3 3 0 0 1 0-6zM18 8a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm10 0a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm-5 10a6 6 0 0 0-5.3 8.9l-.5 3.3c-.2 1.4.9 2.6 2.3 2.6h7a2.3 2.3 0 0 0 2.3-2.6l-.5-3.3A6 6 0 0 0 23 18z'/></g></svg>")`,
+              `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'><g fill='white'><ellipse cx='14' cy='28' rx='5' ry='6.5'/><ellipse cx='46' cy='28' rx='5' ry='6.5'/><ellipse cx='22.5' cy='15' rx='4.5' ry='6'/><ellipse cx='37.5' cy='15' rx='4.5' ry='6'/><path d='M30 30c-7.5 0-12.5 5-12.5 11.25 0 5.5 4.25 8.75 12.5 8.75s12.5-3.25 12.5-8.75c0-6.25-5-11.25-12.5-11.25z'/></g></svg>")`,
             backgroundSize: '140px 140px',
           }}
         />
