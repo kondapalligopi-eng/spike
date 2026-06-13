@@ -87,10 +87,12 @@ export function Home() {
           }
         `}</style>
 
-        {/* Decorative paw-print pattern (full banner) */}
+        {/* Decorative paw-print pattern (full banner) — opacity pulses gently
+            on a 2.6s loop so the whole background blinks/breathes. The Tailwind
+            opacity-[0.08] is dropped here because the keyframes own opacity. */}
         <div
           aria-hidden="true"
-          className="absolute inset-0 opacity-[0.08]"
+          className="absolute inset-0 hero-paw-bg"
           style={{
             backgroundImage:
               `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'><g fill='white'><path d='M14 18a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm18 0a3 3 0 1 1 0 6 3 3 0 0 1 0-6zM18 8a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm10 0a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm-5 10a6 6 0 0 0-5.3 8.9l-.5 3.3c-.2 1.4.9 2.6 2.3 2.6h7a2.3 2.3 0 0 0 2.3-2.6l-.5-3.3A6 6 0 0 0 23 18z'/></g></svg>")`,
