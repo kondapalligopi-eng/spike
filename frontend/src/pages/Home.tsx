@@ -39,33 +39,32 @@ export function Home() {
         path="/"
       />
 
-      {/* Announcement bar — soft-green gradient pill, sits above the hero. */}
+      {/* Announcement bar — full-width band sitting flush above the hero,
+          using the HiSpike accent yellow (matches the logo's yellow circle). */}
       {showAnnouncement && (
-        <div className="px-3 sm:px-6 pt-3">
-          <div
-            role="region"
-            aria-label="Announcement"
-            className="relative max-w-7xl mx-auto rounded-full bg-gradient-to-r from-emerald-200 via-emerald-100 to-emerald-200 text-warm-900 text-sm sm:text-base font-semibold text-center px-12 py-2.5 shadow-sm ring-1 ring-emerald-300/40"
+        <div
+          role="region"
+          aria-label="Announcement"
+          className="relative bg-gradient-to-r from-accent-300 via-accent-400 to-accent-300 text-warm-900 text-sm sm:text-base font-semibold text-center py-2.5 px-12 border-y border-accent-500/30"
+        >
+          <span aria-hidden="true" className="mr-1.5">🐾</span>
+          List your pet business on HiSpike — free for verified providers in Bengaluru
+          <Link
+            to="/feedback"
+            className="ml-2 underline underline-offset-2 hover:text-warm-700 font-bold"
           >
-            <span aria-hidden="true" className="mr-1.5">🐾</span>
-            List your pet business on HiSpike — free for verified providers in Bengaluru
-            <Link
-              to="/feedback"
-              className="ml-2 underline-offset-2 hover:underline text-emerald-900 font-bold"
-            >
-              Get listed →
-            </Link>
-            <button
-              type="button"
-              onClick={dismissAnnouncement}
-              aria-label="Dismiss announcement"
-              className="absolute right-3 top-1/2 -translate-y-1/2 inline-flex items-center justify-center w-7 h-7 rounded-full hover:bg-emerald-300/40 text-warm-700 hover:text-warm-900 transition-colors"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
+            Get listed →
+          </Link>
+          <button
+            type="button"
+            onClick={dismissAnnouncement}
+            aria-label="Dismiss announcement"
+            className="absolute right-3 top-1/2 -translate-y-1/2 inline-flex items-center justify-center w-7 h-7 rounded-full hover:bg-accent-500/30 text-warm-800 hover:text-warm-900 transition-colors"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
       )}
 
