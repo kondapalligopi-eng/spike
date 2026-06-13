@@ -60,7 +60,7 @@ export function Home() {
           style={{
             backgroundImage:
               `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'><g fill='white'><ellipse cx='14' cy='28' rx='5' ry='6.5'/><ellipse cx='46' cy='28' rx='5' ry='6.5'/><ellipse cx='22.5' cy='15' rx='4.5' ry='6'/><ellipse cx='37.5' cy='15' rx='4.5' ry='6'/><path d='M30 30c-7.5 0-12.5 5-12.5 11.25 0 5.5 4.25 8.75 12.5 8.75s12.5-3.25 12.5-8.75c0-6.25-5-11.25-12.5-11.25z'/></g></svg>")`,
-            backgroundSize: '140px 140px',
+            backgroundSize: '90px 90px',
           }}
         />
 
