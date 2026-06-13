@@ -62,15 +62,19 @@ export function Home() {
         `}</style>
 
         <div aria-hidden="true" className="absolute inset-0 pointer-events-none">
+          {/* Paws are pinned to the top and bottom safe bands of the hero so
+              they never sit on top of the wordmark, the "ALL-IN-ONE" line, or
+              the service-button column. Vertical extremes are the only zones
+              with no text on either breakpoint. */}
           {[
-            { top: '10%',  left: '5%',  size: 56, rotate: -14, delay: 0   },
-            { top: '70%',  left: '11%', size: 40, rotate: 16,  delay: 0.6 },
-            { top: '22%',  left: '30%', size: 44, rotate: -6,  delay: 1.2 },
-            { top: '80%',  left: '38%', size: 34, rotate: 22,  delay: 0.3 },
-            { top: '14%',  left: '58%', size: 38, rotate: -20, delay: 1.5 },
-            { top: '65%',  left: '62%', size: 50, rotate: 8,   delay: 0.9 },
-            { top: '28%',  left: '80%', size: 42, rotate: 12,  delay: 1.8 },
-            { top: '72%',  left: '90%', size: 36, rotate: -10, delay: 0.4 },
+            { top: '6%',  left: '4%',  size: 50, rotate: -14, delay: 0   },
+            { top: '4%',  left: '24%', size: 38, rotate: -6,  delay: 1.2 },
+            { top: '3%',  left: '46%', size: 42, rotate: -20, delay: 1.5 },
+            { top: '5%',  left: '72%', size: 36, rotate: 12,  delay: 1.8 },
+            { top: '86%', left: '8%',  size: 42, rotate: 16,  delay: 0.6 },
+            { top: '88%', left: '30%', size: 34, rotate: 22,  delay: 0.3 },
+            { top: '84%', left: '54%', size: 44, rotate: 8,   delay: 0.9 },
+            { top: '90%', left: '80%', size: 36, rotate: -10, delay: 0.4 },
           ].map((p, i) => (
             // Each paw is wrapped with 3 sparkle stars positioned around it,
             // so the sparkles read as the paw glinting — not as decoration
