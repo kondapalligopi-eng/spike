@@ -1,35 +1,12 @@
-import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { PageHead } from '@/components/PageHead';
 import { useBackendWarmup } from '@/lib/warmupBackend';
-
-const ANNOUNCEMENT_DISMISS_KEY = 'hispike_announcement_v1_dismissed';
 
 export function Home() {
   // Wake the Render dyno the moment any user lands here, so by the time they
   // click into Hospital / Park / Swimming / Grooming the API is warm. Cheap
   // win for Google-search visitors who often land on Home first.
   useBackendWarmup();
-
-  // Dismissible announcement bar — soft-green pill above the hero. Persists
-  // the dismissal in localStorage so it doesn't pop back every page load.
-  // Bump the version suffix in ANNOUNCEMENT_DISMISS_KEY when the message
-  // changes so previously-dismissed users see the fresh announcement.
-  const [showAnnouncement, setShowAnnouncement] = useState(false);
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    try {
-      if (localStorage.getItem(ANNOUNCEMENT_DISMISS_KEY) !== '1') {
-        setShowAnnouncement(true);
-      }
-    } catch {
-      setShowAnnouncement(true);
-    }
-  }, []);
-  const dismissAnnouncement = () => {
-    setShowAnnouncement(false);
-    try { localStorage.setItem(ANNOUNCEMENT_DISMISS_KEY, '1'); } catch { /* noop */ }
-  };
 
   return (
     <div className="flex flex-col">
