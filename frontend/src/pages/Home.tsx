@@ -1,12 +1,36 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { PageHead } from '@/components/PageHead';
 import { useBackendWarmup } from '@/lib/warmupBackend';
+
+const ANNOUNCEMENT_DISMISS_KEY = 'hispike_announcement_v1_dismissed';
 
 export function Home() {
   // Wake the Render dyno the moment any user lands here, so by the time they
   // click into Hospital / Park / Swimming / Grooming the API is warm. Cheap
   // win for Google-search visitors who often land on Home first.
   useBackendWarmup();
+
+  // Dismissible announcement bar — soft-green pill above the hero. Persists
+  // the dismissal in localStorage so it doesn't pop back every page load.
+  // Bump the version suffix in ANNOUNCEMENT_DISMISS_KEY when the message
+  // changes so previously-dismissed users see the fresh announcement.
+  const [showAnnouncement, setShowAnnouncement] = useState(false);
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      if (localStorage.getItem(ANNOUNCEMENT_DISMISS_KEY) !== '1') {
+        setShowAnnouncement(true);
+      }
+    } catch {
+      setShowAnnouncement(true);
+    }
+  }, []);
+  const dismissAnnouncement = () => {
+    setShowAnnouncement(false);
+    try { localStorage.setItem(ANNOUNCEMENT_DISMISS_KEY, '1'); } catch { /* noop */ }
+  };
+
   return (
     <div className="flex flex-col">
       <PageHead
@@ -14,6 +38,37 @@ export function Home() {
         description="HiSpike is Bengaluru's all-in-one pet care platform — find trusted vets, dog parks, swim coaches, grooming salons, and premium pet supplies in one place. Verified providers, honest reviews, hyperlocal."
         path="/"
       />
+
+      {/* Announcement bar — soft-green gradient pill, sits above the hero. */}
+      {showAnnouncement && (
+        <div className="px-3 sm:px-6 pt-3">
+          <div
+            role="region"
+            aria-label="Announcement"
+            className="relative max-w-7xl mx-auto rounded-full bg-gradient-to-r from-emerald-200 via-emerald-100 to-emerald-200 text-warm-900 text-sm sm:text-base font-semibold text-center px-12 py-2.5 shadow-sm ring-1 ring-emerald-300/40"
+          >
+            <span aria-hidden="true" className="mr-1.5">🐾</span>
+            List your pet business on HiSpike — free for verified providers in Bengaluru
+            <Link
+              to="/feedback"
+              className="ml-2 underline-offset-2 hover:underline text-emerald-900 font-bold"
+            >
+              Get listed →
+            </Link>
+            <button
+              type="button"
+              onClick={dismissAnnouncement}
+              aria-label="Dismiss announcement"
+              className="absolute right-3 top-1/2 -translate-y-1/2 inline-flex items-center justify-center w-7 h-7 rounded-full hover:bg-emerald-300/40 text-warm-700 hover:text-warm-900 transition-colors"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Hero Banner — cinematic wide layout */}
       <section className="relative overflow-hidden bg-gradient-to-r from-primary-900 via-primary-800 to-primary-600 text-white">
         {/* Decorative paw-print pattern (full banner) */}
