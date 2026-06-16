@@ -12,6 +12,26 @@ export const apiClient = axios.create({
   // ~15 min idle and takes 30–60s to wake on the next hit). 30s wasn't
   // enough — POSTs from the admin form were timing out as "Network Error".
   timeout: 60000,
+  // Replace axios's default JSON parser. Render's free-tier proxy returns a
+  // styled HTML 502/503 page while the dyno boots, and the default parser
+  // would feed that HTML to JSON.parse and throw
+  //   Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+  // which then leaks into the console (and any toast that surfaces
+  // error.message). Only parse when the server actually said it's JSON.
+  transformResponse: [
+    (data, headers) => {
+      if (typeof data !== 'string' || data.length === 0) return data;
+      const contentType = String(
+        (headers as Record<string, unknown> | undefined)?.['content-type'] ?? '',
+      ).toLowerCase();
+      if (!contentType.includes('application/json')) return data;
+      try {
+        return JSON.parse(data);
+      } catch {
+        return data;
+      }
+    },
+  ],
 });
 
 // Request interceptor: attach Authorization header from localStorage
