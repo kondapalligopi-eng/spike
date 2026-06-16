@@ -28,6 +28,7 @@ const SEARCH_INDEX: SearchEntry[] = [
   { section: 'Services', title: 'Park', subtitle: 'Dog-friendly parks & lakes', to: '/park' },
   { section: 'Services', title: 'Swimming', subtitle: 'Aquatic training', to: '/swimming' },
   { section: 'Services', title: 'Grooming', subtitle: 'Salon & spa', to: '/grooming' },
+  { section: 'Services', title: 'Dog Walking', subtitle: 'Verified walkers near you', to: '/dog-walking' },
   { section: 'Services', title: 'Pet Supplies', subtitle: 'Food, treats, accessories', to: '/pet-supplies' },
 
   { section: 'Hospitals', title: 'SKS Veterinary Hospital', subtitle: 'Indiranagar', to: '/hospital' },
