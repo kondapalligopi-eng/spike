@@ -248,9 +248,10 @@ export function DogWalking() {
                       Call
                     </a>
                     <ShareButtons
-                      url={`https://hispike.in/dog-walking#${encodeURIComponent(w.name)}`}
-                      title={`${w.name} — verified dog walker in ${w.area}, Bengaluru`}
-                      compact
+                      name={w.name}
+                      url={`/dog-walking#${encodeURIComponent(w.name)}`}
+                      context={`Verified dog walker in ${w.area}, Bengaluru`}
+                      variant="compact"
                     />
                   </div>
                 </article>
