@@ -150,14 +150,22 @@ apiClient.interceptors.response.use(
     }
 
     // Normalize error message for everything else (including the final
-    // 401 we couldn't recover from).
-    const detail = error.response?.data?.detail;
+    // 401 we couldn't recover from). When the server returned HTML (cold-
+    // start proxy page, NGINX 502, generic gateway error), data is the raw
+    // string — surface a friendly "warming up" message instead of the
+    // useless "Unexpected token '<'..." parser error.
+    const data = error.response?.data as unknown;
     let message = 'An unexpected error occurred';
 
-    if (typeof detail === 'string') {
-      message = detail;
-    } else if (Array.isArray(detail) && detail.length > 0) {
-      message = detail.map((d) => d.msg).join(', ');
+    if (data && typeof data === 'object' && 'detail' in data) {
+      const detail = (data as { detail?: unknown }).detail;
+      if (typeof detail === 'string') {
+        message = detail;
+      } else if (Array.isArray(detail) && detail.length > 0) {
+        message = detail.map((d: { msg?: string }) => d.msg ?? '').filter(Boolean).join(', ');
+      }
+    } else if (typeof data === 'string' && data.trim().startsWith('<')) {
+      message = 'The service is starting up. Please try again in a moment.';
     } else if (error.message) {
       message = error.message;
     }
