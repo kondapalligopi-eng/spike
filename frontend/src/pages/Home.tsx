@@ -203,6 +203,7 @@ export function Home() {
                     { icon: '🌳', label: 'Dog Parks', to: '/park' },
                     { icon: '🏊', label: 'Swim Training', to: '/swimming' },
                     { icon: '✂️', label: 'Grooming Salon', to: '/grooming' },
+                    { icon: '🦮', label: 'Dog Walking', to: '/dog-walking' },
                     { icon: '🛒', label: 'Pet Supplies', to: '/pet-supplies' },
                   ].map(({ icon, label, to }) => (
                     <li key={to}>
