@@ -11,6 +11,7 @@ const DRAWER_TOP: DrawerItem[] = [
   { label: 'Park', to: '/park' },
   { label: 'Swimming', to: '/swimming' },
   { label: 'Grooming', to: '/grooming' },
+  { label: 'Dog Walking', to: '/dog-walking' },
   { label: 'Pet Supplies', to: '/pet-supplies' },
 ];
 
@@ -27,6 +28,7 @@ const SEARCH_INDEX: SearchEntry[] = [
   { section: 'Services', title: 'Park', subtitle: 'Dog-friendly parks & lakes', to: '/park' },
   { section: 'Services', title: 'Swimming', subtitle: 'Aquatic training', to: '/swimming' },
   { section: 'Services', title: 'Grooming', subtitle: 'Salon & spa', to: '/grooming' },
+  { section: 'Services', title: 'Dog Walking', subtitle: 'Verified walkers near you', to: '/dog-walking' },
   { section: 'Services', title: 'Pet Supplies', subtitle: 'Food, treats, accessories', to: '/pet-supplies' },
 
   { section: 'Hospitals', title: 'SKS Veterinary Hospital', subtitle: 'Indiranagar', to: '/hospital' },
@@ -251,6 +253,7 @@ export function Navbar() {
               <NavLink to="/park" className={navLinkClass}>Park</NavLink>
               <NavLink to="/swimming" className={navLinkClass}>Swimming</NavLink>
               <NavLink to="/grooming" className={navLinkClass}>Grooming</NavLink>
+              <NavLink to="/dog-walking" className={navLinkClass}>Dog Walking</NavLink>
               <NavLink to="/pet-supplies" className={navLinkClass}>Pet Supplies</NavLink>
             </div>
           </div>

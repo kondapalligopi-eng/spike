@@ -17,6 +17,7 @@ import { Park } from '@/pages/Park';
 import { Grooming } from '@/pages/Grooming';
 import { GroomingSalon } from '@/pages/GroomingSalon';
 import { PetSupplies } from '@/pages/PetSupplies';
+import { DogWalking } from '@/pages/DogWalking';
 import { OurStory } from '@/pages/OurStory';
 import { Newsroom } from '@/pages/Newsroom';
 import { Blog } from '@/pages/Blog';
@@ -43,6 +44,7 @@ export const routes: RouteRecord[] = [
           { path: 'grooming', Component: Grooming },
           { path: 'grooming/:slug', Component: GroomingSalon },
           { path: 'pet-supplies', Component: PetSupplies },
+          { path: 'dog-walking', Component: DogWalking },
           { path: 'about', Component: OurStory },
           { path: 'newsroom', Component: Newsroom },
           { path: 'blog', Component: Blog },

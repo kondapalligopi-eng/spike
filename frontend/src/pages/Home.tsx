@@ -203,6 +203,7 @@ export function Home() {
                     { icon: '🌳', label: 'Dog Parks', to: '/park' },
                     { icon: '🏊', label: 'Swim Training', to: '/swimming' },
                     { icon: '✂️', label: 'Grooming Salon', to: '/grooming' },
+                    { icon: '🦮', label: 'Dog Walking', to: '/dog-walking' },
                     { icon: '🛒', label: 'Pet Supplies', to: '/pet-supplies' },
                   ].map(({ icon, label, to }) => (
                     <li key={to}>
@@ -225,12 +226,13 @@ export function Home() {
       {/* Services / Categories — editorial thumbnail grid */}
       <section className="py-10 bg-primary-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6 sm:gap-8">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6 sm:gap-8">
             {[
               { label: 'Hospital', dog: '🐶', badge: '🩺', kicker: 'Vet Care', image: '/services/hospital.jpg', tint: 'from-rose-200 to-rose-400', to: '/hospital' },
               { label: 'Park', dog: '🐕', badge: '🌳', kicker: 'Outdoors', image: '/services/park.jpg', tint: 'from-emerald-200 to-emerald-500', to: '/park' },
               { label: 'Swimming', dog: '🐶💦', badge: '🌊', kicker: 'Aquatic', image: '/services/swimming.jpg', tint: 'from-sky-200 to-sky-500', to: '/swimming' },
               { label: 'Grooming', dog: '🐩', badge: '✂️', kicker: 'Salon', image: '/services/grooming.jpg', tint: 'from-amber-200 to-amber-400', to: '/grooming' },
+              { label: 'Dog Walking', dog: '🦮', badge: '🐾', kicker: 'Walkers', image: '/services/dog-walking.jpg', tint: 'from-teal-200 to-teal-400', to: '/dog-walking' },
               { label: 'Pet Supplies', dog: '🐶🦴', badge: '🥣', kicker: 'Shop', image: '/services/pet-supplies.jpg', tint: 'from-violet-200 to-violet-400', to: '/pet-supplies' },
             ].map(({ label, dog, badge, kicker, image, tint, to }) => (
               <Link key={label} to={to} className="group block text-center">

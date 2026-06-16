@@ -12,6 +12,26 @@ export const apiClient = axios.create({
   // ~15 min idle and takes 30–60s to wake on the next hit). 30s wasn't
   // enough — POSTs from the admin form were timing out as "Network Error".
   timeout: 60000,
+  // Replace axios's default JSON parser. Render's free-tier proxy returns a
+  // styled HTML 502/503 page while the dyno boots, and the default parser
+  // would feed that HTML to JSON.parse and throw
+  //   Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+  // which then leaks into the console (and any toast that surfaces
+  // error.message). Only parse when the server actually said it's JSON.
+  transformResponse: [
+    (data, headers) => {
+      if (typeof data !== 'string' || data.length === 0) return data;
+      const contentType = String(
+        (headers as Record<string, unknown> | undefined)?.['content-type'] ?? '',
+      ).toLowerCase();
+      if (!contentType.includes('application/json')) return data;
+      try {
+        return JSON.parse(data);
+      } catch {
+        return data;
+      }
+    },
+  ],
 });
 
 // Request interceptor: attach Authorization header from localStorage
@@ -130,14 +150,22 @@ apiClient.interceptors.response.use(
     }
 
     // Normalize error message for everything else (including the final
-    // 401 we couldn't recover from).
-    const detail = error.response?.data?.detail;
+    // 401 we couldn't recover from). When the server returned HTML (cold-
+    // start proxy page, NGINX 502, generic gateway error), data is the raw
+    // string — surface a friendly "warming up" message instead of the
+    // useless "Unexpected token '<'..." parser error.
+    const data = error.response?.data as unknown;
     let message = 'An unexpected error occurred';
 
-    if (typeof detail === 'string') {
-      message = detail;
-    } else if (Array.isArray(detail) && detail.length > 0) {
-      message = detail.map((d) => d.msg).join(', ');
+    if (data && typeof data === 'object' && 'detail' in data) {
+      const detail = (data as { detail?: unknown }).detail;
+      if (typeof detail === 'string') {
+        message = detail;
+      } else if (Array.isArray(detail) && detail.length > 0) {
+        message = detail.map((d: { msg?: string }) => d.msg ?? '').filter(Boolean).join(', ');
+      }
+    } else if (typeof data === 'string' && data.trim().startsWith('<')) {
+      message = 'The service is starting up. Please try again in a moment.';
     } else if (error.message) {
       message = error.message;
     }
