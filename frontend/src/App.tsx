@@ -17,6 +17,7 @@ import { Park } from '@/pages/Park';
 import { Grooming } from '@/pages/Grooming';
 import { GroomingSalon } from '@/pages/GroomingSalon';
 import { PetSupplies } from '@/pages/PetSupplies';
+import { DogWalking } from '@/pages/DogWalking';
 import { OurStory } from '@/pages/OurStory';
 import { Newsroom } from '@/pages/Newsroom';
 import { Blog } from '@/pages/Blog';
