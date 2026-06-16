@@ -1,4 +1,5 @@
 import { PageHead } from '@/components/PageHead';
+import { HeroPaws } from '@/components/HeroPaws';
 
 export function OurStory() {
   return (
