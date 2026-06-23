@@ -5,6 +5,11 @@ import { useSiteSetting } from '@/api/siteSettings';
 import { ComingSoon } from '@/components/ComingSoon';
 import { PageHead } from '@/components/PageHead';
 import { FaqSchema, type FaqItem } from '@/components/FaqSchema';
+import { PaymentBadges } from '@/components/PaymentBadges';
+
+// Razorpay hosted Payment Link / Payment Page for the soft-launch checkout.
+// Blank until a link is created in the Razorpay dashboard — see .env.example.
+const RAZORPAY_PAYMENT_LINK = import.meta.env.VITE_RAZORPAY_PAYMENT_LINK as string | undefined;
 
 const SUPPLIES_FAQS: FaqItem[] = [
   {
