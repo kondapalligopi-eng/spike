@@ -272,6 +272,10 @@ export function PetSupplies() {
         </div>
       </section>
 
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+        <PaymentBadges payLink={RAZORPAY_PAYMENT_LINK} />
+      </div>
+
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-[240px_1fr] gap-8">
           {/* Filters sidebar */}
