@@ -9,6 +9,8 @@ import {
   isSlugWellFormed,
   listMyPetPages,
   MAX_MEMORY_WORDS,
+  MAX_PHOTOS,
+  PET_HIGHLIGHTS,
   slugify,
   updatePetPage,
   type PetPageRead,
