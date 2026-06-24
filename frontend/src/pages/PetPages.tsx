@@ -247,11 +247,28 @@ export function PetPages() {
               {photos.length > 0 && (
                 <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 mb-3">
                   {photos.map((src, i) => (
-                    <div key={i} className="relative group aspect-square rounded-lg overflow-hidden border border-warm-200">
-                      <img src={src} alt="" className="w-full h-full object-cover" />
-                      {i === 0 && (
-                        <span className="absolute top-1 left-1 bg-primary-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded">
+                    <div
+                      key={i}
+                      className={`relative group aspect-square rounded-lg overflow-hidden border-2 ${
+                        i === 0 ? 'border-primary-500' : 'border-warm-200'
+                      }`}
+                    >
+                      {/* Click the image to make it the cover */}
+                      <button
+                        type="button"
+                        onClick={() => setCover(i)}
+                        aria-label={i === 0 ? 'Cover photo' : 'Set as cover photo'}
+                        className="block w-full h-full"
+                      >
+                        <img src={src} alt="" className="w-full h-full object-cover" />
+                      </button>
+                      {i === 0 ? (
+                        <span className="absolute top-1 left-1 bg-primary-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded pointer-events-none">
                           Cover
+                        </span>
+                      ) : (
+                        <span className="absolute bottom-1 inset-x-1 text-center bg-black/60 text-white text-[9px] font-semibold py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                          Set as cover
                         </span>
                       )}
                       <button
