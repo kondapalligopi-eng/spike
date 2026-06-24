@@ -161,8 +161,8 @@ export function PetPages() {
             Your Pet Stories
           </h1>
           <p className="mt-2 text-sm text-warm-600">
-            Give your dog their own page — a photo and your favourite memories — and share the
-            link with anyone. It lives at <span className="font-mono text-warm-800">{SITE_HOST}/pet/your-dog</span>.
+            Give your pet their own page — a photo and your favourite memories — and share the
+            link with anyone. It lives at <span className="font-mono text-warm-800">{SITE_HOST}/pet/your-pet</span>.
           </p>
         </header>
 
