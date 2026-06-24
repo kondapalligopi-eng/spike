@@ -190,7 +190,7 @@ export function PetPages() {
             <div>
               <label className="block text-sm font-semibold text-warm-800 mb-1.5">Page link</label>
               <div className="flex items-center rounded-lg border border-warm-300 focus-within:border-primary-500 overflow-hidden">
-                <span className="pl-3 pr-1 py-2.5 text-sm text-warm-400 select-none whitespace-nowrap">
+                <span className="pl-3 py-2.5 text-sm text-warm-400 select-none whitespace-nowrap">
                   {SITE_HOST}/pet/
                 </span>
                 <input
@@ -201,7 +201,7 @@ export function PetPages() {
                     setSlug(slugify(e.target.value));
                   }}
                   placeholder="coco"
-                  className="flex-1 pr-3 py-2.5 outline-none text-sm font-medium text-warm-900"
+                  className="flex-1 pl-0 pr-3 py-2.5 outline-none text-sm font-medium text-warm-900"
                 />
               </div>
               {slugHint && <p className={`mt-1.5 text-xs ${slugHint.cls}`}>{slugHint.text}</p>}
