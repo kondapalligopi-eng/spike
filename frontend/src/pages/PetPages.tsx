@@ -148,23 +148,41 @@ export function PetPages() {
   }, [slugStatus]);
 
   return (
-    <div className="bg-white min-h-screen">
+    <div className="bg-warm-50 min-h-screen">
       <PageHead
         title="Your Pet Stories"
         description="Create a free shareable page for your pet — name, photo and story — at hispike.in/pet/your-pet."
         path="/pet-stories"
       />
 
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
-        <header className="mb-8">
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-warm-900">
+      {/* Branded hero band — mirrors the Pet Supplies hero (primary gradient +
+          paw pattern + gold accent) so the page reads as part of HiSpike. */}
+      <section className="relative overflow-hidden bg-gradient-to-r from-primary-900 via-primary-800 to-primary-600 text-white">
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 opacity-[0.08]"
+          style={{
+            backgroundImage:
+              `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'><g fill='white'><path d='M14 18a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm18 0a3 3 0 1 1 0 6 3 3 0 0 1 0-6zM18 8a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm10 0a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm-5 10a6 6 0 0 0-5.3 8.9l-.5 3.3c-.2 1.4.9 2.6 2.3 2.6h7a2.3 2.3 0 0 0 2.3-2.6l-.5-3.3A6 6 0 0 0 23 18z'/></g></svg>")`,
+            backgroundSize: '120px 120px',
+          }}
+        />
+        <div className="relative max-w-3xl mx-auto px-4 sm:px-6 py-10 sm:py-12">
+          <p className="text-[11px] sm:text-xs font-semibold tracking-[0.3em] text-accent-400 uppercase mb-1">
+            Pet Stories · Bangalore
+          </p>
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight leading-tight">
             Your Pet Stories
           </h1>
-          <p className="mt-2 text-sm text-warm-600">
+          <div className="mt-2 h-0.5 w-16 bg-accent-400 rounded-full" />
+          <p className="mt-3 text-sm text-primary-100/90 max-w-2xl">
             Give your pet their own page — a photo and your favourite memories — and share the
-            link with anyone. It lives at <span className="font-mono text-warm-800">{SITE_HOST}/pet/your-pet</span>.
+            link with anyone. It lives at <span className="font-mono text-white">{SITE_HOST}/pet/your-pet</span>.
           </p>
-        </header>
+        </div>
+      </section>
+
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
 
         {/* Create / edit form */}
         <div ref={formRef} className="rounded-2xl border border-warm-200 p-5 sm:p-6 shadow-sm">
