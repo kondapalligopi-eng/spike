@@ -30,7 +30,7 @@ export function PetPage() {
         <div className="text-6xl mb-4">🐾</div>
         <h1 className="text-2xl font-extrabold text-warm-900">This page isn't here</h1>
         <p className="mt-2 text-warm-600 max-w-md">
-          We couldn't find a dog page at <span className="font-mono text-warm-800">/pet/{slug}</span>.
+          We couldn't find a pet page at <span className="font-mono text-warm-800">/pet/{slug}</span>.
           It may have been removed, or the link is mistyped.
         </p>
         <Link
