@@ -289,7 +289,7 @@ export function PetPages() {
               ) : (
                 <p className="text-xs text-warm-500">Maximum {MAX_PHOTOS} photos reached.</p>
               )}
-              <p className="mt-1.5 text-xs text-warm-400">The first photo is used as the cover.</p>
+              <p className="mt-1.5 text-xs text-warm-400">Click a photo to make it the cover.</p>
             </div>
 
             {/* Highlights */}
