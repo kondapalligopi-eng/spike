@@ -294,7 +294,7 @@ export function PetPages() {
               {pages.map((page) => (
                 <li
                   key={page.id}
-                  className="flex items-center gap-4 rounded-xl border border-warm-200 p-3"
+                  className="flex items-center gap-4 rounded-xl border border-warm-200 bg-white p-3"
                 >
                   <div className="w-14 h-14 rounded-full overflow-hidden bg-warm-100 flex items-center justify-center shrink-0">
                     {page.photo_url ? (
