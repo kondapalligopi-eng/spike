@@ -358,8 +358,8 @@ export function PetPages() {
                   className="flex items-center gap-4 rounded-xl border border-warm-200 bg-white p-3"
                 >
                   <div className="w-14 h-14 rounded-full overflow-hidden bg-warm-100 flex items-center justify-center shrink-0">
-                    {page.photo_url ? (
-                      <img src={page.photo_url} alt={page.name} className="w-full h-full object-cover" />
+                    {page.photos[0] ? (
+                      <img src={page.photos[0]} alt={page.name} className="w-full h-full object-cover" />
                     ) : (
                       <span className="text-2xl" aria-hidden="true">🐶</span>
                     )}
