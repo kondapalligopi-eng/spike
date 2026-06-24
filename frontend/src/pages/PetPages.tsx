@@ -229,10 +229,67 @@ export function PetPages() {
               {slugHint && <p className={`mt-1.5 text-xs ${slugHint.cls}`}>{slugHint.text}</p>}
             </div>
 
-            {/* Photo */}
+            {/* Photos — gallery */}
             <div>
-              <label className="block text-sm font-semibold text-warm-800 mb-1.5">Photo</label>
-              <ImageUpload onFileSelect={onFileSelect} currentImageUrl={photoUrl ?? undefined} />
+              <label className="block text-sm font-semibold text-warm-800 mb-1.5">
+                Photos <span className="font-normal text-warm-400">({photos.length}/{MAX_PHOTOS})</span>
+              </label>
+              {photos.length > 0 && (
+                <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 mb-3">
+                  {photos.map((src, i) => (
+                    <div key={i} className="relative group aspect-square rounded-lg overflow-hidden border border-warm-200">
+                      <img src={src} alt="" className="w-full h-full object-cover" />
+                      {i === 0 && (
+                        <span className="absolute top-1 left-1 bg-primary-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded">
+                          Cover
+                        </span>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => removePhoto(i)}
+                        aria-label="Remove photo"
+                        className="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/60 text-white text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              {photos.length < MAX_PHOTOS ? (
+                // key resets the dropzone's internal preview after each add
+                <ImageUpload key={photos.length} onFileSelect={onFileSelect} />
+              ) : (
+                <p className="text-xs text-warm-500">Maximum {MAX_PHOTOS} photos reached.</p>
+              )}
+              <p className="mt-1.5 text-xs text-warm-400">The first photo is used as the cover.</p>
+            </div>
+
+            {/* Highlights */}
+            <div>
+              <label className="block text-sm font-semibold text-warm-800 mb-1.5">
+                Highlights <span className="font-normal text-warm-400">(optional)</span>
+              </label>
+              <div className="flex flex-wrap gap-2">
+                {PET_HIGHLIGHTS.map((h) => {
+                  const active = highlights.includes(h.key);
+                  return (
+                    <button
+                      key={h.key}
+                      type="button"
+                      onClick={() => toggleHighlight(h.key)}
+                      className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
+                        active
+                          ? 'border-primary-500 bg-primary-50 text-primary-700'
+                          : 'border-warm-300 text-warm-600 hover:border-warm-400'
+                      }`}
+                    >
+                      <span aria-hidden="true">{h.emoji}</span>
+                      {h.label}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
             {/* Memories */}
