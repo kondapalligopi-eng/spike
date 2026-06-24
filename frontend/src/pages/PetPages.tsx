@@ -107,6 +107,16 @@ export function PetPages() {
 
   const removePhoto = (idx: number) => setPhotos((prev) => prev.filter((_, i) => i !== idx));
 
+  // Promote a photo to the front — photos[0] is the cover used everywhere.
+  const setCover = (idx: number) =>
+    setPhotos((prev) => {
+      if (idx <= 0 || idx >= prev.length) return prev;
+      const next = [...prev];
+      const [pick] = next.splice(idx, 1);
+      next.unshift(pick);
+      return next;
+    });
+
   const toggleHighlight = (key: string) =>
     setHighlights((prev) => (prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]));
 
