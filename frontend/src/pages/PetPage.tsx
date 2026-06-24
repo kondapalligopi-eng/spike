@@ -48,7 +48,7 @@ export function PetPage() {
   const preview = page.memories.replace(/\s+/g, ' ').trim().slice(0, 155);
 
   return (
-    <div className="bg-white">
+    <div className="bg-warm-50 min-h-screen pb-16">
       <PageHead
         title={`${page.name}'s Page`}
         description={preview || `${page.name}'s photos and memories, shared on HiSpike.`}
@@ -56,52 +56,55 @@ export function PetPage() {
         image={page.photo_url ?? undefined}
       />
 
-      {/* Hero: photo + name */}
-      <section className="relative bg-gradient-to-b from-primary-50 to-white">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10 sm:py-14 flex flex-col items-center text-center">
-          <div className="relative w-44 h-44 sm:w-56 sm:h-56 rounded-full overflow-hidden ring-4 ring-white shadow-xl bg-warm-100 flex items-center justify-center">
+      {/* Branded cover band — same gradient + animated paws as the site hero */}
+      <section className="relative h-40 sm:h-52 overflow-hidden bg-gradient-to-r from-primary-900 via-primary-800 to-primary-600">
+        <HeroPaws />
+      </section>
+
+      <div className="max-w-2xl mx-auto px-4 sm:px-6">
+        {/* Avatar overlapping the cover band */}
+        <div className="-mt-20 sm:-mt-24 flex flex-col items-center text-center">
+          <div className="relative w-40 h-40 sm:w-48 sm:h-48 rounded-full overflow-hidden ring-4 ring-white shadow-xl bg-warm-100 flex items-center justify-center">
             {page.photo_url ? (
               <img src={page.photo_url} alt={page.name} className="w-full h-full object-cover" />
             ) : (
               <span className="text-7xl" aria-hidden="true">🐶</span>
             )}
           </div>
-          <p className="mt-6 text-[11px] font-semibold tracking-[0.3em] text-accent-500 uppercase">
+          <p className="mt-5 text-[11px] font-semibold tracking-[0.3em] text-accent-500 uppercase">
             A HiSpike Pet Story
           </p>
           <h1 className="mt-1 text-3xl sm:text-4xl font-extrabold tracking-tight text-warm-900">
             {page.name}
           </h1>
-          <div className="mt-3">
+          <div className="mt-4">
             <ShareButtons name={`${page.name}'s page`} url={`/pet/${page.slug}`} context="see the photos & memories 🐾" />
           </div>
         </div>
-      </section>
 
-      {/* Memories */}
-      <section className="max-w-2xl mx-auto px-4 sm:px-6 pb-16">
-        <h2 className="text-sm font-bold tracking-[0.2em] uppercase text-warm-500 mb-4">
-          About {page.name}
-        </h2>
-        <div className="prose prose-warm max-w-none">
+        {/* About card */}
+        <section className="mt-10 rounded-2xl border border-warm-200 bg-white shadow-sm p-6 sm:p-8">
+          <h2 className="text-sm font-bold tracking-[0.2em] uppercase text-warm-500 mb-4 flex items-center gap-2">
+            <span className="text-accent-400" aria-hidden="true">🐾</span> About {page.name}
+          </h2>
           <p className="whitespace-pre-wrap text-warm-800 leading-relaxed text-[15px]">
             {page.memories}
           </p>
-        </div>
+        </section>
 
         {/* Soft CTA so every shared page seeds the next owner */}
-        <div className="mt-12 rounded-2xl border border-warm-200 bg-warm-50 p-6 text-center">
-          <p className="text-sm text-warm-700">
+        <div className="mt-8 rounded-2xl border border-primary-100 bg-primary-50 p-6 text-center">
+          <p className="text-sm font-medium text-warm-700">
             Have a pet of your own?
           </p>
           <Link
             to="/pet-stories"
-            className="mt-3 inline-flex items-center gap-2 rounded-full bg-primary-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-primary-700 transition-colors"
+            className="mt-3 inline-flex items-center gap-2 rounded-full bg-primary-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-primary-700 transition-colors shadow"
           >
             Create their HiSpike page — free
           </Link>
         </div>
-      </section>
+      </div>
     </div>
   );
 }
