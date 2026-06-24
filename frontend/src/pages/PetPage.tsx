@@ -37,7 +37,7 @@ export function PetPage() {
           to="/pet-stories"
           className="mt-6 inline-flex items-center gap-2 rounded-full bg-primary-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-primary-700 transition-colors"
         >
-          Create your dog's page
+          Create your pet's page
         </Link>
       </div>
     );
