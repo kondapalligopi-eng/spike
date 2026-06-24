@@ -13,7 +13,7 @@ const DRAWER_TOP: DrawerItem[] = [
   { label: 'Grooming', to: '/grooming' },
   { label: 'Dog Walking', to: '/dog-walking' },
   { label: 'Pet Supplies', to: '/pet-supplies' },
-  { label: 'Pet Stories', to: '/pet-pages' },
+  { label: 'Pet Stories', to: '/pet-stories' },
 ];
 
 const DRAWER_BOTTOM: DrawerItem[] = [
