@@ -266,7 +266,7 @@ export function PetPages() {
 
         {/* Existing pages */}
         <div className="mt-10">
-          <h2 className="text-lg font-bold text-warm-900 mb-4">Your pages</h2>
+          <h2 className="text-lg font-bold text-warm-900 mb-4">Your stories</h2>
           {isLoading ? (
             <p className="text-sm text-warm-500">Loading…</p>
           ) : !pages || pages.length === 0 ? (
