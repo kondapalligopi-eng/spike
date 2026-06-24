@@ -47,6 +47,17 @@ export const routes: RouteRecord[] = [
           { path: 'grooming/:slug', Component: GroomingSalon },
           { path: 'pet-supplies', Component: PetSupplies },
           { path: 'dog-walking', Component: DogWalking },
+          // Public, shareable dog page — slug is user-created, so it renders
+          // client-side (not pre-rendered at build time).
+          { path: 'pet/:slug', Component: PetPage },
+          {
+            path: 'pet-pages',
+            element: (
+              <ProtectedRoute>
+                <PetPages />
+              </ProtectedRoute>
+            ),
+          },
           { path: 'about', Component: OurStory },
           { path: 'newsroom', Component: Newsroom },
           { path: 'blog', Component: Blog },
