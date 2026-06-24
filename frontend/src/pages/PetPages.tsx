@@ -15,6 +15,7 @@ import {
 } from '@/api/petPages';
 import { ImageUpload } from '@/components/ImageUpload';
 import { ShareButtons } from '@/components/ShareButtons';
+import { HeroPaws } from '@/components/HeroPaws';
 import { PageHead } from '@/components/PageHead';
 import { toast } from '@/store/toastStore';
 
