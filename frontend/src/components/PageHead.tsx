@@ -18,9 +18,15 @@ type PageHeadProps = {
 // vite-react-ssg's SSR captures it into each pre-rendered HTML — that's what
 // Google indexes. Without per-page meta, every page would share the site-wide
 // homepage <title>, which crushes long-tail ranking.
-export function PageHead({ title, description, path }: PageHeadProps) {
+export function PageHead({ title, description, path, image }: PageHeadProps) {
   const fullTitle = title.includes('HiSpike') ? title : `${title} | HiSpike`;
   const url = `${SITE_URL}${path.startsWith('/') ? path : `/${path}`}`;
+  // Resolve a root-relative image to an absolute URL — crawlers require it.
+  const imageUrl = image
+    ? image.startsWith('http')
+      ? image
+      : `${SITE_URL}${image.startsWith('/') ? image : `/${image}`}`
+    : undefined;
   return (
     <Head>
       <title>{fullTitle}</title>
@@ -32,6 +38,9 @@ export function PageHead({ title, description, path }: PageHeadProps) {
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:url" content={url} />
+      {imageUrl && <meta property="og:image" content={imageUrl} />}
+      {imageUrl && <meta name="twitter:image" content={imageUrl} />}
+      {imageUrl && <meta name="twitter:card" content="summary_large_image" />}
     </Head>
   );
 }
