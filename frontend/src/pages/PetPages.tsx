@@ -37,7 +37,8 @@ export function PetPages() {
   const [name, setName] = useState('');
   const [slug, setSlug] = useState('');
   const [slugTouched, setSlugTouched] = useState(false);
-  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
+  const [photos, setPhotos] = useState<string[]>([]);
+  const [highlights, setHighlights] = useState<string[]>([]);
   const [memories, setMemories] = useState('');
   const [slugStatus, setSlugStatus] = useState<SlugStatus>('idle');
 
