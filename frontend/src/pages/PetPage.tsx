@@ -66,7 +66,7 @@ export function PetPage() {
             )}
           </div>
           <p className="mt-6 text-[11px] font-semibold tracking-[0.3em] text-accent-500 uppercase">
-            A HiSpike Dog Page
+            A HiSpike Pet Story
           </p>
           <h1 className="mt-1 text-3xl sm:text-4xl font-extrabold tracking-tight text-warm-900">
             {page.name}
