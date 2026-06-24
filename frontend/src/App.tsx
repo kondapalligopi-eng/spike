@@ -9,6 +9,8 @@ import { Login } from '@/pages/Login';
 import { Register } from '@/pages/Register';
 import { Profile } from '@/pages/Profile';
 import { MyDogs } from '@/pages/MyDogs';
+import { PetPages } from '@/pages/PetPages';
+import { PetPage } from '@/pages/PetPage';
 import { Adoptions } from '@/pages/Adoptions';
 import { Admin } from '@/pages/Admin';
 import { Swimming } from '@/pages/Swimming';
@@ -45,6 +47,17 @@ export const routes: RouteRecord[] = [
           { path: 'grooming/:slug', Component: GroomingSalon },
           { path: 'pet-supplies', Component: PetSupplies },
           { path: 'dog-walking', Component: DogWalking },
+          // Public, shareable dog page — slug is user-created, so it renders
+          // client-side (not pre-rendered at build time).
+          { path: 'pet/:slug', Component: PetPage },
+          {
+            path: 'pet-stories',
+            element: (
+              <ProtectedRoute>
+                <PetPages />
+              </ProtectedRoute>
+            ),
+          },
           { path: 'about', Component: OurStory },
           { path: 'newsroom', Component: Newsroom },
           { path: 'blog', Component: Blog },

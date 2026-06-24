@@ -15,20 +15,25 @@ export function HeroPaws() {
           0%, 100% { opacity: 0.06; }
           50%      { opacity: 0.20; }
         }
-        .hero-paw-bg { animation: hero-paw-pulse 2.6s ease-in-out infinite; will-change: opacity; }
+        /* Base opacity is set statically (not only via the keyframes) so the
+           paws still look intentional when the animation can't run — e.g.
+           corporate Chrome with hardware acceleration disabled, or
+           prefers-reduced-motion. No will-change: promoting these to their own
+           compositor layers makes them freeze on the first frame when the GPU
+           is blocklisted; opacity animates fine on the main thread without it. */
+        .hero-paw-bg { opacity: 0.12; animation: hero-paw-pulse 2.6s ease-in-out infinite; }
         @keyframes hero-sparkle {
           0%, 100% { opacity: 0;   transform: translate(-50%, -50%) scale(0)   rotate(0deg); }
           45%      { opacity: 1;   transform: translate(-50%, -50%) scale(1)   rotate(25deg); }
           55%      { opacity: 0.9; transform: translate(-50%, -50%) scale(1.1) rotate(30deg); }
         }
         .hero-sparkle {
+          opacity: 0.6;
           animation: hero-sparkle 2.2s ease-in-out infinite;
-          will-change: opacity, transform;
           filter: drop-shadow(0 0 4px rgba(255,255,255,0.9));
         }
         @media (prefers-reduced-motion: reduce) {
           .hero-paw-bg, .hero-sparkle { animation: none !important; }
-          .hero-sparkle { opacity: 0.6; }
         }
       `}</style>
 

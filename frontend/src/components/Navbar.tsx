@@ -13,6 +13,7 @@ const DRAWER_TOP: DrawerItem[] = [
   { label: 'Grooming', to: '/grooming' },
   { label: 'Dog Walking', to: '/dog-walking' },
   { label: 'Pet Supplies', to: '/pet-supplies' },
+  { label: 'Pet Stories', to: '/pet-stories' },
 ];
 
 const DRAWER_BOTTOM: DrawerItem[] = [
@@ -255,6 +256,7 @@ export function Navbar() {
               <NavLink to="/grooming" className={navLinkClass}>Grooming</NavLink>
               <NavLink to="/dog-walking" className={navLinkClass}>Dog Walking</NavLink>
               <NavLink to="/pet-supplies" className={navLinkClass}>Pet Supplies</NavLink>
+              <NavLink to="/pet-stories" className={navLinkClass}>Pet Stories</NavLink>
             </div>
           </div>
         </nav>

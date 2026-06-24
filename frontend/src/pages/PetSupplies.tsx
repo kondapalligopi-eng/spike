@@ -5,6 +5,11 @@ import { useSiteSetting } from '@/api/siteSettings';
 import { ComingSoon } from '@/components/ComingSoon';
 import { PageHead } from '@/components/PageHead';
 import { FaqSchema, type FaqItem } from '@/components/FaqSchema';
+import { PaymentBadges } from '@/components/PaymentBadges';
+
+// Razorpay hosted Payment Link / Payment Page for the soft-launch checkout.
+// Blank until a link is created in the Razorpay dashboard — see .env.example.
+const RAZORPAY_PAYMENT_LINK = import.meta.env.VITE_RAZORPAY_PAYMENT_LINK as string | undefined;
 
 const SUPPLIES_FAQS: FaqItem[] = [
   {
@@ -266,6 +271,10 @@ export function PetSupplies() {
           </div>
         </div>
       </section>
+
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+        <PaymentBadges payLink={RAZORPAY_PAYMENT_LINK} />
+      </div>
 
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-[240px_1fr] gap-8">
