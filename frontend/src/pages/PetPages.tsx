@@ -79,7 +79,8 @@ export function PetPages() {
     setName('');
     setSlug('');
     setSlugTouched(false);
-    setPhotoUrl(null);
+    setPhotos([]);
+    setHighlights([]);
     setMemories('');
     setSlugStatus('idle');
   };
@@ -89,7 +90,8 @@ export function PetPages() {
     setName(page.name);
     setSlug(page.slug);
     setSlugTouched(true);
-    setPhotoUrl(page.photo_url);
+    setPhotos(page.photos);
+    setHighlights(page.highlights);
     setMemories(page.memories);
     formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
@@ -98,13 +100,19 @@ export function PetPages() {
     // In mock/dev we inline the image as a data URL so it persists and renders
     // without a backend. Stage 2 swaps this for the /pet-pages/{id}/photo upload.
     const reader = new FileReader();
-    reader.onloadend = () => setPhotoUrl(reader.result as string);
+    reader.onloadend = () =>
+      setPhotos((prev) => (prev.length >= MAX_PHOTOS ? prev : [...prev, reader.result as string]));
     reader.readAsDataURL(file);
   };
 
+  const removePhoto = (idx: number) => setPhotos((prev) => prev.filter((_, i) => i !== idx));
+
+  const toggleHighlight = (key: string) =>
+    setHighlights((prev) => (prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]));
+
   const saveMut = useMutation({
     mutationFn: async () => {
-      const payload = { slug, name, photo_url: photoUrl, memories };
+      const payload = { slug, name, photos, highlights, memories };
       return editingId ? updatePetPage(editingId, payload) : createPetPage(payload);
     },
     onSuccess: (page) => {
