@@ -9,6 +9,9 @@ type PageHeadProps = {
   description: string;
   /** Path from site root, like '/hospital'. Used for canonical URL + og:url. */
   path: string;
+  /** Optional social-card image (absolute or root-relative). Drives the large
+   *  preview thumbnail on WhatsApp/Facebook/X for shareable pages. */
+  image?: string;
 };
 
 // Per-page SEO + social-card meta. Set on every route via React Helmet so
