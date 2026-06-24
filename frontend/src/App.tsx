@@ -51,7 +51,7 @@ export const routes: RouteRecord[] = [
           // client-side (not pre-rendered at build time).
           { path: 'pet/:slug', Component: PetPage },
           {
-            path: 'pet-pages',
+            path: 'pet-stories',
             element: (
               <ProtectedRoute>
                 <PetPages />
