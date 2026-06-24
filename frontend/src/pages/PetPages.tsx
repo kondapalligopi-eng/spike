@@ -175,7 +175,7 @@ export function PetPages() {
           <div className="space-y-5">
             {/* Name */}
             <div>
-              <label className="block text-sm font-semibold text-warm-800 mb-1.5">Dog's name</label>
+              <label className="block text-sm font-semibold text-warm-800 mb-1.5">Pet's name</label>
               <input
                 type="text"
                 value={name}
