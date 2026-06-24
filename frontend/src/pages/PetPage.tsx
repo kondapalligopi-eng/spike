@@ -4,6 +4,16 @@ import { getPetPageBySlug, highlightFor, type PetPageRead } from '@/api/petPages
 import { PageHead } from '@/components/PageHead';
 import { ShareButtons } from '@/components/ShareButtons';
 
+// A single photo in a fixed aspect-ratio frame — defined height + overflow-hidden
+// so object-cover crops cleanly and nothing spills onto the next section.
+function Photo({ src, alt, className }: { src: string; alt: string; className: string }) {
+  return (
+    <div className={`overflow-hidden border border-warm-200 ${className}`}>
+      <img src={src} alt={alt} className="block w-full h-full object-cover" />
+    </div>
+  );
+}
+
 // Compact, content-dense photo gallery (1 big + thumbnail grid), inspired by
 // sitter-profile layouts. Adapts to 1, 2 or 3+ photos.
 function Gallery({ photos, name }: { photos: string[]; name: string }) {
@@ -15,23 +25,15 @@ function Gallery({ photos, name }: { photos: string[]; name: string }) {
     );
   }
   if (photos.length === 1) {
-    return (
-      <div className="rounded-2xl overflow-hidden border border-warm-200">
-        <img src={photos[0]} alt={name} className="w-full max-h-[26rem] object-cover" />
-      </div>
-    );
+    return <Photo src={photos[0]} alt={name} className="rounded-2xl aspect-[16/10]" />;
   }
   const [cover, ...rest] = photos;
   return (
-    <div className="grid grid-cols-2 gap-2 h-64 sm:h-96">
-      <div className="rounded-2xl overflow-hidden border border-warm-200">
-        <img src={cover} alt={name} className="w-full h-full object-cover" />
-      </div>
-      <div className={`grid h-full gap-2 ${rest.length === 1 ? 'grid-cols-1' : 'grid-cols-2'}`}>
+    <div className="grid grid-cols-2 gap-2 items-start">
+      <Photo src={cover} alt={name} className="rounded-2xl aspect-square" />
+      <div className={`grid gap-2 ${rest.length === 1 ? 'grid-cols-1' : 'grid-cols-2'}`}>
         {rest.slice(0, 4).map((src, i) => (
-          <div key={i} className="rounded-xl overflow-hidden border border-warm-200">
-            <img src={src} alt="" className="w-full h-full object-cover" />
-          </div>
+          <Photo key={i} src={src} alt="" className="rounded-xl aspect-square" />
         ))}
       </div>
     </div>
