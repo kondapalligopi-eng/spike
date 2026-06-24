@@ -70,7 +70,7 @@ function Body({ page }: { page: PetPageRead }) {
             {highlights.map((h) => (
               <div key={h!.key} className="flex items-center gap-3">
                 <span
-                  className="w-9 h-9 rounded-full bg-white shadow-sm flex items-center justify-center text-lg shrink-0"
+                  className="w-9 h-9 rounded-full bg-primary-50 flex items-center justify-center text-lg shrink-0"
                   aria-hidden="true"
                 >
                   {h!.emoji}
