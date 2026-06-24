@@ -150,7 +150,7 @@ export function PetPages() {
   return (
     <div className="bg-white min-h-screen">
       <PageHead
-        title="Your Dog Pages"
+        title="Your Pet Stories"
         description="Create a free shareable page for your dog — name, photo and memories — at hispike.in/pet/your-dog."
         path="/pet-pages"
       />
@@ -158,7 +158,7 @@ export function PetPages() {
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
         <header className="mb-8">
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-warm-900">
-            Your Dog Pages
+            Your Pet Stories
           </h1>
           <p className="mt-2 text-sm text-warm-600">
             Give your dog their own page — a photo and your favourite memories — and share the
