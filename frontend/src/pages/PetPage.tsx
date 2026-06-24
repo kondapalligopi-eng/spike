@@ -91,7 +91,7 @@ export function PetPage() {
         {/* Soft CTA so every shared page seeds the next owner */}
         <div className="mt-12 rounded-2xl border border-warm-200 bg-warm-50 p-6 text-center">
           <p className="text-sm text-warm-700">
-            Have a dog of your own?
+            Have a pet of your own?
           </p>
           <Link
             to="/pet-stories"
