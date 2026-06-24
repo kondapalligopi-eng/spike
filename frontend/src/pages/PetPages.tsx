@@ -185,7 +185,7 @@ export function PetPages() {
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
 
         {/* Create / edit form */}
-        <div ref={formRef} className="rounded-2xl border border-warm-200 p-5 sm:p-6 shadow-sm">
+        <div ref={formRef} className="rounded-2xl border border-warm-200 bg-white p-5 sm:p-6 shadow-sm">
           <h2 className="text-lg font-bold text-warm-900 mb-4">
             {editingId ? 'Edit page' : 'Create a new page'}
           </h2>
