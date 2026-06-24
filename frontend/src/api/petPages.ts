@@ -82,7 +82,7 @@ function writeStore(rows: PetPageRead[]): void {
 }
 
 function currentOwnerId(): string {
-  return useAuthStore.getState().user?.id ?? 'mock-owner';
+  return String(useAuthStore.getState().user?.id ?? 'mock-owner');
 }
 
 const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
