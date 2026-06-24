@@ -216,7 +216,7 @@ export function PetPages() {
             {/* Memories */}
             <div>
               <div className="flex items-center justify-between mb-1.5">
-                <label className="block text-sm font-semibold text-warm-800">Memories</label>
+                <label className="block text-sm font-semibold text-warm-800">About your dog</label>
                 <span className={`text-xs ${overLimit ? 'text-red-600 font-semibold' : 'text-warm-500'}`}>
                   {words} / {MAX_MEMORY_WORDS} words
                 </span>
