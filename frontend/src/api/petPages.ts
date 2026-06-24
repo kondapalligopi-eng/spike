@@ -4,14 +4,15 @@ import { useAuthStore } from '@/store/authStore';
 const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
 const MOCK_KEY = 'hispike_mock_pet_pages';
 
-// A public, shareable tribute/profile page for a dog — owner-created, lives at
-// hispike.in/pet/<slug>. Works for living dogs (celebrate them) and memorials
+// A public, shareable profile page for a pet — owner-created, lives at
+// hispike.in/pet/<slug>. Works for living pets (celebrate them) and memorials
 // alike; the copy is kept celebratory, not memorial-only.
 export type PetPageRead = {
   id: string;
   slug: string;
   name: string;
-  photo_url: string | null;
+  photos: string[]; // gallery; photos[0] is the primary/cover image
+  highlights: string[]; // selected keys from PET_HIGHLIGHTS
   memories: string;
   owner_id: string;
   created_at: string;
@@ -21,11 +22,36 @@ export type PetPageRead = {
 export type PetPageCreate = {
   slug: string;
   name: string;
-  photo_url?: string | null;
+  photos: string[];
+  highlights: string[];
   memories: string;
 };
 
 export const MAX_MEMORY_WORDS = 500;
+export const MAX_PHOTOS = 6;
+
+// Curated trait chips an owner can toggle — rendered as the "Highlights" row on
+// the public page (icon + label, two columns), like a sitter-profile highlight.
+export type PetHighlight = { key: string; emoji: string; label: string };
+export const PET_HIGHLIGHTS: PetHighlight[] = [
+  { key: 'vaccinated', emoji: '💉', label: 'Vaccinated' },
+  { key: 'neutered', emoji: '🩺', label: 'Neutered / spayed' },
+  { key: 'house_trained', emoji: '🏠', label: 'House-trained' },
+  { key: 'good_with_kids', emoji: '🧒', label: 'Good with kids' },
+  { key: 'good_with_dogs', emoji: '🐕', label: 'Good with other dogs' },
+  { key: 'good_with_cats', emoji: '🐈', label: 'Good with cats' },
+  { key: 'loves_walks', emoji: '🦮', label: 'Loves walks' },
+  { key: 'loves_swimming', emoji: '🏊', label: 'Loves swimming' },
+  { key: 'microchipped', emoji: '🔖', label: 'Microchipped' },
+  { key: 'friendly', emoji: '😊', label: 'Super friendly' },
+  { key: 'trained', emoji: '🎓', label: 'Knows commands' },
+  { key: 'cuddly', emoji: '🫶', label: 'Loves cuddles' },
+];
+
+const HIGHLIGHT_BY_KEY = new Map(PET_HIGHLIGHTS.map((h) => [h.key, h]));
+export function highlightFor(key: string): PetHighlight | undefined {
+  return HIGHLIGHT_BY_KEY.get(key);
+}
 
 // Slugs that must never be taken — they collide with sub-paths we may add under
 // /pet/ later (e.g. /pet/new for the editor). Site-page collisions (/about,
@@ -61,12 +87,32 @@ function makeId(): string {
     : `mock-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
+// Tolerate older mock rows that stored a single `photo_url` / no highlights.
+function normalizeRow(r: Record<string, unknown>): PetPageRead {
+  const photos = Array.isArray(r.photos)
+    ? (r.photos as string[])
+    : typeof r.photo_url === 'string' && r.photo_url
+      ? [r.photo_url]
+      : [];
+  return {
+    id: String(r.id),
+    slug: String(r.slug),
+    name: String(r.name ?? ''),
+    photos,
+    highlights: Array.isArray(r.highlights) ? (r.highlights as string[]) : [],
+    memories: String(r.memories ?? ''),
+    owner_id: String(r.owner_id ?? ''),
+    created_at: String(r.created_at ?? ''),
+    updated_at: String(r.updated_at ?? ''),
+  };
+}
+
 function readStore(): PetPageRead[] {
   if (typeof localStorage === 'undefined') return [];
   try {
     const raw = localStorage.getItem(MOCK_KEY);
     const parsed = raw ? JSON.parse(raw) : [];
-    return Array.isArray(parsed) ? parsed : [];
+    return Array.isArray(parsed) ? parsed.map(normalizeRow) : [];
   } catch {
     return [];
   }
@@ -89,6 +135,16 @@ const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 function status404(err: unknown): boolean {
   return (err as { response?: { status?: number } } | undefined)?.response?.status === 404;
+}
+
+function cleanPayload(data: PetPageCreate) {
+  return {
+    slug: data.slug,
+    name: data.name.trim(),
+    photos: (data.photos ?? []).slice(0, MAX_PHOTOS),
+    highlights: data.highlights ?? [],
+    memories: data.memories.trim(),
+  };
 }
 
 // ---- API ----
@@ -146,10 +202,7 @@ export async function createPetPage(data: PetPageCreate): Promise<PetPageRead> {
     const row: PetPageRead = {
       id: makeId(),
       owner_id: currentOwnerId(),
-      slug: data.slug,
-      name: data.name.trim(),
-      photo_url: data.photo_url?.trim() || null,
-      memories: data.memories.trim(),
+      ...cleanPayload(data),
       created_at: now,
       updated_at: now,
     };
@@ -172,10 +225,7 @@ export async function updatePetPage(id: string, data: PetPageCreate): Promise<Pe
     }
     const updated: PetPageRead = {
       ...store[idx],
-      slug: data.slug,
-      name: data.name.trim(),
-      photo_url: data.photo_url?.trim() || null,
-      memories: data.memories.trim(),
+      ...cleanPayload(data),
       updated_at: new Date().toISOString(),
     };
     store[idx] = updated;
