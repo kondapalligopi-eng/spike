@@ -151,7 +151,7 @@ export function PetPages() {
     <div className="bg-white min-h-screen">
       <PageHead
         title="Your Pet Stories"
-        description="Create a free shareable page for your dog — name, photo and memories — at hispike.in/pet/your-dog."
+        description="Create a free shareable page for your pet — name, photo and story — at hispike.in/pet/your-pet."
         path="/pet-stories"
       />
 
