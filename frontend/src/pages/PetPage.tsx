@@ -2,6 +2,7 @@ import { Link, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { getPetPageBySlug } from '@/api/petPages';
 import { PageHead } from '@/components/PageHead';
+import { HeroPaws } from '@/components/HeroPaws';
 import { ShareButtons } from '@/components/ShareButtons';
 
 // Public, shareable dog page at hispike.in/pet/<slug>. Rendered client-side
