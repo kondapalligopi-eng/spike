@@ -28,7 +28,9 @@ export type PetPageCreate = {
 };
 
 export const MAX_MEMORY_WORDS = 500;
-export const MAX_PHOTOS = 6;
+// The public gallery renders 1 cover + 4 thumbnails, so cap uploads at 5 to
+// match what's actually shown.
+export const MAX_PHOTOS = 5;
 
 // Curated trait chips an owner can toggle — rendered as the "Highlights" row on
 // the public page (icon + label, two columns), like a sitter-profile highlight.
