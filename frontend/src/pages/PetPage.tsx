@@ -1,10 +1,108 @@
 import { Link, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { getPetPageBySlug } from '@/api/petPages';
+import { getPetPageBySlug, highlightFor, type PetPageRead } from '@/api/petPages';
 import { PageHead } from '@/components/PageHead';
 import { ShareButtons } from '@/components/ShareButtons';
 
-// Public, shareable dog page at hispike.in/pet/<slug>. Rendered client-side
+// Compact, content-dense photo gallery (1 big + thumbnail grid), inspired by
+// sitter-profile layouts. Adapts to 1, 2 or 3+ photos.
+function Gallery({ photos, name }: { photos: string[]; name: string }) {
+  if (photos.length === 0) {
+    return (
+      <div className="aspect-[16/9] rounded-2xl bg-gradient-to-br from-primary-50 to-accent-50 flex items-center justify-center">
+        <span className="text-7xl" aria-hidden="true">🐶</span>
+      </div>
+    );
+  }
+  if (photos.length === 1) {
+    return (
+      <div className="rounded-2xl overflow-hidden border border-warm-200">
+        <img src={photos[0]} alt={name} className="w-full max-h-[26rem] object-cover" />
+      </div>
+    );
+  }
+  const [cover, ...rest] = photos;
+  return (
+    <div className="grid grid-cols-2 gap-2 h-64 sm:h-96">
+      <div className="rounded-2xl overflow-hidden border border-warm-200">
+        <img src={cover} alt={name} className="w-full h-full object-cover" />
+      </div>
+      <div className={`grid h-full gap-2 ${rest.length === 1 ? 'grid-cols-1' : 'grid-cols-2'}`}>
+        {rest.slice(0, 4).map((src, i) => (
+          <div key={i} className="rounded-xl overflow-hidden border border-warm-200">
+            <img src={src} alt="" className="w-full h-full object-cover" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function Body({ page }: { page: PetPageRead }) {
+  const highlights = page.highlights.map(highlightFor).filter(Boolean);
+
+  return (
+    <>
+      {/* Header: name + eyebrow + share */}
+      <div className="flex items-start justify-between gap-4 mb-5">
+        <div>
+          <p className="text-[11px] font-semibold tracking-[0.3em] text-accent-500 uppercase">
+            A HiSpike Pet Story
+          </p>
+          <h1 className="mt-1 text-3xl sm:text-4xl font-extrabold tracking-tight text-warm-900">
+            {page.name}
+          </h1>
+        </div>
+        <div className="shrink-0 mt-1">
+          <ShareButtons name={`${page.name}'s page`} url={`/pet/${page.slug}`} variant="compact" />
+        </div>
+      </div>
+
+      <Gallery photos={page.photos} name={page.name} />
+
+      {/* Highlights */}
+      {highlights.length > 0 && (
+        <section className="mt-8">
+          <h2 className="text-lg font-bold text-warm-900 mb-4">Highlights</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
+            {highlights.map((h) => (
+              <div key={h!.key} className="flex items-center gap-3">
+                <span
+                  className="w-9 h-9 rounded-full bg-primary-50 flex items-center justify-center text-lg shrink-0"
+                  aria-hidden="true"
+                >
+                  {h!.emoji}
+                </span>
+                <span className="text-sm font-medium text-warm-800">{h!.label}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* About / story */}
+      <section className="mt-8 pt-8 border-t border-warm-200">
+        <h2 className="text-lg font-bold text-warm-900 mb-3">About {page.name}</h2>
+        <p className="whitespace-pre-wrap text-warm-700 leading-relaxed text-[15px]">
+          {page.memories}
+        </p>
+      </section>
+
+      {/* Soft CTA so every shared page seeds the next owner */}
+      <div className="mt-10 rounded-2xl border border-primary-100 bg-primary-50 p-5 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <p className="text-sm font-medium text-warm-700">Have a pet of your own?</p>
+        <Link
+          to="/pet-stories"
+          className="inline-flex items-center gap-2 rounded-full bg-primary-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-primary-700 transition-colors shadow whitespace-nowrap"
+        >
+          Create their HiSpike page — free
+        </Link>
+      </div>
+    </>
+  );
+}
+
+// Public, shareable pet page at hispike.in/pet/<slug>. Rendered client-side
 // (the slug isn't known at build time), so it fetches by slug on mount.
 export function PetPage() {
   const { slug = '' } = useParams();
@@ -43,65 +141,18 @@ export function PetPage() {
     );
   }
 
-  // First ~155 chars of the memories make a natural meta description / preview.
   const preview = page.memories.replace(/\s+/g, ' ').trim().slice(0, 155);
 
   return (
-    <div className="bg-warm-50 min-h-screen pb-16">
+    <div className="bg-white min-h-screen">
       <PageHead
         title={`${page.name}'s Page`}
-        description={preview || `${page.name}'s photos and memories, shared on HiSpike.`}
+        description={preview || `${page.name}'s photos and story, shared on HiSpike.`}
         path={`/pet/${page.slug}`}
-        image={page.photo_url ?? undefined}
+        image={page.photos[0]}
       />
-
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 pt-10 sm:pt-14">
-        {/* Photo-forward header — the pet's portrait is the centrepiece */}
-        <div className="flex flex-col items-center text-center">
-          <p className="text-[11px] font-semibold tracking-[0.3em] text-accent-500 uppercase">
-            A HiSpike Pet Story
-          </p>
-
-          <div className="mt-5 w-full max-w-sm rounded-[2rem] overflow-hidden shadow-xl ring-1 ring-warm-200 bg-gradient-to-br from-primary-50 to-accent-50 aspect-square flex items-center justify-center">
-            {page.photo_url ? (
-              <img src={page.photo_url} alt={page.name} className="w-full h-full object-cover" />
-            ) : (
-              <span className="text-8xl" aria-hidden="true">🐶</span>
-            )}
-          </div>
-
-          <h1 className="mt-7 text-4xl sm:text-5xl font-extrabold tracking-tight text-warm-900">
-            {page.name}
-          </h1>
-          <div className="mt-3 h-0.5 w-12 bg-accent-400 rounded-full" />
-
-          <div className="mt-5">
-            <ShareButtons name={`${page.name}'s page`} url={`/pet/${page.slug}`} context="see the photos & memories 🐾" />
-          </div>
-        </div>
-
-        {/* About card */}
-        <section className="mt-10 rounded-2xl border border-warm-200 bg-white shadow-sm p-6 sm:p-8">
-          <h2 className="text-sm font-bold tracking-[0.2em] uppercase text-warm-500 mb-4 flex items-center gap-2">
-            <span className="text-accent-400" aria-hidden="true">🐾</span> About {page.name}
-          </h2>
-          <p className="whitespace-pre-wrap text-warm-800 leading-relaxed text-[15px]">
-            {page.memories}
-          </p>
-        </section>
-
-        {/* Soft CTA so every shared page seeds the next owner */}
-        <div className="mt-8 rounded-2xl border border-primary-100 bg-primary-50 p-6 text-center">
-          <p className="text-sm font-medium text-warm-700">
-            Have a pet of your own?
-          </p>
-          <Link
-            to="/pet-stories"
-            className="mt-3 inline-flex items-center gap-2 rounded-full bg-primary-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-primary-700 transition-colors shadow"
-          >
-            Create their HiSpike page — free
-          </Link>
-        </div>
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
+        <Body page={page} />
       </div>
     </div>
   );
