@@ -80,7 +80,7 @@ export function PetPage() {
       {/* Memories */}
       <section className="max-w-2xl mx-auto px-4 sm:px-6 pb-16">
         <h2 className="text-sm font-bold tracking-[0.2em] uppercase text-warm-500 mb-4">
-          Memories
+          About {page.name}
         </h2>
         <div className="prose prose-warm max-w-none">
           <p className="whitespace-pre-wrap text-warm-800 leading-relaxed text-[15px]">
