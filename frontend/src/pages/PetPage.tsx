@@ -55,28 +55,27 @@ export function PetPage() {
         image={page.photo_url ?? undefined}
       />
 
-      {/* Branded cover band — same gradient + animated paws as the site hero */}
-      <section className="relative h-40 sm:h-52 overflow-hidden bg-gradient-to-r from-primary-900 via-primary-800 to-primary-600">
-        <HeroPaws />
-      </section>
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 pt-10 sm:pt-14">
+        {/* Photo-forward header — the pet's portrait is the centrepiece */}
+        <div className="flex flex-col items-center text-center">
+          <p className="text-[11px] font-semibold tracking-[0.3em] text-accent-500 uppercase">
+            A HiSpike Pet Story
+          </p>
 
-      <div className="max-w-2xl mx-auto px-4 sm:px-6">
-        {/* Avatar overlapping the cover band */}
-        <div className="-mt-20 sm:-mt-24 flex flex-col items-center text-center">
-          <div className="relative w-40 h-40 sm:w-48 sm:h-48 rounded-full overflow-hidden ring-4 ring-white shadow-xl bg-warm-100 flex items-center justify-center">
+          <div className="mt-5 w-full max-w-sm rounded-[2rem] overflow-hidden shadow-xl ring-1 ring-warm-200 bg-gradient-to-br from-primary-50 to-accent-50 aspect-square flex items-center justify-center">
             {page.photo_url ? (
               <img src={page.photo_url} alt={page.name} className="w-full h-full object-cover" />
             ) : (
-              <span className="text-7xl" aria-hidden="true">🐶</span>
+              <span className="text-8xl" aria-hidden="true">🐶</span>
             )}
           </div>
-          <p className="mt-5 text-[11px] font-semibold tracking-[0.3em] text-accent-500 uppercase">
-            A HiSpike Pet Story
-          </p>
-          <h1 className="mt-1 text-3xl sm:text-4xl font-extrabold tracking-tight text-warm-900">
+
+          <h1 className="mt-7 text-4xl sm:text-5xl font-extrabold tracking-tight text-warm-900">
             {page.name}
           </h1>
-          <div className="mt-4">
+          <div className="mt-3 h-0.5 w-12 bg-accent-400 rounded-full" />
+
+          <div className="mt-5">
             <ShareButtons name={`${page.name}'s page`} url={`/pet/${page.slug}`} context="see the photos & memories 🐾" />
           </div>
         </div>
