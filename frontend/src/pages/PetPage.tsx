@@ -154,7 +154,9 @@ export function PetPage() {
         image={page.photos[0]}
       />
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
-        <Body page={page} />
+        <div className="bg-white rounded-3xl shadow-sm border border-warm-200 p-5 sm:p-8">
+          <Body page={page} />
+        </div>
       </div>
     </div>
   );
