@@ -36,7 +36,28 @@ class CloudinaryStorageBackend(StorageBackend):
             secure=True,
         )
 
+    @staticmethod
+    def _ensure_configured() -> None:
+        # When the CLOUDINARY_* env vars are unset they default to "" and the
+        # SDK fails deep in the upload with a cryptic "Must supply api_key".
+        # Fail fast with a clear, actionable message instead.
+        if not (
+            settings.CLOUDINARY_CLOUD_NAME
+            and settings.CLOUDINARY_API_KEY
+            and settings.CLOUDINARY_API_SECRET
+        ):
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail=(
+                    "Image storage isn't configured yet. "
+                    "Set the CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY and "
+                    "CLOUDINARY_API_SECRET environment variables on the backend."
+                ),
+            )
+
     async def upload_image(self, file: UploadFile, folder: str = "petdogs") -> str:
+        self._ensure_configured()
+
         if file.content_type not in ALLOWED_CONTENT_TYPES:
             raise HTTPException(
                 status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
