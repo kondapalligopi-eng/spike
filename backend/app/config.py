@@ -28,6 +28,22 @@ class Settings(BaseSettings):
     CLOUDINARY_API_KEY: str = ""
     CLOUDINARY_API_SECRET: str = ""
 
+    # Email (SMTP) — provider-agnostic. Leave blank to disable email features
+    # (password reset just no-ops + logs until these are set).
+    SMTP_HOST: str = ""
+    SMTP_PORT: int = 587
+    SMTP_USER: str = ""
+    SMTP_PASSWORD: str = ""
+    SMTP_STARTTLS: bool = True
+    SMTP_USE_SSL: bool = False
+    EMAIL_FROM: str = ""  # e.g. "HiSpike <support@hispike.in>"
+
+    # Public site URL — used to build links inside emails.
+    FRONTEND_URL: str = "https://hispike.in"
+
+    # Password-reset token lifetime.
+    PASSWORD_RESET_TOKEN_EXPIRE_MINUTES: int = 60
+
     # CORS
     CORS_ORIGINS: List[str] = [
         "http://localhost:3000",

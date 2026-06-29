@@ -103,6 +103,35 @@ export async function refreshAccessToken(
   return response.data;
 }
 
+// Request a password-reset email. Always resolves (the backend returns the same
+// generic message whether or not the account exists, to avoid leaking who has
+// an account).
+export async function forgotPassword(email: string): Promise<{ message: string }> {
+  if (USE_MOCK) {
+    await delay(500);
+    return { message: 'If an account exists for that email, a reset link has been sent.' };
+  }
+  const res = await apiClient.post<{ message: string }>('/auth/forgot-password', { email });
+  return res.data;
+}
+
+// Complete a reset: exchange the emailed token for a new password.
+export async function resetPassword(
+  token: string,
+  newPassword: string,
+): Promise<{ message: string }> {
+  if (USE_MOCK) {
+    await delay(500);
+    if (!token) throw new Error('This reset link is invalid or has expired.');
+    return { message: 'Your password has been updated. You can now sign in.' };
+  }
+  const res = await apiClient.post<{ message: string }>('/auth/reset-password', {
+    token,
+    new_password: newPassword,
+  });
+  return res.data;
+}
+
 export async function getCurrentUser(): Promise<User> {
   if (USE_MOCK) {
     await delay(200);

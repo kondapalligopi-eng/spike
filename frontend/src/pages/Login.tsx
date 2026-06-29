@@ -108,6 +108,12 @@ export function Login() {
                 <label htmlFor="password" className="block text-sm font-medium text-warm-700">
                   Password
                 </label>
+                <Link
+                  to="/forgot-password"
+                  className="text-xs font-medium text-primary-600 hover:text-primary-700 hover:underline"
+                >
+                  Forgot password?
+                </Link>
               </div>
               <input
                 {...register('password')}

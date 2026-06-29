@@ -7,6 +7,7 @@ from app.models.swim_school import SwimSchool
 from app.models.grooming_salon import GroomingSalon
 from app.models.pet_food import PetFood
 from app.models.pet_page import PetPage
+from app.models.password_reset_token import PasswordResetToken
 from app.models.site_setting import SiteSetting
 from app.models.submission import Submission
 
@@ -25,6 +26,7 @@ __all__ = [
     "GroomingSalon",
     "PetFood",
     "PetPage",
+    "PasswordResetToken",
     "SiteSetting",
     "Submission",
 ]
