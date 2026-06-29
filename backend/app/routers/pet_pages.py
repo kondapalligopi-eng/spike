@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import html
 import uuid
 
 from fastapi import APIRouter, Depends, File, HTTPException, Response, UploadFile, status
+from fastapi.responses import HTMLResponse
 from sqlalchemy import desc, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -14,6 +16,42 @@ from app.schemas.pet_page import PetPageCreate, PetPageRead
 from app.services.storage_service import storage
 
 router = APIRouter(prefix="/pet-pages", tags=["pet-pages"])
+
+# Public site origin + a fallback social image for the crawler OG page.
+SITE_URL = "https://hispike.in"
+DEFAULT_OG_IMAGE = f"{SITE_URL}/logo.png"
+
+
+def _og_html(*, title: str, description: str, image: str, url: str) -> str:
+    """A minimal HTML doc carrying Open Graph / Twitter meta for link-preview
+    crawlers (which don't run JS, so they never see the React app's tags)."""
+    t = html.escape(title)
+    d = html.escape(description)
+    img = html.escape(image, quote=True)
+    u = html.escape(url, quote=True)
+    return (
+        "<!DOCTYPE html>\n"
+        '<html lang="en"><head>\n'
+        '<meta charset="utf-8">\n'
+        '<meta name="viewport" content="width=device-width, initial-scale=1">\n'
+        f"<title>{t}</title>\n"
+        f'<meta name="description" content="{d}">\n'
+        f'<link rel="canonical" href="{u}">\n'
+        '<meta property="og:type" content="website">\n'
+        '<meta property="og:site_name" content="HiSpike">\n'
+        f'<meta property="og:title" content="{t}">\n'
+        f'<meta property="og:description" content="{d}">\n'
+        f'<meta property="og:image" content="{img}">\n'
+        f'<meta property="og:url" content="{u}">\n'
+        '<meta name="twitter:card" content="summary_large_image">\n'
+        f'<meta name="twitter:title" content="{t}">\n'
+        f'<meta name="twitter:description" content="{d}">\n'
+        f'<meta name="twitter:image" content="{img}">\n'
+        "</head><body>\n"
+        f"<p>{t}</p>\n"
+        f'<p><a href="{u}">View this page on HiSpike</a></p>\n'
+        "</body></html>"
+    )
 
 
 async def _get_page_or_404(db: AsyncSession, page_id: uuid.UUID) -> PetPage:
