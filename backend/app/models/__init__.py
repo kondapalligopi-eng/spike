@@ -26,6 +26,7 @@ __all__ = [
     "GroomingSalon",
     "PetFood",
     "PetPage",
+    "PasswordResetToken",
     "SiteSetting",
     "Submission",
 ]
