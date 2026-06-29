@@ -451,6 +451,39 @@ export function PetPages() {
           )}
         </div>
       </div>
+
+      {/* Preview overlay — renders the public page exactly, from the draft */}
+      {showPreview && (
+        <div
+          className="fixed inset-0 z-50 overflow-y-auto bg-black/50"
+          onClick={() => setShowPreview(false)}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Page preview"
+        >
+          <div className="min-h-full px-3 py-6 sm:py-8">
+            <div className="max-w-4xl mx-auto" onClick={(e) => e.stopPropagation()}>
+              <div className="flex items-center justify-between mb-3 text-white">
+                <p className="text-sm font-semibold">
+                  Preview — how your page will look {!canSubmit && <span className="text-primary-200 font-normal">(not published yet)</span>}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setShowPreview(false)}
+                  className="inline-flex items-center gap-1.5 rounded-full bg-white/15 hover:bg-white/25 px-3 py-1.5 text-xs font-semibold"
+                >
+                  Close ✕
+                </button>
+              </div>
+              <div className="rounded-3xl bg-gradient-to-b from-primary-100 via-primary-50 to-accent-50 p-4 sm:p-8">
+                <div className="bg-white rounded-3xl shadow-sm border border-warm-200 p-5 sm:p-8">
+                  <PetPageView data={draft} preview />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
