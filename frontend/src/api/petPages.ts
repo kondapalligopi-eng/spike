@@ -203,6 +203,29 @@ export async function checkSlugAvailable(slug: string, excludeId?: string): Prom
   return res.data.available;
 }
 
+/**
+ * Upload one photo and return a string to store in `photos`.
+ * Mock → an inline data URL (persists in localStorage, no backend).
+ * Real → the file is sent to the backend, stored on Cloudinary, and its
+ * hosted URL is returned (so the DB holds a short URL, not base64).
+ */
+export async function uploadPetPagePhoto(file: File): Promise<string> {
+  if (USE_MOCK) {
+    await delay(120);
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.readAsDataURL(file);
+    });
+  }
+  const form = new FormData();
+  form.append('file', file);
+  const res = await apiClient.post<{ url: string }>('/pet-pages/photos', form, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+  return res.data.url;
+}
+
 export async function createPetPage(data: PetPageCreate): Promise<PetPageRead> {
   if (USE_MOCK) {
     await delay(300);
