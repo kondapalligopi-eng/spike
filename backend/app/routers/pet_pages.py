@@ -136,6 +136,38 @@ async def get_pet_page_by_slug(
 
 
 @router.get(
+    "/og/{slug}",
+    response_class=HTMLResponse,
+    include_in_schema=False,
+    summary="Server-rendered OG/meta page for link-preview crawlers",
+)
+async def pet_page_og(slug: str, db: AsyncSession = Depends(get_db)) -> HTMLResponse:
+    result = await db.execute(select(PetPage).where(func.lower(PetPage.slug) == slug.lower()))
+    page = result.scalar_one_or_none()
+    page_url = f"{SITE_URL}/pet/{slug}"
+    cache = {"Cache-Control": "public, max-age=300"}
+
+    if page is None:
+        # Unknown slug → a generic HiSpike card so the preview still renders.
+        body = _og_html(
+            title="HiSpike — Pet Stories",
+            description="Create a free, shareable page for your pet on HiSpike.",
+            image=DEFAULT_OG_IMAGE,
+            url=page_url,
+        )
+        return HTMLResponse(content=body, headers=cache)
+
+    snippet = " ".join(page.memories.split())[:155]
+    body = _og_html(
+        title=f"{page.name} — A HiSpike Pet Story",
+        description=snippet or f"{page.name}'s photos and story, shared on HiSpike.",
+        image=page.photos[0] if page.photos else DEFAULT_OG_IMAGE,
+        url=page_url,
+    )
+    return HTMLResponse(content=body, headers=cache)
+
+
+@router.get(
     "/slug-available/{slug}",
     summary="Check whether a slug is free to use",
 )
