@@ -24,6 +24,7 @@ __all__ = [
     "SwimSchool",
     "GroomingSalon",
     "PetFood",
+    "PetPage",
     "SiteSetting",
     "Submission",
 ]
