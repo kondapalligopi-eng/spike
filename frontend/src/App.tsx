@@ -7,6 +7,8 @@ import { Dogs } from '@/pages/Dogs';
 import { DogDetail } from '@/pages/DogDetail';
 import { Login } from '@/pages/Login';
 import { Register } from '@/pages/Register';
+import { ForgotPassword } from '@/pages/ForgotPassword';
+import { ResetPassword } from '@/pages/ResetPassword';
 import { Profile } from '@/pages/Profile';
 import { MyDogs } from '@/pages/MyDogs';
 import { PetPages } from '@/pages/PetPages';
