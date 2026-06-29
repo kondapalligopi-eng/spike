@@ -108,13 +108,25 @@ export function PetPages() {
     formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
+  const readAsDataUrl = (file: File) =>
+    new Promise<string>((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.readAsDataURL(file);
+    });
+
   const onFileSelect = (file: File) => {
-    // In mock/dev we inline the image as a data URL so it persists and renders
-    // without a backend. Stage 2 swaps this for the /pet-pages/{id}/photo upload.
-    const reader = new FileReader();
-    reader.onloadend = () =>
-      setPhotos((prev) => (prev.length >= MAX_PHOTOS ? prev : [...prev, reader.result as string]));
-    reader.readAsDataURL(file);
+    void onFilesSelect([file]);
+  };
+
+  // Add several photos in one go (multi-select / multi-drop), capped at MAX_PHOTOS.
+  // In mock/dev we inline each image as a data URL so it persists and renders
+  // without a backend. Stage 2 swaps this for the /pet-pages/{id}/photo upload.
+  const onFilesSelect = async (files: File[]) => {
+    const remaining = MAX_PHOTOS - photos.length;
+    if (remaining <= 0) return;
+    const urls = await Promise.all(files.slice(0, remaining).map(readAsDataUrl));
+    setPhotos((prev) => [...prev, ...urls].slice(0, MAX_PHOTOS));
   };
 
   const removePhoto = (idx: number) => setPhotos((prev) => prev.filter((_, i) => i !== idx));
