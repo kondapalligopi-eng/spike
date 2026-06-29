@@ -237,8 +237,8 @@ export function Home() {
               { label: 'Park', dog: '🐕', badge: '🌳', kicker: 'Outdoors', image: '/services/park.jpg', tint: 'from-emerald-200 to-emerald-500', to: '/park' },
               { label: 'Swimming', dog: '🐶💦', badge: '🌊', kicker: 'Aquatic', image: '/services/swimming.jpg', tint: 'from-sky-200 to-sky-500', to: '/swimming' },
               { label: 'Grooming', dog: '🐩', badge: '✂️', kicker: 'Salon', image: '/services/grooming.jpg', tint: 'from-amber-200 to-amber-400', to: '/grooming' },
-              { label: 'Dog Walking', dog: '🦮', badge: '🐾', kicker: 'Walkers', image: '/services/dog-walking.jpg', tint: 'from-teal-200 to-teal-400', to: '/dog-walking' },
               { label: 'Pet Supplies', dog: '🐶🦴', badge: '🥣', kicker: 'Shop', image: '/services/pet-supplies.jpg', tint: 'from-violet-200 to-violet-400', to: '/pet-supplies' },
+              { label: 'Pet Stories', dog: '🐶', badge: '📖', kicker: 'Stories', image: '/services/pet-stories.jpg', tint: 'from-fuchsia-200 to-fuchsia-400', to: '/pet-stories' },
             ].map(({ label, dog, badge, kicker, image, tint, to }) => (
               <Link key={label} to={to} className="group block text-center">
                 <p className="text-xs text-warm-600 mb-3 tracking-wide">{kicker}</p>
