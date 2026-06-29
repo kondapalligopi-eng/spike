@@ -313,11 +313,13 @@ export function PetPages() {
               )}
               {photos.length < MAX_PHOTOS ? (
                 // key resets the dropzone's internal preview after each add
-                <ImageUpload key={photos.length} onFileSelect={onFileSelect} />
+                <ImageUpload key={photos.length} multiple onFileSelect={onFileSelect} onFilesSelect={onFilesSelect} />
               ) : (
                 <p className="text-xs text-warm-500">Maximum {MAX_PHOTOS} photos reached.</p>
               )}
-              <p className="mt-1.5 text-xs text-warm-400">Click a photo to make it the cover.</p>
+              <p className="mt-1.5 text-xs text-warm-400">
+                Pick or drop several at once (up to {MAX_PHOTOS}). Click a photo to make it the cover.
+              </p>
             </div>
 
             {/* Highlights */}
