@@ -315,7 +315,7 @@ export function PetPages() {
               )}
               {photos.length < MAX_PHOTOS ? (
                 // key resets the dropzone's internal preview after each add
-                <ImageUpload key={photos.length} multiple onFileSelect={onFileSelect} onFilesSelect={onFilesSelect} />
+                <ImageUpload key={photos.length} multiple isUploading={uploading} onFileSelect={onFileSelect} onFilesSelect={onFilesSelect} />
               ) : (
                 <p className="text-xs text-warm-500">Maximum {MAX_PHOTOS} photos reached.</p>
               )}
