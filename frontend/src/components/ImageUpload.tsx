@@ -78,8 +78,9 @@ export function ImageUpload({
   const handleDragLeave = () => setIsDragOver(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) handleFile(file);
+    handleFiles(e.target.files);
+    // Reset so re-picking the same file(s) still fires onChange.
+    e.target.value = '';
   };
 
   const displayImage = preview ?? currentImageUrl;
