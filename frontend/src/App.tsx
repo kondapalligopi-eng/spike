@@ -25,6 +25,8 @@ import { Newsroom } from '@/pages/Newsroom';
 import { Blog } from '@/pages/Blog';
 import { Careers } from '@/pages/Careers';
 import { Feedback } from '@/pages/Feedback';
+import { TermsOfService } from '@/pages/TermsOfService';
+import { PrivacyPolicy } from '@/pages/PrivacyPolicy';
 import { NotFound } from '@/pages/NotFound';
 
 export const routes: RouteRecord[] = [
@@ -63,6 +65,8 @@ export const routes: RouteRecord[] = [
           { path: 'blog', Component: Blog },
           { path: 'careers', Component: Careers },
           { path: 'feedback', Component: Feedback },
+          { path: 'terms', Component: TermsOfService },
+          { path: 'privacy', Component: PrivacyPolicy },
           {
             path: 'profile',
             element: (

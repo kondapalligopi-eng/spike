@@ -151,6 +151,16 @@ function cleanPayload(data: PetPageCreate) {
 
 // ---- API ----
 
+/** Admin: every pet page across all owners (newest first) — for moderation. */
+export async function listAllPetPages(): Promise<PetPageRead[]> {
+  if (USE_MOCK) {
+    await delay(150);
+    return readStore().sort((a, b) => b.created_at.localeCompare(a.created_at));
+  }
+  const res = await apiClient.get<PetPageRead[]>('/pet-pages');
+  return res.data;
+}
+
 /** The signed-in owner's own pages, newest first. */
 export async function listMyPetPages(): Promise<PetPageRead[]> {
   if (USE_MOCK) {
@@ -191,6 +201,29 @@ export async function checkSlugAvailable(slug: string, excludeId?: string): Prom
     { params: excludeId ? { exclude_id: excludeId } : undefined },
   );
   return res.data.available;
+}
+
+/**
+ * Upload one photo and return a string to store in `photos`.
+ * Mock → an inline data URL (persists in localStorage, no backend).
+ * Real → the file is sent to the backend, stored on Cloudinary, and its
+ * hosted URL is returned (so the DB holds a short URL, not base64).
+ */
+export async function uploadPetPagePhoto(file: File): Promise<string> {
+  if (USE_MOCK) {
+    await delay(120);
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.readAsDataURL(file);
+    });
+  }
+  const form = new FormData();
+  form.append('file', file);
+  const res = await apiClient.post<{ url: string }>('/pet-pages/photos', form, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+  return res.data.url;
 }
 
 export async function createPetPage(data: PetPageCreate): Promise<PetPageRead> {

@@ -2,6 +2,10 @@ import { useState, useRef, useCallback } from 'react';
 
 interface ImageUploadProps {
   onFileSelect: (file: File) => void;
+  /** When `multiple` is set, receives all picked/dropped files at once. */
+  onFilesSelect?: (files: File[]) => void;
+  /** Allow selecting/dropping several images in one go. */
+  multiple?: boolean;
   currentImageUrl?: string;
   isUploading?: boolean;
   accept?: string;
@@ -9,6 +13,8 @@ interface ImageUploadProps {
 
 export function ImageUpload({
   onFileSelect,
+  onFilesSelect,
+  multiple = false,
   currentImageUrl,
   isUploading = false,
   accept = 'image/jpeg,image/png,image/webp',
@@ -21,38 +27,47 @@ export function ImageUpload({
   const MAX_SIZE_MB = 5;
   const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
 
-  const handleFile = useCallback(
-    (file: File) => {
+  const handleFiles = useCallback(
+    (fileList: FileList | null) => {
+      if (!fileList || fileList.length === 0) return;
       setError(null);
 
-      if (!file.type.startsWith('image/')) {
-        setError('Please select an image file.');
+      const valid: File[] = [];
+      for (const file of Array.from(fileList)) {
+        if (!file.type.startsWith('image/')) {
+          setError('Please select an image file.');
+          continue;
+        }
+        if (file.size > MAX_SIZE_BYTES) {
+          setError(`Each image must be smaller than ${MAX_SIZE_MB}MB.`);
+          continue;
+        }
+        valid.push(file);
+      }
+      if (valid.length === 0) return;
+
+      if (multiple && onFilesSelect) {
+        onFilesSelect(valid);
         return;
       }
 
-      if (file.size > MAX_SIZE_BYTES) {
-        setError(`Image must be smaller than ${MAX_SIZE_MB}MB.`);
-        return;
-      }
-
+      // Single-image mode: preview the file and emit it.
+      const file = valid[0];
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreview(reader.result as string);
-      };
+      reader.onloadend = () => setPreview(reader.result as string);
       reader.readAsDataURL(file);
       onFileSelect(file);
     },
-    [onFileSelect, MAX_SIZE_BYTES]
+    [onFileSelect, onFilesSelect, multiple, MAX_SIZE_BYTES]
   );
 
   const handleDrop = useCallback(
     (e: React.DragEvent<HTMLDivElement>) => {
       e.preventDefault();
       setIsDragOver(false);
-      const file = e.dataTransfer.files[0];
-      if (file) handleFile(file);
+      handleFiles(e.dataTransfer.files);
     },
-    [handleFile]
+    [handleFiles]
   );
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
@@ -63,8 +78,9 @@ export function ImageUpload({
   const handleDragLeave = () => setIsDragOver(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) handleFile(file);
+    handleFiles(e.target.files);
+    // Reset so re-picking the same file(s) still fires onChange.
+    e.target.value = '';
   };
 
   const displayImage = preview ?? currentImageUrl;
@@ -149,6 +165,7 @@ export function ImageUpload({
         ref={inputRef}
         type="file"
         accept={accept}
+        multiple={multiple}
         onChange={handleInputChange}
         className="hidden"
         aria-hidden="true"

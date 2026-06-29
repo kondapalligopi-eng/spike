@@ -13,12 +13,14 @@ import {
   PET_HIGHLIGHTS,
   slugify,
   updatePetPage,
+  uploadPetPagePhoto,
   type PetPageRead,
 } from '@/api/petPages';
 import { ImageUpload } from '@/components/ImageUpload';
 import { ShareButtons } from '@/components/ShareButtons';
 import { HeroPaws } from '@/components/HeroPaws';
 import { PageHead } from '@/components/PageHead';
+import { PetPageView } from '@/components/PetPageView';
 import { toast } from '@/store/toastStore';
 
 type SlugStatus = 'idle' | 'checking' | 'ok' | 'taken' | 'invalid';
@@ -41,6 +43,8 @@ export function PetPages() {
   const [highlights, setHighlights] = useState<string[]>([]);
   const [memories, setMemories] = useState('');
   const [slugStatus, setSlugStatus] = useState<SlugStatus>('idle');
+  const [showPreview, setShowPreview] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   const formRef = useRef<HTMLDivElement>(null);
 
@@ -74,6 +78,16 @@ export function PetPages() {
     return () => window.clearTimeout(handle);
   }, [slug, editingId]);
 
+  // Close the preview overlay on Escape.
+  useEffect(() => {
+    if (!showPreview) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setShowPreview(false);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [showPreview]);
+
   const resetForm = () => {
     setEditingId(null);
     setName('');
@@ -96,13 +110,25 @@ export function PetPages() {
     formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
+  // Add several photos in one go (multi-select / multi-drop), capped at MAX_PHOTOS.
+  // Each file is uploaded via uploadPetPagePhoto — a hosted URL in real mode,
+  // an inline data URL in mock mode — and the returned strings go into `photos`.
+  const onFilesSelect = async (files: File[]) => {
+    const remaining = MAX_PHOTOS - photos.length;
+    if (remaining <= 0) return;
+    setUploading(true);
+    try {
+      const urls = await Promise.all(files.slice(0, remaining).map(uploadPetPagePhoto));
+      setPhotos((prev) => [...prev, ...urls].slice(0, MAX_PHOTOS));
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Could not upload photo.');
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const onFileSelect = (file: File) => {
-    // In mock/dev we inline the image as a data URL so it persists and renders
-    // without a backend. Stage 2 swaps this for the /pet-pages/{id}/photo upload.
-    const reader = new FileReader();
-    reader.onloadend = () =>
-      setPhotos((prev) => (prev.length >= MAX_PHOTOS ? prev : [...prev, reader.result as string]));
-    reader.readAsDataURL(file);
+    void onFilesSelect([file]);
   };
 
   const removePhoto = (idx: number) => setPhotos((prev) => prev.filter((_, i) => i !== idx));
@@ -153,6 +179,10 @@ export function PetPages() {
     words > 0 &&
     !overLimit &&
     !saveMut.isPending;
+
+  // Preview needs at least something to render.
+  const canPreview = name.trim().length > 0 || photos.length > 0 || memories.trim().length > 0;
+  const draft = { name, slug, photos, highlights, memories };
 
   const slugHint = useMemo(() => {
     switch (slugStatus) {
@@ -285,11 +315,13 @@ export function PetPages() {
               )}
               {photos.length < MAX_PHOTOS ? (
                 // key resets the dropzone's internal preview after each add
-                <ImageUpload key={photos.length} onFileSelect={onFileSelect} />
+                <ImageUpload key={photos.length} multiple isUploading={uploading} onFileSelect={onFileSelect} onFilesSelect={onFilesSelect} />
               ) : (
                 <p className="text-xs text-warm-500">Maximum {MAX_PHOTOS} photos reached.</p>
               )}
-              <p className="mt-1.5 text-xs text-warm-400">Click a photo to make it the cover.</p>
+              <p className="mt-1.5 text-xs text-warm-400">
+                Pick or drop several at once (up to {MAX_PHOTOS}). Click a photo to make it the cover.
+              </p>
             </div>
 
             {/* Highlights */}
@@ -356,6 +388,14 @@ export function PetPages() {
                   : editingId
                     ? 'Save changes'
                     : 'Publish page'}
+              </button>
+              <button
+                type="button"
+                disabled={!canPreview}
+                onClick={() => setShowPreview(true)}
+                className="inline-flex items-center gap-2 rounded-full border border-primary-600 px-5 py-2.5 text-sm font-bold text-primary-700 hover:bg-primary-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                Preview
               </button>
               {editingId && (
                 <button
@@ -427,6 +467,39 @@ export function PetPages() {
           )}
         </div>
       </div>
+
+      {/* Preview overlay — renders the public page exactly, from the draft */}
+      {showPreview && (
+        <div
+          className="fixed inset-0 z-50 overflow-y-auto bg-black/50"
+          onClick={() => setShowPreview(false)}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Page preview"
+        >
+          <div className="min-h-full px-3 py-6 sm:py-8">
+            <div className="max-w-4xl mx-auto" onClick={(e) => e.stopPropagation()}>
+              <div className="flex items-center justify-between mb-3 text-white">
+                <p className="text-sm font-semibold">
+                  Preview — how your page will look {!canSubmit && <span className="text-primary-200 font-normal">(not published yet)</span>}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setShowPreview(false)}
+                  className="inline-flex items-center gap-1.5 rounded-full bg-white/15 hover:bg-white/25 px-3 py-1.5 text-xs font-semibold"
+                >
+                  Close ✕
+                </button>
+              </div>
+              <div className="rounded-3xl bg-gradient-to-b from-primary-100 via-primary-50 to-accent-50 p-4 sm:p-8">
+                <div className="bg-white rounded-3xl shadow-sm border border-warm-200 p-5 sm:p-8">
+                  <PetPageView data={draft} preview />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

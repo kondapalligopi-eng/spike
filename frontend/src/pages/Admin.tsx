@@ -46,6 +46,10 @@ import {
   type SiteSettingKey,
 } from '@/api/siteSettings';
 import {
+  listAllPetPages,
+  deletePetPage,
+} from '@/api/petPages';
+import {
   listSubmissions,
   setSubmissionHandled,
   deleteSubmission,
@@ -2404,6 +2408,136 @@ function SubmissionsSection() {
   );
 }
 
+function PetStoriesSection() {
+  const queryClient = useQueryClient();
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['admin-pet-pages'],
+    queryFn: listAllPetPages,
+    refetchInterval: 60_000,
+  });
+
+  const [confirmId, setConfirmId] = useState<string | null>(null);
+
+  const deleteMutation = useMutation({
+    mutationFn: deletePetPage,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-pet-pages'] });
+      queryClient.invalidateQueries({ queryKey: ['my-pet-pages'] });
+      toast.success('Pet story page removed.');
+      setConfirmId(null);
+    },
+    onError: (err: Error) => toast.error(err.message || 'Could not remove the page.'),
+  });
+
+  const pages = data ?? [];
+
+  const handleDelete = (id: string) => {
+    if (confirmId !== id) {
+      setConfirmId(id);
+      return;
+    }
+    deleteMutation.mutate(id);
+  };
+
+  return (
+    <section className="mb-10">
+      <div className="mb-4">
+        <p className="text-[11px] font-semibold tracking-[0.3em] text-accent-600 uppercase mb-1">
+          Moderation
+        </p>
+        <h2 className="text-xl font-bold text-warm-900">
+          Pet Stories
+          <span className="ml-2 align-middle text-xs font-bold text-warm-600 bg-warm-100 rounded-full px-2 py-0.5">
+            {pages.length}
+          </span>
+        </h2>
+        <p className="text-sm text-warm-500 mt-1">
+          Owner-created pages at <span className="font-mono">hispike.in/pet/…</span>. Open any page to
+          review it, and remove anything inappropriate.
+        </p>
+      </div>
+
+      {isLoading ? (
+        <p className="text-sm text-warm-500 py-6">Loading pet stories…</p>
+      ) : isError ? (
+        <p className="text-sm text-red-600 py-6">Could not load pet stories. Refresh to retry.</p>
+      ) : pages.length === 0 ? (
+        <div className="rounded-2xl border-2 border-dashed border-warm-300 p-8 text-center text-sm text-warm-500">
+          No pet stories yet. Pages created by owners will appear here.
+        </div>
+      ) : (
+        <ul className="space-y-3">
+          {pages.map((p) => {
+            const staged = confirmId === p.id;
+            const url = `/pet/${p.slug}`;
+            const snippet = p.memories.replace(/\s+/g, ' ').trim().slice(0, 140);
+            return (
+              <li key={p.id} className="rounded-2xl border-2 border-warm-200 bg-white p-4 sm:p-5">
+                <div className="flex items-start gap-4">
+                  <div className="w-16 h-16 rounded-xl overflow-hidden bg-warm-100 flex items-center justify-center shrink-0">
+                    {p.photos[0] ? (
+                      <img src={p.photos[0]} alt="" className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="text-2xl" aria-hidden="true">🐶</span>
+                    )}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="font-bold text-warm-900 truncate">{p.name || 'Untitled'}</p>
+                        <a
+                          href={url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs text-primary-600 hover:underline font-mono break-all"
+                        >
+                          hispike.in/pet/{p.slug}
+                        </a>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <a
+                          href={url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-3 py-1.5 rounded-full border-2 border-warm-300 bg-white text-warm-700 text-xs font-bold uppercase tracking-wider hover:border-primary-500 hover:text-primary-700 transition-colors"
+                        >
+                          View
+                        </a>
+                        <button
+                          type="button"
+                          onClick={() => handleDelete(p.id)}
+                          disabled={deleteMutation.isPending && staged}
+                          className={`px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-colors ${
+                            staged
+                              ? 'bg-red-600 text-white hover:bg-red-700 disabled:opacity-60'
+                              : 'border-2 border-warm-300 bg-white text-warm-700 hover:border-red-500 hover:text-red-600'
+                          }`}
+                        >
+                          {deleteMutation.isPending && staged ? 'Removing…' : staged ? 'Confirm' : 'Remove'}
+                        </button>
+                      </div>
+                    </div>
+                    {snippet && (
+                      <p className="mt-2 text-sm text-warm-600 line-clamp-2">
+                        {snippet}{p.memories.length > 140 ? '…' : ''}
+                      </p>
+                    )}
+                    <div className="mt-2 flex items-center gap-3 text-xs text-warm-400">
+                      <span>{p.photos.length} photo{p.photos.length === 1 ? '' : 's'}</span>
+                      <span aria-hidden="true">·</span>
+                      <span>{formatDateTime(new Date(p.created_at))}</span>
+                    </div>
+                  </div>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </section>
+  );
+}
+
 export function Admin() {
   // Warm the backend the moment the admin lands here. Render free-tier
   // services sleep after ~15 min idle; the first request after sleep takes
@@ -2425,6 +2559,7 @@ export function Admin() {
       </div>
 
       <SubmissionsSection />
+      <PetStoriesSection />
       <AddListingsSection />
       <SiteVisibilitySection />
       <VisitsSection />
