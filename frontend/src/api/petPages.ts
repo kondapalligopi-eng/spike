@@ -151,6 +151,16 @@ function cleanPayload(data: PetPageCreate) {
 
 // ---- API ----
 
+/** Admin: every pet page across all owners (newest first) — for moderation. */
+export async function listAllPetPages(): Promise<PetPageRead[]> {
+  if (USE_MOCK) {
+    await delay(150);
+    return readStore().sort((a, b) => b.created_at.localeCompare(a.created_at));
+  }
+  const res = await apiClient.get<PetPageRead[]>('/pet-pages');
+  return res.data;
+}
+
 /** The signed-in owner's own pages, newest first. */
 export async function listMyPetPages(): Promise<PetPageRead[]> {
   if (USE_MOCK) {
