@@ -42,6 +42,7 @@ export function PetPages() {
   const [highlights, setHighlights] = useState<string[]>([]);
   const [memories, setMemories] = useState('');
   const [slugStatus, setSlugStatus] = useState<SlugStatus>('idle');
+  const [showPreview, setShowPreview] = useState(false);
 
   const formRef = useRef<HTMLDivElement>(null);
 
