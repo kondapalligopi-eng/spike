@@ -76,6 +76,16 @@ export function PetPages() {
     return () => window.clearTimeout(handle);
   }, [slug, editingId]);
 
+  // Close the preview overlay on Escape.
+  useEffect(() => {
+    if (!showPreview) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setShowPreview(false);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [showPreview]);
+
   const resetForm = () => {
     setEditingId(null);
     setName('');
