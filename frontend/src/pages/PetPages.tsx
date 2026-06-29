@@ -19,6 +19,7 @@ import { ImageUpload } from '@/components/ImageUpload';
 import { ShareButtons } from '@/components/ShareButtons';
 import { HeroPaws } from '@/components/HeroPaws';
 import { PageHead } from '@/components/PageHead';
+import { PetPageView } from '@/components/PetPageView';
 import { toast } from '@/store/toastStore';
 
 type SlugStatus = 'idle' | 'checking' | 'ok' | 'taken' | 'invalid';
