@@ -166,6 +166,10 @@ export function PetPages() {
     !overLimit &&
     !saveMut.isPending;
 
+  // Preview needs at least something to render.
+  const canPreview = name.trim().length > 0 || photos.length > 0 || memories.trim().length > 0;
+  const draft = { name, slug, photos, highlights, memories };
+
   const slugHint = useMemo(() => {
     switch (slugStatus) {
       case 'checking':
