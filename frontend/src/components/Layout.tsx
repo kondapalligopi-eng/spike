@@ -164,9 +164,8 @@ export function Layout() {
           <div className="mt-12 pt-6 border-t border-warm-200 flex flex-col md:flex-row gap-3 items-center justify-between text-xs text-warm-500">
             <p>© {new Date().getFullYear()} HiSpike. All-in-one pet care for dogs.</p>
             <div className="flex gap-4">
-              <a href="#" className="hover:text-warm-800">Privacy Policy</a>
-              <a href="#" className="hover:text-warm-800">Terms of Service</a>
-              <a href="#" className="hover:text-warm-800">Cookie Settings</a>
+              <a href="/privacy" className="hover:text-warm-800">Privacy Policy</a>
+              <a href="/terms" className="hover:text-warm-800">Terms of Service</a>
             </div>
           </div>
         </div>
