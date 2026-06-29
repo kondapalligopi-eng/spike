@@ -165,6 +165,7 @@ export function ImageUpload({
         ref={inputRef}
         type="file"
         accept={accept}
+        multiple={multiple}
         onChange={handleInputChange}
         className="hidden"
         aria-hidden="true"
