@@ -13,8 +13,8 @@ const FOOTER_COLUMNS: { heading: string; links: { label: string; href: string; e
       { label: 'Grooming Services', href: '/grooming' },
       { label: 'Dog Parks Near You', href: '/park' },
       { label: 'Swim & Training', href: '/swimming' },
-      { label: 'Hire a Dog Walker', href: '/dog-walking' },
       { label: 'Shop Pet Supplies', href: '/pet-supplies' },
+      { label: 'Create a Pet Story', href: '/pet-stories' },
     ],
   },
   {
