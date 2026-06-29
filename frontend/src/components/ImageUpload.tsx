@@ -2,6 +2,10 @@ import { useState, useRef, useCallback } from 'react';
 
 interface ImageUploadProps {
   onFileSelect: (file: File) => void;
+  /** When `multiple` is set, receives all picked/dropped files at once. */
+  onFilesSelect?: (files: File[]) => void;
+  /** Allow selecting/dropping several images in one go. */
+  multiple?: boolean;
   currentImageUrl?: string;
   isUploading?: boolean;
   accept?: string;
@@ -9,6 +13,8 @@ interface ImageUploadProps {
 
 export function ImageUpload({
   onFileSelect,
+  onFilesSelect,
+  multiple = false,
   currentImageUrl,
   isUploading = false,
   accept = 'image/jpeg,image/png,image/webp',
