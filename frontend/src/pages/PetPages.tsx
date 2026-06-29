@@ -115,10 +115,6 @@ export function PetPages() {
       reader.readAsDataURL(file);
     });
 
-  const onFileSelect = (file: File) => {
-    void onFilesSelect([file]);
-  };
-
   // Add several photos in one go (multi-select / multi-drop), capped at MAX_PHOTOS.
   // In mock/dev we inline each image as a data URL so it persists and renders
   // without a backend. Stage 2 swaps this for the /pet-pages/{id}/photo upload.
@@ -127,6 +123,10 @@ export function PetPages() {
     if (remaining <= 0) return;
     const urls = await Promise.all(files.slice(0, remaining).map(readAsDataUrl));
     setPhotos((prev) => [...prev, ...urls].slice(0, MAX_PHOTOS));
+  };
+
+  const onFileSelect = (file: File) => {
+    void onFilesSelect([file]);
   };
 
   const removePhoto = (idx: number) => setPhotos((prev) => prev.filter((_, i) => i !== idx));
