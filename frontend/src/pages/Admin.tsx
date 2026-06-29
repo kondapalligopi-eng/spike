@@ -2559,6 +2559,7 @@ export function Admin() {
       </div>
 
       <SubmissionsSection />
+      <PetStoriesSection />
       <AddListingsSection />
       <SiteVisibilitySection />
       <VisitsSection />
