@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+import re
 import uuid
 
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr, Field, field_validator
 
 
 class Token(BaseModel):
