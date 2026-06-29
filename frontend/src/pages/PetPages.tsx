@@ -13,6 +13,7 @@ import {
   PET_HIGHLIGHTS,
   slugify,
   updatePetPage,
+  uploadPetPagePhoto,
   type PetPageRead,
 } from '@/api/petPages';
 import { ImageUpload } from '@/components/ImageUpload';
