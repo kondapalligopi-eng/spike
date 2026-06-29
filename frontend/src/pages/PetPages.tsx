@@ -44,6 +44,7 @@ export function PetPages() {
   const [memories, setMemories] = useState('');
   const [slugStatus, setSlugStatus] = useState<SlugStatus>('idle');
   const [showPreview, setShowPreview] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   const formRef = useRef<HTMLDivElement>(null);
 
