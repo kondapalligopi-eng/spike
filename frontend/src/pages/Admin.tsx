@@ -46,6 +46,10 @@ import {
   type SiteSettingKey,
 } from '@/api/siteSettings';
 import {
+  listAllPetPages,
+  deletePetPage,
+} from '@/api/petPages';
+import {
   listSubmissions,
   setSubmissionHandled,
   deleteSubmission,
