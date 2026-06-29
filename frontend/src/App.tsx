@@ -42,6 +42,8 @@ export const routes: RouteRecord[] = [
           { index: true, Component: Home },
           { path: 'login', Component: Login },
           { path: 'register', Component: Register },
+          { path: 'forgot-password', Component: ForgotPassword },
+          { path: 'reset-password', Component: ResetPassword },
           { path: 'dogs', Component: Dogs },
           { path: 'dogs/:id', Component: DogDetail },
           { path: 'swimming', Component: Swimming },
