@@ -1,21 +1,44 @@
 from __future__ import annotations
 
+import hashlib
+import logging
+import secrets
+from datetime import datetime, timedelta, timezone
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from jose import JWTError
+from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.config import settings
 from app.core.security import (
     create_access_token,
     create_refresh_token,
     decode_refresh_token,
+    hash_password,
     verify_password,
 )
 from app.database import get_db
-from app.schemas.auth import AccessToken, Token, TokenRefresh
+from app.models.password_reset_token import PasswordResetToken
+from app.schemas.auth import (
+    AccessToken,
+    ForgotPasswordRequest,
+    MessageResponse,
+    ResetPasswordRequest,
+    Token,
+    TokenRefresh,
+)
 from app.schemas.user import UserCreate, UserLogin, UserResponse
+from app.services import email_service
 from app.services.user_service import UserService
 
+logger = logging.getLogger(__name__)
+
 router = APIRouter(prefix="/auth", tags=["auth"])
+
+
+def _hash_token(raw: str) -> str:
+    return hashlib.sha256(raw.encode()).hexdigest()
 
 
 @router.post(
