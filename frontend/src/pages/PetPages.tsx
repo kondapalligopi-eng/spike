@@ -373,6 +373,14 @@ export function PetPages() {
                     ? 'Save changes'
                     : 'Publish page'}
               </button>
+              <button
+                type="button"
+                disabled={!canPreview}
+                onClick={() => setShowPreview(true)}
+                className="inline-flex items-center gap-2 rounded-full border border-primary-600 px-5 py-2.5 text-sm font-bold text-primary-700 hover:bg-primary-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                Preview
+              </button>
               {editingId && (
                 <button
                   type="button"
