@@ -27,14 +27,19 @@ def _send_sync(to: str, subject: str, html: str, text: str) -> None:
     msg.set_content(text)
     msg.add_alternative(html, subtype="html")
 
+    # A timeout so a stalled connection fails fast (and gets logged) instead of
+    # hanging the worker indefinitely.
+    timeout = 20
     if settings.SMTP_USE_SSL:
         context = ssl.create_default_context()
-        with smtplib.SMTP_SSL(settings.SMTP_HOST, settings.SMTP_PORT, context=context) as server:
+        with smtplib.SMTP_SSL(
+            settings.SMTP_HOST, settings.SMTP_PORT, context=context, timeout=timeout
+        ) as server:
             if settings.SMTP_USER:
                 server.login(settings.SMTP_USER, settings.SMTP_PASSWORD)
             server.send_message(msg)
     else:
-        with smtplib.SMTP(settings.SMTP_HOST, settings.SMTP_PORT) as server:
+        with smtplib.SMTP(settings.SMTP_HOST, settings.SMTP_PORT, timeout=timeout) as server:
             if settings.SMTP_STARTTLS:
                 server.starttls(context=ssl.create_default_context())
             if settings.SMTP_USER:
