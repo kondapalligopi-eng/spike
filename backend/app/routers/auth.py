@@ -176,10 +176,8 @@ async def forgot_password(
         "<p>If you didn't request this, you can safely ignore this email.</p>"
         "<p>— HiSpike</p>"
     )
-    try:
-        await email_service.send_email(user.email, subject, html, text)
-    except Exception as exc:  # noqa: BLE001 — never surface email failures to the caller
-        logger.error("Failed to send password-reset email: %s", exc)
+    # Send AFTER the response so a slow SMTP server never hangs the request.
+    background_tasks.add_task(_send_reset_email_safe, user.email, subject, html, text)
 
     return generic
 
