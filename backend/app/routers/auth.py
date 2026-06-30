@@ -41,6 +41,14 @@ def _hash_token(raw: str) -> str:
     return hashlib.sha256(raw.encode()).hexdigest()
 
 
+async def _send_reset_email_safe(to: str, subject: str, html: str, text: str) -> None:
+    """Background email send — never raises (failures are logged, not surfaced)."""
+    try:
+        await email_service.send_email(to, subject, html, text)
+    except Exception as exc:  # noqa: BLE001
+        logger.error("Failed to send password-reset email to %s: %s", to, exc)
+
+
 @router.post(
     "/register",
     response_model=UserResponse,
