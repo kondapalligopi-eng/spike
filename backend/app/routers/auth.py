@@ -132,6 +132,7 @@ async def refresh(
 )
 async def forgot_password(
     payload: ForgotPasswordRequest,
+    background_tasks: BackgroundTasks,
     db: AsyncSession = Depends(get_db),
 ) -> MessageResponse:
     # Always return the same message so we never reveal whether an account exists.
