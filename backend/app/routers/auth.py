@@ -5,7 +5,7 @@ import logging
 import secrets
 from datetime import datetime, timedelta, timezone
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
 from jose import JWTError
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -39,6 +39,14 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 def _hash_token(raw: str) -> str:
     return hashlib.sha256(raw.encode()).hexdigest()
+
+
+async def _send_reset_email_safe(to: str, subject: str, html: str, text: str) -> None:
+    """Background email send — never raises (failures are logged, not surfaced)."""
+    try:
+        await email_service.send_email(to, subject, html, text)
+    except Exception as exc:  # noqa: BLE001
+        logger.error("Failed to send password-reset email to %s: %s", to, exc)
 
 
 @router.post(
@@ -124,6 +132,7 @@ async def refresh(
 )
 async def forgot_password(
     payload: ForgotPasswordRequest,
+    background_tasks: BackgroundTasks,
     db: AsyncSession = Depends(get_db),
 ) -> MessageResponse:
     # Always return the same message so we never reveal whether an account exists.
@@ -167,10 +176,8 @@ async def forgot_password(
         "<p>If you didn't request this, you can safely ignore this email.</p>"
         "<p>— HiSpike</p>"
     )
-    try:
-        await email_service.send_email(user.email, subject, html, text)
-    except Exception as exc:  # noqa: BLE001 — never surface email failures to the caller
-        logger.error("Failed to send password-reset email: %s", exc)
+    # Send AFTER the response so a slow SMTP server never hangs the request.
+    background_tasks.add_task(_send_reset_email_safe, user.email, subject, html, text)
 
     return generic
 

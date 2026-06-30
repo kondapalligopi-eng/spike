@@ -28,8 +28,12 @@ class Settings(BaseSettings):
     CLOUDINARY_API_KEY: str = ""
     CLOUDINARY_API_SECRET: str = ""
 
-    # Email (SMTP) — provider-agnostic. Leave blank to disable email features
-    # (password reset just no-ops + logs until these are set).
+    # Email. Preferred: Resend HTTP API — set RESEND_API_KEY (HTTP isn't blocked
+    # by SMTP-port throttling on some hosts). Otherwise generic SMTP below.
+    RESEND_API_KEY: str = ""
+
+    # Email (SMTP) — provider-agnostic fallback. Leave blank to disable email
+    # features (password reset just no-ops + logs until configured).
     SMTP_HOST: str = ""
     SMTP_PORT: int = 587
     SMTP_USER: str = ""
