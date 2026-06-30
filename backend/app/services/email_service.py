@@ -1,9 +1,13 @@
-"""Provider-agnostic SMTP email sender.
+"""Email sender with two backends:
 
-Works with any SMTP provider (Resend, Brevo, SendGrid, Zoho, Gmail, …) — just
-set the SMTP_* / EMAIL_FROM env vars. Until they're set, `is_configured()` is
-False and callers can no-op gracefully (the password-reset flow does this so it
-never reveals whether an account exists).
+1. Resend HTTP API (preferred) — set RESEND_API_KEY. HTTP is never blocked by
+   the SMTP-port throttling some PaaS hosts (incl. Render) apply, so it's the
+   reliable choice in production.
+2. Generic SMTP — set SMTP_* / EMAIL_FROM. Works with any provider.
+
+Until one is configured, `is_configured()` is False and callers no-op (the
+password-reset flow relies on this so it never reveals whether an account
+exists).
 """
 from __future__ import annotations
 
@@ -12,14 +16,43 @@ import smtplib
 import ssl
 from email.message import EmailMessage
 
+import httpx
+
 from app.config import settings
 
+RESEND_API_URL = "https://api.resend.com/emails"
 
-def is_configured() -> bool:
+
+def _use_resend_http() -> bool:
+    return bool(settings.RESEND_API_KEY and settings.EMAIL_FROM)
+
+
+def _smtp_configured() -> bool:
     return bool(settings.SMTP_HOST and settings.EMAIL_FROM)
 
 
-def _send_sync(to: str, subject: str, html: str, text: str) -> None:
+def is_configured() -> bool:
+    return _use_resend_http() or _smtp_configured()
+
+
+async def _send_via_resend(to: str, subject: str, html: str, text: str) -> None:
+    async with httpx.AsyncClient(timeout=20) as client:
+        resp = await client.post(
+            RESEND_API_URL,
+            headers={"Authorization": f"Bearer {settings.RESEND_API_KEY}"},
+            json={
+                "from": settings.EMAIL_FROM,
+                "to": [to],
+                "subject": subject,
+                "html": html,
+                "text": text,
+            },
+        )
+    if resp.status_code >= 300:
+        raise RuntimeError(f"Resend API error {resp.status_code}: {resp.text[:300]}")
+
+
+def _send_via_smtp(to: str, subject: str, html: str, text: str) -> None:
     msg = EmailMessage()
     msg["From"] = settings.EMAIL_FROM
     msg["To"] = to
@@ -48,8 +81,11 @@ def _send_sync(to: str, subject: str, html: str, text: str) -> None:
 
 
 async def send_email(to: str, subject: str, html: str, text: str) -> None:
-    """Send an email. Raises RuntimeError if SMTP isn't configured; runs the
-    blocking smtplib call in a thread so it doesn't block the event loop."""
-    if not is_configured():
-        raise RuntimeError("Email (SMTP) is not configured")
-    await asyncio.to_thread(_send_sync, to, subject, html, text)
+    """Send an email via Resend HTTP (if RESEND_API_KEY set) else SMTP.
+    Raises on failure / when nothing is configured."""
+    if _use_resend_http():
+        await _send_via_resend(to, subject, html, text)
+        return
+    if not _smtp_configured():
+        raise RuntimeError("Email is not configured")
+    await asyncio.to_thread(_send_via_smtp, to, subject, html, text)
