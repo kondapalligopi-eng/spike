@@ -239,7 +239,7 @@ export function Home() {
               { label: 'Grooming', dog: '🐩', badge: '✂️', kicker: 'Salon', image: '/services/grooming.jpg', tint: 'from-amber-200 to-amber-400', to: '/grooming' },
               { label: 'Pet Supplies', dog: '🐶🦴', badge: '🥣', kicker: 'Shop', image: '/services/pet-supplies.jpg', tint: 'from-violet-200 to-violet-400', to: '/pet-supplies' },
               { label: 'Pet Stories', dog: '🐶', badge: '📖', kicker: 'Stories', image: '/services/pet-stories.jpg', tint: 'from-fuchsia-200 to-fuchsia-400', to: '/pet-stories' },
-            ].map(({ label, dog, badge, kicker, image, tint, to }) => (
+            ].map(({ label, dog, badge, kicker, tint, to }) => (
               <Link key={label} to={to} className="group block text-center">
                 <p className="text-xs text-warm-600 mb-3 tracking-wide">{kicker}</p>
                 <div className={`relative mx-auto aspect-square w-20 sm:w-24 lg:w-28 rounded-full overflow-visible bg-gradient-to-br ${tint} ring-1 ring-warm-200 group-hover:ring-primary-400 transition`}>
