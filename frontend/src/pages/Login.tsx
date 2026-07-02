@@ -66,7 +66,7 @@ function Showcase() {
       </h2>
       <p className="text-sm text-warm-600 mt-2 mb-6 max-w-md">
         Sign in to give your dog a free, shareable page — photos, highlights and their story,
-        at your own <span className="font-mono text-warm-800">hispike.in/pet/</span> link.
+        at your own <span className="font-mono text-warm-800">hispike.in/pet/</span>link.
       </p>
 
       <div className="space-y-3 max-w-md">
