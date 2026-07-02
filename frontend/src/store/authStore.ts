@@ -7,6 +7,11 @@ interface AuthState {
   token: string | null;
   refreshToken: string | null;
   isAuthenticated: boolean;
+  // False until the persisted state has been read from localStorage. Because
+  // the site is pre-rendered logged-out (no localStorage on the server), we
+  // defer reading it (skipHydration) so the first client render matches the
+  // server — then rehydrate in an effect. Guards against SSG hydration errors.
+  hasHydrated: boolean;
   login: (token: string, user: User, refreshToken?: string | null) => void;
   setTokens: (accessToken: string, refreshToken?: string | null) => void;
   logout: () => void;
@@ -20,6 +25,7 @@ export const useAuthStore = create<AuthState>()(
       token: null,
       refreshToken: null,
       isAuthenticated: false,
+      hasHydrated: false,
 
       login: (token: string, user: User, refreshToken?: string | null) => {
         localStorage.setItem('auth_token', token);
@@ -56,6 +62,9 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: 'auth-storage',
+      // Don't read localStorage during the first render — RootShell calls
+      // rehydrate() in an effect so server & client initial HTML match.
+      skipHydration: true,
       partialize: (state) => ({
         token: state.token,
         refreshToken: state.refreshToken,
@@ -66,6 +75,8 @@ export const useAuthStore = create<AuthState>()(
         // Sync tokens to localStorage for axios interceptor on a fresh tab.
         if (state?.token) localStorage.setItem('auth_token', state.token);
         if (state?.refreshToken) localStorage.setItem('auth_refresh_token', state.refreshToken);
+        // Mark hydration complete so ProtectedRoute stops waiting.
+        useAuthStore.setState({ hasHydrated: true });
       },
     }
   )

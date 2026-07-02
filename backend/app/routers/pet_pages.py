@@ -103,6 +103,22 @@ async def list_all_pet_pages(
 
 
 @router.get(
+    "/recent",
+    response_model=list[PetPageRead],
+    summary="Recent public pet pages (for the login showcase)",
+)
+async def recent_pet_pages(
+    limit: int = 6,
+    db: AsyncSession = Depends(get_db),
+) -> list[PetPageRead]:
+    limit = max(1, min(limit, 12))
+    result = await db.execute(
+        select(PetPage).order_by(desc(PetPage.created_at)).limit(limit)
+    )
+    return [PetPageRead.model_validate(r) for r in result.scalars().all()]
+
+
+@router.get(
     "/mine",
     response_model=list[PetPageRead],
     summary="List the signed-in owner's pet pages",
