@@ -243,15 +243,7 @@ export function Home() {
               <Link key={label} to={to} className="group block text-center">
                 <p className="text-xs text-warm-600 mb-3 tracking-wide">{kicker}</p>
                 <div className={`relative mx-auto aspect-square w-20 sm:w-24 lg:w-28 rounded-full overflow-visible bg-gradient-to-br ${tint} ring-1 ring-warm-200 group-hover:ring-primary-400 transition`}>
-                  <img
-                    src={image}
-                    alt=""
-                    aria-hidden="true"
-                    className="absolute inset-0 w-full h-full object-cover opacity-0 rounded-full transition-all duration-500 group-hover:scale-[1.05]"
-                    onLoad={(e) => { (e.currentTarget as HTMLImageElement).style.opacity = '1'; }}
-                    onError={(e) => { (e.currentTarget as HTMLImageElement).remove(); }}
-                  />
-                  <span aria-hidden="true" className="absolute inset-0 flex items-center justify-center text-3xl sm:text-4xl drop-shadow">
+                  <span aria-hidden="true" className="absolute inset-0 flex items-center justify-center text-3xl sm:text-4xl drop-shadow group-hover:scale-110 transition-transform">
                     {dog}
                   </span>
                   <span
