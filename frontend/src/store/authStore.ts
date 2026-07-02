@@ -7,6 +7,11 @@ interface AuthState {
   token: string | null;
   refreshToken: string | null;
   isAuthenticated: boolean;
+  // False until the persisted state has been read from localStorage. Because
+  // the site is pre-rendered logged-out (no localStorage on the server), we
+  // defer reading it (skipHydration) so the first client render matches the
+  // server — then rehydrate in an effect. Guards against SSG hydration errors.
+  hasHydrated: boolean;
   login: (token: string, user: User, refreshToken?: string | null) => void;
   setTokens: (accessToken: string, refreshToken?: string | null) => void;
   logout: () => void;
@@ -20,6 +25,7 @@ export const useAuthStore = create<AuthState>()(
       token: null,
       refreshToken: null,
       isAuthenticated: false,
+      hasHydrated: false,
 
       login: (token: string, user: User, refreshToken?: string | null) => {
         localStorage.setItem('auth_token', token);
