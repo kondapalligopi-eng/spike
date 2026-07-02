@@ -1,5 +1,6 @@
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { useAuthStore } from '@/store/authStore';
 import { LoadingSpinner } from './LoadingSpinner';
 
 interface ProtectedRouteProps {
@@ -9,10 +10,12 @@ interface ProtectedRouteProps {
 
 export function ProtectedRoute({ children, adminOnly = false }: ProtectedRouteProps) {
   const { isAuthenticated, isAdmin, user } = useAuth();
+  const hasHydrated = useAuthStore((s) => s.hasHydrated);
   const location = useLocation();
 
-  // Still hydrating from localStorage
-  if (isAuthenticated && !user) {
+  // Wait until persisted auth has been read, otherwise a logged-in user would
+  // be redirected to /login on the first render (before rehydration).
+  if (!hasHydrated || (isAuthenticated && !user)) {
     return <LoadingSpinner fullPage />;
   }
 
