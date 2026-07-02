@@ -38,6 +38,9 @@ export function RootShell() {
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
     setMounted(true);
+    // Read persisted auth AFTER first render so the client's initial HTML
+    // matches the (logged-out) server render — avoids SSG hydration mismatches.
+    void useAuthStore.persist.rehydrate();
   }, []);
 
   // Proactive token refresh: restart whenever the access token rotates
