@@ -161,6 +161,18 @@ export async function listAllPetPages(): Promise<PetPageRead[]> {
   return res.data;
 }
 
+/** A few recent public pages — for the login-screen showcase (no auth). */
+export async function listRecentPetPages(limit = 6): Promise<PetPageRead[]> {
+  if (USE_MOCK) {
+    await delay(150);
+    return readStore()
+      .sort((a, b) => b.created_at.localeCompare(a.created_at))
+      .slice(0, limit);
+  }
+  const res = await apiClient.get<PetPageRead[]>('/pet-pages/recent', { params: { limit } });
+  return res.data;
+}
+
 /** The signed-in owner's own pages, newest first. */
 export async function listMyPetPages(): Promise<PetPageRead[]> {
   if (USE_MOCK) {
