@@ -62,6 +62,9 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: 'auth-storage',
+      // Don't read localStorage during the first render — RootShell calls
+      // rehydrate() in an effect so server & client initial HTML match.
+      skipHydration: true,
       partialize: (state) => ({
         token: state.token,
         refreshToken: state.refreshToken,
@@ -72,6 +75,8 @@ export const useAuthStore = create<AuthState>()(
         // Sync tokens to localStorage for axios interceptor on a fresh tab.
         if (state?.token) localStorage.setItem('auth_token', state.token);
         if (state?.refreshToken) localStorage.setItem('auth_refresh_token', state.refreshToken);
+        // Mark hydration complete so ProtectedRoute stops waiting.
+        useAuthStore.setState({ hasHydrated: true });
       },
     }
   )
