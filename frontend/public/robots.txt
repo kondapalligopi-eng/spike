@@ -1,8 +1,25 @@
 User-agent: *
 Allow: /
 
+# Auth & utility pages — no SEO value
+Disallow: /login
+Disallow: /register
+Disallow: /forgot-password
+Disallow: /reset-password
+
+# Private / protected pages
 Disallow: /admin
 Disallow: /profile
 Disallow: /my-dogs
+Disallow: /adoptions
+Disallow: /pet-stories
+
+# Client-rendered detail pages. These are served via the SPA fallback (the
+# homepage HTML) until they're server-rendered, so Google would otherwise index
+# them as duplicates of the homepage. Block the sub-paths only — the list pages
+# (/dogs, /grooming) stay crawlable.
+Disallow: /dogs/
+Disallow: /grooming/
+Disallow: /pet/
 
 Sitemap: https://hispike.in/sitemap.xml
