@@ -140,6 +140,12 @@ export function PrivacyPolicy() {
           See also our{' '}
           <Link to="/terms" className="text-primary-600 hover:underline">Terms of Service</Link>.
         </p>
+        <p className="text-sm text-warm-600">
+          <strong className="text-warm-800">HiSpike</strong> is a sole proprietorship registered in India.<br />
+          GSTIN: <span className="font-mono">29EHWPS8826R1ZK</span><br />
+          Registered address: WeWork Salarpuria Magnificia, Tin Factory, 78 Old Madras Road,
+          Mahadevapura, next to KR Puram, Bangalore, Karnataka 560016.
+        </p>
       </LegalSection>
     </LegalLayout>
   );
