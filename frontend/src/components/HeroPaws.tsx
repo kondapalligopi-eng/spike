@@ -10,17 +10,18 @@
 export function HeroPaws() {
   return (
     <>
+      {/* Base opacity is set statically (not only via keyframes) so the paws
+          still look intentional when the animation can't run (reduced-motion,
+          or corporate Chrome with the GPU disabled). No will-change: promoting
+          these to their own compositor layers freezes them on the first frame
+          when the GPU is blocklisted. NOTE: keep this rationale out of the CSS
+          below — special chars (apostrophes, em-dashes) inside a <style> text
+          node cause an SSR hydration mismatch (React error #425). */}
       <style>{`
         @keyframes hero-paw-pulse {
           0%, 100% { opacity: 0.06; }
           50%      { opacity: 0.20; }
         }
-        /* Base opacity is set statically (not only via the keyframes) so the
-           paws still look intentional when the animation can't run — e.g.
-           corporate Chrome with hardware acceleration disabled, or
-           prefers-reduced-motion. No will-change: promoting these to their own
-           compositor layers makes them freeze on the first frame when the GPU
-           is blocklisted; opacity animates fine on the main thread without it. */
         .hero-paw-bg { opacity: 0.12; animation: hero-paw-pulse 2.6s ease-in-out infinite; }
         @keyframes hero-sparkle {
           0%, 100% { opacity: 0;   transform: translate(-50%, -50%) scale(0)   rotate(0deg); }

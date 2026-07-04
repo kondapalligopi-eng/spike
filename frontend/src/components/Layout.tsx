@@ -163,7 +163,7 @@ export function Layout() {
           {/* Bottom strip */}
           <div className="mt-12 pt-6 border-t border-warm-200 text-xs text-warm-500">
             <div className="flex flex-col md:flex-row gap-3 items-center justify-between">
-              <p>© {new Date().getFullYear()} HiSpike. All-in-one pet care for dogs.</p>
+              <p suppressHydrationWarning>© {new Date().getFullYear()} HiSpike. All-in-one pet care for dogs.</p>
               <div className="flex gap-4">
                 <a href="/privacy" className="hover:text-warm-800">Privacy Policy</a>
                 <a href="/terms" className="hover:text-warm-800">Terms of Service</a>
