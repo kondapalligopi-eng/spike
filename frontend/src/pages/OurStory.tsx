@@ -162,6 +162,22 @@ export function OurStory() {
               </a>{' '}
               — we usually reply within a day.
             </p>
+            <div className="mt-4 pt-4 border-t border-warm-100 text-sm text-warm-600 leading-relaxed">
+              <p className="font-semibold text-warm-900">HiSpike</p>
+              <p>Proprietorship · GSTIN <span className="font-mono">29EHWPS8826R1ZK</span></p>
+              <p className="mt-1">
+                WeWork Salarpuria Magnificia, Tin Factory, 78 Old Madras Road,
+                Mahadevapura, next to KR Puram, Bangalore, Karnataka 560016
+              </p>
+              <a
+                href="https://www.google.com/maps/search/?api=1&query=WeWork%20Salarpuria%20Magnificia%2C%20Mahadevapura%2C%20Bangalore%20560016"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-xs font-semibold text-primary-600 hover:text-primary-700 hover:underline mt-2"
+              >
+                Get directions <span aria-hidden="true">→</span>
+              </a>
+            </div>
           </div>
         </div>
       </section>
