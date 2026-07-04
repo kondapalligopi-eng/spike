@@ -166,6 +166,9 @@ export function Feedback() {
                   Get directions
                   <span aria-hidden="true">→</span>
                 </a>
+                <p className="text-xs text-warm-500 mt-3">
+                  GSTIN: <span className="font-mono text-warm-700">29EHWPS8826R1ZK</span>
+                </p>
               </div>
             </div>
           </div>
