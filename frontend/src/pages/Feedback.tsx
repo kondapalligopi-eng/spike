@@ -166,9 +166,11 @@ export function Feedback() {
                   Get directions
                   <span aria-hidden="true">→</span>
                 </a>
-                <p className="text-xs text-warm-500 mt-3">
-                  GSTIN: <span className="font-mono text-warm-700">29EHWPS8826R1ZK</span>
-                </p>
+                <div className="mt-3 space-y-0.5 text-xs text-warm-500">
+                  <p>Trade name: <span className="text-warm-700 font-medium">HiSpike</span></p>
+                  <p>Constitution: <span className="text-warm-700 font-medium">Proprietorship</span></p>
+                  <p>GSTIN: <span className="font-mono text-warm-700">29EHWPS8826R1ZK</span></p>
+                </div>
               </div>
             </div>
           </div>
