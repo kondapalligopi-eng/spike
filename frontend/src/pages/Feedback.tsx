@@ -141,6 +141,35 @@ export function Feedback() {
             </form>
           </div>
 
+          {/* Office address */}
+          <div className="mt-6 rounded-2xl border-2 border-primary-100 bg-white p-6 shadow-sm">
+            <div className="flex items-start gap-3">
+              <span className="w-10 h-10 rounded-full bg-primary-50 flex items-center justify-center text-primary-700 shrink-0" aria-hidden="true">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </span>
+              <div className="min-w-0">
+                <p className="text-sm font-bold text-warm-900">Our office</p>
+                <address className="not-italic text-sm text-warm-600 leading-relaxed mt-1">
+                  WeWork Salarpuria Magnificia, Tin Factory,<br />
+                  78 Old Madras Road, Mahadevapura,<br />
+                  next to KR Puram, Bangalore, Karnataka 560016
+                </address>
+                <a
+                  href="https://www.google.com/maps/search/?api=1&query=WeWork%20Salarpuria%20Magnificia%2C%20Mahadevapura%2C%20Bangalore%20560016"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-xs font-semibold text-primary-600 hover:text-primary-700 hover:underline mt-2"
+                >
+                  Get directions
+                  <span aria-hidden="true">→</span>
+                </a>
+              </div>
+            </div>
+          </div>
+
           <p className="text-xs text-warm-500 mt-6 text-center">
             Prefer email? Write to <a className="text-primary-700 hover:underline" href="mailto:support@hispike.in">support@hispike.in</a>.
           </p>
