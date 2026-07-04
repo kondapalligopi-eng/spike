@@ -39,17 +39,15 @@ export function Home() {
             grid so the banner feels organic, not corporate. Each paw pulses
             between 6% and 20% opacity, with a small per-paw animation-delay
             so they don't blink in lockstep. Honours prefers-reduced-motion. */}
+        {/* Static base opacity so the paws still show if the animation can't
+            run (reduced-motion / GPU off). Keep prose OUT of the CSS below —
+            apostrophes/em-dashes inside a <style> text node cause an SSR
+            hydration mismatch (React #425). */}
         <style>{`
           @keyframes hero-paw-pulse {
             0%, 100% { opacity: 0.06; }
             50%       { opacity: 0.20; }
           }
-          /* Base opacity set statically (not only via keyframes) so the paws
-             still look intentional when the animation can't run — corporate
-             Chrome with hardware acceleration off, or prefers-reduced-motion.
-             No will-change: promoting these to GPU compositor layers makes them
-             freeze on the first frame when the GPU is blocklisted; opacity
-             animates fine on the main thread without it. */
           .hero-paw-bg { opacity: 0.12; animation: hero-paw-pulse 2.6s ease-in-out infinite; }
           @keyframes hero-sparkle {
             0%, 100% { opacity: 0;   transform: translate(-50%, -50%) scale(0)   rotate(0deg); }
