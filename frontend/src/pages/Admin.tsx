@@ -63,6 +63,7 @@ import {
   type VisitStats,
 } from '@/lib/visitTracker';
 import { readSheetRows, downloadTemplate, downloadRows, type SheetRow } from '@/lib/spreadsheet';
+import { getCounter } from '@/api/counters';
 
 const BANGALORE_NEIGHBOURHOODS = [
   'Banashankari', 'Banaswadi', 'Basavanagudi', 'Bellandur', 'Bommanahalli',
@@ -2006,10 +2007,17 @@ function VisitsSection() {
   const [ranged, setRanged] = useState<RangedVisitStats>(() =>
     getRangedStats(startOfDayMs(initialRange.start), endOfDayMs(initialRange.end)),
   );
+  // Site-wide "❤️ love" tally (backend counter, admin-only view).
+  const [helpfulVotes, setHelpfulVotes] = useState<number | null>(null);
 
   const refresh = () => {
     setAllTime(getVisitStats());
     setRanged(getRangedStats(startOfDayMs(startDate), endOfDayMs(endDate)));
+    getCounter('helpful')
+      .then(setHelpfulVotes)
+      .catch(() => {
+        /* leave it hidden if the backend is asleep */
+      });
   };
 
   // Recompute whenever the date range changes
@@ -2041,6 +2049,19 @@ function VisitsSection() {
           Site Analytics
         </p>
         <h2 className="text-xl font-bold text-warm-900">Website visits</h2>
+      </div>
+
+      {/* Love tally — visitors tap the ❤️ heart in the navbar; only admin sees the count */}
+      <div className="rounded-2xl border-2 border-red-200 bg-red-50 p-4 mb-4 flex items-center gap-4">
+        <span className="text-3xl leading-none" aria-hidden="true">❤️</span>
+        <div>
+          <p className="text-3xl font-extrabold text-warm-900 tabular-nums leading-none">
+            {helpfulVotes === null ? '—' : helpfulVotes.toLocaleString('en-IN')}
+          </p>
+          <p className="text-sm text-warm-600 mt-1">
+            Loves from visitors (navbar heart)
+          </p>
+        </div>
       </div>
 
       {/* Date range controls */}
