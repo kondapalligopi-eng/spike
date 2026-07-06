@@ -161,5 +161,3 @@ Verified vets, dog parks, grooming, swimming & premium supplies — plus Pet Sto
 - Instagram bio (@hispike.in)
 - Facebook page
 - Email signature / support replies
-```
-```
