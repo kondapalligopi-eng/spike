@@ -1,5 +1,6 @@
 import type { RouteRecord } from 'vite-react-ssg';
 import { RootShell } from '@/components/RootShell';
+import { RouteError } from '@/components/RouteError';
 import { Layout } from '@/components/Layout';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { Home } from '@/pages/Home';
@@ -34,10 +35,12 @@ import { NotFound } from '@/pages/NotFound';
 export const routes: RouteRecord[] = [
   {
     element: <RootShell />,
+    errorElement: <RouteError />,
     children: [
       {
         path: '/',
         element: <Layout />,
+        errorElement: <RouteError />,
         children: [
           { index: true, Component: Home },
           { path: 'login', Component: Login },
