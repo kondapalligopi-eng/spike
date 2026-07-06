@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>HiSpike — Promo Video (1080×1920, loops)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap">
+  <style>
+    :root {
+      --primary-900: #1e3a8a; --primary-800: #1e40af; --primary-600: #2563eb;
+      --accent-400: #facc15; --accent-300: #fde047; --warm-900: #1c1917;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0; padding: 0; background: #0b0b0b; overflow: hidden;
+      font-family: 'Inter', system-ui, sans-serif; color: #fff;
+    }
+    .viewport { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; }
+    .stage {
+      width: 1080px; height: 1920px; position: relative; overflow: hidden;
+      transform-origin: center center;
+      background: linear-gradient(170deg, var(--primary-900) 0%, var(--primary-800) 50%, var(--primary-600) 100%);
+    }
+    .pattern {
+      position: absolute; inset: 0; opacity: 0.10;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'><g fill='white'><path d='M14 18a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm18 0a3 3 0 1 1 0 6 3 3 0 0 1 0-6zM18 8a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm10 0a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm-5 10a6 6 0 0 0-5.3 8.9l-.5 3.3c-.2 1.4.9 2.6 2.3 2.6h7a2.3 2.3 0 0 0 2.3-2.6l-.5-3.3A6 6 0 0 0 23 18z'/></g></svg>");
+      background-size: 180px 180px; animation: drift 40s linear infinite;
+    }
+    @keyframes drift { to { background-position: 180px 360px; } }
+    .glow {
+      position: absolute; width: 1000px; height: 1000px; right: -280px; bottom: -340px;
+      border-radius: 50%; filter: blur(14px);
+      background: radial-gradient(closest-side, rgba(250,204,21,.32), rgba(250,204,21,0));
+      animation: glowpulse 6s ease-in-out infinite;
+    }
+    @keyframes glowpulse { 0%,100% { opacity:.75; } 50% { opacity:1; } }
+
+    /* Floating paws */
+    .paw { position: absolute; opacity: .16; animation: float 9s ease-in-out infinite; }
+    .paw svg { width: 100%; height: 100%; fill: #fff; }
+    @keyframes float { 0%,100% { transform: translateY(0) rotate(var(--r,0deg)); } 50% { transform: translateY(-40px) rotate(var(--r,0deg)); } }
+
+    /* Scenes */
+    .scene {
+      position: absolute; inset: 0; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; text-align: center;
+      padding: 0 90px; opacity: 0; transform: translateY(38px) scale(.97);
+      transition: opacity .55s ease, transform .7s cubic-bezier(.2,.7,.2,1);
+      pointer-events: none;
+    }
+    .scene.active { opacity: 1; transform: none; }
+
+    .logo { width: 200px; height: 200px; filter: drop-shadow(0 12px 26px rgba(0,0,0,.35)); }
+    .pill {
+      margin-top: 26px; background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.22);
+      font-size: 20px; font-weight: 800; letter-spacing: .34em; text-transform: uppercase;
+      padding: 13px 30px; border-radius: 999px;
+    }
+    .eyebrow { color: var(--accent-300); font-size: 24px; font-weight: 900; letter-spacing: .40em; text-transform: uppercase; margin-bottom: 26px; }
+    h1 { font-weight: 900; font-size: 104px; line-height: 1.03; letter-spacing: -.028em; margin: 30px 0 0; }
+    h2 { font-weight: 900; font-size: 92px; line-height: 1.06; letter-spacing: -.02em; margin: 0; }
+    .y { color: var(--accent-300); }
+    .sub { font-size: 30px; line-height: 1.4; color: rgba(255,255,255,.92); margin: 30px auto 0; max-width: 820px; }
+    .underline { width: 150px; height: 7px; background: var(--accent-400); border-radius: 999px; margin: 34px auto 0; }
+
+    /* Services grid (scene 3) */
+    .services { display: grid; grid-template-columns: repeat(2, 1fr); gap: 46px 60px; }
+    .svc { display: flex; flex-direction: column; align-items: center; gap: 16px; opacity: 0; transform: translateY(26px) scale(.9); }
+    .scene.active .svc { animation: pop .5s cubic-bezier(.2,.9,.3,1.2) forwards; }
+    .scene.active .svc:nth-child(1) { animation-delay: .10s; }
+    .scene.active .svc:nth-child(2) { animation-delay: .24s; }
+    .scene.active .svc:nth-child(3) { animation-delay: .38s; }
+    .scene.active .svc:nth-child(4) { animation-delay: .52s; }
+    .scene.active .svc:nth-child(5) { animation-delay: .66s; }
+    @keyframes pop { to { opacity: 1; transform: none; } }
+    .bubble {
+      position: relative; width: 190px; height: 190px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; font-size: 88px; line-height: 1;
+      box-shadow: 0 18px 38px rgba(0,0,0,.30);
+    }
+    .bubble.hospital { background: linear-gradient(135deg, #fecdd3, #fb7185); }
+    .bubble.park     { background: linear-gradient(135deg, #a7f3d0, #10b981); }
+    .bubble.swim     { background: linear-gradient(135deg, #bae6fd, #0ea5e9); }
+    .bubble.grooming { background: linear-gradient(135deg, #fde68a, #fbbf24); }
+    .bubble.supplies { background: linear-gradient(135deg, #ddd6fe, #a78bfa); }
+    .badge {
+      position: absolute; right: -6px; bottom: -6px; width: 60px; height: 60px; border-radius: 50%;
+      background: #fff; display: flex; align-items: center; justify-content: center; font-size: 28px;
+      box-shadow: 0 8px 16px rgba(0,0,0,.24); border: 3px solid rgba(255,255,255,.95);
+    }
+    .label { font-size: 26px; font-weight: 800; letter-spacing: .03em; }
+
+    .cta {
+      margin-top: 44px; background: var(--accent-400); color: var(--warm-900);
+      font-weight: 900; font-size: 42px; letter-spacing: .03em; padding: 34px 66px; border-radius: 999px;
+      box-shadow: 0 20px 40px rgba(250,204,21,.42); display: inline-flex; align-items: center; gap: 18px;
+      animation: bob 1.6s ease-in-out infinite;
+    }
+    @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+    /* Progress bar */
+    .progress { position: absolute; left: 90px; right: 90px; bottom: 70px; height: 8px; border-radius: 999px; background: rgba(255,255,255,.2); overflow: hidden; }
+    .progress .bar { height: 100%; width: 0; background: var(--accent-400); border-radius: 999px; animation: fill var(--loop, 14s) linear infinite; }
+    @keyframes fill { from { width: 0; } to { width: 100%; } }
+
+    /* Recording note (fixed, NOT recorded) */
+    .note {
+      position: fixed; left: 16px; bottom: 16px; z-index: 50; max-width: 360px;
+      background: rgba(0,0,0,.72); color: #fff; font-size: 13px; line-height: 1.5;
+      padding: 12px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,.15);
+    }
+    .note b { color: var(--accent-300); }
+  </style>
+</head>
+<body>
+  <div class="viewport">
+    <div class="stage">
+      <div class="pattern"></div>
+      <div class="glow"></div>
+
+      <!-- floating paws -->
+      <div class="paw" style="width:120px;height:120px;top:6%;left:8%;--r:-14deg;animation-delay:0s"><svg viewBox="0 0 60 60"><path d="M14 18a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm18 0a3 3 0 1 1 0 6 3 3 0 0 1 0-6zM18 8a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm10 0a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm-5 10a6 6 0 0 0-5.3 8.9l-.5 3.3c-.2 1.4.9 2.6 2.3 2.6h7a2.3 2.3 0 0 0 2.3-2.6l-.5-3.3A6 6 0 0 0 23 18z"/></svg></div>
+      <div class="paw" style="width:90px;height:90px;top:12%;right:9%;--r:12deg;animation-delay:1.5s"><svg viewBox="0 0 60 60"><path d="M14 18a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm18 0a3 3 0 1 1 0 6 3 3 0 0 1 0-6zM18 8a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm10 0a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm-5 10a6 6 0 0 0-5.3 8.9l-.5 3.3c-.2 1.4.9 2.6 2.3 2.6h7a2.3 2.3 0 0 0 2.3-2.6l-.5-3.3A6 6 0 0 0 23 18z"/></svg></div>
+      <div class="paw" style="width:110px;height:110px;bottom:16%;left:11%;--r:16deg;animation-delay:.8s"><svg viewBox="0 0 60 60"><path d="M14 18a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm18 0a3 3 0 1 1 0 6 3 3 0 0 1 0-6zM18 8a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm10 0a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm-5 10a6 6 0 0 0-5.3 8.9l-.5 3.3c-.2 1.4.9 2.6 2.3 2.6h7a2.3 2.3 0 0 0 2.3-2.6l-.5-3.3A6 6 0 0 0 23 18z"/></svg></div>
+      <div class="paw" style="width:80px;height:80px;bottom:12%;right:12%;--r:-10deg;animation-delay:2.2s"><svg viewBox="0 0 60 60"><path d="M14 18a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm18 0a3 3 0 1 1 0 6 3 3 0 0 1 0-6zM18 8a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm10 0a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm-5 10a6 6 0 0 0-5.3 8.9l-.5 3.3c-.2 1.4.9 2.6 2.3 2.6h7a2.3 2.3 0 0 0 2.3-2.6l-.5-3.3A6 6 0 0 0 23 18z"/></svg></div>
+
+      <!-- Scene 1 — Hook -->
+      <div class="scene" data-scene>
+        <img src="./logo.png?v=2" alt="HiSpike" class="logo" />
+        <div class="pill">Bengaluru 🐾</div>
+        <h1>Your dog's<br/>whole <span class="y">world.</span></h1>
+      </div>
+
+      <!-- Scene 2 — One place -->
+      <div class="scene" data-scene>
+        <div class="eyebrow">All-In-One Pet Care</div>
+        <h1>Everything they need,<br/><span class="y">in one place.</span></h1>
+        <div class="underline"></div>
+      </div>
+
+      <!-- Scene 3 — Services -->
+      <div class="scene" data-scene>
+        <div class="eyebrow">Five services · one app</div>
+        <div class="services" style="margin-top:20px">
+          <div class="svc"><div class="bubble hospital">🐶<div class="badge">🩺</div></div><div class="label">Vets</div></div>
+          <div class="svc"><div class="bubble park">🐕<div class="badge">🌳</div></div><div class="label">Dog Parks</div></div>
+          <div class="svc"><div class="bubble swim">🐶<div class="badge">🌊</div></div><div class="label">Swimming</div></div>
+          <div class="svc"><div class="bubble grooming">🐩<div class="badge">✂️</div></div><div class="label">Grooming</div></div>
+          <div class="svc" style="grid-column:1 / -1"><div class="bubble supplies">🐶<div class="badge">🥣</div></div><div class="label">Pet Supplies</div></div>
+        </div>
+      </div>
+
+      <!-- Scene 4 — Trust -->
+      <div class="scene" data-scene>
+        <h2>Verified providers.<br/><span class="y">Honest reviews.</span><br/>Hyperlocal.</h2>
+        <p class="sub">No paid placements. Just the best care in your neighbourhood.</p>
+      </div>
+
+      <!-- Scene 5 — CTA -->
+      <div class="scene" data-scene>
+        <img src="./logo.png?v=2" alt="HiSpike" class="logo" />
+        <h2 style="margin-top:20px">Find it all on<br/><span class="y">HiSpike</span></h2>
+        <div class="cta">Visit hispike.in →</div>
+      </div>
+
+      <div class="progress"><div class="bar"></div></div>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>How to make the video:</b> this promo loops on its own (~14s).
+    Screen-record this window with your phone/PC recorder (or OBS), then add trending
+    audio inside Instagram/CapCut. This note isn't part of the recording area.
+  </div>
+
+  <script>
+    // Fit the 1080×1920 stage to the window so the whole frame is visible/recordable.
+    const stage = document.querySelector('.stage');
+    function fit() {
+      const s = Math.min(window.innerWidth / 1080, window.innerHeight / 1920);
+      stage.style.transform = 'scale(' + s + ')';
+    }
+    window.addEventListener('resize', fit); fit();
+
+    // Sequence the scenes on a loop. Total should match the progress-bar --loop.
+    const scenes = [...document.querySelectorAll('[data-scene]')];
+    const durations = [2600, 2600, 4000, 2600, 3000]; // ms per scene
+    const total = durations.reduce((a, b) => a + b, 0);
+    document.querySelector('.progress .bar').style.setProperty('--loop', total + 'ms');
+    document.querySelector('.progress .bar').style.animationDuration = total + 'ms';
+
+    let i = 0;
+    function show() {
+      scenes.forEach((s, idx) => s.classList.toggle('active', idx === i));
+      const d = durations[i];
+      i = (i + 1) % scenes.length;
+      setTimeout(show, d);
+    }
+    show();
+  </script>
+</body>
+</html>
