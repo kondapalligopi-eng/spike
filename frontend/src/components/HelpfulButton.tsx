@@ -5,11 +5,11 @@ const COUNTER_KEY = 'helpful';
 const GUARD_KEY = 'hispike_helpful_voted';
 
 /**
- * Compact "was HiSpike helpful?" thumbs-up for the navbar, beside search.
+ * Compact Instagram-style "love" heart for the navbar, beside search.
  *
- * Public visitors see only the icon — no number. Every click bumps a single
- * backend counter (/api/v1/counters/helpful) that the admin reads in /admin.
- * A localStorage guard keeps one visitor to a single vote.
+ * Public visitors see only the heart — no number. Tapping fills it red and
+ * bumps a single backend counter (/api/v1/counters/helpful) that the admin
+ * reads in /admin. A localStorage guard keeps one visitor to a single vote.
  *
  * SSG-safe: the voted state is only read on the client (in an effect), so the
  * server markup and first client render match.
