@@ -150,7 +150,8 @@ function PaginationControls({ currentPage, totalPages, onChange }: PaginationPro
 
 export function Swimming() {
   useBackendWarmup();
-  const [query, setQuery] = useState('');
+  const [searchParams] = useSearchParams();
+  const [query, setQuery] = useState(searchParams.get('q') ?? '');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [locationFilter, setLocationFilter] = useState('');
   const [activeCity, setActiveCity] = useState<string | null>(null);
