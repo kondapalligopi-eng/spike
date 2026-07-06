@@ -3,6 +3,7 @@ import { incrementCounter } from '@/api/counters';
 
 const COUNTER_KEY = 'helpful';
 const GUARD_KEY = 'hispike_helpful_voted';
+const HINT_KEY = 'hispike_helpful_hinted';
 
 /**
  * Compact Instagram-style "love" heart for the navbar, beside search.
@@ -11,26 +12,53 @@ const GUARD_KEY = 'hispike_helpful_voted';
  * bumps a single backend counter (/api/v1/counters/helpful) that the admin
  * reads in /admin. A localStorage guard keeps one visitor to a single vote.
  *
- * SSG-safe: the voted state is only read on the client (in an effect), so the
+ * The "Loved HiSpike?" label is a custom bubble (not the native title tooltip,
+ * which never shows on touch): it appears on hover/focus on desktop and
+ * auto-pops once on first visit so mobile users can discover the heart too.
+ *
+ * SSG-safe: voted/hint state is only read on the client (in an effect), so the
  * server markup and first client render match.
  */
 export function HelpfulButton() {
   const [voted, setVoted] = useState(false);
   const [busy, setBusy] = useState(false);
   const [showThanks, setShowThanks] = useState(false);
+  const [showHint, setShowHint] = useState(false); // pre-vote "Loved HiSpike?"
+  const [hover, setHover] = useState(false);
 
   useEffect(() => {
+    let didVote = false;
     try {
-      setVoted(localStorage.getItem(GUARD_KEY) === '1');
+      didVote = localStorage.getItem(GUARD_KEY) === '1';
     } catch {
       // ignore
     }
+    setVoted(didVote);
+
+    // One-time discovery nudge (mainly for mobile, which can't hover).
+    if (didVote) return;
+    let hinted = false;
+    try {
+      hinted = localStorage.getItem(HINT_KEY) === '1';
+    } catch {
+      // ignore
+    }
+    if (hinted) return;
+    try {
+      localStorage.setItem(HINT_KEY, '1');
+    } catch {
+      // ignore quota
+    }
+    setShowHint(true);
+    const id = window.setTimeout(() => setShowHint(false), 3200);
+    return () => window.clearTimeout(id);
   }, []);
 
   const handleClick = async () => {
     if (voted || busy) return;
     setBusy(true);
     setVoted(true);
+    setShowHint(false);
     setShowThanks(true);
     try {
       localStorage.setItem(GUARD_KEY, '1');
@@ -47,15 +75,25 @@ export function HelpfulButton() {
     }
   };
 
+  // What (if anything) the bubble should say right now.
+  const bubble = showThanks
+    ? 'Thanks! 🐾'
+    : !voted && (showHint || hover)
+      ? 'Loved HiSpike?'
+      : null;
+
   return (
     <div className="relative">
       <button
         type="button"
         onClick={handleClick}
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
+        onFocus={() => setHover(true)}
+        onBlur={() => setHover(false)}
         disabled={voted || busy}
         aria-pressed={voted}
         aria-label={voted ? 'Thanks — you love HiSpike' : 'Loved HiSpike? Tap the heart'}
-        title={voted ? 'Thanks! 🐾' : 'Loved HiSpike?'}
         className={[
           'p-2 rounded-lg transition-colors',
           voted
@@ -78,9 +116,9 @@ export function HelpfulButton() {
         </svg>
       </button>
 
-      {showThanks && (
+      {bubble && (
         <span className="absolute right-0 top-full mt-1.5 z-30 whitespace-nowrap rounded-lg bg-warm-900 text-white text-xs font-medium px-2.5 py-1 shadow-lg animate-fade-in">
-          Thanks! 🐾
+          {bubble}
         </span>
       )}
     </div>
