@@ -188,8 +188,9 @@ export function Navbar() {
               </Link>
             </div>
 
-            {/* Right: search + user */}
+            {/* Right: helpful + search + user */}
             <div className="flex items-center justify-end gap-2 sm:gap-3">
+              <HelpfulButton />
               <button
                 onClick={() => setSearchOpen((o) => !o)}
                 className={`p-2 rounded-lg transition-colors ${searchOpen ? 'text-primary-700 bg-primary-50' : 'text-warm-700 hover:bg-warm-100'}`}
