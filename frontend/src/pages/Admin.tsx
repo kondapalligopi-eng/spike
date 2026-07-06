@@ -63,6 +63,7 @@ import {
   type VisitStats,
 } from '@/lib/visitTracker';
 import { readSheetRows, downloadTemplate, downloadRows, type SheetRow } from '@/lib/spreadsheet';
+import { getCounter } from '@/api/counters';
 
 const BANGALORE_NEIGHBOURHOODS = [
   'Banashankari', 'Banaswadi', 'Basavanagudi', 'Bellandur', 'Bommanahalli',
