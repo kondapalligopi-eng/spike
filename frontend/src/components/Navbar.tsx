@@ -1,6 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/useAuth';
+import { listHospitals } from '@/api/hospitals';
+import { listParks } from '@/api/parks';
+import { listSwimSchools } from '@/api/swimSchools';
+import { listGroomingSalons } from '@/api/groomingSalons';
+import { listPetFoods } from '@/api/petFoods';
 import { AuthTransitionOverlay } from './AuthTransitionOverlay';
 
 type DrawerItem = { label: string; to: string };
