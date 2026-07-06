@@ -4,6 +4,7 @@ import { Navbar } from './Navbar';
 import { ScrollToTop } from './ScrollToTop';
 import { ToastContainer } from './Toast';
 import { VisitTracker } from './VisitTracker';
+import { HelpfulButton } from './HelpfulButton';
 
 const FOOTER_COLUMNS: { heading: string; links: { label: string; href: string; external?: boolean }[] }[] = [
   {
