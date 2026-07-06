@@ -169,8 +169,17 @@ function PawRatingDark({ value, max = 5 }: { value: number; max?: number }) {
 export function Park() {
   useBackendWarmup();
   const [searchParams] = useSearchParams();
-  const [query, setQuery] = useState(searchParams.get('q') ?? '');
-  const [appliedQuery, setAppliedQuery] = useState(searchParams.get('q') ?? '');
+  const [query, setQuery] = useState('');
+  const [appliedQuery, setAppliedQuery] = useState('');
+
+  // Apply a search passed via the URL (?q=…) from the global navbar search.
+  // Done in an effect (not useState init) so the pre-rendered page and the
+  // client's first render match — avoids an SSG hydration mismatch.
+  useEffect(() => {
+    const q = searchParams.get('q') ?? '';
+    setQuery(q);
+    setAppliedQuery(q);
+  }, [searchParams]);
   const [locationFilter, setLocationFilter] = useState('');
   const [activeCity, setActiveCity] = useState<string | null>(null);
   const [selectedSpot, setSelectedSpot] = useState<ParkSpot | null>(null);
