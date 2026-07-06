@@ -54,13 +54,13 @@ export function HelpfulButton() {
         onClick={handleClick}
         disabled={voted || busy}
         aria-pressed={voted}
-        aria-label={voted ? 'Thanks — you found HiSpike helpful' : 'Was HiSpike helpful? Give a thumbs up'}
-        title={voted ? 'Thanks! 🐾' : 'Was HiSpike helpful?'}
+        aria-label={voted ? 'Thanks — you love HiSpike' : 'Loved HiSpike? Tap the heart'}
+        title={voted ? 'Thanks! 🐾' : 'Loved HiSpike?'}
         className={[
           'p-2 rounded-lg transition-colors',
           voted
-            ? 'text-accent-500 bg-accent-50 cursor-default'
-            : 'text-warm-700 hover:bg-warm-100',
+            ? 'text-red-500 bg-red-50 cursor-default'
+            : 'text-warm-700 hover:bg-warm-100 hover:text-red-500',
         ].join(' ')}
       >
         <svg
@@ -73,7 +73,7 @@ export function HelpfulButton() {
             strokeLinecap="round"
             strokeLinejoin="round"
             strokeWidth={2}
-            d="M14 9V5a3 3 0 00-3-3l-4 9v11h11.28a2 2 0 002-1.7l1.38-9a2 2 0 00-2-2.3zM7 22H4a2 2 0 01-2-2v-7a2 2 0 012-2h3"
+            d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"
           />
         </svg>
       </button>
