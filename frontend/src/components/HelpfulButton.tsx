@@ -35,17 +35,19 @@ export function HelpfulButton() {
     }
     setVoted(didVote);
 
-    // One-time discovery nudge (mainly for mobile, which can't hover).
+    // Discovery nudge (mainly for mobile, which can't hover). Shown once per
+    // browser session — sessionStorage, so it reappears for a fresh visit but
+    // doesn't nag on every page navigation within the same session.
     if (didVote) return;
     let hinted = false;
     try {
-      hinted = localStorage.getItem(HINT_KEY) === '1';
+      hinted = sessionStorage.getItem(HINT_KEY) === '1';
     } catch {
       // ignore
     }
     if (hinted) return;
     try {
-      localStorage.setItem(HINT_KEY, '1');
+      sessionStorage.setItem(HINT_KEY, '1');
     } catch {
       // ignore quota
     }
