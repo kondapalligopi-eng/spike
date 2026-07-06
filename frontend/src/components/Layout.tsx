@@ -176,25 +176,6 @@ export function Layout() {
         </div>
       </footer>
 
-      {/* Floating chat button */}
-      <button
-        type="button"
-        onClick={() => setChatOpen((o) => !o)}
-        className="fixed bottom-5 right-5 z-40 flex items-center gap-2 pl-1.5 pr-4 py-1.5 bg-primary-700 hover:bg-primary-800 text-white rounded-full shadow-lg transition-colors"
-      >
-        <span className="w-8 h-8 rounded-full bg-accent-400 text-warm-900 flex items-center justify-center text-lg">
-          💬
-        </span>
-        <span className="text-sm font-semibold">Let's Chat</span>
-      </button>
-
-      {chatOpen && (
-        <div className="fixed bottom-20 right-5 z-40 w-72 bg-white rounded-xl shadow-xl border border-warm-200 p-4 animate-fade-in">
-          <p className="text-sm text-warm-800 font-semibold mb-1">Hi! 👋</p>
-          <p className="text-xs text-warm-600">Our team usually replies within a few minutes. How can we help?</p>
-        </div>
-      )}
-
       <ToastContainer />
     </div>
   );
