@@ -2007,10 +2007,17 @@ function VisitsSection() {
   const [ranged, setRanged] = useState<RangedVisitStats>(() =>
     getRangedStats(startOfDayMs(initialRange.start), endOfDayMs(initialRange.end)),
   );
+  // Site-wide "👍 helpful" thumbs-up tally (backend counter, admin-only view).
+  const [helpfulVotes, setHelpfulVotes] = useState<number | null>(null);
 
   const refresh = () => {
     setAllTime(getVisitStats());
     setRanged(getRangedStats(startOfDayMs(startDate), endOfDayMs(endDate)));
+    getCounter('helpful')
+      .then(setHelpfulVotes)
+      .catch(() => {
+        /* leave it hidden if the backend is asleep */
+      });
   };
 
   // Recompute whenever the date range changes
