@@ -61,7 +61,8 @@ function FilterSection({
   withSearch?: boolean;
   moreCount?: number;
 }) {
-  const [query, setQuery] = useState('');
+  const [searchParams] = useSearchParams();
+  const [query, setQuery] = useState(searchParams.get('q') ?? '');
   const filtered = withSearch && query
     ? items.filter((i) => i.toLowerCase().includes(query.toLowerCase()))
     : items;
