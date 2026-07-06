@@ -508,17 +508,22 @@ export function Swimming() {
                 className="rounded-md overflow-hidden bg-white shadow-sm hover:shadow-md transition-shadow group cursor-pointer flex flex-col"
               >
                 <div className="relative aspect-square bg-warm-200">
-                  <img
-                    src={spot.image}
-                    alt={spot.name}
-                    className="absolute inset-0 w-full h-full object-cover"
-                    onError={(e) => {
-                      (e.currentTarget as HTMLImageElement).style.display = 'none';
-                    }}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-br from-sky-300 to-primary-600 flex items-center justify-center text-6xl opacity-0 [&:has(+img[style*='display: none'])]:opacity-100">
-                    🏊🐕
+                  {/* Default backdrop — shown whenever a school has no photo
+                      (or the photo fails to load). Keeps cards consistent. */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-sky-300 to-primary-600 flex items-center justify-center text-6xl">
+                    🐕💦
                   </div>
+                  {spot.image && (
+                    <img
+                      src={spot.image}
+                      alt={spot.name}
+                      loading="lazy"
+                      className="absolute inset-0 w-full h-full object-cover"
+                      onError={(e) => {
+                        (e.currentTarget as HTMLImageElement).style.display = 'none';
+                      }}
+                    />
+                  )}
                 </div>
                 <div className="bg-primary-600 group-hover:bg-primary-700 transition-colors p-3 sm:p-4 text-white flex-1">
                   <h3 className="font-extrabold text-sm sm:text-base leading-tight mb-1">

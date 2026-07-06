@@ -62,7 +62,7 @@ import {
   type RangedVisitStats,
   type VisitStats,
 } from '@/lib/visitTracker';
-import { readSheetRows, downloadTemplate, type SheetRow } from '@/lib/spreadsheet';
+import { readSheetRows, downloadTemplate, downloadRows, type SheetRow } from '@/lib/spreadsheet';
 
 const BANGALORE_NEIGHBOURHOODS = [
   'Banashankari', 'Banaswadi', 'Basavanagudi', 'Bellandur', 'Bommanahalli',
@@ -2538,6 +2538,127 @@ function PetStoriesSection() {
   );
 }
 
+// ---- Backup / Export: download each category's live data as .xlsx ----
+
+type ExportConfig = {
+  kind: string;
+  label: string;
+  emoji: string;
+  file: string;
+  headers: string[];
+  run: () => Promise<Record<string, string>[]>;
+};
+
+// Coerce any field to a cell string (arrays -> "a|b", null -> "").
+const cell = (v: unknown): string =>
+  Array.isArray(v) ? v.join('|') : v == null ? '' : String(v);
+
+const EXPORT_CONFIGS: ExportConfig[] = [
+  {
+    kind: 'hospital',
+    label: 'Hospitals',
+    emoji: '🏥',
+    file: 'hispike-hospitals-backup.xlsx',
+    headers: ['Name', 'Locality', 'Address', 'Phone', 'Specialties', 'Rating', 'Email', 'Open hours', 'Website'],
+    run: async () =>
+      (await listHospitals()).map((r) => ({
+        Name: cell(r.name), Locality: cell(r.locality), Address: cell(r.address), Phone: cell(r.phone),
+        Specialties: cell(r.specialties), Rating: cell(r.rating), Email: cell(r.email),
+        'Open hours': cell(r.hours), Website: cell(r.website),
+      })),
+  },
+  {
+    kind: 'park',
+    label: 'Parks',
+    emoji: '🌳',
+    file: 'hispike-parks-backup.xlsx',
+    headers: ['Name', 'Locality', 'Address', 'Rating', 'Cost', 'Off-leash', 'Features', 'Open hours', 'Phone', 'Email', 'Website', 'Image URL', 'Highlights'],
+    run: async () =>
+      (await listParks()).map((r) => ({
+        Name: cell(r.name), Locality: cell(r.locality), Address: cell(r.address), Rating: cell(r.rating),
+        Cost: cell(r.cost), 'Off-leash': cell(r.off_leash), Features: cell(r.features), 'Open hours': cell(r.hours),
+        Phone: cell(r.phone), Email: cell(r.email), Website: cell(r.website), 'Image URL': cell(r.image_url),
+        Highlights: cell(r.highlights),
+      })),
+  },
+  {
+    kind: 'swimming',
+    label: 'Swim schools',
+    emoji: '🐕💦',
+    file: 'hispike-swim-schools-backup.xlsx',
+    headers: ['Name', 'Locality', 'Address', 'Rating', 'Pool type', 'Cost', 'Open hours', 'Phone', 'Email', 'Website', 'Image URL', 'Highlights'],
+    run: async () =>
+      (await listSwimSchools()).map((r) => ({
+        Name: cell(r.name), Locality: cell(r.locality), Address: cell(r.address), Rating: cell(r.rating),
+        'Pool type': cell(r.pool_type), Cost: cell(r.cost), 'Open hours': cell(r.hours), Phone: cell(r.phone),
+        Email: cell(r.email), Website: cell(r.website), 'Image URL': cell(r.image_url), Highlights: cell(r.highlights),
+      })),
+  },
+  {
+    kind: 'grooming',
+    label: 'Grooming',
+    emoji: '✂️',
+    file: 'hispike-grooming-salons-backup.xlsx',
+    headers: ['Name', 'Area', 'City', 'Address', 'Phone', 'Rating', 'Open hours', 'Email', 'Website', 'Image URL'],
+    run: async () =>
+      (await listGroomingSalons()).map((r) => ({
+        Name: cell(r.name), Area: cell(r.area), City: cell(r.city), Address: cell(r.address), Phone: cell(r.phone),
+        Rating: cell(r.rating_avg), 'Open hours': cell(r.hours), Email: cell(r.email), Website: cell(r.website),
+        'Image URL': cell(r.image_url),
+      })),
+  },
+];
+
+function BackupSection() {
+  const [busy, setBusy] = useState<string | null>(null);
+
+  const exportOne = async (cfg: ExportConfig) => {
+    setBusy(cfg.kind);
+    try {
+      const rows = await cfg.run();
+      downloadRows(cfg.file, cfg.headers, rows);
+      toast.success(`Downloaded ${rows.length} ${cfg.label.toLowerCase()}.`);
+    } catch {
+      toast.error(`Could not export ${cfg.label.toLowerCase()}. Please try again.`);
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  return (
+    <section className="mb-10">
+      <div className="mb-4">
+        <p className="text-[11px] font-semibold tracking-[0.3em] text-accent-600 uppercase mb-1">
+          Backup
+        </p>
+        <h2 className="text-xl font-bold text-warm-900">Export data</h2>
+        <p className="text-sm text-warm-500 mt-1">
+          Download the current listings for each category as an Excel (.xlsx) backup. The files use
+          the same columns as the Import screens, so you can re-upload them to restore.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        {EXPORT_CONFIGS.map((cfg) => (
+          <button
+            key={cfg.kind}
+            type="button"
+            onClick={() => exportOne(cfg)}
+            disabled={busy !== null}
+            className="rounded-2xl border-2 border-warm-200 bg-white p-4 text-center hover:border-primary-400 hover:shadow-sm disabled:opacity-60 disabled:cursor-not-allowed transition-all"
+          >
+            <span className="block text-2xl mb-1" aria-hidden="true">{cfg.emoji}</span>
+            <span className="block text-sm font-bold text-warm-900">{cfg.label}</span>
+            <span className="block text-xs text-primary-600 mt-1 font-semibold">
+              {busy === cfg.kind ? 'Preparing…' : '↓ Download .xlsx'}
+            </span>
+          </button>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 export function Admin() {
   // Warm the backend the moment the admin lands here. Render free-tier
   // services sleep after ~15 min idle; the first request after sleep takes
@@ -2561,6 +2682,7 @@ export function Admin() {
       <SubmissionsSection />
       <PetStoriesSection />
       <AddListingsSection />
+      <BackupSection />
       <SiteVisibilitySection />
       <VisitsSection />
     </div>

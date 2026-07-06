@@ -26,6 +26,21 @@ export async function readSheetRows(file: File): Promise<SheetRow[]> {
   });
 }
 
+// Build and download an .xlsx of real data: a header row plus one row per
+// record (each an object keyed by header). Used by the admin "Backup / Export".
+export function downloadRows(
+  filename: string,
+  headers: string[],
+  rows: Record<string, string>[],
+): void {
+  const aoa = [headers, ...rows.map((r) => headers.map((h) => r[h] ?? ''))];
+  const sheet = XLSX.utils.aoa_to_sheet(aoa);
+  sheet['!cols'] = headers.map((h) => ({ wch: Math.max(14, Math.min(40, h.length + 6)) }));
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, sheet, 'Data');
+  XLSX.writeFile(wb, filename);
+}
+
 // Build and download an .xlsx template: a header row plus one example row so
 // the admin can see the expected format for each column.
 export function downloadTemplate(

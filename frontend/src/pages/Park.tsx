@@ -551,17 +551,22 @@ export function Park() {
               >
                 {/* Image on top — square aspect ratio */}
                 <div className="relative aspect-square bg-warm-200">
-                  <img
-                    src={spot.image}
-                    alt={spot.name}
-                    className="absolute inset-0 w-full h-full object-cover"
-                    onError={(e) => {
-                      (e.currentTarget as HTMLImageElement).style.display = 'none';
-                    }}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-6xl opacity-0 [&:has(+img[style*='display: none'])]:opacity-100">
-                    🏖️🐕
+                  {/* Default backdrop — shown whenever a park has no photo
+                      (or the photo fails to load). Keeps cards consistent. */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-6xl">
+                    🌳🐕
                   </div>
+                  {spot.image && (
+                    <img
+                      src={spot.image}
+                      alt={spot.name}
+                      loading="lazy"
+                      className="absolute inset-0 w-full h-full object-cover"
+                      onError={(e) => {
+                        (e.currentTarget as HTMLImageElement).style.display = 'none';
+                      }}
+                    />
+                  )}
                 </div>
                 {/* Caption panel — solid brand blue below the image,
                     flex-1 so it fills any leftover height when rows are
