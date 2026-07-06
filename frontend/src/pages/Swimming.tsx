@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { listSwimSchools, type SwimSchoolRead } from '@/api/swimSchools';
 import { createSubmission } from '@/api/submissions';
@@ -149,7 +150,8 @@ function PaginationControls({ currentPage, totalPages, onChange }: PaginationPro
 
 export function Swimming() {
   useBackendWarmup();
-  const [query, setQuery] = useState('');
+  const [searchParams] = useSearchParams();
+  const [query, setQuery] = useState(searchParams.get('q') ?? '');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [locationFilter, setLocationFilter] = useState('');
   const [activeCity, setActiveCity] = useState<string | null>(null);

@@ -1,6 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/useAuth';
+import { listHospitals } from '@/api/hospitals';
+import { listParks } from '@/api/parks';
+import { listSwimSchools } from '@/api/swimSchools';
+import { listGroomingSalons } from '@/api/groomingSalons';
+import { listPetFoods } from '@/api/petFoods';
 import { AuthTransitionOverlay } from './AuthTransitionOverlay';
 
 type DrawerItem = { label: string; to: string };
@@ -21,34 +27,18 @@ const DRAWER_BOTTOM: DrawerItem[] = [
   { label: 'Contact Us', to: '/feedback' },
 ];
 
-type SearchEntry = { title: string; subtitle?: string; section: string; to: string };
+type SearchEntry = { title: string; subtitle?: string; section: string; to: string; q?: string };
 
-const SEARCH_INDEX: SearchEntry[] = [
+// Category shortcuts always shown. The actual hospital/park/etc. entries are
+// built dynamically from live data (see searchIndex below) so search finds
+// every current listing, not a hardcoded sample.
+const STATIC_SERVICES: SearchEntry[] = [
   { section: 'Services', title: 'Hospital', subtitle: 'Vet care across Bangalore', to: '/hospital' },
   { section: 'Services', title: 'Park', subtitle: 'Dog-friendly parks & lakes', to: '/park' },
   { section: 'Services', title: 'Swimming', subtitle: 'Aquatic training', to: '/swimming' },
   { section: 'Services', title: 'Grooming', subtitle: 'Salon & spa', to: '/grooming' },
   { section: 'Services', title: 'Pet Supplies', subtitle: 'Food, treats, accessories', to: '/pet-supplies' },
   { section: 'Services', title: 'Pet Stories', subtitle: 'A shareable page for your pet', to: '/pet-stories' },
-
-  { section: 'Hospitals', title: 'SKS Veterinary Hospital', subtitle: 'Indiranagar', to: '/hospital' },
-  { section: 'Hospitals', title: 'V-Care Pet Polyclinic', subtitle: 'Koramangala', to: '/hospital' },
-  { section: 'Hospitals', title: 'V-Care Pet Polyclinic', subtitle: 'Whitefield', to: '/hospital' },
-  { section: 'Hospitals', title: 'Vetic Pet Clinic', subtitle: 'HSR Layout', to: '/hospital' },
-  { section: 'Hospitals', title: 'Dr. Doodley Pet Hospital', subtitle: 'Jayanagar', to: '/hospital' },
-  { section: 'Hospitals', title: 'Cessna Lifeline Veterinary Hospital', subtitle: 'Domlur', to: '/hospital' },
-
-  { section: 'Parks', title: 'Cubbon Park', subtitle: 'Sampangi Rama Nagar', to: '/park' },
-  { section: 'Parks', title: 'Lalbagh Botanical Garden', subtitle: 'Mavalli', to: '/park' },
-  { section: 'Parks', title: 'Agara Lake Park', subtitle: 'HSR Layout', to: '/park' },
-  { section: 'Parks', title: 'Indiranagar Defence Colony Park', subtitle: 'Indiranagar', to: '/park' },
-  { section: 'Parks', title: 'Bellandur Lake Park', subtitle: 'Bellandur', to: '/park' },
-  { section: 'Parks', title: 'Whitefield Memorial Park', subtitle: 'Whitefield', to: '/park' },
-
-  { section: 'Brands', title: 'Royal Canin', subtitle: 'Pet Supplies', to: '/pet-supplies' },
-  { section: 'Brands', title: 'Royal Canin Veterinary Diet', subtitle: 'Pet Supplies', to: '/pet-supplies' },
-  { section: 'Brands', title: 'Pedigree', subtitle: 'Pet Supplies', to: '/pet-supplies' },
-  { section: 'Brands', title: 'ACANA', subtitle: 'Pet Supplies', to: '/pet-supplies' },
 ];
 
 function SocialIcon({ label, children, href = '#' }: { label: string; children: React.ReactNode; href?: string }) {
@@ -86,12 +76,37 @@ export function Navbar() {
     return () => window.removeEventListener('keydown', onKey);
   }, [drawerOpen, searchOpen]);
 
+  // Live directory data — fetched only once the search panel is opened. Shares
+  // react-query's cache with the category pages, so it's usually instant.
+  const enabled = searchOpen;
+  const hospitalsQ = useQuery({ queryKey: ['hospitals'], queryFn: listHospitals, enabled, staleTime: 60_000 });
+  const parksQ = useQuery({ queryKey: ['parks'], queryFn: listParks, enabled, staleTime: 60_000 });
+  const swimQ = useQuery({ queryKey: ['swim-schools'], queryFn: listSwimSchools, enabled, staleTime: 60_000 });
+  const groomingQ = useQuery({ queryKey: ['grooming-salons'], queryFn: listGroomingSalons, enabled, staleTime: 60_000 });
+  const petFoodsQ = useQuery({ queryKey: ['pet-foods'], queryFn: listPetFoods, enabled, staleTime: 60_000 });
+
+  const searchIndex = useMemo<SearchEntry[]>(() => {
+    const idx: SearchEntry[] = [...STATIC_SERVICES];
+    (hospitalsQ.data ?? []).forEach((h) =>
+      idx.push({ section: 'Hospitals', title: h.name, subtitle: h.locality, to: '/hospital', q: h.name }));
+    (parksQ.data ?? []).forEach((p) =>
+      idx.push({ section: 'Parks', title: p.name, subtitle: p.locality, to: '/park', q: p.name }));
+    (swimQ.data ?? []).forEach((s) =>
+      idx.push({ section: 'Swimming', title: s.name, subtitle: s.locality, to: '/swimming', q: s.name }));
+    (groomingQ.data ?? []).forEach((g) =>
+      idx.push({ section: 'Grooming', title: g.name, subtitle: [g.area, g.city].filter(Boolean).join(', '), to: '/grooming', q: g.name }));
+    const brands = new Set<string>();
+    (petFoodsQ.data ?? []).forEach((f) => { if (f.brand) brands.add(f.brand); });
+    brands.forEach((b) => idx.push({ section: 'Pet Supplies', title: b, subtitle: 'Brand', to: '/pet-supplies', q: b }));
+    return idx;
+  }, [hospitalsQ.data, parksQ.data, swimQ.data, groomingQ.data, petFoodsQ.data]);
+
   const searchResults = searchQuery.trim()
-    ? SEARCH_INDEX.filter((entry) =>
+    ? searchIndex.filter((entry) =>
         `${entry.title} ${entry.subtitle ?? ''} ${entry.section}`
           .toLowerCase()
           .includes(searchQuery.trim().toLowerCase()),
-      ).slice(0, 30)
+      ).slice(0, 40)
     : [];
 
   const groupedResults = searchResults.reduce<Record<string, SearchEntry[]>>((acc, entry) => {
@@ -99,10 +114,12 @@ export function Navbar() {
     return acc;
   }, {});
 
-  const goToResult = (to: string) => {
+  // Category entries carry a `q` — navigate with ?q= so the target page opens
+  // pre-filtered to that listing.
+  const goToResult = (entry: SearchEntry) => {
     setSearchOpen(false);
     setSearchQuery('');
-    navigate(to);
+    navigate(entry.q ? `${entry.to}?q=${encodeURIComponent(entry.q)}` : entry.to);
   };
 
   const [signingOut, setSigningOut] = useState(false);
@@ -327,7 +344,7 @@ export function Navbar() {
                           {entries.map((entry) => (
                             <li key={`${entry.section}-${entry.title}`}>
                               <button
-                                onClick={() => goToResult(entry.to)}
+                                onClick={() => goToResult(entry)}
                                 className="w-full text-left px-3 py-2.5 hover:bg-warm-50 flex items-center justify-between gap-3 transition-colors"
                               >
                                 <div>

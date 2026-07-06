@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { listHospitals, type HospitalRead } from '@/api/hospitals';
 import { createSubmission } from '@/api/submissions';
@@ -175,11 +176,13 @@ const BANGALORE_NEIGHBOURHOODS = [
 
 export function Hospital() {
   useBackendWarmup();
-  const [search, setSearch] = useState('');
+  const [searchParams] = useSearchParams();
+  const initialQuery = searchParams.get('q') ?? '';
+  const [search, setSearch] = useState(initialQuery);
   const [specialty, setSpecialty] = useState(ALL_SPECIALTIES);
   const [location, setLocation] = useState(ALL_LOCATIONS);
   const [activeCity, setActiveCity] = useState<string | null>(null);
-  const [applied, setApplied] = useState({ search: '', specialty: ALL_SPECIALTIES, location: ALL_LOCATIONS });
+  const [applied, setApplied] = useState({ search: initialQuery, specialty: ALL_SPECIALTIES, location: ALL_LOCATIONS });
 
   // Admin-added hospitals from the API. Fails open — if the request errors,
   // we just show the hardcoded seed list with a one-line warning.

@@ -422,25 +422,27 @@ export function PetPages() {
               {pages.map((page) => (
                 <li
                   key={page.id}
-                  className="flex items-center gap-4 rounded-xl border border-warm-200 bg-white p-3"
+                  className="flex flex-col sm:flex-row sm:items-center gap-3 rounded-xl border border-warm-200 bg-white p-3"
                 >
-                  <div className="w-14 h-14 rounded-full overflow-hidden bg-warm-100 flex items-center justify-center shrink-0">
-                    {page.photos[0] ? (
-                      <img src={page.photos[0]} alt={page.name} className="w-full h-full object-cover" />
-                    ) : (
-                      <span className="text-2xl" aria-hidden="true">🐶</span>
-                    )}
+                  <div className="flex items-center gap-4 min-w-0 flex-1">
+                    <div className="w-14 h-14 rounded-full overflow-hidden bg-warm-100 flex items-center justify-center shrink-0">
+                      {page.photos[0] ? (
+                        <img src={page.photos[0]} alt={page.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="text-2xl" aria-hidden="true">🐶</span>
+                      )}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="font-bold text-warm-900 truncate">{page.name}</p>
+                      <Link
+                        to={`/pet/${page.slug}`}
+                        className="block truncate text-xs text-primary-600 hover:underline font-mono"
+                      >
+                        {SITE_HOST}/pet/{page.slug}
+                      </Link>
+                    </div>
                   </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="font-bold text-warm-900 truncate">{page.name}</p>
-                    <Link
-                      to={`/pet/${page.slug}`}
-                      className="text-xs text-primary-600 hover:underline font-mono"
-                    >
-                      {SITE_HOST}/pet/{page.slug}
-                    </Link>
-                  </div>
-                  <div className="flex items-center gap-2 shrink-0">
+                  <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto">
                     <ShareButtons name={`${page.name}'s page`} url={`/pet/${page.slug}`} variant="compact" />
                     <button
                       type="button"

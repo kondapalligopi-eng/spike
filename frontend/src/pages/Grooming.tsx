@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { listGroomingSalons, type GroomingSalonRead } from '@/api/groomingSalons';
 import { createSubmission } from '@/api/submissions';
@@ -142,7 +142,8 @@ function PaginationControls({ currentPage, totalPages, onChange }: PaginationPro
 
 export function Grooming() {
   useBackendWarmup();
-  const [query, setQuery] = useState('');
+  const [searchParams] = useSearchParams();
+  const [query, setQuery] = useState(searchParams.get('q') ?? '');
   const [appliedQuery, setAppliedQuery] = useState('');
   const [locationFilter, setLocationFilter] = useState('');
   const [activeCity, setActiveCity] = useState<string | null>(null);
