@@ -8,6 +8,7 @@ import { listSwimSchools } from '@/api/swimSchools';
 import { listGroomingSalons } from '@/api/groomingSalons';
 import { listPetFoods } from '@/api/petFoods';
 import { AuthTransitionOverlay } from './AuthTransitionOverlay';
+import { HelpfulButton } from './HelpfulButton';
 
 type DrawerItem = { label: string; to: string };
 
