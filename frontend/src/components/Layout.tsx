@@ -160,9 +160,6 @@ export function Layout() {
             </div>
           </div>
 
-          {/* Thumbs-up — quick "was this helpful?" tally for social proof */}
-          <HelpfulButton />
-
           {/* Bottom strip */}
           <div className="mt-12 pt-6 border-t border-warm-200 text-xs text-warm-500">
             <div className="flex flex-col md:flex-row gap-3 items-center justify-between">
