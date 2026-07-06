@@ -35,10 +35,12 @@ import { NotFound } from '@/pages/NotFound';
 export const routes: RouteRecord[] = [
   {
     element: <RootShell />,
+    errorElement: <RouteError />,
     children: [
       {
         path: '/',
         element: <Layout />,
+        errorElement: <RouteError />,
         children: [
           { index: true, Component: Home },
           { path: 'login', Component: Login },
