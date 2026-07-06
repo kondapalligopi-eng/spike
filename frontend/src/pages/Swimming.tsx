@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { listSwimSchools, type SwimSchoolRead } from '@/api/swimSchools';
 import { createSubmission } from '@/api/submissions';
