@@ -177,12 +177,20 @@ const BANGALORE_NEIGHBOURHOODS = [
 export function Hospital() {
   useBackendWarmup();
   const [searchParams] = useSearchParams();
-  const initialQuery = searchParams.get('q') ?? '';
-  const [search, setSearch] = useState(initialQuery);
+  const [search, setSearch] = useState('');
   const [specialty, setSpecialty] = useState(ALL_SPECIALTIES);
   const [location, setLocation] = useState(ALL_LOCATIONS);
   const [activeCity, setActiveCity] = useState<string | null>(null);
-  const [applied, setApplied] = useState({ search: initialQuery, specialty: ALL_SPECIALTIES, location: ALL_LOCATIONS });
+  const [applied, setApplied] = useState({ search: '', specialty: ALL_SPECIALTIES, location: ALL_LOCATIONS });
+
+  // Apply a search passed via the URL (?q=…) from the global navbar search.
+  // Done in an effect (not useState init) so the pre-rendered page and the
+  // client's first render match — avoids an SSG hydration mismatch.
+  useEffect(() => {
+    const q = searchParams.get('q') ?? '';
+    setSearch(q);
+    setApplied((a) => ({ ...a, search: q }));
+  }, [searchParams]);
 
   // Admin-added hospitals from the API. Fails open — if the request errors,
   // we just show the hardcoded seed list with a one-line warning.

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { listPetFoods, type PetFoodRead } from '@/api/petFoods';
@@ -62,7 +62,13 @@ function FilterSection({
   moreCount?: number;
 }) {
   const [searchParams] = useSearchParams();
-  const [query, setQuery] = useState(searchParams.get('q') ?? '');
+  const [query, setQuery] = useState('');
+
+  // Apply a search passed via the URL (?q=…) from the global navbar search.
+  useEffect(() => {
+    const q = searchParams.get('q') ?? '';
+    if (q) setQuery(q);
+  }, [searchParams]);
   const filtered = withSearch && query
     ? items.filter((i) => i.toLowerCase().includes(query.toLowerCase()))
     : items;

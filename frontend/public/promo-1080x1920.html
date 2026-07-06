@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>HiSpike — Promo Video (1080×1920, loops)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap">
+  <style>
+    :root {
+      --primary-900: #1e3a8a; --primary-800: #1e40af; --primary-600: #2563eb;
+      --accent-400: #facc15; --accent-300: #fde047; --warm-900: #1c1917;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0; padding: 0; background: #0b0b0b; overflow: hidden;
+      font-family: 'Inter', system-ui, sans-serif; color: #fff;
+    }
+    .viewport { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; }
+    .stage {
+      width: 1080px; height: 1920px; position: relative; overflow: hidden;
+      transform-origin: center center;
+      background: linear-gradient(170deg, var(--primary-900) 0%, var(--primary-800) 50%, var(--primary-600) 100%);
+    }
+    #paws { position: absolute; inset: 0; pointer-events: none; }
+    .glow {
+      position: absolute; width: 1000px; height: 1000px; right: -280px; bottom: -340px;
+      border-radius: 50%; filter: blur(14px);
+      background: radial-gradient(closest-side, rgba(250,204,21,.32), rgba(250,204,21,0));
+      animation: glowpulse 6s ease-in-out infinite;
+    }
+    @keyframes glowpulse { 0%,100% { opacity:.75; } 50% { opacity:1; } }
+
+    /* Scattered pulsing paws + twinkling sparkles — matches the site hero banner */
+    .hpaw { position: absolute; }
+    .hpaw .pawimg { width: 100%; height: 100%; animation: pawpulse 2.6s ease-in-out infinite; }
+    .hpaw .pawimg svg { width: 100%; height: 100%; display: block; }
+    @keyframes pawpulse { 0%, 100% { opacity: .07; } 50% { opacity: .20; } }
+    .spark { position: absolute; animation: sparkle 2.2s ease-in-out infinite; filter: drop-shadow(0 0 4px rgba(255,255,255,.9)); }
+    .spark svg { width: 100%; height: 100%; display: block; fill: #fff; }
+    @keyframes sparkle {
+      0%, 100% { opacity: 0;  transform: translate(-50%, -50%) scale(0)   rotate(0deg); }
+      45%      { opacity: 1;  transform: translate(-50%, -50%) scale(1)   rotate(25deg); }
+      55%      { opacity: .9; transform: translate(-50%, -50%) scale(1.1) rotate(30deg); }
+    }
+
+    /* Scenes */
+    .scene {
+      position: absolute; inset: 0; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; text-align: center;
+      padding: 0 90px; opacity: 0; transform: translateY(38px) scale(.97);
+      transition: opacity .55s ease, transform .7s cubic-bezier(.2,.7,.2,1);
+      pointer-events: none;
+    }
+    .scene.active { opacity: 1; transform: none; }
+
+    .logo { width: 200px; height: 200px; filter: drop-shadow(0 12px 26px rgba(0,0,0,.35)); }
+    .pill {
+      margin-top: 26px; background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.22);
+      font-size: 20px; font-weight: 800; letter-spacing: .34em; text-transform: uppercase;
+      padding: 13px 30px; border-radius: 999px;
+    }
+    .eyebrow { color: var(--accent-300); font-size: 24px; font-weight: 900; letter-spacing: .40em; text-transform: uppercase; margin-bottom: 26px; }
+    h1 { font-weight: 900; font-size: 104px; line-height: 1.03; letter-spacing: -.028em; margin: 30px 0 0; }
+    h2 { font-weight: 900; font-size: 92px; line-height: 1.06; letter-spacing: -.02em; margin: 0; }
+    .y { color: var(--accent-300); }
+    .sub { font-size: 30px; line-height: 1.4; color: rgba(255,255,255,.92); margin: 30px auto 0; max-width: 820px; }
+    .underline { width: 150px; height: 7px; background: var(--accent-400); border-radius: 999px; margin: 34px auto 0; }
+
+    /* Services grid (scene 3) */
+    .services { display: grid; grid-template-columns: repeat(2, 1fr); gap: 46px 60px; }
+    .svc { display: flex; flex-direction: column; align-items: center; gap: 16px; opacity: 0; transform: translateY(26px) scale(.9); }
+    .scene.active .svc { animation: pop .5s cubic-bezier(.2,.9,.3,1.2) forwards; }
+    .scene.active .svc:nth-child(1) { animation-delay: .10s; }
+    .scene.active .svc:nth-child(2) { animation-delay: .24s; }
+    .scene.active .svc:nth-child(3) { animation-delay: .38s; }
+    .scene.active .svc:nth-child(4) { animation-delay: .52s; }
+    .scene.active .svc:nth-child(5) { animation-delay: .66s; }
+    .scene.active .svc:nth-child(6) { animation-delay: .80s; }
+    @keyframes pop { to { opacity: 1; transform: none; } }
+    .bubble {
+      position: relative; width: 190px; height: 190px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; font-size: 88px; line-height: 1;
+      box-shadow: 0 18px 38px rgba(0,0,0,.30);
+    }
+    .bubble.hospital { background: linear-gradient(135deg, #fecdd3, #fb7185); }
+    .bubble.park     { background: linear-gradient(135deg, #a7f3d0, #10b981); }
+    .bubble.swim     { background: linear-gradient(135deg, #bae6fd, #0ea5e9); }
+    .bubble.grooming { background: linear-gradient(135deg, #fde68a, #fbbf24); }
+    .bubble.supplies { background: linear-gradient(135deg, #ddd6fe, #a78bfa); }
+    .bubble.stories  { background: linear-gradient(135deg, #f5d0fe, #d946ef); }
+    .badge {
+      position: absolute; right: -6px; bottom: -6px; width: 60px; height: 60px; border-radius: 50%;
+      background: #fff; display: flex; align-items: center; justify-content: center; font-size: 28px;
+      box-shadow: 0 8px 16px rgba(0,0,0,.24); border: 3px solid rgba(255,255,255,.95);
+    }
+    .label { font-size: 26px; font-weight: 800; letter-spacing: .03em; }
+
+    .cta {
+      margin-top: 44px; background: var(--accent-400); color: var(--warm-900);
+      font-weight: 900; font-size: 42px; letter-spacing: .03em; padding: 34px 66px; border-radius: 999px;
+      box-shadow: 0 20px 40px rgba(250,204,21,.42); display: inline-flex; align-items: center; gap: 18px;
+      animation: bob 1.6s ease-in-out infinite;
+    }
+    @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+    /* Progress bar */
+    .progress { position: absolute; left: 90px; right: 90px; bottom: 70px; height: 8px; border-radius: 999px; background: rgba(255,255,255,.2); overflow: hidden; }
+    .progress .bar { height: 100%; width: 0; background: var(--accent-400); border-radius: 999px; animation: fill var(--loop, 14s) linear infinite; }
+    @keyframes fill { from { width: 0; } to { width: 100%; } }
+
+    /* Recording note (fixed, NOT recorded) */
+    .note {
+      position: fixed; left: 16px; bottom: 16px; z-index: 50; max-width: 360px;
+      background: rgba(0,0,0,.72); color: #fff; font-size: 13px; line-height: 1.5;
+      padding: 12px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,.15);
+    }
+    .note b { color: var(--accent-300); }
+  </style>
+</head>
+<body>
+  <div class="viewport">
+    <div class="stage">
+      <div class="glow"></div>
+      <div id="paws"></div>
+
+      <!-- Scene 1 — Hook -->
+      <div class="scene" data-scene>
+        <img src="./logo.png?v=2" alt="HiSpike" class="logo" />
+        <div class="pill">Bengaluru 🐾</div>
+        <h1>Your dog's<br/>whole <span class="y">world.</span></h1>
+      </div>
+
+      <!-- Scene 2 — One place -->
+      <div class="scene" data-scene>
+        <div class="eyebrow">All-In-One Pet Care</div>
+        <h1>Everything they need,<br/><span class="y">in one place.</span></h1>
+        <div class="underline"></div>
+      </div>
+
+      <!-- Scene 3 — Services -->
+      <div class="scene" data-scene>
+        <div class="eyebrow">Everything · one app</div>
+        <div class="services" style="margin-top:20px">
+          <div class="svc"><div class="bubble hospital">🐶<div class="badge">🩺</div></div><div class="label">Vets</div></div>
+          <div class="svc"><div class="bubble park">🐕<div class="badge">🌳</div></div><div class="label">Dog Parks</div></div>
+          <div class="svc"><div class="bubble swim">🐶<div class="badge">🌊</div></div><div class="label">Swimming</div></div>
+          <div class="svc"><div class="bubble grooming">🐩<div class="badge">✂️</div></div><div class="label">Grooming</div></div>
+          <div class="svc"><div class="bubble supplies">🐶<div class="badge">🥣</div></div><div class="label">Pet Supplies</div></div>
+          <div class="svc"><div class="bubble stories">🐶<div class="badge">📖</div></div><div class="label">Pet Stories</div></div>
+        </div>
+      </div>
+
+      <!-- Scene 4 — Trust -->
+      <div class="scene" data-scene>
+        <h2>Verified providers.<br/><span class="y">Honest reviews.</span><br/>Hyperlocal.</h2>
+        <p class="sub">No paid placements. Just the best care in your neighbourhood.</p>
+      </div>
+
+      <!-- Scene 5 — CTA -->
+      <div class="scene" data-scene>
+        <img src="./logo.png?v=2" alt="HiSpike" class="logo" />
+        <h2 style="margin-top:20px">Find it all on<br/><span class="y">HiSpike</span></h2>
+        <div class="cta">Visit hispike.in →</div>
+      </div>
+
+      <div class="progress"><div class="bar"></div></div>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>How to make the video:</b> this promo loops on its own (~14s).
+    Screen-record this window with your phone/PC recorder (or OBS), then add trending
+    audio inside Instagram/CapCut. This note isn't part of the recording area.
+  </div>
+
+  <script>
+    // Fit the 1080×1920 stage to the window so the whole frame is visible/recordable.
+    const stage = document.querySelector('.stage');
+    function fit() {
+      const s = Math.min(window.innerWidth / 1080, window.innerHeight / 1920);
+      stage.style.transform = 'scale(' + s + ')';
+    }
+    window.addEventListener('resize', fit); fit();
+
+    // Scattered pulsing paws + sparkles (same look as the site hero banner).
+    (function () {
+      const PAW = `<svg viewBox="0 0 60 60"><g fill="#fff"><ellipse cx="14" cy="28" rx="5" ry="6.5"/><ellipse cx="46" cy="28" rx="5" ry="6.5"/><ellipse cx="22.5" cy="15" rx="4.5" ry="6"/><ellipse cx="37.5" cy="15" rx="4.5" ry="6"/><path d="M30 30c-7.5 0-12.5 5-12.5 11.25 0 5.5 4.25 8.75 12.5 8.75s12.5-3.25 12.5-8.75c0-6.25-5-11.25-12.5-11.25z"/></g></svg>`;
+      const SPARK = `<svg viewBox="0 0 10 10"><path d="M5 0 L5.9 4.1 L10 5 L5.9 5.9 L5 10 L4.1 5.9 L0 5 L4.1 4.1 Z"/></svg>`;
+      // positions kept to the top/bottom/side bands so they never sit on the copy
+      const PAWS = [
+        { t: 4,  l: 5,  s: 108, r: -14, d: 0   },
+        { t: 3,  l: 76, s: 90,  r: 12,  d: 1.2 },
+        { t: 20, l: 90, s: 62,  r: 20,  d: 1.6 },
+        { t: 41, l: 3,  s: 78,  r: 8,   d: 0.6 },
+        { t: 47, l: 89, s: 82,  r: -10, d: 1.9 },
+        { t: 85, l: 8,  s: 100, r: 16,  d: 0.3 },
+        { t: 88, l: 78, s: 80,  r: -8,  d: 0.9 },
+      ];
+      const SPARKS = [
+        { t: -6, l: 96, sc: 0.30, o: 0.15 },
+        { t: 62, l: -8, sc: 0.26, o: 0.55 },
+        { t: 104, l: 48, sc: 0.22, o: 1.0 },
+      ];
+      const layer = document.getElementById('paws');
+      PAWS.forEach((p) => {
+        const el = document.createElement('div');
+        el.className = 'hpaw';
+        el.style.cssText = `top:${p.t}%;left:${p.l}%;width:${p.s}px;height:${p.s}px`;
+        const img = document.createElement('div');
+        img.className = 'pawimg';
+        img.style.cssText = `transform:rotate(${p.r}deg);animation-delay:${p.d}s`;
+        img.innerHTML = PAW;
+        el.appendChild(img);
+        SPARKS.forEach((s) => {
+          const sp = document.createElement('div');
+          sp.className = 'spark';
+          sp.style.cssText = `top:${s.t}%;left:${s.l}%;width:${(p.s * s.sc).toFixed(0)}px;height:${(p.s * s.sc).toFixed(0)}px;animation-delay:${(p.d + s.o).toFixed(2)}s`;
+          sp.innerHTML = SPARK;
+          el.appendChild(sp);
+        });
+        layer.appendChild(el);
+      });
+    })();
+
+    // Sequence the scenes on a loop. Total should match the progress-bar --loop.
+    const scenes = [...document.querySelectorAll('[data-scene]')];
+    const durations = [2600, 2600, 4000, 2600, 3000]; // ms per scene
+    const total = durations.reduce((a, b) => a + b, 0);
+    document.querySelector('.progress .bar').style.setProperty('--loop', total + 'ms');
+    document.querySelector('.progress .bar').style.animationDuration = total + 'ms';
+
+    let i = 0;
+    function show() {
+      scenes.forEach((s, idx) => s.classList.toggle('active', idx === i));
+      const d = durations[i];
+      i = (i + 1) % scenes.length;
+      setTimeout(show, d);
+    }
+    show();
+  </script>
+</body>
+</html>
