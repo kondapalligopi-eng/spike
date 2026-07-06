@@ -41,8 +41,6 @@ function SocialIcon({ label, children, href = '#' }: { label: string; children: 
 }
 
 export function Layout() {
-  const [chatOpen, setChatOpen] = useState(false);
-
   return (
     <div className="min-h-screen bg-warm-50 flex flex-col">
       <ScrollToTop />
