@@ -76,12 +76,37 @@ export function Navbar() {
     return () => window.removeEventListener('keydown', onKey);
   }, [drawerOpen, searchOpen]);
 
+  // Live directory data — fetched only once the search panel is opened. Shares
+  // react-query's cache with the category pages, so it's usually instant.
+  const enabled = searchOpen;
+  const hospitalsQ = useQuery({ queryKey: ['hospitals'], queryFn: listHospitals, enabled, staleTime: 60_000 });
+  const parksQ = useQuery({ queryKey: ['parks'], queryFn: listParks, enabled, staleTime: 60_000 });
+  const swimQ = useQuery({ queryKey: ['swim-schools'], queryFn: listSwimSchools, enabled, staleTime: 60_000 });
+  const groomingQ = useQuery({ queryKey: ['grooming-salons'], queryFn: listGroomingSalons, enabled, staleTime: 60_000 });
+  const petFoodsQ = useQuery({ queryKey: ['pet-foods'], queryFn: listPetFoods, enabled, staleTime: 60_000 });
+
+  const searchIndex = useMemo<SearchEntry[]>(() => {
+    const idx: SearchEntry[] = [...STATIC_SERVICES];
+    (hospitalsQ.data ?? []).forEach((h) =>
+      idx.push({ section: 'Hospitals', title: h.name, subtitle: h.locality, to: '/hospital', q: h.name }));
+    (parksQ.data ?? []).forEach((p) =>
+      idx.push({ section: 'Parks', title: p.name, subtitle: p.locality, to: '/park', q: p.name }));
+    (swimQ.data ?? []).forEach((s) =>
+      idx.push({ section: 'Swimming', title: s.name, subtitle: s.locality, to: '/swimming', q: s.name }));
+    (groomingQ.data ?? []).forEach((g) =>
+      idx.push({ section: 'Grooming', title: g.name, subtitle: [g.area, g.city].filter(Boolean).join(', '), to: '/grooming', q: g.name }));
+    const brands = new Set<string>();
+    (petFoodsQ.data ?? []).forEach((f) => { if (f.brand) brands.add(f.brand); });
+    brands.forEach((b) => idx.push({ section: 'Pet Supplies', title: b, subtitle: 'Brand', to: '/pet-supplies', q: b }));
+    return idx;
+  }, [hospitalsQ.data, parksQ.data, swimQ.data, groomingQ.data, petFoodsQ.data]);
+
   const searchResults = searchQuery.trim()
-    ? SEARCH_INDEX.filter((entry) =>
+    ? searchIndex.filter((entry) =>
         `${entry.title} ${entry.subtitle ?? ''} ${entry.section}`
           .toLowerCase()
           .includes(searchQuery.trim().toLowerCase()),
-      ).slice(0, 30)
+      ).slice(0, 40)
     : [];
 
   const groupedResults = searchResults.reduce<Record<string, SearchEntry[]>>((acc, entry) => {
@@ -89,10 +114,12 @@ export function Navbar() {
     return acc;
   }, {});
 
-  const goToResult = (to: string) => {
+  // Category entries carry a `q` — navigate with ?q= so the target page opens
+  // pre-filtered to that listing.
+  const goToResult = (entry: SearchEntry) => {
     setSearchOpen(false);
     setSearchQuery('');
-    navigate(to);
+    navigate(entry.q ? `${entry.to}?q=${encodeURIComponent(entry.q)}` : entry.to);
   };
 
   const [signingOut, setSigningOut] = useState(false);
