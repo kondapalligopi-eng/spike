@@ -2051,15 +2051,15 @@ function VisitsSection() {
         <h2 className="text-xl font-bold text-warm-900">Website visits</h2>
       </div>
 
-      {/* Thumbs-up tally — visitors tap 👍 in the navbar; only admin sees the count */}
-      <div className="rounded-2xl border-2 border-accent-200 bg-accent-50 p-4 mb-4 flex items-center gap-4">
-        <span className="text-3xl leading-none" aria-hidden="true">👍</span>
+      {/* Love tally — visitors tap the ❤️ heart in the navbar; only admin sees the count */}
+      <div className="rounded-2xl border-2 border-red-200 bg-red-50 p-4 mb-4 flex items-center gap-4">
+        <span className="text-3xl leading-none" aria-hidden="true">❤️</span>
         <div>
           <p className="text-3xl font-extrabold text-warm-900 tabular-nums leading-none">
             {helpfulVotes === null ? '—' : helpfulVotes.toLocaleString('en-IN')}
           </p>
           <p className="text-sm text-warm-600 mt-1">
-            "Yes, helpful" thumbs-up from visitors
+            Loves from visitors (navbar heart)
           </p>
         </div>
       </div>
