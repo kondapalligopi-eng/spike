@@ -119,7 +119,7 @@ export function HelpfulButton() {
       </button>
 
       {bubble && (
-        <span className="absolute right-0 top-full mt-1.5 z-30 whitespace-nowrap rounded-lg bg-accent-400 text-warm-900 text-xs font-semibold px-2.5 py-1 shadow-lg animate-fade-in">
+        <span className="absolute left-1/2 -translate-x-1/2 top-full mt-2 z-30 whitespace-nowrap rounded-lg bg-accent-400 text-warm-900 text-xs font-semibold px-2.5 py-1 shadow-lg animate-fade-in">
           {bubble}
         </span>
       )}
