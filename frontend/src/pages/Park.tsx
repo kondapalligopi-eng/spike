@@ -170,7 +170,7 @@ export function Park() {
   useBackendWarmup();
   const [searchParams] = useSearchParams();
   const [query, setQuery] = useState(searchParams.get('q') ?? '');
-  const [appliedQuery, setAppliedQuery] = useState('');
+  const [appliedQuery, setAppliedQuery] = useState(searchParams.get('q') ?? '');
   const [locationFilter, setLocationFilter] = useState('');
   const [activeCity, setActiveCity] = useState<string | null>(null);
   const [selectedSpot, setSelectedSpot] = useState<ParkSpot | null>(null);
