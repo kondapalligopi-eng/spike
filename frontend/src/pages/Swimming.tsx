@@ -511,7 +511,7 @@ export function Swimming() {
                   {/* Default backdrop — shown whenever a school has no photo
                       (or the photo fails to load). Keeps cards consistent. */}
                   <div className="absolute inset-0 bg-gradient-to-br from-sky-300 to-primary-600 flex items-center justify-center text-6xl">
-                    🏊🐕
+                    🐕💦
                   </div>
                   {spot.image && (
                     <img
