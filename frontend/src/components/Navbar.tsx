@@ -344,7 +344,7 @@ export function Navbar() {
                           {entries.map((entry) => (
                             <li key={`${entry.section}-${entry.title}`}>
                               <button
-                                onClick={() => goToResult(entry.to)}
+                                onClick={() => goToResult(entry)}
                                 className="w-full text-left px-3 py-2.5 hover:bg-warm-50 flex items-center justify-between gap-3 transition-colors"
                               >
                                 <div>
