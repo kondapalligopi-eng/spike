@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { login, requestOtp, verifyOtp } from '@/api/auth';
+import type { AuthResponse } from '@/types';
 import { listRecentPetPages, type PetPageRead } from '@/api/petPages';
 import { useAuth } from '@/hooks/useAuth';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
