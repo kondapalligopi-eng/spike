@@ -311,7 +311,7 @@ export function Login() {
                     className={inputClass(false)}
                   />
                   <p className="mt-1.5 text-xs text-warm-500">
-                    We'll email you a {`6`}-digit code to sign in — no password needed.
+                    We'll email you a 6-digit code to sign in — no password needed.
                   </p>
                 </div>
 
