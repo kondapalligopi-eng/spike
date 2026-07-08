@@ -226,23 +226,24 @@ export function Login() {
               <p className="text-warm-500">Sign in to your account</p>
             </div>
 
-            {/* Method toggle */}
+            {/* Method toggle — links (not buttons) so the first tap works even
+                before the page has hydrated on a cold mobile load. */}
             <div className="grid grid-cols-2 gap-1 p-1 bg-warm-100 rounded-xl mb-6" role="tablist">
               {(['password', 'otp'] as const).map((m) => (
-                <button
+                <Link
                   key={m}
-                  type="button"
+                  to={tabTo(m)}
+                  replace
                   role="tab"
                   aria-selected={method === m}
-                  onClick={() => switchMethod(m)}
-                  className={`py-2 text-sm font-semibold rounded-lg transition-colors ${
+                  className={`block text-center py-2 text-sm font-semibold rounded-lg transition-colors ${
                     method === m
                       ? 'bg-white text-warm-900 shadow-sm'
                       : 'text-warm-500 hover:text-warm-700'
                   }`}
                 >
                   {m === 'password' ? 'Password' : 'Email code'}
-                </button>
+                </Link>
               ))}
             </div>
 
