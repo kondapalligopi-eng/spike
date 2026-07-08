@@ -46,7 +46,16 @@ export function Register() {
   const redirectTo = searchParams.get('redirect') ?? '/';
   const { isAuthenticated, login: storeLogin } = useAuth();
 
-  const [method, setMethod] = useState<'password' | 'otp'>('password');
+  // Method driven by the URL (?method=otp) so the tabs are links that work on
+  // the first tap even before hydration (fixes the cold-load mobile issue).
+  const method: 'password' | 'otp' = searchParams.get('method') === 'otp' ? 'otp' : 'password';
+  const tabTo = (m: 'password' | 'otp') => {
+    const p = new URLSearchParams();
+    if (redirectTo !== '/') p.set('redirect', redirectTo);
+    if (m === 'otp') p.set('method', 'otp');
+    const qs = p.toString();
+    return `/register${qs ? `?${qs}` : ''}`;
+  };
   const [otpStep, setOtpStep] = useState<'request' | 'verify'>('request');
   const [otpName, setOtpName] = useState('');
   const [otpEmail, setOtpEmail] = useState('');
@@ -65,6 +74,14 @@ export function Register() {
     const id = window.setTimeout(() => setResendIn((s) => s - 1), 1000);
     return () => window.clearTimeout(id);
   }, [resendIn]);
+
+  // Switching to the Email-code tab resets the OTP flow to step 1.
+  useEffect(() => {
+    if (method === 'otp') {
+      setOtpStep('request');
+      setOtpCode('');
+    }
+  }, [method]);
 
   const {
     register,
@@ -175,21 +192,22 @@ export function Register() {
             <p className="text-warm-500">Join thousands of dog lovers</p>
           </div>
 
-          {/* Method toggle */}
+          {/* Method toggle — links (not buttons) so the first tap works even
+              before the page has hydrated on a cold mobile load. */}
           <div className="grid grid-cols-2 gap-1 p-1 bg-warm-100 rounded-xl mb-6" role="tablist">
             {(['password', 'otp'] as const).map((m) => (
-              <button
+              <Link
                 key={m}
-                type="button"
+                to={tabTo(m)}
+                replace
                 role="tab"
                 aria-selected={method === m}
-                onClick={() => { setMethod(m); if (m === 'otp') { setOtpStep('request'); setOtpCode(''); } }}
-                className={`py-2 text-sm font-semibold rounded-lg transition-colors ${
+                className={`block text-center py-2 text-sm font-semibold rounded-lg transition-colors ${
                   method === m ? 'bg-white text-warm-900 shadow-sm' : 'text-warm-500 hover:text-warm-700'
                 }`}
               >
                 {m === 'password' ? 'Password' : 'Email code'}
-              </button>
+              </Link>
             ))}
           </div>
 
