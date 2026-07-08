@@ -74,6 +74,74 @@ async def register(
 
 
 @router.post(
+    "/register-otp",
+    response_model=MessageResponse,
+    summary="Start a passwordless sign-up: create the account and email a login code",
+)
+async def register_otp(
+    payload: RegisterOtpRequest,
+    background_tasks: BackgroundTasks,
+    db: AsyncSession = Depends(get_db),
+) -> MessageResponse:
+    if await UserService.email_exists(db, payload.email):
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="An account with this email already exists",
+        )
+    if not email_service.is_configured():
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Email sign-up is unavailable right now. Please create an account with a password instead.",
+        )
+
+    # Passwordless account: store an unguessable random password so the row is
+    # valid; the user signs in with email codes (or sets a password later via
+    # the reset flow). The code emailed below verifies they own the address.
+    user = User(
+        email=payload.email.lower().strip(),
+        hashed_password=hash_password(secrets.token_urlsafe(32)),
+        full_name=payload.full_name,
+        phone=payload.phone,
+        role=UserRole.user,
+        is_active=True,
+    )
+    db.add(user)
+    await db.flush()
+
+    now = datetime.now(timezone.utc)
+    length = settings.OTP_LENGTH
+    code = f"{secrets.randbelow(10 ** length):0{length}d}"
+    minutes = settings.OTP_EXPIRE_MINUTES
+    db.add(
+        EmailOtp(
+            user_id=user.id,
+            code_hash=_hash_token(code),
+            expires_at=now + timedelta(minutes=minutes),
+        )
+    )
+    await db.flush()
+
+    name = user.full_name or "there"
+    subject = "Your HiSpike sign-up code"
+    text = (
+        f"Hi {name},\n\n"
+        f"Welcome to HiSpike! Your sign-up code is {code}. It expires in {minutes} minutes.\n\n"
+        "If you didn't request this, you can safely ignore this email.\n\n— HiSpike"
+    )
+    html = (
+        f"<p>Hi {name},</p>"
+        "<p>Welcome to HiSpike! Your sign-up code is:</p>"
+        f'<p style="font-size:30px;font-weight:800;letter-spacing:8px;margin:12px 0">{code}</p>'
+        f"<p>It expires in {minutes} minutes.</p>"
+        "<p>If you didn't request this, you can safely ignore this email.</p>"
+        "<p>— HiSpike</p>"
+    )
+    background_tasks.add_task(_send_reset_email_safe, user.email, subject, html, text)
+
+    return MessageResponse(message="We've emailed you a code to finish creating your account.")
+
+
+@router.post(
     "/login",
     response_model=Token,
     summary="Authenticate and receive JWT tokens",
