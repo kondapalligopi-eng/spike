@@ -34,7 +34,7 @@ from app.schemas.auth import (
     VerifyOtpRequest,
 )
 from app.schemas.user import UserCreate, UserLogin, UserResponse
-from app.services import email_service
+from app.services import email_service, email_templates
 from app.services.user_service import UserService
 
 logger = logging.getLogger(__name__)
