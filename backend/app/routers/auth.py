@@ -375,14 +375,7 @@ async def forgot_password(
         f"below to choose a new one (valid for {minutes} minutes):\n\n{link}\n\n"
         "If you didn't request this, you can safely ignore this email.\n\n— HiSpike"
     )
-    html = (
-        f"<p>Hi {name},</p>"
-        "<p>We received a request to reset your HiSpike password.</p>"
-        f'<p><a href="{link}">Choose a new password</a> '
-        f"(valid for {minutes} minutes).</p>"
-        "<p>If you didn't request this, you can safely ignore this email.</p>"
-        "<p>— HiSpike</p>"
-    )
+    html = email_templates.reset_password_html(name, link, minutes)
     # Send AFTER the response so a slow SMTP server never hangs the request.
     background_tasks.add_task(_send_reset_email_safe, user.email, subject, html, text)
 
