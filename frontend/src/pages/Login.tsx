@@ -131,6 +131,14 @@ export function Login() {
     return () => window.clearTimeout(id);
   }, [resendIn]);
 
+  // Switching to the Email-code tab resets the OTP flow to step 1.
+  useEffect(() => {
+    if (method === 'otp') {
+      setOtpStep('request');
+      setOtpCode('');
+    }
+  }, [method]);
+
   const {
     register,
     handleSubmit,
