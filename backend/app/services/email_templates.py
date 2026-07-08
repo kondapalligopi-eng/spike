@@ -55,7 +55,7 @@ def _shell(body_html: str, preheader: str = "") -> str:
             <td style="padding:22px 30px 8px;text-align:center;">
               <img src="{_LOGO_URL}" width="32" height="32" alt="HiSpike" style="border:0;border-radius:50%;opacity:.85;">
               <p style="margin:10px 0 0;font-size:12px;line-height:1.7;color:{_FAINT};">
-                This email was sent from HiSpike<br>{_ADDRESS}
+                This email was sent from HiSpike<br>Registered Address: {_ADDRESS}
               </p>
             </td>
           </tr>
