@@ -64,6 +64,7 @@ import {
 } from '@/lib/visitTracker';
 import { readSheetRows, downloadTemplate, downloadRows, type SheetRow } from '@/lib/spreadsheet';
 import { getCounter } from '@/api/counters';
+import { listUsers } from '@/api/users';
 
 const BANGALORE_NEIGHBOURHOODS = [
   'Banashankari', 'Banaswadi', 'Basavanagudi', 'Bellandur', 'Bommanahalli',
@@ -2429,6 +2430,102 @@ function SubmissionsSection() {
   );
 }
 
+function UsersSection() {
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['admin-users'],
+    queryFn: listUsers,
+    refetchInterval: 60_000,
+  });
+  const users = data ?? [];
+
+  const fmtDate = (iso: string) => {
+    const d = new Date(iso);
+    return isNaN(d.getTime())
+      ? '—'
+      : d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+  };
+
+  return (
+    <section className="mb-10">
+      <div className="mb-4">
+        <p className="text-[11px] font-semibold tracking-[0.3em] text-accent-600 uppercase mb-1">
+          Accounts
+        </p>
+        <h2 className="text-xl font-bold text-warm-900">
+          Users
+          <span className="ml-2 align-middle text-xs font-bold text-warm-600 bg-warm-100 rounded-full px-2 py-0.5">
+            {users.length}
+          </span>
+        </h2>
+        <p className="text-sm text-warm-500 mt-1">
+          Everyone who has registered on HiSpike, newest first.
+        </p>
+      </div>
+
+      {isLoading ? (
+        <p className="text-sm text-warm-500 py-6">Loading users…</p>
+      ) : isError ? (
+        <p className="text-sm text-red-600 py-6">Could not load users. Refresh to retry.</p>
+      ) : users.length === 0 ? (
+        <div className="rounded-2xl border-2 border-dashed border-warm-300 p-8 text-center text-sm text-warm-500">
+          No users yet.
+        </div>
+      ) : (
+        <div className="overflow-x-auto rounded-2xl border-2 border-warm-200 bg-white">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="text-left text-xs uppercase tracking-wide text-warm-500 border-b border-warm-200">
+                <th className="px-4 py-3 font-semibold">Name</th>
+                <th className="px-4 py-3 font-semibold">Email</th>
+                <th className="px-4 py-3 font-semibold">Phone</th>
+                <th className="px-4 py-3 font-semibold">Role</th>
+                <th className="px-4 py-3 font-semibold">Joined</th>
+                <th className="px-4 py-3 font-semibold">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {users.map((u) => (
+                <tr key={u.id} className="border-b border-warm-100 last:border-0">
+                  <td className="px-4 py-3 font-semibold text-warm-900 whitespace-nowrap">
+                    {u.full_name || '—'}
+                  </td>
+                  <td className="px-4 py-3 text-warm-700 break-all">{u.email}</td>
+                  <td className="px-4 py-3 text-warm-600 whitespace-nowrap">{u.phone || '—'}</td>
+                  <td className="px-4 py-3">
+                    <span
+                      className={`inline-block rounded-full px-2 py-0.5 text-xs font-bold ${
+                        u.role === 'admin'
+                          ? 'bg-accent-100 text-accent-800'
+                          : 'bg-warm-100 text-warm-700'
+                      }`}
+                    >
+                      {u.role}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-warm-600 whitespace-nowrap">{fmtDate(u.created_at)}</td>
+                  <td className="px-4 py-3 whitespace-nowrap">
+                    {u.is_active ? (
+                      <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-green-700">
+                        <span className="w-2 h-2 rounded-full bg-green-500" />
+                        Active
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-warm-500">
+                        <span className="w-2 h-2 rounded-full bg-warm-400" />
+                        Inactive
+                      </span>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </section>
+  );
+}
+
 function PetStoriesSection() {
   const queryClient = useQueryClient();
   const { data, isLoading, isError } = useQuery({
@@ -2700,6 +2797,7 @@ export function Admin() {
         <p className="text-warm-500">Site activity at a glance</p>
       </div>
 
+      <UsersSection />
       <SubmissionsSection />
       <PetStoriesSection />
       <AddListingsSection />
