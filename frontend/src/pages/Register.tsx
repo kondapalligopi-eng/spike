@@ -46,7 +46,16 @@ export function Register() {
   const redirectTo = searchParams.get('redirect') ?? '/';
   const { isAuthenticated, login: storeLogin } = useAuth();
 
-  const [method, setMethod] = useState<'password' | 'otp'>('password');
+  // Method driven by the URL (?method=otp) so the tabs are links that work on
+  // the first tap even before hydration (fixes the cold-load mobile issue).
+  const method: 'password' | 'otp' = searchParams.get('method') === 'otp' ? 'otp' : 'password';
+  const tabTo = (m: 'password' | 'otp') => {
+    const p = new URLSearchParams();
+    if (redirectTo !== '/') p.set('redirect', redirectTo);
+    if (m === 'otp') p.set('method', 'otp');
+    const qs = p.toString();
+    return `/register${qs ? `?${qs}` : ''}`;
+  };
   const [otpStep, setOtpStep] = useState<'request' | 'verify'>('request');
   const [otpName, setOtpName] = useState('');
   const [otpEmail, setOtpEmail] = useState('');
