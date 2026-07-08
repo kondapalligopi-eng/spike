@@ -115,6 +115,39 @@ export async function forgotPassword(email: string): Promise<{ message: string }
   return res.data;
 }
 
+// Passwordless sign-up: create the account and email a login code. Completing
+// the sign-up = verifyOtp() with that code (which returns tokens + logs in).
+export async function registerOtp(data: {
+  full_name: string;
+  email: string;
+  phone?: string;
+}): Promise<{ message: string }> {
+  if (USE_MOCK) {
+    await delay(600);
+    if (MOCK_USERS.find((u) => u.email === data.email)) {
+      throw new Error('An account with this email already exists');
+    }
+    // Seed the account so the follow-up verifyOtp() can find it in mock mode.
+    MOCK_USERS.push({
+      id: MOCK_USERS.length + 1,
+      email: data.email,
+      full_name: data.full_name,
+      phone: data.phone,
+      role: 'user',
+      is_active: true,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    });
+    return { message: "We've emailed you a code to finish creating your account." };
+  }
+  const res = await apiClient.post<{ message: string }>('/auth/register-otp', {
+    full_name: data.full_name,
+    email: data.email,
+    phone: data.phone || undefined,
+  });
+  return res.data;
+}
+
 // Request a one-time login code by email. Always resolves with a generic
 // message (the backend won't reveal whether the account exists).
 export async function requestOtp(email: string): Promise<{ message: string }> {
