@@ -129,8 +129,8 @@ export function Login() {
     resolver: zodResolver(loginSchema),
   });
 
-  const onLoginSuccess = (data: { access_token: string; refresh_token?: string; user: { full_name: string } }) => {
-    storeLogin(data.access_token, data.user as never, data.refresh_token);
+  const onLoginSuccess = (data: AuthResponse) => {
+    storeLogin(data.access_token, data.user, data.refresh_token);
     toast.success(`Welcome back, ${data.user.full_name}!`);
     navigate(redirectTo, { replace: true });
   };
