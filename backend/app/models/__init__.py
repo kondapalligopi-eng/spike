@@ -29,6 +29,7 @@ __all__ = [
     "PetFood",
     "PetPage",
     "PasswordResetToken",
+    "EmailOtp",
     "SiteSetting",
     "Submission",
     "AppCounter",
