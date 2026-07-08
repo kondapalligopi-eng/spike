@@ -19,14 +19,17 @@ from app.core.security import (
     verify_password,
 )
 from app.database import get_db
+from app.models.email_otp import EmailOtp
 from app.models.password_reset_token import PasswordResetToken
 from app.schemas.auth import (
     AccessToken,
     ForgotPasswordRequest,
     MessageResponse,
+    RequestOtpRequest,
     ResetPasswordRequest,
     Token,
     TokenRefresh,
+    VerifyOtpRequest,
 )
 from app.schemas.user import UserCreate, UserLogin, UserResponse
 from app.services import email_service
