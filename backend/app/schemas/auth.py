@@ -52,6 +52,12 @@ class VerifyOtpRequest(BaseModel):
         return v
 
 
+class RegisterOtpRequest(BaseModel):
+    full_name: str = Field(..., min_length=1, max_length=255)
+    email: EmailStr
+    phone: str | None = Field(default=None, max_length=50)
+
+
 class ResetPasswordRequest(BaseModel):
     token: str = Field(..., min_length=10, max_length=255)
     new_password: str = Field(..., min_length=8, max_length=128)
