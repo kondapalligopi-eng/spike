@@ -232,14 +232,7 @@ async def request_otp(
         f"Your HiSpike login code is {code}. It expires in {minutes} minutes.\n\n"
         "If you didn't request this, you can safely ignore this email.\n\n— HiSpike"
     )
-    html = (
-        f"<p>Hi {name},</p>"
-        "<p>Your HiSpike login code is:</p>"
-        f'<p style="font-size:30px;font-weight:800;letter-spacing:8px;margin:12px 0">{code}</p>'
-        f"<p>It expires in {minutes} minutes.</p>"
-        "<p>If you didn't request this, you can safely ignore this email.</p>"
-        "<p>— HiSpike</p>"
-    )
+    html = email_templates.login_code_html(name, code, minutes)
     background_tasks.add_task(_send_reset_email_safe, user.email, subject, html, text)
 
     return generic
