@@ -35,6 +35,29 @@ class ForgotPasswordRequest(BaseModel):
     email: EmailStr
 
 
+class RequestOtpRequest(BaseModel):
+    email: EmailStr
+
+
+class VerifyOtpRequest(BaseModel):
+    email: EmailStr
+    code: str = Field(..., min_length=4, max_length=8)
+
+    @field_validator("code")
+    @classmethod
+    def _digits(cls, v: str) -> str:
+        v = v.strip()
+        if not v.isdigit():
+            raise ValueError("Code must be numeric")
+        return v
+
+
+class RegisterOtpRequest(BaseModel):
+    full_name: str = Field(..., min_length=1, max_length=255)
+    email: EmailStr
+    phone: str | None = Field(default=None, max_length=50)
+
+
 class ResetPasswordRequest(BaseModel):
     token: str = Field(..., min_length=10, max_length=255)
     new_password: str = Field(..., min_length=8, max_length=128)

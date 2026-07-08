@@ -1,10 +1,11 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { login } from '@/api/auth';
+import { login, requestOtp, verifyOtp } from '@/api/auth';
+import type { AuthResponse } from '@/types';
 import { listRecentPetPages, type PetPageRead } from '@/api/petPages';
 import { useAuth } from '@/hooks/useAuth';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
@@ -17,6 +18,8 @@ const loginSchema = z.object({
 });
 
 type LoginForm = z.infer<typeof loginSchema>;
+
+const isValidEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
 
 // One example pet page, styled like the Admin Pet Stories list — clickable so a
 // logged-out visitor can open a real page and see how theirs would look.
@@ -57,7 +60,7 @@ function Showcase() {
   const pages = data ?? [];
 
   return (
-    <aside className="hidden lg:block">
+    <aside className="order-2 lg:order-1">
       <p className="text-[11px] font-semibold tracking-[0.3em] text-accent-600 uppercase mb-2">
         Pet Stories
       </p>
@@ -86,17 +89,37 @@ function Showcase() {
   );
 }
 
+const inputClass = (invalid?: boolean) =>
+  `w-full px-4 py-3 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent transition-colors ${
+    invalid ? 'border-red-300 bg-red-50' : 'border-warm-200 bg-white'
+  }`;
+
 export function Login() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get('redirect') ?? '/';
   const { isAuthenticated, login: storeLogin } = useAuth();
 
+  // Which sign-in method the user is using. Password stays the default.
+  const [method, setMethod] = useState<'password' | 'otp'>('password');
+  // OTP is a two-step flow: enter email → enter the emailed code.
+  const [otpStep, setOtpStep] = useState<'request' | 'verify'>('request');
+  const [otpEmail, setOtpEmail] = useState('');
+  const [otpCode, setOtpCode] = useState('');
+  const [resendIn, setResendIn] = useState(0); // seconds until "Resend" re-enables
+
   useEffect(() => {
     if (isAuthenticated) {
       navigate(redirectTo, { replace: true });
     }
   }, [isAuthenticated, navigate, redirectTo]);
+
+  // Tick the resend cooldown down to zero.
+  useEffect(() => {
+    if (resendIn <= 0) return;
+    const id = window.setTimeout(() => setResendIn((s) => s - 1), 1000);
+    return () => window.clearTimeout(id);
+  }, [resendIn]);
 
   const {
     register,
@@ -106,31 +129,83 @@ export function Login() {
     resolver: zodResolver(loginSchema),
   });
 
-  const mutation = useMutation({
+  const onLoginSuccess = (data: AuthResponse) => {
+    storeLogin(data.access_token, data.user, data.refresh_token);
+    toast.success(`Welcome back, ${data.user.full_name}!`);
+    navigate(redirectTo, { replace: true });
+  };
+
+  const passwordMutation = useMutation({
     mutationFn: login,
-    onSuccess: (data) => {
-      storeLogin(data.access_token, data.user, data.refresh_token);
-      toast.success(`Welcome back, ${data.user.full_name}!`);
-      navigate(redirectTo, { replace: true });
-    },
-    onError: (error: Error) => {
-      toast.error(error.message);
-    },
+    onSuccess: onLoginSuccess,
+    onError: (error: Error) => toast.error(error.message),
   });
 
-  const onSubmit = (data: LoginForm) => {
-    mutation.mutate(data);
+  const requestMutation = useMutation({
+    mutationFn: (email: string) => requestOtp(email),
+    onSuccess: () => {
+      setOtpStep('verify');
+      setResendIn(60);
+      toast.success('If that email has an account, a code is on its way. Check your inbox.');
+    },
+    onError: (error: Error) => toast.error(error.message),
+  });
+
+  const verifyMutation = useMutation({
+    mutationFn: ({ email, code }: { email: string; code: string }) => verifyOtp(email, code),
+    onSuccess: onLoginSuccess,
+    onError: (error: Error) => toast.error(error.message),
+  });
+
+  const busy = passwordMutation.isPending || requestMutation.isPending || verifyMutation.isPending;
+
+  const onSubmitPassword = (data: LoginForm) => passwordMutation.mutate(data);
+
+  const onSubmitRequestOtp = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isValidEmail(otpEmail)) {
+      toast.error('Please enter a valid email address');
+      return;
+    }
+    requestMutation.mutate(otpEmail.trim());
+  };
+
+  const onSubmitVerifyOtp = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (otpCode.trim().length < 4) {
+      toast.error('Enter the code from your email');
+      return;
+    }
+    verifyMutation.mutate({ email: otpEmail.trim(), code: otpCode.trim() });
+  };
+
+  const switchMethod = (m: 'password' | 'otp') => {
+    setMethod(m);
+    if (m === 'otp') {
+      setOtpStep('request');
+      setOtpCode('');
+    }
   };
 
   return (
     <div className="bg-warm-50">
-      {mutation.isPending && <AuthTransitionOverlay message="Signing you in…" />}
+      {busy && (
+        <AuthTransitionOverlay
+          message={
+            requestMutation.isPending
+              ? 'Sending your code…'
+              : verifyMutation.isPending
+                ? 'Signing you in…'
+                : 'Signing you in…'
+          }
+        />
+      )}
       <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-10 items-center px-4 py-10 lg:py-14">
         {/* Left: showcase of real dog pages */}
         <Showcase />
 
-        {/* Right: login card */}
-        <div className="w-full max-w-md mx-auto lg:mx-0 lg:justify-self-end">
+        {/* Right: login card (comes first on mobile, right column on desktop) */}
+        <div className="order-1 lg:order-2 w-full max-w-md mx-auto lg:mx-0 lg:justify-self-end">
           <div className="bg-white rounded-3xl shadow-xl border border-warm-200 p-8">
             {/* Logo */}
             <div className="text-center mb-8">
@@ -141,89 +216,162 @@ export function Login() {
               <p className="text-warm-500">Sign in to your account</p>
             </div>
 
+            {/* Method toggle */}
+            <div className="grid grid-cols-2 gap-1 p-1 bg-warm-100 rounded-xl mb-6" role="tablist">
+              {(['password', 'otp'] as const).map((m) => (
+                <button
+                  key={m}
+                  type="button"
+                  role="tab"
+                  aria-selected={method === m}
+                  onClick={() => switchMethod(m)}
+                  className={`py-2 text-sm font-semibold rounded-lg transition-colors ${
+                    method === m
+                      ? 'bg-white text-warm-900 shadow-sm'
+                      : 'text-warm-500 hover:text-warm-700'
+                  }`}
+                >
+                  {m === 'password' ? 'Password' : 'Email code'}
+                </button>
+              ))}
+            </div>
+
             {/* method="POST" + action="" is a defensive belt-and-suspenders for
                 the SSG hydration race: if the user submits BEFORE React has
-                attached the onSubmit handler (the form HTML exists pre-JS), the
-                browser would fall back to its native default — which is GET to
-                the current URL, leaking email & password into the address bar.
-                method="POST" forces credentials into the body instead. action=""
-                points to the same page, which won't accept POST, so the worst
-                case is a wasted round-trip — never a leak. */}
-            <form method="POST" action="" onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-              {/* Email */}
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-warm-700 mb-1.5">
-                  Email address
-                </label>
-                <input
-                  {...register('email')}
-                  id="email"
-                  type="email"
-                  autoComplete="email"
-                  placeholder="you@example.com"
-                  className={`w-full px-4 py-3 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent transition-colors ${
-                    errors.email ? 'border-red-300 bg-red-50' : 'border-warm-200 bg-white'
-                  }`}
-                />
-                {errors.email && (
-                  <p className="mt-1.5 text-xs text-red-600 flex items-center gap-1">
-                    <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                    </svg>
-                    {errors.email.message}
-                  </p>
-                )}
-              </div>
-
-              {/* Password */}
-              <div>
-                <div className="flex items-center justify-between mb-1.5">
-                  <label htmlFor="password" className="block text-sm font-medium text-warm-700">
-                    Password
+                attached onSubmit (the form HTML exists pre-JS), the browser's
+                native fallback is GET to the current URL, leaking credentials
+                into the address bar. method="POST" forces them into the body. */}
+            {method === 'password' ? (
+              <form method="POST" action="" onSubmit={handleSubmit(onSubmitPassword)} className="space-y-5">
+                {/* Email */}
+                <div>
+                  <label htmlFor="email" className="block text-sm font-medium text-warm-700 mb-1.5">
+                    Email address
                   </label>
-                  <Link
-                    to="/forgot-password"
-                    className="text-xs font-medium text-primary-600 hover:text-primary-700 hover:underline"
-                  >
-                    Forgot password?
-                  </Link>
+                  <input
+                    {...register('email')}
+                    id="email"
+                    type="email"
+                    autoComplete="email"
+                    placeholder="you@example.com"
+                    className={inputClass(!!errors.email)}
+                  />
+                  {errors.email && (
+                    <p className="mt-1.5 text-xs text-red-600">{errors.email.message}</p>
+                  )}
                 </div>
-                <input
-                  {...register('password')}
-                  id="password"
-                  type="password"
-                  autoComplete="current-password"
-                  placeholder="••••••••"
-                  className={`w-full px-4 py-3 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent transition-colors ${
-                    errors.password ? 'border-red-300 bg-red-50' : 'border-warm-200 bg-white'
-                  }`}
-                />
-                {errors.password && (
-                  <p className="mt-1.5 text-xs text-red-600 flex items-center gap-1">
-                    <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                    </svg>
-                    {errors.password.message}
-                  </p>
-                )}
-              </div>
 
-              {/* Submit */}
-              <button
-                type="submit"
-                disabled={mutation.isPending}
-                className="w-full py-3.5 bg-primary-500 text-white font-bold rounded-xl hover:bg-primary-600 transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-primary-200"
-              >
-                {mutation.isPending ? (
-                  <>
-                    <LoadingSpinner size="sm" />
-                    Signing in...
-                  </>
-                ) : (
-                  'Sign In'
-                )}
-              </button>
-            </form>
+                {/* Password */}
+                <div>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label htmlFor="password" className="block text-sm font-medium text-warm-700">
+                      Password
+                    </label>
+                    <Link
+                      to="/forgot-password"
+                      className="text-xs font-medium text-primary-600 hover:text-primary-700 hover:underline"
+                    >
+                      Forgot password?
+                    </Link>
+                  </div>
+                  <input
+                    {...register('password')}
+                    id="password"
+                    type="password"
+                    autoComplete="current-password"
+                    placeholder="••••••••"
+                    className={inputClass(!!errors.password)}
+                  />
+                  {errors.password && (
+                    <p className="mt-1.5 text-xs text-red-600">{errors.password.message}</p>
+                  )}
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={busy}
+                  className="w-full py-3.5 bg-primary-500 text-white font-bold rounded-xl hover:bg-primary-600 transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-primary-200"
+                >
+                  {passwordMutation.isPending ? (<><LoadingSpinner size="sm" />Signing in...</>) : 'Sign In'}
+                </button>
+              </form>
+            ) : otpStep === 'request' ? (
+              <form method="POST" action="" onSubmit={onSubmitRequestOtp} className="space-y-5">
+                <div>
+                  <label htmlFor="otp-email" className="block text-sm font-medium text-warm-700 mb-1.5">
+                    Email address
+                  </label>
+                  <input
+                    id="otp-email"
+                    type="email"
+                    autoComplete="email"
+                    placeholder="you@example.com"
+                    value={otpEmail}
+                    onChange={(e) => setOtpEmail(e.target.value)}
+                    className={inputClass(false)}
+                  />
+                  <p className="mt-1.5 text-xs text-warm-500">
+                    We'll email you a 6-digit code to sign in — no password needed.
+                  </p>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={busy}
+                  className="w-full py-3.5 bg-primary-500 text-white font-bold rounded-xl hover:bg-primary-600 transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-primary-200"
+                >
+                  {requestMutation.isPending ? (<><LoadingSpinner size="sm" />Sending…</>) : 'Send code'}
+                </button>
+              </form>
+            ) : (
+              <form method="POST" action="" onSubmit={onSubmitVerifyOtp} className="space-y-5">
+                <p className="text-sm text-warm-600">
+                  Enter the code we sent to <span className="font-semibold text-warm-900">{otpEmail}</span>.
+                </p>
+                <div>
+                  <label htmlFor="otp-code" className="block text-sm font-medium text-warm-700 mb-1.5">
+                    Login code
+                  </label>
+                  <input
+                    id="otp-code"
+                    type="text"
+                    inputMode="numeric"
+                    autoComplete="one-time-code"
+                    maxLength={8}
+                    placeholder="123456"
+                    value={otpCode}
+                    onChange={(e) => setOtpCode(e.target.value.replace(/[^0-9]/g, ''))}
+                    className={`${inputClass(false)} text-center text-2xl font-bold tracking-[0.5em]`}
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={busy}
+                  className="w-full py-3.5 bg-primary-500 text-white font-bold rounded-xl hover:bg-primary-600 transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-primary-200"
+                >
+                  {verifyMutation.isPending ? (<><LoadingSpinner size="sm" />Signing in…</>) : 'Verify & sign in'}
+                </button>
+
+                <div className="flex items-center justify-between text-xs">
+                  <button
+                    type="button"
+                    onClick={() => { setOtpStep('request'); setOtpCode(''); }}
+                    className="font-medium text-warm-500 hover:text-warm-700"
+                  >
+                    ← Change email
+                  </button>
+                  <button
+                    type="button"
+                    disabled={resendIn > 0 || requestMutation.isPending}
+                    onClick={() => requestMutation.mutate(otpEmail.trim())}
+                    className="font-medium text-primary-600 hover:text-primary-700 disabled:text-warm-400 disabled:cursor-not-allowed"
+                  >
+                    {resendIn > 0 ? `Resend in ${resendIn}s` : 'Resend code'}
+                  </button>
+                </div>
+              </form>
+            )}
 
             <div className="mt-6 text-center">
               <p className="text-sm text-warm-500">

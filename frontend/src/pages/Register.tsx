@@ -1,10 +1,11 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useMutation } from '@tanstack/react-query';
-import { register as registerApi } from '@/api/auth';
+import { register as registerApi, registerOtp, requestOtp, verifyOtp } from '@/api/auth';
+import type { AuthResponse } from '@/types';
 import { useAuth } from '@/hooks/useAuth';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { toast } from '@/store/toastStore';
@@ -37,17 +38,33 @@ const registerSchema = z
 
 type RegisterForm = z.infer<typeof registerSchema>;
 
+const isValidEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
+
 export function Register() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get('redirect') ?? '/';
   const { isAuthenticated, login: storeLogin } = useAuth();
 
+  const [method, setMethod] = useState<'password' | 'otp'>('password');
+  const [otpStep, setOtpStep] = useState<'request' | 'verify'>('request');
+  const [otpName, setOtpName] = useState('');
+  const [otpEmail, setOtpEmail] = useState('');
+  const [otpPhone, setOtpPhone] = useState('');
+  const [otpCode, setOtpCode] = useState('');
+  const [resendIn, setResendIn] = useState(0);
+
   useEffect(() => {
     if (isAuthenticated) {
       navigate(redirectTo, { replace: true });
     }
   }, [isAuthenticated, navigate, redirectTo]);
+
+  useEffect(() => {
+    if (resendIn <= 0) return;
+    const id = window.setTimeout(() => setResendIn((s) => s - 1), 1000);
+    return () => window.clearTimeout(id);
+  }, [resendIn]);
 
   const {
     register,
@@ -57,20 +74,77 @@ export function Register() {
     resolver: zodResolver(registerSchema),
   });
 
-  const mutation = useMutation({
+  const onAuthSuccess = (data: AuthResponse) => {
+    storeLogin(data.access_token, data.user, data.refresh_token);
+    toast.success(`Welcome to HiSpike, ${data.user.full_name}!`);
+    navigate(redirectTo, { replace: true });
+  };
+
+  const passwordMutation = useMutation({
     mutationFn: registerApi,
-    onSuccess: (data) => {
-      storeLogin(data.access_token, data.user, data.refresh_token);
-      toast.success(`Welcome to HiSpike, ${data.user.full_name}!`);
-      navigate(redirectTo, { replace: true });
-    },
-    onError: (error: Error) => {
-      toast.error(error.message);
-    },
+    onSuccess: onAuthSuccess,
+    onError: (error: Error) => toast.error(error.message),
   });
 
-  const onSubmit = (data: RegisterForm) => {
-    mutation.mutate(data);
+  // OTP sign-up: create the passwordless account + email a code.
+  const requestMutation = useMutation({
+    mutationFn: registerOtp,
+    onSuccess: () => {
+      setOtpStep('verify');
+      setResendIn(60);
+      toast.success('Check your email for a code to finish signing up.');
+    },
+    onError: (error: Error) => toast.error(error.message),
+  });
+
+  // Resend uses the login-code endpoint (the account already exists by now).
+  const resendMutation = useMutation({
+    mutationFn: (email: string) => requestOtp(email),
+    onSuccess: () => {
+      setResendIn(60);
+      toast.success('A new code is on its way.');
+    },
+    onError: (error: Error) => toast.error(error.message),
+  });
+
+  const verifyMutation = useMutation({
+    mutationFn: ({ email, code }: { email: string; code: string }) => verifyOtp(email, code),
+    onSuccess: onAuthSuccess,
+    onError: (error: Error) => toast.error(error.message),
+  });
+
+  const busy =
+    passwordMutation.isPending ||
+    requestMutation.isPending ||
+    resendMutation.isPending ||
+    verifyMutation.isPending;
+
+  const onSubmitPassword = (data: RegisterForm) => passwordMutation.mutate(data);
+
+  const onSubmitRequestOtp = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (otpName.trim().length < 2) {
+      toast.error('Please enter your name');
+      return;
+    }
+    if (!isValidEmail(otpEmail)) {
+      toast.error('Please enter a valid email address');
+      return;
+    }
+    requestMutation.mutate({
+      full_name: otpName.trim(),
+      email: otpEmail.trim(),
+      phone: otpPhone.trim() || undefined,
+    });
+  };
+
+  const onSubmitVerifyOtp = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (otpCode.trim().length < 4) {
+      toast.error('Enter the code from your email');
+      return;
+    }
+    verifyMutation.mutate({ email: otpEmail.trim(), code: otpCode.trim() });
   };
 
   const fieldClass = (hasError: boolean) =>
@@ -101,115 +175,125 @@ export function Register() {
             <p className="text-warm-500">Join thousands of dog lovers</p>
           </div>
 
+          {/* Method toggle */}
+          <div className="grid grid-cols-2 gap-1 p-1 bg-warm-100 rounded-xl mb-6" role="tablist">
+            {(['password', 'otp'] as const).map((m) => (
+              <button
+                key={m}
+                type="button"
+                role="tab"
+                aria-selected={method === m}
+                onClick={() => { setMethod(m); if (m === 'otp') { setOtpStep('request'); setOtpCode(''); } }}
+                className={`py-2 text-sm font-semibold rounded-lg transition-colors ${
+                  method === m ? 'bg-white text-warm-900 shadow-sm' : 'text-warm-500 hover:text-warm-700'
+                }`}
+              >
+                {m === 'password' ? 'Password' : 'Email code'}
+              </button>
+            ))}
+          </div>
+
           {/* See Login.tsx — method="POST" guards against the SSG hydration
               race exposing typed credentials in the URL on native submit. */}
-          <form method="POST" action="" onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            {/* Full Name */}
-            <div>
-              <label htmlFor="full_name" className="block text-sm font-medium text-warm-700 mb-1.5">
-                Full name
-              </label>
-              <input
-                {...register('full_name')}
-                id="full_name"
-                type="text"
-                autoComplete="name"
-                placeholder="Jane Doe"
-                className={fieldClass(!!errors.full_name)}
-              />
-              {errorEl(errors.full_name?.message)}
-            </div>
-
-            {/* Email */}
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-warm-700 mb-1.5">
-                Email address
-              </label>
-              <input
-                {...register('email')}
-                id="email"
-                type="email"
-                autoComplete="email"
-                placeholder="you@example.com"
-                className={fieldClass(!!errors.email)}
-              />
-              {errorEl(errors.email?.message)}
-            </div>
-
-            {/* Phone */}
-            <div>
-              <label htmlFor="phone" className="block text-sm font-medium text-warm-700 mb-1.5">
-                Phone number{' '}
-                <span className="text-warm-400 font-normal">(optional)</span>
-              </label>
-              <input
-                {...register('phone')}
-                id="phone"
-                type="tel"
-                autoComplete="tel"
-                placeholder="+1 (555) 000-0000"
-                className={fieldClass(!!errors.phone)}
-              />
-              {errorEl(errors.phone?.message)}
-            </div>
-
-            {/* Password */}
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-warm-700 mb-1.5">
-                Password
-              </label>
-              <input
-                {...register('password')}
-                id="password"
-                type="password"
-                autoComplete="new-password"
-                placeholder="Min 8 chars, 1 uppercase, 1 number"
-                className={fieldClass(!!errors.password)}
-              />
-              {errorEl(errors.password?.message)}
-            </div>
-
-            {/* Confirm Password */}
-            <div>
-              <label htmlFor="confirm_password" className="block text-sm font-medium text-warm-700 mb-1.5">
-                Confirm password
-              </label>
-              <input
-                {...register('confirm_password')}
-                id="confirm_password"
-                type="password"
-                autoComplete="new-password"
-                placeholder="••••••••"
-                className={fieldClass(!!errors.confirm_password)}
-              />
-              {errorEl(errors.confirm_password?.message)}
-            </div>
-
-            <button
-              type="submit"
-              disabled={mutation.isPending}
-              className="w-full py-3.5 mt-2 bg-primary-500 text-white font-bold rounded-xl hover:bg-primary-600 transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-primary-200"
-            >
-              {mutation.isPending ? (
-                <>
-                  <LoadingSpinner size="sm" />
-                  Creating account...
-                </>
-              ) : (
-                'Create Account'
-              )}
-            </button>
-          </form>
+          {method === 'password' ? (
+            <form method="POST" action="" onSubmit={handleSubmit(onSubmitPassword)} className="space-y-4">
+              <div>
+                <label htmlFor="full_name" className="block text-sm font-medium text-warm-700 mb-1.5">Full name</label>
+                <input {...register('full_name')} id="full_name" type="text" autoComplete="name" placeholder="Jane Doe" className={fieldClass(!!errors.full_name)} />
+                {errorEl(errors.full_name?.message)}
+              </div>
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-warm-700 mb-1.5">Email address</label>
+                <input {...register('email')} id="email" type="email" autoComplete="email" placeholder="you@example.com" className={fieldClass(!!errors.email)} />
+                {errorEl(errors.email?.message)}
+              </div>
+              <div>
+                <label htmlFor="phone" className="block text-sm font-medium text-warm-700 mb-1.5">
+                  Phone number <span className="text-warm-400 font-normal">(optional)</span>
+                </label>
+                <input {...register('phone')} id="phone" type="tel" autoComplete="tel" placeholder="+91 98765 43210" className={fieldClass(!!errors.phone)} />
+                {errorEl(errors.phone?.message)}
+              </div>
+              <div>
+                <label htmlFor="password" className="block text-sm font-medium text-warm-700 mb-1.5">Password</label>
+                <input {...register('password')} id="password" type="password" autoComplete="new-password" placeholder="Min 8 chars, 1 uppercase, 1 number" className={fieldClass(!!errors.password)} />
+                {errorEl(errors.password?.message)}
+              </div>
+              <div>
+                <label htmlFor="confirm_password" className="block text-sm font-medium text-warm-700 mb-1.5">Confirm password</label>
+                <input {...register('confirm_password')} id="confirm_password" type="password" autoComplete="new-password" placeholder="••••••••" className={fieldClass(!!errors.confirm_password)} />
+                {errorEl(errors.confirm_password?.message)}
+              </div>
+              <button type="submit" disabled={busy} className="w-full py-3.5 mt-2 bg-primary-500 text-white font-bold rounded-xl hover:bg-primary-600 transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-primary-200">
+                {passwordMutation.isPending ? (<><LoadingSpinner size="sm" />Creating account...</>) : 'Create Account'}
+              </button>
+            </form>
+          ) : otpStep === 'request' ? (
+            <form method="POST" action="" onSubmit={onSubmitRequestOtp} className="space-y-4">
+              <div>
+                <label htmlFor="otp-name" className="block text-sm font-medium text-warm-700 mb-1.5">Full name</label>
+                <input id="otp-name" type="text" autoComplete="name" placeholder="Jane Doe" value={otpName} onChange={(e) => setOtpName(e.target.value)} className={fieldClass(false)} />
+              </div>
+              <div>
+                <label htmlFor="otp-email" className="block text-sm font-medium text-warm-700 mb-1.5">Email address</label>
+                <input id="otp-email" type="email" autoComplete="email" placeholder="you@example.com" value={otpEmail} onChange={(e) => setOtpEmail(e.target.value)} className={fieldClass(false)} />
+              </div>
+              <div>
+                <label htmlFor="otp-phone" className="block text-sm font-medium text-warm-700 mb-1.5">
+                  Phone number <span className="text-warm-400 font-normal">(optional)</span>
+                </label>
+                <input id="otp-phone" type="tel" autoComplete="tel" placeholder="+91 98765 43210" value={otpPhone} onChange={(e) => setOtpPhone(e.target.value)} className={fieldClass(false)} />
+              </div>
+              <p className="text-xs text-warm-500">
+                We'll email you a 6-digit code to create your account — no password needed.
+              </p>
+              <button type="submit" disabled={busy} className="w-full py-3.5 mt-1 bg-primary-500 text-white font-bold rounded-xl hover:bg-primary-600 transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-primary-200">
+                {requestMutation.isPending ? (<><LoadingSpinner size="sm" />Sending…</>) : 'Send code'}
+              </button>
+            </form>
+          ) : (
+            <form method="POST" action="" onSubmit={onSubmitVerifyOtp} className="space-y-4">
+              <p className="text-sm text-warm-600">
+                Enter the code we sent to <span className="font-semibold text-warm-900">{otpEmail}</span> to finish creating your account.
+              </p>
+              <div>
+                <label htmlFor="otp-code" className="block text-sm font-medium text-warm-700 mb-1.5">Sign-up code</label>
+                <input
+                  id="otp-code"
+                  type="text"
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                  maxLength={8}
+                  placeholder="123456"
+                  value={otpCode}
+                  onChange={(e) => setOtpCode(e.target.value.replace(/[^0-9]/g, ''))}
+                  className={`${fieldClass(false)} text-center text-2xl font-bold tracking-[0.5em]`}
+                />
+              </div>
+              <button type="submit" disabled={busy} className="w-full py-3.5 bg-primary-500 text-white font-bold rounded-xl hover:bg-primary-600 transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-primary-200">
+                {verifyMutation.isPending ? (<><LoadingSpinner size="sm" />Creating account…</>) : 'Verify & create account'}
+              </button>
+              <div className="flex items-center justify-between text-xs">
+                <button type="button" onClick={() => { setOtpStep('request'); setOtpCode(''); }} className="font-medium text-warm-500 hover:text-warm-700">
+                  ← Edit details
+                </button>
+                <button
+                  type="button"
+                  disabled={resendIn > 0 || resendMutation.isPending}
+                  onClick={() => resendMutation.mutate(otpEmail.trim())}
+                  className="font-medium text-primary-600 hover:text-primary-700 disabled:text-warm-400 disabled:cursor-not-allowed"
+                >
+                  {resendIn > 0 ? `Resend in ${resendIn}s` : 'Resend code'}
+                </button>
+              </div>
+            </form>
+          )}
 
           <p className="mt-6 text-center text-xs text-warm-400 leading-relaxed">
             By creating an account, you agree to our{' '}
-            <Link to="/terms" className="text-primary-600 font-medium hover:text-primary-700 hover:underline">
-              Terms of Service
-            </Link>{' '}
+            <Link to="/terms" className="text-primary-600 font-medium hover:text-primary-700 hover:underline">Terms of Service</Link>{' '}
             and{' '}
-            <Link to="/privacy" className="text-primary-600 font-medium hover:text-primary-700 hover:underline">
-              Privacy Policy
-            </Link>.
+            <Link to="/privacy" className="text-primary-600 font-medium hover:text-primary-700 hover:underline">Privacy Policy</Link>.
           </p>
 
           <div className="mt-4 text-center">

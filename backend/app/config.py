@@ -48,6 +48,12 @@ class Settings(BaseSettings):
     # Password-reset token lifetime.
     PASSWORD_RESET_TOKEN_EXPIRE_MINUTES: int = 60
 
+    # Email login codes (OTP).
+    OTP_LENGTH: int = 6
+    OTP_EXPIRE_MINUTES: int = 10
+    OTP_MAX_ATTEMPTS: int = 5           # wrong guesses before the code is void
+    OTP_RESEND_COOLDOWN_SECONDS: int = 60  # min gap between requesting new codes
+
     # CORS
     CORS_ORIGINS: List[str] = [
         "http://localhost:3000",

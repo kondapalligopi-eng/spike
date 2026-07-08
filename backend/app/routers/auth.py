@@ -19,14 +19,19 @@ from app.core.security import (
     verify_password,
 )
 from app.database import get_db
+from app.models.email_otp import EmailOtp
 from app.models.password_reset_token import PasswordResetToken
+from app.models.user import User, UserRole
 from app.schemas.auth import (
     AccessToken,
     ForgotPasswordRequest,
     MessageResponse,
+    RegisterOtpRequest,
+    RequestOtpRequest,
     ResetPasswordRequest,
     Token,
     TokenRefresh,
+    VerifyOtpRequest,
 )
 from app.schemas.user import UserCreate, UserLogin, UserResponse
 from app.services import email_service
@@ -69,6 +74,74 @@ async def register(
 
 
 @router.post(
+    "/register-otp",
+    response_model=MessageResponse,
+    summary="Start a passwordless sign-up: create the account and email a login code",
+)
+async def register_otp(
+    payload: RegisterOtpRequest,
+    background_tasks: BackgroundTasks,
+    db: AsyncSession = Depends(get_db),
+) -> MessageResponse:
+    if await UserService.email_exists(db, payload.email):
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="An account with this email already exists",
+        )
+    if not email_service.is_configured():
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Email sign-up is unavailable right now. Please create an account with a password instead.",
+        )
+
+    # Passwordless account: store an unguessable random password so the row is
+    # valid; the user signs in with email codes (or sets a password later via
+    # the reset flow). The code emailed below verifies they own the address.
+    user = User(
+        email=payload.email.lower().strip(),
+        hashed_password=hash_password(secrets.token_urlsafe(32)),
+        full_name=payload.full_name,
+        phone=payload.phone,
+        role=UserRole.user,
+        is_active=True,
+    )
+    db.add(user)
+    await db.flush()
+
+    now = datetime.now(timezone.utc)
+    length = settings.OTP_LENGTH
+    code = f"{secrets.randbelow(10 ** length):0{length}d}"
+    minutes = settings.OTP_EXPIRE_MINUTES
+    db.add(
+        EmailOtp(
+            user_id=user.id,
+            code_hash=_hash_token(code),
+            expires_at=now + timedelta(minutes=minutes),
+        )
+    )
+    await db.flush()
+
+    name = user.full_name or "there"
+    subject = "Your HiSpike sign-up code"
+    text = (
+        f"Hi {name},\n\n"
+        f"Welcome to HiSpike! Your sign-up code is {code}. It expires in {minutes} minutes.\n\n"
+        "If you didn't request this, you can safely ignore this email.\n\n— HiSpike"
+    )
+    html = (
+        f"<p>Hi {name},</p>"
+        "<p>Welcome to HiSpike! Your sign-up code is:</p>"
+        f'<p style="font-size:30px;font-weight:800;letter-spacing:8px;margin:12px 0">{code}</p>'
+        f"<p>It expires in {minutes} minutes.</p>"
+        "<p>If you didn't request this, you can safely ignore this email.</p>"
+        "<p>— HiSpike</p>"
+    )
+    background_tasks.add_task(_send_reset_email_safe, user.email, subject, html, text)
+
+    return MessageResponse(message="We've emailed you a code to finish creating your account.")
+
+
+@router.post(
     "/login",
     response_model=Token,
     summary="Authenticate and receive JWT tokens",
@@ -89,6 +162,140 @@ async def login(
             detail="Account is deactivated",
         )
 
+    access_token = create_access_token(user.id, user.email, user.role.value)
+    refresh_token = create_refresh_token(user.id)
+    return Token(access_token=access_token, refresh_token=refresh_token)
+
+
+@router.post(
+    "/request-otp",
+    response_model=MessageResponse,
+    summary="Email a one-time login code",
+)
+async def request_otp(
+    payload: RequestOtpRequest,
+    background_tasks: BackgroundTasks,
+    db: AsyncSession = Depends(get_db),
+) -> MessageResponse:
+    # Same message whether or not the account exists — never reveal who's registered.
+    generic = MessageResponse(
+        message="If an account exists for that email, a login code has been sent."
+    )
+
+    user = await UserService.get_by_email(db, payload.email)
+    if user is None or not user.is_active:
+        return generic
+    if not email_service.is_configured():
+        logger.warning("OTP requested but email is not configured; no code sent.")
+        return generic
+
+    now = datetime.now(timezone.utc)
+
+    # Resend cooldown: if a code was issued very recently, don't send another.
+    latest_res = await db.execute(
+        select(EmailOtp)
+        .where(EmailOtp.user_id == user.id, EmailOtp.used_at.is_(None))
+        .order_by(EmailOtp.created_at.desc())
+        .limit(1)
+    )
+    latest = latest_res.scalar_one_or_none()
+    if latest is not None:
+        created = latest.created_at
+        if created.tzinfo is None:
+            created = created.replace(tzinfo=timezone.utc)
+        if (now - created).total_seconds() < settings.OTP_RESEND_COOLDOWN_SECONDS:
+            return generic
+
+    # Invalidate any outstanding codes, then issue a fresh one.
+    await db.execute(
+        update(EmailOtp)
+        .where(EmailOtp.user_id == user.id, EmailOtp.used_at.is_(None))
+        .values(used_at=now)
+        .execution_options(synchronize_session=False)
+    )
+    length = settings.OTP_LENGTH
+    code = f"{secrets.randbelow(10 ** length):0{length}d}"
+    minutes = settings.OTP_EXPIRE_MINUTES
+    db.add(
+        EmailOtp(
+            user_id=user.id,
+            code_hash=_hash_token(code),
+            expires_at=now + timedelta(minutes=minutes),
+        )
+    )
+    await db.flush()
+
+    name = user.full_name or "there"
+    subject = "Your HiSpike login code"
+    text = (
+        f"Hi {name},\n\n"
+        f"Your HiSpike login code is {code}. It expires in {minutes} minutes.\n\n"
+        "If you didn't request this, you can safely ignore this email.\n\n— HiSpike"
+    )
+    html = (
+        f"<p>Hi {name},</p>"
+        "<p>Your HiSpike login code is:</p>"
+        f'<p style="font-size:30px;font-weight:800;letter-spacing:8px;margin:12px 0">{code}</p>'
+        f"<p>It expires in {minutes} minutes.</p>"
+        "<p>If you didn't request this, you can safely ignore this email.</p>"
+        "<p>— HiSpike</p>"
+    )
+    background_tasks.add_task(_send_reset_email_safe, user.email, subject, html, text)
+
+    return generic
+
+
+@router.post(
+    "/verify-otp",
+    response_model=Token,
+    summary="Exchange an email login code for JWT tokens",
+)
+async def verify_otp(
+    payload: VerifyOtpRequest,
+    db: AsyncSession = Depends(get_db),
+) -> Token:
+    invalid = HTTPException(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        detail="That code is invalid or has expired. Please request a new one.",
+    )
+
+    user = await UserService.get_by_email(db, payload.email)
+    if user is None or not user.is_active:
+        raise invalid
+
+    now = datetime.now(timezone.utc)
+    result = await db.execute(
+        select(EmailOtp)
+        .where(EmailOtp.user_id == user.id, EmailOtp.used_at.is_(None))
+        .order_by(EmailOtp.created_at.desc())
+        .limit(1)
+    )
+    otp = result.scalar_one_or_none()
+    if otp is None:
+        raise invalid
+
+    expires_at = otp.expires_at
+    if expires_at.tzinfo is None:
+        expires_at = expires_at.replace(tzinfo=timezone.utc)
+    if expires_at < now:
+        raise invalid
+
+    # Too many wrong guesses → burn the code so it can't be brute-forced.
+    if otp.attempts >= settings.OTP_MAX_ATTEMPTS:
+        otp.used_at = now
+        await db.commit()  # persist before the rollback that raising triggers
+        raise invalid
+
+    if _hash_token(payload.code) != otp.code_hash:
+        otp.attempts += 1
+        await db.commit()  # persist the attempt count (get_db rolls back on raise)
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Incorrect code. Please try again.",
+        )
+
+    # Correct code → consume it and issue tokens (same as a password login).
+    otp.used_at = now
     access_token = create_access_token(user.id, user.email, user.role.value)
     refresh_token = create_refresh_token(user.id)
     return Token(access_token=access_token, refresh_token=refresh_token)
