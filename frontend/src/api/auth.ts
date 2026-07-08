@@ -115,6 +115,48 @@ export async function forgotPassword(email: string): Promise<{ message: string }
   return res.data;
 }
 
+// Request a one-time login code by email. Always resolves with a generic
+// message (the backend won't reveal whether the account exists).
+export async function requestOtp(email: string): Promise<{ message: string }> {
+  if (USE_MOCK) {
+    await delay(500);
+    return { message: 'If an account exists for that email, a login code has been sent.' };
+  }
+  const res = await apiClient.post<{ message: string }>('/auth/request-otp', { email });
+  return res.data;
+}
+
+// Verify an emailed login code and sign the user in. Mirrors login(): the
+// backend returns tokens only, so we fetch /users/me to build the AuthResponse.
+export async function verifyOtp(email: string, code: string): Promise<AuthResponse> {
+  if (USE_MOCK) {
+    await delay(500);
+    const user = MOCK_USERS.find((u) => u.email === email);
+    if (!user || code.length < 4) {
+      throw new Error('That code is invalid or has expired. Please request a new one.');
+    }
+    mockCurrentUser = user;
+    return { access_token: 'mock-jwt-token-' + user.id, token_type: 'bearer', user };
+  }
+
+  const tokenResp = await apiClient.post<{
+    access_token: string;
+    refresh_token: string;
+    token_type: string;
+  }>('/auth/verify-otp', { email, code });
+
+  const userResp = await apiClient.get<User>('/users/me', {
+    headers: { Authorization: `Bearer ${tokenResp.data.access_token}` },
+  });
+
+  return {
+    access_token: tokenResp.data.access_token,
+    refresh_token: tokenResp.data.refresh_token,
+    token_type: tokenResp.data.token_type,
+    user: userResp.data,
+  };
+}
+
 // Complete a reset: exchange the emailed token for a new password.
 export async function resetPassword(
   token: string,
