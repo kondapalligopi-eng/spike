@@ -21,10 +21,12 @@ from app.core.security import (
 from app.database import get_db
 from app.models.email_otp import EmailOtp
 from app.models.password_reset_token import PasswordResetToken
+from app.models.user import User, UserRole
 from app.schemas.auth import (
     AccessToken,
     ForgotPasswordRequest,
     MessageResponse,
+    RegisterOtpRequest,
     RequestOtpRequest,
     ResetPasswordRequest,
     Token,
