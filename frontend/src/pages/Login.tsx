@@ -204,8 +204,8 @@ export function Login() {
         {/* Left: showcase of real dog pages */}
         <Showcase />
 
-        {/* Right: login card */}
-        <div className="w-full max-w-md mx-auto lg:mx-0 lg:justify-self-end">
+        {/* Right: login card (comes first on mobile, right column on desktop) */}
+        <div className="order-1 lg:order-2 w-full max-w-md mx-auto lg:mx-0 lg:justify-self-end">
           <div className="bg-white rounded-3xl shadow-xl border border-warm-200 p-8">
             {/* Logo */}
             <div className="text-center mb-8">
