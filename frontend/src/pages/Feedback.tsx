@@ -151,7 +151,7 @@ export function Feedback() {
                 </svg>
               </span>
               <div className="min-w-0">
-                <p className="text-sm font-bold text-warm-900">Our office</p>
+                <p className="text-sm font-bold text-warm-900">Registered Address</p>
                 <address className="not-italic text-sm text-warm-600 leading-relaxed mt-1">
                   WeWork Salarpuria Magnificia, Tin Factory,<br />
                   78 Old Madras Road, Mahadevapura,<br />
