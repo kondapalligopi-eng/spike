@@ -197,14 +197,6 @@ export function Login() {
     verifyMutation.mutate({ email: otpEmail.trim(), code: otpCode.trim() });
   };
 
-  const switchMethod = (m: 'password' | 'otp') => {
-    setMethod(m);
-    if (m === 'otp') {
-      setOtpStep('request');
-      setOtpCode('');
-    }
-  };
-
   return (
     <div className="bg-warm-50">
       {busy && (
