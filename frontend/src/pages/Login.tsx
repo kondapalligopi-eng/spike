@@ -60,7 +60,7 @@ function Showcase() {
   const pages = data ?? [];
 
   return (
-    <aside className="hidden lg:block">
+    <aside className="order-2 lg:order-1">
       <p className="text-[11px] font-semibold tracking-[0.3em] text-accent-600 uppercase mb-2">
         Pet Stories
       </p>
