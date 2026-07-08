@@ -100,8 +100,18 @@ export function Login() {
   const redirectTo = searchParams.get('redirect') ?? '/';
   const { isAuthenticated, login: storeLogin } = useAuth();
 
-  // Which sign-in method the user is using. Password stays the default.
-  const [method, setMethod] = useState<'password' | 'otp'>('password');
+  // Which sign-in method — driven by the URL (?method=otp) so the tabs are
+  // plain links that respond to the very first tap, even before React has
+  // hydrated. (On a cold mobile load a button's onClick isn't wired up yet,
+  // so the tap was being ignored until a refresh.)
+  const method: 'password' | 'otp' = searchParams.get('method') === 'otp' ? 'otp' : 'password';
+  const tabTo = (m: 'password' | 'otp') => {
+    const p = new URLSearchParams();
+    if (redirectTo !== '/') p.set('redirect', redirectTo);
+    if (m === 'otp') p.set('method', 'otp');
+    const qs = p.toString();
+    return `/login${qs ? `?${qs}` : ''}`;
+  };
   // OTP is a two-step flow: enter email → enter the emailed code.
   const [otpStep, setOtpStep] = useState<'request' | 'verify'>('request');
   const [otpEmail, setOtpEmail] = useState('');
