@@ -166,7 +166,7 @@ export function OurStory() {
               <p className="font-semibold text-warm-900">HiSpike</p>
               <p>Proprietorship · GSTIN <span className="font-mono">29EHWPS8826R1ZK</span></p>
               <p className="mt-1">
-                WeWork Salarpuria Magnificia, Tin Factory, 78 Old Madras Road,
+                Registered Address: WeWork Salarpuria Magnificia, Tin Factory, 78 Old Madras Road,
                 Mahadevapura, next to KR Puram, Bangalore, Karnataka 560016
               </p>
               <a
