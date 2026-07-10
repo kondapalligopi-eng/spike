@@ -38,6 +38,18 @@ const clearStoredRedirect = () => {
   try { sessionStorage.removeItem(REDIRECT_KEY); } catch { /* private mode */ }
 };
 
+// How many recent pages the showcase pulls. The backend caps /recent at 12.
+const SHOWCASE_LIMIT = 8;
+
+// Mobile: a horizontal snap-scrolling strip, so eight pages cost one card of
+// height instead of eight — the login card stays near the top of the screen.
+// Desktop (lg): back to a vertical list, capped in height and scrollable.
+const LIST_CLASS =
+  'flex gap-3 overflow-x-auto snap-x snap-mandatory pb-3 -mx-4 px-4 ' +
+  'lg:mx-0 lg:px-0 lg:pr-1 lg:block lg:space-y-3 lg:max-w-md ' +
+  'lg:max-h-[26rem] lg:overflow-x-visible lg:overflow-y-auto';
+const ITEM_CLASS = 'shrink-0 w-[262px] snap-start lg:w-full lg:shrink';
+
 // One example pet page, styled like the Admin Pet Stories list — clickable so a
 // logged-out visitor can open a real page and see how theirs would look.
 function ShowcaseCard({ page }: { page: PetPageRead }) {
@@ -46,7 +58,7 @@ function ShowcaseCard({ page }: { page: PetPageRead }) {
       href={`/pet/${page.slug}`}
       target="_blank"
       rel="noopener noreferrer"
-      className="flex items-center gap-4 rounded-2xl border border-warm-200 bg-white p-3 hover:border-primary-300 hover:shadow-md transition"
+      className={`${ITEM_CLASS} flex items-center gap-4 rounded-2xl border border-warm-200 bg-white p-3 hover:border-primary-300 hover:shadow-md transition`}
     >
       <div className="w-16 h-16 rounded-xl overflow-hidden bg-warm-100 flex items-center justify-center shrink-0">
         {page.photos[0] ? (
