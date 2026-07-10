@@ -21,6 +21,23 @@ type LoginForm = z.infer<typeof loginSchema>;
 
 const isValidEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
 
+// Where to send the user after signing in. It rides in ?redirect=, but the
+// method tabs are plain links whose href must be identical on the server and
+// the client (the page is pre-rendered without query params — a differing href
+// is a hydration mismatch that React resolves by KEEPING the server's value).
+// So the tabs link to a bare /login and we stash the destination here instead;
+// that also means a pre-hydration tap on a tab can't lose it.
+const REDIRECT_KEY = 'hispike_login_redirect';
+const readStoredRedirect = (): string | null => {
+  try { return sessionStorage.getItem(REDIRECT_KEY); } catch { return null; }
+};
+const storeRedirect = (v: string) => {
+  try { sessionStorage.setItem(REDIRECT_KEY, v); } catch { /* private mode */ }
+};
+const clearStoredRedirect = () => {
+  try { sessionStorage.removeItem(REDIRECT_KEY); } catch { /* private mode */ }
+};
+
 // One example pet page, styled like the Admin Pet Stories list — clickable so a
 // logged-out visitor can open a real page and see how theirs would look.
 function ShowcaseCard({ page }: { page: PetPageRead }) {
