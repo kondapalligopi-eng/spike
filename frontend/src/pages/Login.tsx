@@ -52,7 +52,7 @@ function ShowcaseCard({ page }: { page: PetPageRead }) {
 
 // Left-hand showcase on the login screen — real registered dog pages, so people
 // can preview the feature before creating an account.
-function Showcase() {
+function Showcase({ orderClass }: { orderClass: string }) {
   const { data, isLoading } = useQuery({
     queryKey: ['recent-pet-pages'],
     queryFn: () => listRecentPetPages(5),
@@ -60,7 +60,7 @@ function Showcase() {
   const pages = data ?? [];
 
   return (
-    <aside className="order-2 lg:order-1">
+    <aside className={orderClass}>
       <p className="text-[11px] font-semibold tracking-[0.3em] text-accent-600 uppercase mb-2">
         Pet Stories
       </p>
