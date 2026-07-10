@@ -89,7 +89,10 @@ function Showcase({ orderClass }: { orderClass: string }) {
   const pages = data ?? [];
 
   return (
-    <aside className={orderClass}>
+    // min-w-0: a grid item defaults to min-width:auto, so without this the
+    // aside stretches to fit the whole card strip and the PAGE scrolls
+    // sideways instead of the strip.
+    <aside className={`${orderClass} min-w-0`}>
       <p className="text-[11px] font-semibold tracking-[0.3em] text-accent-600 uppercase mb-2">
         Pet Stories
       </p>
