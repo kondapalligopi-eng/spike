@@ -101,19 +101,31 @@ function Showcase({ orderClass }: { orderClass: string }) {
         at your own <span className="font-mono text-warm-800">hispike.in/pet/</span>link.
       </p>
 
-      <div className="space-y-3 max-w-md">
-        {isLoading ? (
-          [0, 1, 2].map((i) => (
-            <div key={i} className="h-[88px] rounded-2xl border border-warm-200 bg-white animate-pulse" />
-          ))
-        ) : pages.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-warm-300 p-6 text-sm text-warm-500 text-center">
-            Be the first to create a page for your dog! 🐾
+      {isLoading ? (
+        <div className={LIST_CLASS}>
+          {[0, 1, 2].map((i) => (
+            <div
+              key={i}
+              className={`${ITEM_CLASS} h-[88px] rounded-2xl border border-warm-200 bg-white animate-pulse`}
+            />
+          ))}
+        </div>
+      ) : pages.length === 0 ? (
+        <div className="max-w-md rounded-2xl border border-dashed border-warm-300 p-6 text-sm text-warm-500 text-center">
+          Be the first to create a page for your dog! 🐾
+        </div>
+      ) : (
+        <>
+          <div className={LIST_CLASS}>
+            {pages.map((p) => (
+              <ShowcaseCard key={p.id} page={p} />
+            ))}
           </div>
-        ) : (
-          pages.map((p) => <ShowcaseCard key={p.id} page={p} />)
-        )}
-      </div>
+          {pages.length > 1 && (
+            <p className="lg:hidden -mt-1 text-xs text-warm-400">Swipe to see more 🐾</p>
+          )}
+        </>
+      )}
     </aside>
   );
 }
