@@ -157,7 +157,12 @@ Verified vets, dog parks, grooming, swimming & premium supplies — plus Pet Sto
 ---
 
 ## Where to share the channel
-- hispike.in footer (add a YouTube icon → @HiSpikeIn)
-- Instagram bio (@hispike.in)
+- hispike.in footer (YouTube icon → @hispike-petcare) ✅ wired
+- Instagram bio (@hispike.petcare)
 - Facebook page
 - Email signature / support replies
+
+## Official profile links
+- Instagram: https://www.instagram.com/hispike.petcare
+- Facebook: https://www.facebook.com/share/1DFVNm7ER2/
+- YouTube: https://www.youtube.com/@hispike-petcare
