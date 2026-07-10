@@ -118,9 +118,11 @@ export function Register() {
   });
 
   const onAuthSuccess = (data: AuthResponse) => {
+    const target = resolveTarget();
+    clearStoredRedirect();
     storeLogin(data.access_token, data.user, data.refresh_token);
     toast.success(`Welcome to HiSpike, ${data.user.full_name}!`);
-    navigate(redirectTo, { replace: true });
+    navigate(target, { replace: true });
   };
 
   const passwordMutation = useMutation({
