@@ -74,7 +74,7 @@ grooming, swimming & premium supplies. Verified, honest, hyperlocal.
 
 🔗 Explore: https://hispike.in
 📖 Pet Stories (your dog's own page): https://hispike.in/pet-stories
-📸 Instagram: @hispike.in
+📸 Instagram: @hispike.petcare
 ✉️ Business: support@hispike.in
 
 #HiSpike #DogsOfBangalore #PetCare
