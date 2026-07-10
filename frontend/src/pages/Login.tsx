@@ -21,6 +21,35 @@ type LoginForm = z.infer<typeof loginSchema>;
 
 const isValidEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
 
+// Where to send the user after signing in. It rides in ?redirect=, but the
+// method tabs are plain links whose href must be identical on the server and
+// the client (the page is pre-rendered without query params — a differing href
+// is a hydration mismatch that React resolves by KEEPING the server's value).
+// So the tabs link to a bare /login and we stash the destination here instead;
+// that also means a pre-hydration tap on a tab can't lose it.
+const REDIRECT_KEY = 'hispike_login_redirect';
+const readStoredRedirect = (): string | null => {
+  try { return sessionStorage.getItem(REDIRECT_KEY); } catch { return null; }
+};
+const storeRedirect = (v: string) => {
+  try { sessionStorage.setItem(REDIRECT_KEY, v); } catch { /* private mode */ }
+};
+const clearStoredRedirect = () => {
+  try { sessionStorage.removeItem(REDIRECT_KEY); } catch { /* private mode */ }
+};
+
+// How many recent pages the showcase pulls. The backend caps /recent at 12.
+const SHOWCASE_LIMIT = 8;
+
+// Mobile: a horizontal snap-scrolling strip, so eight pages cost one card of
+// height instead of eight — the login card stays near the top of the screen.
+// Desktop (lg): back to a vertical list, capped in height and scrollable.
+const LIST_CLASS =
+  'flex gap-3 overflow-x-auto snap-x snap-mandatory pb-3 -mx-4 px-4 ' +
+  'lg:mx-0 lg:px-0 lg:pr-1 lg:block lg:space-y-3 lg:max-w-md ' +
+  'lg:max-h-[26rem] lg:overflow-x-visible lg:overflow-y-auto';
+const ITEM_CLASS = 'shrink-0 w-[262px] snap-start lg:w-full lg:shrink';
+
 // One example pet page, styled like the Admin Pet Stories list — clickable so a
 // logged-out visitor can open a real page and see how theirs would look.
 function ShowcaseCard({ page }: { page: PetPageRead }) {
@@ -29,7 +58,7 @@ function ShowcaseCard({ page }: { page: PetPageRead }) {
       href={`/pet/${page.slug}`}
       target="_blank"
       rel="noopener noreferrer"
-      className="flex items-center gap-4 rounded-2xl border border-warm-200 bg-white p-3 hover:border-primary-300 hover:shadow-md transition"
+      className={`${ITEM_CLASS} flex items-center gap-4 rounded-2xl border border-warm-200 bg-white p-3 hover:border-primary-300 hover:shadow-md transition`}
     >
       <div className="w-16 h-16 rounded-xl overflow-hidden bg-warm-100 flex items-center justify-center shrink-0">
         {page.photos[0] ? (
@@ -52,15 +81,18 @@ function ShowcaseCard({ page }: { page: PetPageRead }) {
 
 // Left-hand showcase on the login screen — real registered dog pages, so people
 // can preview the feature before creating an account.
-function Showcase() {
+function Showcase({ orderClass }: { orderClass: string }) {
   const { data, isLoading } = useQuery({
-    queryKey: ['recent-pet-pages'],
-    queryFn: () => listRecentPetPages(5),
+    queryKey: ['recent-pet-pages', SHOWCASE_LIMIT],
+    queryFn: () => listRecentPetPages(SHOWCASE_LIMIT),
   });
   const pages = data ?? [];
 
   return (
-    <aside className="order-2 lg:order-1">
+    // min-w-0: a grid item defaults to min-width:auto, so without this the
+    // aside stretches to fit the whole card strip and the PAGE scrolls
+    // sideways instead of the strip.
+    <aside className={`${orderClass} min-w-0`}>
       <p className="text-[11px] font-semibold tracking-[0.3em] text-accent-600 uppercase mb-2">
         Pet Stories
       </p>
@@ -72,19 +104,31 @@ function Showcase() {
         at your own <span className="font-mono text-warm-800">hispike.in/pet/</span>link.
       </p>
 
-      <div className="space-y-3 max-w-md">
-        {isLoading ? (
-          [0, 1, 2].map((i) => (
-            <div key={i} className="h-[88px] rounded-2xl border border-warm-200 bg-white animate-pulse" />
-          ))
-        ) : pages.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-warm-300 p-6 text-sm text-warm-500 text-center">
-            Be the first to create a page for your dog! 🐾
+      {isLoading ? (
+        <div className={LIST_CLASS}>
+          {[0, 1, 2].map((i) => (
+            <div
+              key={i}
+              className={`${ITEM_CLASS} h-[88px] rounded-2xl border border-warm-200 bg-white animate-pulse`}
+            />
+          ))}
+        </div>
+      ) : pages.length === 0 ? (
+        <div className="max-w-md rounded-2xl border border-dashed border-warm-300 p-6 text-sm text-warm-500 text-center">
+          Be the first to create a page for your dog! 🐾
+        </div>
+      ) : (
+        <>
+          <div className={LIST_CLASS}>
+            {pages.map((p) => (
+              <ShowcaseCard key={p.id} page={p} />
+            ))}
           </div>
-        ) : (
-          pages.map((p) => <ShowcaseCard key={p.id} page={p} />)
-        )}
-      </div>
+          {pages.length > 1 && (
+            <p className="lg:hidden -mt-1 text-xs text-warm-400">Swipe to see more 🐾</p>
+          )}
+        </>
+      )}
     </aside>
   );
 }
@@ -97,21 +141,40 @@ const inputClass = (invalid?: boolean) =>
 export function Login() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const redirectTo = searchParams.get('redirect') ?? '/';
   const { isAuthenticated, login: storeLogin } = useAuth();
+
+  // Resolved after mount (see REDIRECT_KEY above): starting at '/' keeps the
+  // first client render identical to the pre-rendered HTML, so the follow-up
+  // update is a normal re-render rather than an ignored hydration mismatch.
+  const [redirectTo, setRedirectTo] = useState('/');
+  useEffect(() => {
+    const fromUrl = searchParams.get('redirect');
+    if (fromUrl) {
+      storeRedirect(fromUrl);
+      setRedirectTo(fromUrl);
+      return;
+    }
+    setRedirectTo(readStoredRedirect() ?? '/');
+  }, [searchParams]);
+
+  // Arriving from the Pet Stories tab? On mobile, lead with the real pages
+  // people have created — a first-time visitor lands on the login card and
+  // won't scroll to discover the feature. Desktop keeps the two-column layout.
+  const fromPetStories = redirectTo === '/pet-stories';
+
+  // Read fresh rather than off `redirectTo` state, which is still '/' on the
+  // render right after mount.
+  const resolveTarget = () =>
+    searchParams.get('redirect') ?? readStoredRedirect() ?? '/';
 
   // Which sign-in method — driven by the URL (?method=otp) so the tabs are
   // plain links that respond to the very first tap, even before React has
   // hydrated. (On a cold mobile load a button's onClick isn't wired up yet,
   // so the tap was being ignored until a refresh.)
   const method: 'password' | 'otp' = searchParams.get('method') === 'otp' ? 'otp' : 'password';
-  const tabTo = (m: 'password' | 'otp') => {
-    const p = new URLSearchParams();
-    if (redirectTo !== '/') p.set('redirect', redirectTo);
-    if (m === 'otp') p.set('method', 'otp');
-    const qs = p.toString();
-    return `/login${qs ? `?${qs}` : ''}`;
-  };
+  // Static hrefs (no ?redirect=) so server and client markup agree — the
+  // destination is preserved via sessionStorage instead.
+  const tabTo = (m: 'password' | 'otp') => (m === 'otp' ? '/login?method=otp' : '/login');
   // OTP is a two-step flow: enter email → enter the emailed code.
   const [otpStep, setOtpStep] = useState<'request' | 'verify'>('request');
   const [otpEmail, setOtpEmail] = useState('');
@@ -119,10 +182,12 @@ export function Login() {
   const [resendIn, setResendIn] = useState(0); // seconds until "Resend" re-enables
 
   useEffect(() => {
-    if (isAuthenticated) {
-      navigate(redirectTo, { replace: true });
-    }
-  }, [isAuthenticated, navigate, redirectTo]);
+    if (!isAuthenticated) return;
+    const target = resolveTarget();
+    clearStoredRedirect();
+    navigate(target, { replace: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated, navigate, searchParams]);
 
   // Tick the resend cooldown down to zero.
   useEffect(() => {
@@ -148,9 +213,11 @@ export function Login() {
   });
 
   const onLoginSuccess = (data: AuthResponse) => {
+    const target = resolveTarget();
+    clearStoredRedirect();
     storeLogin(data.access_token, data.user, data.refresh_token);
     toast.success(`Welcome back, ${data.user.full_name}!`);
-    navigate(redirectTo, { replace: true });
+    navigate(target, { replace: true });
   };
 
   const passwordMutation = useMutation({
@@ -212,10 +279,13 @@ export function Login() {
       )}
       <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-10 items-center px-4 py-10 lg:py-14">
         {/* Left: showcase of real dog pages */}
-        <Showcase />
+        <Showcase orderClass={`${fromPetStories ? 'order-1' : 'order-2'} lg:order-1`} />
 
-        {/* Right: login card (comes first on mobile, right column on desktop) */}
-        <div className="order-1 lg:order-2 w-full max-w-md mx-auto lg:mx-0 lg:justify-self-end">
+        {/* Right: login card. On mobile it sits above the showcase, except when
+            the user came from Pet Stories — then the pages lead. */}
+        <div
+          className={`${fromPetStories ? 'order-2' : 'order-1'} lg:order-2 w-full max-w-md mx-auto lg:mx-0 lg:justify-self-end`}
+        >
           <div className="bg-white rounded-3xl shadow-xl border border-warm-200 p-8">
             {/* Logo */}
             <div className="text-center mb-8">
