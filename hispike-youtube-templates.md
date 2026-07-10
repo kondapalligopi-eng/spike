@@ -1,7 +1,7 @@
 # HiSpike — YouTube Kit
 
-Channel: **HiSpike Pet Care** · Handle: **@HiSpikeIn**
-Public URL (share this everywhere): https://www.youtube.com/@HiSpikeIn
+Channel: **HiSpike Pet Care** · Handle: **@hispike-petcare**
+Public URL (share this everywhere): https://www.youtube.com/@hispike-petcare
 
 Assets (in repo root):
 - Banner — `hispike-youtube-banner.png` (2048×1152)
