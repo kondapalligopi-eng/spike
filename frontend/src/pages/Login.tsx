@@ -217,10 +217,13 @@ export function Login() {
       )}
       <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-10 items-center px-4 py-10 lg:py-14">
         {/* Left: showcase of real dog pages */}
-        <Showcase />
+        <Showcase orderClass={`${fromPetStories ? 'order-1' : 'order-2'} lg:order-1`} />
 
-        {/* Right: login card (comes first on mobile, right column on desktop) */}
-        <div className="order-1 lg:order-2 w-full max-w-md mx-auto lg:mx-0 lg:justify-self-end">
+        {/* Right: login card. On mobile it sits above the showcase, except when
+            the user came from Pet Stories — then the pages lead. */}
+        <div
+          className={`${fromPetStories ? 'order-2' : 'order-1'} lg:order-2 w-full max-w-md mx-auto lg:mx-0 lg:justify-self-end`}
+        >
           <div className="bg-white rounded-3xl shadow-xl border border-warm-200 p-8">
             {/* Logo */}
             <div className="text-center mb-8">
