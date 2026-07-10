@@ -1,8 +1,14 @@
 # HiSpike — Social Media Kit
 
+Official profiles:
+- **Instagram:** https://www.instagram.com/hispike.petcare
+- **Facebook:** https://www.facebook.com/share/1DFVNm7ER2/
+- **YouTube:** https://www.youtube.com/@hispike-petcare
+
 Promo assets (live after deploy):
 - **Stories (tap-through):** https://hispike.in/stories.html
 - **Promo video (auto-loop, screen-record for a Reel):** https://hispike.in/promo-1080x1920.html
+- **Service ads (13 PNGs, 1080×1920):** `hispike-ads/`
 
 ---
 
