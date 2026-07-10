@@ -40,7 +40,7 @@ Promo assets (live after deploy):
 
 ## Hashtag pool (rotate to fit each post)
 
-- **Brand:** #HiSpike #HiSpikeIn #AllInOnePetCare
+- **Brand:** #HiSpike #HiSpikePetCare #AllInOnePetCare
 - **City / area (pick 3–5):** #Bangalore #Bengaluru #DogsOfBangalore #DogsOfBengaluru #NammaBengaluru #Indiranagar #Koramangala #HSRLayout #Whitefield #Jayanagar #Bellandur #JPNagar #Marathahalli #Sarjapur #ElectronicCity
 - **Community:** #DogsOfInstagram #PetsOfInstagram #DogLovers #DogLife #DogMom #DogDad #PetParents #PuppyLove #IndianPets #AdoptDontShop
 - **Services:** #VetsNearMe #DogGrooming #DogPark #DogSwimming #PetSupplies #DogFood #PetStories
