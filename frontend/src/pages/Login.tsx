@@ -100,6 +100,11 @@ export function Login() {
   const redirectTo = searchParams.get('redirect') ?? '/';
   const { isAuthenticated, login: storeLogin } = useAuth();
 
+  // Arriving from the Pet Stories tab? On mobile, lead with the real pages
+  // people have created — a first-time visitor lands on the login card and
+  // won't scroll to discover the feature. Desktop keeps the two-column layout.
+  const fromPetStories = redirectTo === '/pet-stories';
+
   // Which sign-in method — driven by the URL (?method=otp) so the tabs are
   // plain links that respond to the very first tap, even before React has
   // hydrated. (On a cold mobile load a button's onClick isn't wired up yet,
