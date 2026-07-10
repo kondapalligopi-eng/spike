@@ -28,11 +28,13 @@ const FOOTER_COLUMNS: { heading: string; links: { label: string; href: string; e
   },
 ];
 
-function SocialIcon({ label, children, href = '#' }: { label: string; children: React.ReactNode; href?: string }) {
+function SocialIcon({ label, children, href }: { label: string; children: React.ReactNode; href: string }) {
   return (
     <a
       href={href}
       aria-label={label}
+      target="_blank"
+      rel="noopener noreferrer"
       className="w-9 h-9 rounded-full bg-primary-600 hover:bg-primary-700 text-white flex items-center justify-center transition-colors"
     >
       {children}
