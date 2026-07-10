@@ -1,8 +1,14 @@
 # HiSpike — Social Media Kit
 
+Official profiles:
+- **Instagram:** https://www.instagram.com/hispike.petcare
+- **Facebook:** https://www.facebook.com/share/1DFVNm7ER2/
+- **YouTube:** https://www.youtube.com/@hispike-petcare
+
 Promo assets (live after deploy):
 - **Stories (tap-through):** https://hispike.in/stories.html
 - **Promo video (auto-loop, screen-record for a Reel):** https://hispike.in/promo-1080x1920.html
+- **Service ads (13 PNGs, 1080×1920):** `hispike-ads/`
 
 ---
 
@@ -34,7 +40,7 @@ Promo assets (live after deploy):
 
 ## Hashtag pool (rotate to fit each post)
 
-- **Brand:** #HiSpike #HiSpikeIn #AllInOnePetCare
+- **Brand:** #HiSpike #HiSpikePetCare #AllInOnePetCare
 - **City / area (pick 3–5):** #Bangalore #Bengaluru #DogsOfBangalore #DogsOfBengaluru #NammaBengaluru #Indiranagar #Koramangala #HSRLayout #Whitefield #Jayanagar #Bellandur #JPNagar #Marathahalli #Sarjapur #ElectronicCity
 - **Community:** #DogsOfInstagram #PetsOfInstagram #DogLovers #DogLife #DogMom #DogDad #PetParents #PuppyLove #IndianPets #AdoptDontShop
 - **Services:** #VetsNearMe #DogGrooming #DogPark #DogSwimming #PetSupplies #DogFood #PetStories

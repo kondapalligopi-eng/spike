@@ -1,7 +1,7 @@
 # HiSpike — YouTube Kit
 
-Channel: **HiSpike Pet Care** · Handle: **@HiSpikeIn**
-Public URL (share this everywhere): https://www.youtube.com/@HiSpikeIn
+Channel: **HiSpike Pet Care** · Handle: **@hispike-petcare**
+Public URL (share this everywhere): https://www.youtube.com/@hispike-petcare
 
 Assets (in repo root):
 - Banner — `hispike-youtube-banner.png` (2048×1152)
@@ -74,7 +74,7 @@ grooming, swimming & premium supplies. Verified, honest, hyperlocal.
 
 🔗 Explore: https://hispike.in
 📖 Pet Stories (your dog's own page): https://hispike.in/pet-stories
-📸 Instagram: @hispike.in
+📸 Instagram: @hispike.petcare
 ✉️ Business: support@hispike.in
 
 #HiSpike #DogsOfBangalore #PetCare
@@ -157,7 +157,12 @@ Verified vets, dog parks, grooming, swimming & premium supplies — plus Pet Sto
 ---
 
 ## Where to share the channel
-- hispike.in footer (add a YouTube icon → @HiSpikeIn)
-- Instagram bio (@hispike.in)
+- hispike.in footer (YouTube icon → @hispike-petcare) ✅ wired
+- Instagram bio (@hispike.petcare)
 - Facebook page
 - Email signature / support replies
+
+## Official profile links
+- Instagram: https://www.instagram.com/hispike.petcare
+- Facebook: https://www.facebook.com/share/1DFVNm7ER2/
+- YouTube: https://www.youtube.com/@hispike-petcare
