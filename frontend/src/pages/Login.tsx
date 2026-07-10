@@ -83,8 +83,8 @@ function ShowcaseCard({ page }: { page: PetPageRead }) {
 // can preview the feature before creating an account.
 function Showcase({ orderClass }: { orderClass: string }) {
   const { data, isLoading } = useQuery({
-    queryKey: ['recent-pet-pages'],
-    queryFn: () => listRecentPetPages(5),
+    queryKey: ['recent-pet-pages', SHOWCASE_LIMIT],
+    queryFn: () => listRecentPetPages(SHOWCASE_LIMIT),
   });
   const pages = data ?? [];
 
