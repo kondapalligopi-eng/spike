@@ -103,7 +103,16 @@ export function Login() {
   // Arriving from the Pet Stories tab? On mobile, lead with the real pages
   // people have created — a first-time visitor lands on the login card and
   // won't scroll to discover the feature. Desktop keeps the two-column layout.
-  const fromPetStories = redirectTo === '/pet-stories';
+  //
+  // Set in an effect, not straight from the URL: /login is pre-rendered without
+  // query params, so deriving the className during the first render is a
+  // hydration mismatch — and React keeps the SERVER's className, silently
+  // ignoring the swap. Starting false (matching the server) and flipping after
+  // mount gives a normal re-render that actually applies.
+  const [fromPetStories, setFromPetStories] = useState(false);
+  useEffect(() => {
+    setFromPetStories(redirectTo === '/pet-stories');
+  }, [redirectTo]);
 
   // Which sign-in method — driven by the URL (?method=otp) so the tabs are
   // plain links that respond to the very first tap, even before React has
