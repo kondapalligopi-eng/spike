@@ -159,10 +159,12 @@ export function Login() {
   const [resendIn, setResendIn] = useState(0); // seconds until "Resend" re-enables
 
   useEffect(() => {
-    if (isAuthenticated) {
-      navigate(redirectTo, { replace: true });
-    }
-  }, [isAuthenticated, navigate, redirectTo]);
+    if (!isAuthenticated) return;
+    const target = resolveTarget();
+    clearStoredRedirect();
+    navigate(target, { replace: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated, navigate, searchParams]);
 
   // Tick the resend cooldown down to zero.
   useEffect(() => {
