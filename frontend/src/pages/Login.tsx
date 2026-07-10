@@ -145,13 +145,9 @@ export function Login() {
   // hydrated. (On a cold mobile load a button's onClick isn't wired up yet,
   // so the tap was being ignored until a refresh.)
   const method: 'password' | 'otp' = searchParams.get('method') === 'otp' ? 'otp' : 'password';
-  const tabTo = (m: 'password' | 'otp') => {
-    const p = new URLSearchParams();
-    if (redirectTo !== '/') p.set('redirect', redirectTo);
-    if (m === 'otp') p.set('method', 'otp');
-    const qs = p.toString();
-    return `/login${qs ? `?${qs}` : ''}`;
-  };
+  // Static hrefs (no ?redirect=) so server and client markup agree — the
+  // destination is preserved via sessionStorage instead.
+  const tabTo = (m: 'password' | 'otp') => (m === 'otp' ? '/login?method=otp' : '/login');
   // OTP is a two-step flow: enter email → enter the emailed code.
   const [otpStep, setOtpStep] = useState<'request' | 'verify'>('request');
   const [otpEmail, setOtpEmail] = useState('');
