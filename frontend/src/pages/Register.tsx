@@ -88,10 +88,12 @@ export function Register() {
   const [resendIn, setResendIn] = useState(0);
 
   useEffect(() => {
-    if (isAuthenticated) {
-      navigate(redirectTo, { replace: true });
-    }
-  }, [isAuthenticated, navigate, redirectTo]);
+    if (!isAuthenticated) return;
+    const target = resolveTarget();
+    clearStoredRedirect();
+    navigate(target, { replace: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated, navigate, searchParams]);
 
   useEffect(() => {
     if (resendIn <= 0) return;
