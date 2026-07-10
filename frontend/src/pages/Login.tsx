@@ -190,9 +190,11 @@ export function Login() {
   });
 
   const onLoginSuccess = (data: AuthResponse) => {
+    const target = resolveTarget();
+    clearStoredRedirect();
     storeLogin(data.access_token, data.user, data.refresh_token);
     toast.success(`Welcome back, ${data.user.full_name}!`);
-    navigate(redirectTo, { replace: true });
+    navigate(target, { replace: true });
   };
 
   const passwordMutation = useMutation({
