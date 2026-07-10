@@ -114,22 +114,31 @@ const inputClass = (invalid?: boolean) =>
 export function Login() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const redirectTo = searchParams.get('redirect') ?? '/';
   const { isAuthenticated, login: storeLogin } = useAuth();
+
+  // Resolved after mount (see REDIRECT_KEY above): starting at '/' keeps the
+  // first client render identical to the pre-rendered HTML, so the follow-up
+  // update is a normal re-render rather than an ignored hydration mismatch.
+  const [redirectTo, setRedirectTo] = useState('/');
+  useEffect(() => {
+    const fromUrl = searchParams.get('redirect');
+    if (fromUrl) {
+      storeRedirect(fromUrl);
+      setRedirectTo(fromUrl);
+      return;
+    }
+    setRedirectTo(readStoredRedirect() ?? '/');
+  }, [searchParams]);
 
   // Arriving from the Pet Stories tab? On mobile, lead with the real pages
   // people have created — a first-time visitor lands on the login card and
   // won't scroll to discover the feature. Desktop keeps the two-column layout.
-  //
-  // Set in an effect, not straight from the URL: /login is pre-rendered without
-  // query params, so deriving the className during the first render is a
-  // hydration mismatch — and React keeps the SERVER's className, silently
-  // ignoring the swap. Starting false (matching the server) and flipping after
-  // mount gives a normal re-render that actually applies.
-  const [fromPetStories, setFromPetStories] = useState(false);
-  useEffect(() => {
-    setFromPetStories(redirectTo === '/pet-stories');
-  }, [redirectTo]);
+  const fromPetStories = redirectTo === '/pet-stories';
+
+  // Read fresh rather than off `redirectTo` state, which is still '/' on the
+  // render right after mount.
+  const resolveTarget = () =>
+    searchParams.get('redirect') ?? readStoredRedirect() ?? '/';
 
   // Which sign-in method — driven by the URL (?method=otp) so the tabs are
   // plain links that respond to the very first tap, even before React has
