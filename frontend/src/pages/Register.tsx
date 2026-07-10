@@ -40,22 +40,46 @@ type RegisterForm = z.infer<typeof registerSchema>;
 
 const isValidEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
 
+// Shared with Login.tsx — see the note there. The tabs are plain links whose
+// href must match the pre-rendered HTML, so the post-auth destination lives in
+// sessionStorage rather than in ?redirect=.
+const REDIRECT_KEY = 'hispike_login_redirect';
+const readStoredRedirect = (): string | null => {
+  try { return sessionStorage.getItem(REDIRECT_KEY); } catch { return null; }
+};
+const storeRedirect = (v: string) => {
+  try { sessionStorage.setItem(REDIRECT_KEY, v); } catch { /* private mode */ }
+};
+const clearStoredRedirect = () => {
+  try { sessionStorage.removeItem(REDIRECT_KEY); } catch { /* private mode */ }
+};
+
 export function Register() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const redirectTo = searchParams.get('redirect') ?? '/';
   const { isAuthenticated, login: storeLogin } = useAuth();
+
+  // Resolved after mount so the first client render matches the pre-rendered
+  // HTML (a query-derived value here would be an ignored hydration mismatch).
+  const [redirectTo, setRedirectTo] = useState('/');
+  useEffect(() => {
+    const fromUrl = searchParams.get('redirect');
+    if (fromUrl) {
+      storeRedirect(fromUrl);
+      setRedirectTo(fromUrl);
+      return;
+    }
+    setRedirectTo(readStoredRedirect() ?? '/');
+  }, [searchParams]);
+
+  const resolveTarget = () =>
+    searchParams.get('redirect') ?? readStoredRedirect() ?? '/';
 
   // Method driven by the URL (?method=otp) so the tabs are links that work on
   // the first tap even before hydration (fixes the cold-load mobile issue).
   const method: 'password' | 'otp' = searchParams.get('method') === 'otp' ? 'otp' : 'password';
-  const tabTo = (m: 'password' | 'otp') => {
-    const p = new URLSearchParams();
-    if (redirectTo !== '/') p.set('redirect', redirectTo);
-    if (m === 'otp') p.set('method', 'otp');
-    const qs = p.toString();
-    return `/register${qs ? `?${qs}` : ''}`;
-  };
+  const tabTo = (m: 'password' | 'otp') =>
+    m === 'otp' ? '/register?method=otp' : '/register';
   const [otpStep, setOtpStep] = useState<'request' | 'verify'>('request');
   const [otpName, setOtpName] = useState('');
   const [otpEmail, setOtpEmail] = useState('');
