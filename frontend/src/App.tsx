@@ -15,6 +15,7 @@ import { MyDogs } from '@/pages/MyDogs';
 import { PetPages } from '@/pages/PetPages';
 import { PetPage } from '@/pages/PetPage';
 import { PetShop } from '@/pages/PetShop';
+import { MyShop } from '@/pages/MyShop';
 import { Adoptions } from '@/pages/Adoptions';
 import { Admin } from '@/pages/Admin';
 import { Swimming } from '@/pages/Swimming';
