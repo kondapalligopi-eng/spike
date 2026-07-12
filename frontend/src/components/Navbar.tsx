@@ -232,6 +232,16 @@ export function Navbar() {
                           </svg>
                           Profile
                         </Link>
+                        <Link
+                          to="/my-shop"
+                          onClick={() => setUserMenuOpen(false)}
+                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-warm-700 hover:bg-warm-50 transition-colors"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9l1-5h16l1 5M4 9v11a1 1 0 001 1h14a1 1 0 001-1V9M4 9h16M9 21v-6h6v6" />
+                          </svg>
+                          My shop
+                        </Link>
                         <div className="border-t border-warm-100 my-1" />
                         <button
                           onClick={handleLogout}
