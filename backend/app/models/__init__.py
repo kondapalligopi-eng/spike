@@ -7,6 +7,7 @@ from app.models.swim_school import SwimSchool
 from app.models.grooming_salon import GroomingSalon
 from app.models.pet_food import PetFood
 from app.models.pet_page import PetPage
+from app.models.pet_shop import PetShop, ShopProduct, ShopUpdate
 from app.models.password_reset_token import PasswordResetToken
 from app.models.email_otp import EmailOtp
 from app.models.site_setting import SiteSetting
