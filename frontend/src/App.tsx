@@ -71,6 +71,14 @@ export const routes: RouteRecord[] = [
               </ProtectedRoute>
             ),
           },
+          {
+            path: 'my-shop',
+            element: (
+              <ProtectedRoute>
+                <MyShop />
+              </ProtectedRoute>
+            ),
+          },
           { path: 'about', Component: OurStory },
           { path: 'newsroom', Component: Newsroom },
           { path: 'blog', Component: Blog },
