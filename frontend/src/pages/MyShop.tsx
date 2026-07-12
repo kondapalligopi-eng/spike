@@ -347,13 +347,19 @@ export function MyShop() {
 
             <div className="bg-white rounded-3xl shadow-sm border border-warm-200 p-6 sm:p-8">
               <h2 className="text-lg font-extrabold text-warm-900 mb-5">Shop details</h2>
-              <ShopDetailsForm shop={fullShop ?? null} onSaved={() => invalidate()} />
+              {fullShop ? (
+                // key so it remounts (and re-reads initial values) when the
+                // async full shop loads or the selected shop changes.
+                <ShopDetailsForm key={fullShop.id} shop={fullShop} onSaved={() => invalidate()} />
+              ) : (
+                <div className="py-8 flex justify-center"><LoadingSpinner /></div>
+              )}
             </div>
 
             {fullShop && (
               <>
-                <div className="bg-white rounded-3xl shadow-sm border border-warm-200 p-6 sm:p-8"><ProductsManager shop={fullShop} onChanged={invalidate} /></div>
-                <div className="bg-white rounded-3xl shadow-sm border border-warm-200 p-6 sm:p-8"><UpdatesManager shop={fullShop} onChanged={invalidate} /></div>
+                <div className="bg-white rounded-3xl shadow-sm border border-warm-200 p-6 sm:p-8"><ProductsManager key={`p-${fullShop.id}`} shop={fullShop} onChanged={invalidate} /></div>
+                <div className="bg-white rounded-3xl shadow-sm border border-warm-200 p-6 sm:p-8"><UpdatesManager key={`u-${fullShop.id}`} shop={fullShop} onChanged={invalidate} /></div>
               </>
             )}
 
