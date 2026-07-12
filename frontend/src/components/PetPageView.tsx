@@ -111,7 +111,7 @@ export function PetPageView({ data, preview = false }: { data: PetPageViewData; 
             to="/pet-stories"
             className="inline-flex items-center gap-2 rounded-full bg-primary-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-primary-700 transition-colors shadow whitespace-nowrap"
           >
-            Create their HiSpike page — free
+            Create your own pet personalized page — free
           </Link>
         </div>
       )}
