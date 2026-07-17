@@ -8,6 +8,7 @@ import { login, requestOtp, verifyOtp } from '@/api/auth';
 import type { AuthResponse } from '@/types';
 import { listRecentPetPages, type PetPageRead } from '@/api/petPages';
 import { useAuth } from '@/hooks/useAuth';
+import { useBackendWarmup } from '@/lib/warmupBackend';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { AuthTransitionOverlay } from '@/components/AuthTransitionOverlay';
 import { toast } from '@/store/toastStore';
@@ -82,9 +83,14 @@ function ShowcaseCard({ page }: { page: PetPageRead }) {
 // Left-hand showcase on the login screen — real registered dog pages, so people
 // can preview the feature before creating an account.
 function Showcase({ orderClass }: { orderClass: string }) {
+  // Decorative preview — it must never hold up the login card. If it's slow or
+  // errors, we fall through to a skeleton then the empty state; the form is a
+  // separate element that always renders regardless.
   const { data, isLoading } = useQuery({
     queryKey: ['recent-pet-pages', SHOWCASE_LIMIT],
     queryFn: () => listRecentPetPages(SHOWCASE_LIMIT),
+    retry: 1,
+    staleTime: 5 * 60 * 1000,
   });
   const pages = data ?? [];
 
@@ -139,6 +145,7 @@ const inputClass = (invalid?: boolean) =>
   }`;
 
 export function Login() {
+  useBackendWarmup(); // fire GET /health on mount so the showcase loads fast
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { isAuthenticated, login: storeLogin } = useAuth();

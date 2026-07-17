@@ -2,7 +2,9 @@ databases:
   - name: petdogs-db
     databaseName: petdogs
     user: petdogs
-    plan: free
+    # Basic-256mb (paid): always-on, persistent, daily backups. The free tier
+    # expires after ~30 days, so a live DB must be on a paid plan.
+    plan: basic_256mb
 
 services:
   # -------------------------------------------------------------------------
@@ -11,7 +13,9 @@ services:
   - type: web
     name: petdogs-backend
     runtime: python
-    plan: free
+    # Starter (paid) keeps the API always-on — free instances spin down after
+    # ~15 min idle and cold-start 30–60s on the next request.
+    plan: starter
     region: oregon
     rootDir: backend
     buildCommand: pip install -r requirements.txt
