@@ -83,9 +83,14 @@ function ShowcaseCard({ page }: { page: PetPageRead }) {
 // Left-hand showcase on the login screen — real registered dog pages, so people
 // can preview the feature before creating an account.
 function Showcase({ orderClass }: { orderClass: string }) {
+  // Decorative preview — it must never hold up the login card. If it's slow or
+  // errors, we fall through to a skeleton then the empty state; the form is a
+  // separate element that always renders regardless.
   const { data, isLoading } = useQuery({
     queryKey: ['recent-pet-pages', SHOWCASE_LIMIT],
     queryFn: () => listRecentPetPages(SHOWCASE_LIMIT),
+    retry: 1,
+    staleTime: 5 * 60 * 1000,
   });
   const pages = data ?? [];
 
