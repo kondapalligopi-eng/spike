@@ -84,6 +84,13 @@ export const routes: RouteRecord[] = [
           { path: 'about', Component: OurStory },
           { path: 'newsroom', Component: Newsroom },
           { path: 'blog', Component: Blog },
+          // Each article is pre-rendered at build time (getStaticPaths) so
+          // crawlers get full HTML, not the SPA shell.
+          {
+            path: 'blog/:slug',
+            Component: BlogPost,
+            getStaticPaths: () => BLOG_POST_SLUGS.map((s) => `blog/${s}`),
+          },
           { path: 'careers', Component: Careers },
           { path: 'feedback', Component: Feedback },
           { path: 'terms', Component: TermsOfService },
