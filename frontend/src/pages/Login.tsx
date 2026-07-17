@@ -145,6 +145,7 @@ const inputClass = (invalid?: boolean) =>
   }`;
 
 export function Login() {
+  useBackendWarmup(); // fire GET /health on mount so the showcase loads fast
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { isAuthenticated, login: storeLogin } = useAuth();
