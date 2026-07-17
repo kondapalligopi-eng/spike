@@ -11,7 +11,9 @@ services:
   - type: web
     name: petdogs-backend
     runtime: python
-    plan: free
+    # Starter (paid) keeps the API always-on — free instances spin down after
+    # ~15 min idle and cold-start 30–60s on the next request.
+    plan: starter
     region: oregon
     rootDir: backend
     buildCommand: pip install -r requirements.txt
