@@ -28,6 +28,8 @@ import { DogWalking } from '@/pages/DogWalking';
 import { OurStory } from '@/pages/OurStory';
 import { Newsroom } from '@/pages/Newsroom';
 import { Blog } from '@/pages/Blog';
+import { BlogPost } from '@/pages/BlogPost';
+import { BLOG_POST_SLUGS } from '@/content/blogPosts';
 import { Careers } from '@/pages/Careers';
 import { Feedback } from '@/pages/Feedback';
 import { TermsOfService } from '@/pages/TermsOfService';
