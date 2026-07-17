@@ -8,6 +8,7 @@ import { login, requestOtp, verifyOtp } from '@/api/auth';
 import type { AuthResponse } from '@/types';
 import { listRecentPetPages, type PetPageRead } from '@/api/petPages';
 import { useAuth } from '@/hooks/useAuth';
+import { useBackendWarmup } from '@/lib/warmupBackend';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { AuthTransitionOverlay } from '@/components/AuthTransitionOverlay';
 import { toast } from '@/store/toastStore';
