@@ -52,8 +52,33 @@
   </url>
   <url>
     <loc>https://hispike.in/blog</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://hispike.in/blog/top-veterinary-hospitals-bengaluru</loc>
     <changefreq>monthly</changefreq>
-    <priority>0.4</priority>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://hispike.in/blog/best-dog-parks-bengaluru</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://hispike.in/blog/dog-swimming-pools-classes-bengaluru</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://hispike.in/blog/best-dog-grooming-salons-bengaluru</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://hispike.in/blog/where-to-buy-pet-supplies-bengaluru</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://hispike.in/careers</loc>
