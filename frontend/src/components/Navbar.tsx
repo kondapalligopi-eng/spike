@@ -20,6 +20,7 @@ const DRAWER_TOP: DrawerItem[] = [
   { label: 'Swimming', to: '/swimming' },
   { label: 'Grooming', to: '/grooming' },
   { label: 'Pet Supplies', to: '/pet-supplies' },
+  { label: 'Pet Shops', to: '/petshops' },
   { label: 'Pet Stories', to: '/pet-stories' },
 ];
 
@@ -40,6 +41,7 @@ const STATIC_SERVICES: SearchEntry[] = [
   { section: 'Services', title: 'Swimming', subtitle: 'Aquatic training', to: '/swimming' },
   { section: 'Services', title: 'Grooming', subtitle: 'Salon & spa', to: '/grooming' },
   { section: 'Services', title: 'Pet Supplies', subtitle: 'Food, treats, accessories', to: '/pet-supplies' },
+  { section: 'Services', title: 'Pet Shops', subtitle: 'Local shops & their products', to: '/petshops' },
   { section: 'Services', title: 'Pet Stories', subtitle: 'A shareable page for your pet', to: '/pet-stories' },
 ];
 
@@ -286,6 +288,7 @@ export function Navbar() {
               <NavLink to="/swimming" className={navLinkClass}>Swimming</NavLink>
               <NavLink to="/grooming" className={navLinkClass}>Grooming</NavLink>
               <NavLink to="/pet-supplies" className={navLinkClass}>Pet Supplies</NavLink>
+              <NavLink to="/petshops" className={navLinkClass}>Pet Shops</NavLink>
               <NavLink to="/pet-stories" className={navLinkClass}>Pet Stories</NavLink>
             </div>
           </div>

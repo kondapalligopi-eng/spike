@@ -15,6 +15,7 @@ import { MyDogs } from '@/pages/MyDogs';
 import { PetPages } from '@/pages/PetPages';
 import { PetPage } from '@/pages/PetPage';
 import { PetShop } from '@/pages/PetShop';
+import { PetShops } from '@/pages/PetShops';
 import { MyShop } from '@/pages/MyShop';
 import { Adoptions } from '@/pages/Adoptions';
 import { Admin } from '@/pages/Admin';
@@ -63,6 +64,8 @@ export const routes: RouteRecord[] = [
           // Public, shareable dog page — slug is user-created, so it renders
           // client-side (not pre-rendered at build time).
           { path: 'pet/:slug', Component: PetPage },
+          // Pet Shops directory (browse) + individual storefronts.
+          { path: 'petshops', Component: PetShops },
           // Public pet-shop storefront — same client-rendered, slug-based pattern.
           { path: 'petshop/:slug', Component: PetShop },
           {

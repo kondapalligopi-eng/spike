@@ -65,6 +65,7 @@ import {
 import { readSheetRows, downloadTemplate, downloadRows, type SheetRow } from '@/lib/spreadsheet';
 import { getCounter } from '@/api/counters';
 import { listUsers } from '@/api/users';
+import { listAllShops, deleteShop } from '@/api/petShops';
 
 const BANGALORE_NEIGHBOURHOODS = [
   'Banashankari', 'Banaswadi', 'Basavanagudi', 'Bellandur', 'Bommanahalli',
@@ -2656,6 +2657,134 @@ function PetStoriesSection() {
   );
 }
 
+function PetShopsSection() {
+  const queryClient = useQueryClient();
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['admin-pet-shops'],
+    queryFn: listAllShops,
+    refetchInterval: 60_000,
+  });
+
+  const [confirmId, setConfirmId] = useState<string | null>(null);
+
+  const deleteMutation = useMutation({
+    mutationFn: deleteShop,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-pet-shops'] });
+      queryClient.invalidateQueries({ queryKey: ['my-shops'] });
+      toast.success('Shop removed.');
+      setConfirmId(null);
+    },
+    onError: (err: Error) => toast.error(err.message || 'Could not remove the shop.'),
+  });
+
+  const shops = data ?? [];
+
+  const handleDelete = (id: string) => {
+    if (confirmId !== id) {
+      setConfirmId(id);
+      return;
+    }
+    deleteMutation.mutate(id);
+  };
+
+  return (
+    <section className="mb-10">
+      <div className="mb-4">
+        <p className="text-[11px] font-semibold tracking-[0.3em] text-accent-600 uppercase mb-1">
+          Moderation
+        </p>
+        <h2 className="text-xl font-bold text-warm-900">
+          Pet Shops
+          <span className="ml-2 align-middle text-xs font-bold text-warm-600 bg-warm-100 rounded-full px-2 py-0.5">
+            {shops.length}
+          </span>
+        </h2>
+        <p className="text-sm text-warm-500 mt-1">
+          Owner-created shops at <span className="font-mono">hispike.in/petshop/…</span>. Open any shop
+          to review it, and remove anything inappropriate.
+        </p>
+      </div>
+
+      {isLoading ? (
+        <p className="text-sm text-warm-500 py-6">Loading shops…</p>
+      ) : isError ? (
+        <p className="text-sm text-red-600 py-6">Could not load shops. Refresh to retry.</p>
+      ) : shops.length === 0 ? (
+        <div className="rounded-2xl border-2 border-dashed border-warm-300 p-8 text-center text-sm text-warm-500">
+          No shops yet. Shops created by owners will appear here.
+        </div>
+      ) : (
+        <ul className="space-y-3">
+          {shops.map((s) => {
+            const staged = confirmId === s.id;
+            const url = `/petshop/${s.slug}`;
+            return (
+              <li key={s.id} className="rounded-2xl border-2 border-warm-200 bg-white p-4 sm:p-5">
+                <div className="flex items-start gap-4">
+                  <div className="w-16 h-16 rounded-xl overflow-hidden bg-warm-100 flex items-center justify-center shrink-0">
+                    {s.logo_url ? (
+                      <img src={s.logo_url} alt="" className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="text-2xl" aria-hidden="true">🏪</span>
+                    )}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="font-bold text-warm-900 truncate">{s.name || 'Untitled'}</p>
+                        <a
+                          href={url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs text-primary-600 hover:underline font-mono break-all"
+                        >
+                          hispike.in/petshop/{s.slug}
+                        </a>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <a
+                          href={url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-3 py-1.5 rounded-full border-2 border-warm-300 bg-white text-warm-700 text-xs font-bold uppercase tracking-wider hover:border-primary-500 hover:text-primary-700 transition-colors"
+                        >
+                          View
+                        </a>
+                        <button
+                          type="button"
+                          onClick={() => handleDelete(s.id)}
+                          disabled={deleteMutation.isPending && staged}
+                          className={`px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-colors ${
+                            staged
+                              ? 'bg-red-600 text-white hover:bg-red-700 disabled:opacity-60'
+                              : 'border-2 border-warm-300 bg-white text-warm-700 hover:border-red-500 hover:text-red-600'
+                          }`}
+                        >
+                          {deleteMutation.isPending && staged ? 'Removing…' : staged ? 'Confirm' : 'Remove'}
+                        </button>
+                      </div>
+                    </div>
+                    <div className="mt-2 flex items-center gap-3 text-xs text-warm-400">
+                      {s.area && (
+                        <>
+                          <span>📍 {s.area}</span>
+                          <span aria-hidden="true">·</span>
+                        </>
+                      )}
+                      <span>{formatDateTime(new Date(s.created_at))}</span>
+                    </div>
+                  </div>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </section>
+  );
+}
+
 // ---- Backup / Export: download each category's live data as .xlsx ----
 
 type ExportConfig = {
@@ -2800,6 +2929,7 @@ export function Admin() {
       <UsersSection />
       <SubmissionsSection />
       <PetStoriesSection />
+      <PetShopsSection />
       <AddListingsSection />
       <BackupSection />
       <SiteVisibilitySection />

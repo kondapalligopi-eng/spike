@@ -152,6 +152,17 @@ export async function listRecentShops(limit = 8): Promise<PetShopSummary[]> {
   return res.data;
 }
 
+// --- admin -------------------------------------------------------------------
+
+export async function listAllShops(): Promise<PetShopSummary[]> {
+  if (USE_MOCK) {
+    await delay(120);
+    return readStore().map(toSummary);
+  }
+  const res = await apiClient.get<PetShopSummary[]>('/pet-shops');
+  return res.data;
+}
+
 // --- owner: shops ------------------------------------------------------------
 
 export async function listMyShops(): Promise<PetShopSummary[]> {
