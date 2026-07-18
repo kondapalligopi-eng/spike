@@ -42,10 +42,31 @@ export function BlogPost() {
 
       <article className="max-w-3xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
         {/* breadcrumb */}
-        <nav className="text-sm text-warm-500 mb-6">
-          <Link to="/" className="hover:text-warm-800">Home</Link>
-          <span className="mx-1.5">/</span>
-          <Link to="/blog" className="hover:text-warm-800">Blog</Link>
+        <nav aria-label="Breadcrumb" className="mb-6">
+          <ol className="flex items-center flex-wrap gap-x-2 gap-y-1 text-sm">
+            <li>
+              <Link to="/" className="inline-flex items-center gap-1.5 font-medium text-warm-500 hover:text-primary-600 transition-colors">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12l8.954-8.955c.44-.44 1.152-.44 1.591 0L21.75 12M4.5 9.75v10.5a.75.75 0 00.75.75h4.5a.75.75 0 00.75-.75V15a.75.75 0 01.75-.75h3a.75.75 0 01.75.75v5.25a.75.75 0 00.75.75h4.5a.75.75 0 00.75-.75V9.75" />
+                </svg>
+                Home
+              </Link>
+            </li>
+            <li aria-hidden="true" className="text-warm-300">
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+              </svg>
+            </li>
+            <li>
+              <Link to="/blog" className="font-medium text-warm-500 hover:text-primary-600 transition-colors">Blog</Link>
+            </li>
+            <li aria-hidden="true" className="text-warm-300">
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+              </svg>
+            </li>
+            <li aria-current="page" className="font-semibold text-warm-800">{post.category}</li>
+          </ol>
         </nav>
 
         <p className="text-[11px] font-bold tracking-[0.28em] uppercase text-accent-600">{post.category}</p>

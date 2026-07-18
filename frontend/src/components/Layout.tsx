@@ -3,6 +3,7 @@ import { Navbar } from './Navbar';
 import { ScrollToTop } from './ScrollToTop';
 import { ToastContainer } from './Toast';
 import { VisitTracker } from './VisitTracker';
+import { SOCIAL } from '@/lib/social';
 
 const FOOTER_COLUMNS: { heading: string; links: { label: string; href: string; external?: boolean }[] }[] = [
   {
@@ -27,14 +28,6 @@ const FOOTER_COLUMNS: { heading: string; links: { label: string; href: string; e
     ],
   },
 ];
-
-// Official HiSpike profiles. Tracking params (igsh/si/mibextid) stripped —
-// they're only added by the app's "share" buttons and aren't needed here.
-const SOCIAL = {
-  instagram: 'https://www.instagram.com/hispike.petcare',
-  facebook: 'https://www.facebook.com/share/1DFVNm7ER2/',
-  youtube: 'https://www.youtube.com/@hispike-petcare',
-} as const;
 
 function SocialIcon({ label, children, href }: { label: string; children: React.ReactNode; href: string }) {
   return (
@@ -76,6 +69,11 @@ export function Layout() {
                 <SocialIcon label="HiSpike on Facebook" href={SOCIAL.facebook}>
                   <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
                     <path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95z" />
+                  </svg>
+                </SocialIcon>
+                <SocialIcon label="HiSpike on LinkedIn" href={SOCIAL.linkedin}>
+                  <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                    <path d="M19 3a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h14m-.5 15.5v-5.3a3.26 3.26 0 00-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 011.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 001.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 00-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z" />
                   </svg>
                 </SocialIcon>
                 <SocialIcon label="HiSpike on YouTube" href={SOCIAL.youtube}>
