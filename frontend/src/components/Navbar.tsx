@@ -42,11 +42,13 @@ const STATIC_SERVICES: SearchEntry[] = [
   { section: 'Services', title: 'Pet Stories', subtitle: 'A shareable page for your pet', to: '/pet-stories' },
 ];
 
-function SocialIcon({ label, children, href = '#' }: { label: string; children: React.ReactNode; href?: string }) {
+function SocialIcon({ label, children, href }: { label: string; children: React.ReactNode; href: string }) {
   return (
     <a
       href={href}
       aria-label={label}
+      target="_blank"
+      rel="noopener noreferrer"
       className="w-10 h-10 flex items-center justify-center text-warm-800 hover:text-primary-700 transition-colors"
     >
       {children}
