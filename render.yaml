@@ -123,7 +123,7 @@ services:
       # future articles automatically. Must come BEFORE the /* catch-all.
       - type: rewrite
         source: /blog/*
-        destination: /blog/:splat/index.html
+        destination: /blog/*/index.html
       # SPA fallback for everything else (dynamic routes, protected routes,
       # 404s — React Router handles them client-side).
       - type: rewrite
