@@ -28,15 +28,6 @@ const FOOTER_COLUMNS: { heading: string; links: { label: string; href: string; e
   },
 ];
 
-// Official HiSpike profiles. Tracking params (igsh/si/mibextid) stripped —
-// they're only added by the app's "share" buttons and aren't needed here.
-const SOCIAL = {
-  instagram: 'https://www.instagram.com/hispike.petcare',
-  facebook: 'https://www.facebook.com/share/1DFVNm7ER2/',
-  youtube: 'https://www.youtube.com/@hispike-petcare',
-  linkedin: 'https://www.linkedin.com/company/hispike-petcare',
-} as const;
-
 function SocialIcon({ label, children, href }: { label: string; children: React.ReactNode; href: string }) {
   return (
     <a
