@@ -65,6 +65,7 @@ import {
 import { readSheetRows, downloadTemplate, downloadRows, type SheetRow } from '@/lib/spreadsheet';
 import { getCounter } from '@/api/counters';
 import { listUsers } from '@/api/users';
+import { listAllShops, deleteShop } from '@/api/petShops';
 
 const BANGALORE_NEIGHBOURHOODS = [
   'Banashankari', 'Banaswadi', 'Basavanagudi', 'Bellandur', 'Bommanahalli',
