@@ -2929,6 +2929,7 @@ export function Admin() {
       <UsersSection />
       <SubmissionsSection />
       <PetStoriesSection />
+      <PetShopsSection />
       <AddListingsSection />
       <BackupSection />
       <SiteVisibilitySection />
