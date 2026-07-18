@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { listRecentShops } from '@/api/petShops';
 import { PageHead } from '@/components/PageHead';
+import { HeroPaws } from '@/components/HeroPaws';
 import { useBackendWarmup } from '@/lib/warmupBackend';
 
 export function PetShops() {
@@ -21,16 +22,33 @@ export function PetShops() {
       />
 
       {/* Hero */}
-      <div className="bg-gradient-to-br from-primary-600 to-primary-500 text-white">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12 sm:py-16 text-center">
-          <p className="text-[11px] font-bold tracking-[0.3em] uppercase text-white/80 mb-2">Pet Shops · Bengaluru</p>
-          <h1 className="text-3xl sm:text-4xl font-black tracking-tight">Local pet shops, one tap away</h1>
-          <p className="mt-3 text-white/90 max-w-2xl mx-auto text-lg">
-            Browse neighbourhood pet stores, see their products, and message them directly. Own a shop?
-            <Link to="/my-shop" className="underline font-semibold ml-1">List it free →</Link>
-          </p>
+      <section className="relative overflow-hidden bg-gradient-to-r from-primary-900 via-primary-800 to-primary-600 text-white">
+        <HeroPaws />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-6">
+          <span aria-hidden="true" className="text-4xl sm:text-5xl drop-shadow">🏪</span>
+          <div className="flex-1">
+            <p className="text-[11px] sm:text-xs font-semibold tracking-[0.3em] text-accent-400 uppercase mb-1">
+              Pet Shops · Bengaluru
+            </p>
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight leading-tight">
+              Local Pet Shops in Bengaluru
+            </h1>
+            <div className="mt-2 h-0.5 w-16 bg-accent-400 rounded-full" />
+            <p className="mt-2 text-sm text-primary-100/90 max-w-2xl">
+              Browse neighbourhood pet stores, see their products, and message them directly on WhatsApp — food, toys, grooming supplies, and more.
+            </p>
+          </div>
+          <Link
+            to="/my-shop"
+            className="self-start md:self-auto inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-accent-400 hover:bg-accent-300 text-warm-900 text-sm font-bold tracking-[0.15em] uppercase ring-2 ring-accent-300/50 hover:ring-accent-200 transition-all shadow-md"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
+            </svg>
+            List Your Shop
+          </Link>
         </div>
-      </div>
+      </section>
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10">
         {isLoading ? (
