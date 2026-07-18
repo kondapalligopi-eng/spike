@@ -207,6 +207,7 @@ export function Home() {
                     { icon: '🏊', label: 'Swim Training', to: '/swimming' },
                     { icon: '✂️', label: 'Grooming Salon', to: '/grooming' },
                     { icon: '🛒', label: 'Pet Supplies', to: '/pet-supplies' },
+                    { icon: '🏪', label: 'Pet Shops', to: '/petshops' },
                     { icon: '📖', label: 'Pet Stories', to: '/pet-stories' },
                   ].map(({ icon, label, to }) => (
                     <li key={to}>
