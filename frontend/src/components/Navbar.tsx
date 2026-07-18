@@ -20,6 +20,7 @@ const DRAWER_TOP: DrawerItem[] = [
   { label: 'Swimming', to: '/swimming' },
   { label: 'Grooming', to: '/grooming' },
   { label: 'Pet Supplies', to: '/pet-supplies' },
+  { label: 'Pet Shops', to: '/petshops' },
   { label: 'Pet Stories', to: '/pet-stories' },
 ];
 
