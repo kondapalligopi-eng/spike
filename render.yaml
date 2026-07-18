@@ -115,6 +115,18 @@ services:
       - type: rewrite
         source: /feedback
         destination: /feedback/index.html
+      - type: rewrite
+        source: /petshops
+        destination: /petshops/index.html
+      - type: rewrite
+        source: /dog-walking
+        destination: /dog-walking/index.html
+      - type: rewrite
+        source: /terms
+        destination: /terms/index.html
+      - type: rewrite
+        source: /privacy
+        destination: /privacy/index.html
       # Blog articles are pre-rendered to nested dirs (/blog/<slug>/index.html).
       # A clean URL like /blog/foo (no trailing slash) has no file of its own, so
       # without this rule it falls through to the SPA catch-all and serves the
