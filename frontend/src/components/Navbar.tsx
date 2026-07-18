@@ -41,6 +41,7 @@ const STATIC_SERVICES: SearchEntry[] = [
   { section: 'Services', title: 'Swimming', subtitle: 'Aquatic training', to: '/swimming' },
   { section: 'Services', title: 'Grooming', subtitle: 'Salon & spa', to: '/grooming' },
   { section: 'Services', title: 'Pet Supplies', subtitle: 'Food, treats, accessories', to: '/pet-supplies' },
+  { section: 'Services', title: 'Pet Shops', subtitle: 'Local shops & their products', to: '/petshops' },
   { section: 'Services', title: 'Pet Stories', subtitle: 'A shareable page for your pet', to: '/pet-stories' },
 ];
 
