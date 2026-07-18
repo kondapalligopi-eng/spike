@@ -115,6 +115,15 @@ services:
       - type: rewrite
         source: /feedback
         destination: /feedback/index.html
+      # Blog articles are pre-rendered to nested dirs (/blog/<slug>/index.html).
+      # A clean URL like /blog/foo (no trailing slash) has no file of its own, so
+      # without this rule it falls through to the SPA catch-all and serves the
+      # homepage shell — crawlers then index homepage content for every article.
+      # This wildcard maps /blog/<slug> -> /blog/<slug>/index.html and covers
+      # future articles automatically. Must come BEFORE the /* catch-all.
+      - type: rewrite
+        source: /blog/*
+        destination: /blog/:splat/index.html
       # SPA fallback for everything else (dynamic routes, protected routes,
       # 404s — React Router handles them client-side).
       - type: rewrite
