@@ -34,6 +34,7 @@ const SOCIAL = {
   instagram: 'https://www.instagram.com/hispike.petcare',
   facebook: 'https://www.facebook.com/share/1DFVNm7ER2/',
   youtube: 'https://www.youtube.com/@hispike-petcare',
+  linkedin: 'https://www.linkedin.com/company/hispike-petcare',
 } as const;
 
 function SocialIcon({ label, children, href }: { label: string; children: React.ReactNode; href: string }) {
