@@ -118,9 +118,8 @@ services:
       - type: rewrite
         source: /petshops
         destination: /petshops/index.html
-      - type: rewrite
-        source: /dog-walking
-        destination: /dog-walking/index.html
+      # (/dog-walking is a "coming soon" placeholder — intentionally not rewritten
+      #  so it isn't indexed until the real page ships.)
       - type: rewrite
         source: /terms
         destination: /terms/index.html
