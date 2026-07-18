@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { listRecentShops } from '@/api/petShops';
 import { PageHead } from '@/components/PageHead';
+import { HeroPaws } from '@/components/HeroPaws';
 import { useBackendWarmup } from '@/lib/warmupBackend';
 
 export function PetShops() {
