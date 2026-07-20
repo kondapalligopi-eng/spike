@@ -162,7 +162,7 @@ export function Home() {
             <div className="hidden lg:flex items-center justify-between gap-6">
               <span
                 aria-hidden="true"
-                className="text-[160px] drop-shadow-2xl select-none -scale-x-100 leading-none"
+                className="text-[210px] drop-shadow-2xl select-none -scale-x-100 leading-none"
               >
                 🐕
               </span>
@@ -200,28 +200,10 @@ export function Home() {
                 <p className="text-base font-light uppercase tracking-[0.25em] text-primary-100/80 mt-1">
                   Pet Care
                 </p>
-                <ul className="mt-4 space-y-1.5">
-                  {[
-                    { icon: '🏥', label: 'Vet Hospital', to: '/hospital' },
-                    { icon: '🌳', label: 'Dog Parks', to: '/park' },
-                    { icon: '🏊', label: 'Swim Training', to: '/swimming' },
-                    { icon: '✂️', label: 'Grooming Salon', to: '/grooming' },
-                    { icon: '🛒', label: 'Pet Supplies', to: '/pet-supplies' },
-                    { icon: '🏪', label: 'Pet Shops', to: '/petshops' },
-                    { icon: '📖', label: 'Pet Stories', to: '/pet-stories' },
-                    { icon: '🦴', label: 'Pet Play', to: '/pet-play' },
-                  ].map(({ icon, label, to }) => (
-                    <li key={to}>
-                      <Link
-                        to={to}
-                        className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold tracking-[0.2em] uppercase bg-accent-400 hover:bg-accent-300 text-warm-900 ring-2 ring-accent-300/50 hover:ring-accent-200 transition-all shadow-md"
-                      >
-                        <span aria-hidden="true">{icon}</span>
-                        {label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
+                {/* The service links that used to sit here were removed: they
+                    duplicate the service circles directly below the hero, and
+                    the list grew ~28px with every new service (it reached 8),
+                    pushing the laptop hero to 476px tall. */}
               </div>
             </div>
           </div>
