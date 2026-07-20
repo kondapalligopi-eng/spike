@@ -44,6 +44,7 @@ const STATIC_SERVICES: SearchEntry[] = [
   { section: 'Services', title: 'Pet Supplies', subtitle: 'Food, treats, accessories', to: '/pet-supplies' },
   { section: 'Services', title: 'Pet Shops', subtitle: 'Local shops & their products', to: '/petshops' },
   { section: 'Services', title: 'Pet Stories', subtitle: 'A shareable page for your pet', to: '/pet-stories' },
+  { section: 'Services', title: 'Pet Games', subtitle: 'Treat Hunt — play with your dog', to: '/pet-games' },
 ];
 
 function SocialIcon({ label, children, href }: { label: string; children: React.ReactNode; href: string }) {
