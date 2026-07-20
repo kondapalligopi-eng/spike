@@ -14,6 +14,7 @@ import { Profile } from '@/pages/Profile';
 import { MyDogs } from '@/pages/MyDogs';
 import { PetPages } from '@/pages/PetPages';
 import { PetPage } from '@/pages/PetPage';
+import { PetGames } from '@/pages/PetGames';
 import { PetShop } from '@/pages/PetShop';
 import { PetShops } from '@/pages/PetShops';
 import { MyShop } from '@/pages/MyShop';
