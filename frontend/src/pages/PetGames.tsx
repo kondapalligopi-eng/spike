@@ -39,32 +39,27 @@ const REWARD_GOAL = 500;
 
 export function PetGames() {
   const [mode, setMode] = useState<Mode>('me');
-  const [treat, setTreat] = useState(0);
   const [picked, setPicked] = useState<number | null>(null);
   const [sniffing, setSniffing] = useState(false);
   const [points, setPoints] = useState(0);
   const [gain, setGain] = useState(0);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Pick the hiding place on the client only — during SSG there is no randomness.
-  useEffect(() => {
-    setTreat(Math.floor(Math.random() * 3));
-    return () => { if (timer.current) clearTimeout(timer.current); };
-  }, []);
+  useEffect(() => () => { if (timer.current) clearTimeout(timer.current); }, []);
 
   const done = picked !== null;
-  const found = done && picked === treat;
 
+  // The chosen bowl is always the one holding the treat — the dog never comes
+  // away empty. The other two grey out so the pick reads clearly.
   const pick = useCallback((i: number) => {
     setPicked((prev) => {
       if (prev !== null) return prev;
-      const hit = i === treat;
-      const g = hit ? 30 + Math.floor(Math.random() * 31) : 5 + Math.floor(Math.random() * 11);
+      const g = 30 + Math.floor(Math.random() * 31);
       setGain(g);
       setPoints((p) => p + g);
       return i;
     });
-  }, [treat]);
+  }, []);
 
   const sniff = useCallback(() => {
     if (done || sniffing) return;
