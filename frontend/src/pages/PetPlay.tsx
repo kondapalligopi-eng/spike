@@ -290,6 +290,12 @@ export function PetPlay() {
               <p className="mt-2 inline-flex items-center gap-2 rounded-full bg-accent-100 px-4 py-1.5 text-sm font-extrabold text-accent-700 tabular-nums">
                 ★ +{gain} pts
               </p>
+              {/* say so explicitly, or the counter appears to lose the points */}
+              {hitGoal && (
+                <p className="mt-2 text-sm font-bold text-green-600">
+                  🏆 You hit {REWARD_GOAL} points! The counter starts over.
+                </p>
+              )}
               <div className="mt-4">
                 <button
                   type="button"
