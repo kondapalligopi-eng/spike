@@ -277,22 +277,16 @@ export function PetGames() {
                 </button>
               </div>
             </>
-          ) : sniffing ? (
-            <p className="text-warm-500">Sniff… sniff… 🐽</p>
           ) : mode === 'dog' ? (
-            <>
-              <p className="text-warm-500 mb-3">Ready? Send your dog in to sniff out the treat.</p>
-              <button
-                type="button"
-                onClick={sniff}
-                className="rounded-full bg-accent-400 hover:bg-accent-300 px-7 py-3 text-sm font-bold text-warm-900 shadow transition-colors"
-              >
-                Let your dog sniff 🐽
-              </button>
-            </>
-          ) : (
-            <p className="text-warm-500">Tap a bowl — which one is your dog sniffing at?</p>
-          )}
+            <button
+              type="button"
+              onClick={sniff}
+              disabled={sniffing}
+              className="rounded-full bg-accent-400 hover:bg-accent-300 disabled:opacity-50 px-7 py-3 text-sm font-bold text-warm-900 shadow transition-colors"
+            >
+              Let your dog sniff 🐽
+            </button>
+          ) : null}
         </div>
 
         {/* session points */}
