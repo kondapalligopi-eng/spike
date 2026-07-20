@@ -90,6 +90,7 @@ export function PetPlay() {
   const again = useCallback(() => {
     setPicked(null);
     setGain(0);
+    setHitGoal(false);
   }, []);
 
   const pct = Math.min(100, (points / REWARD_GOAL) * 100);
