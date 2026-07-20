@@ -183,8 +183,19 @@ export function PetGames() {
           </div>
         </div>
 
+        {/* instruction sits with the mode toggle, above the board */}
+        <p className="text-center text-warm-500 text-sm mt-3 min-h-[20px]">
+          {done
+            ? ''
+            : sniffing
+              ? 'Sniff… sniff… 🐽'
+              : mode === 'dog'
+                ? 'Ready? Send your dog in to sniff out the treat.'
+                : 'Tap a bowl — which one is your dog sniffing at?'}
+        </p>
+
         {/* board */}
-        <div className="nw-board mt-5">
+        <div className="nw-board mt-3">
           {STARS.map((s, i) => (
             <svg
               key={i}
