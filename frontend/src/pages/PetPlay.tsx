@@ -50,9 +50,16 @@ export function PetPlay() {
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pawTimer = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  useEffect(() => () => {
-    if (timer.current) clearTimeout(timer.current);
-    if (pawTimer.current) clearInterval(pawTimer.current);
+  useEffect(() => {
+    // Let the hero introduce the page, then fold it away so the board sits high
+    // on screen. Runs client-side only, so the pre-rendered HTML still ships the
+    // hero (and its h1) intact for crawlers.
+    const heroT = setTimeout(() => setHeroHidden(true), 3500);
+    return () => {
+      clearTimeout(heroT);
+      if (timer.current) clearTimeout(timer.current);
+      if (pawTimer.current) clearInterval(pawTimer.current);
+    };
   }, []);
 
   const done = picked !== null;
