@@ -14,7 +14,7 @@ import { Profile } from '@/pages/Profile';
 import { MyDogs } from '@/pages/MyDogs';
 import { PetPages } from '@/pages/PetPages';
 import { PetPage } from '@/pages/PetPage';
-import { PetGames } from '@/pages/PetGames';
+import { PetPlay } from '@/pages/PetPlay';
 import { PetShop } from '@/pages/PetShop';
 import { PetShops } from '@/pages/PetShops';
 import { MyShop } from '@/pages/MyShop';
@@ -66,7 +66,7 @@ export const routes: RouteRecord[] = [
           // client-side (not pre-rendered at build time).
           { path: 'pet/:slug', Component: PetPage },
           // Nose-work game — front-end only, no scoring backend yet.
-          { path: 'pet-games', Component: PetGames },
+          { path: 'pet-play', Component: PetPlay },
           // Pet Shops directory (browse) + individual storefronts.
           { path: 'petshops', Component: PetShops },
           // Public pet-shop storefront — same client-rendered, slug-based pattern.

@@ -209,7 +209,7 @@ export function Home() {
                     { icon: '🛒', label: 'Pet Supplies', to: '/pet-supplies' },
                     { icon: '🏪', label: 'Pet Shops', to: '/petshops' },
                     { icon: '📖', label: 'Pet Stories', to: '/pet-stories' },
-                    { icon: '🦴', label: 'Pet Games', to: '/pet-games' },
+                    { icon: '🦴', label: 'Pet Play', to: '/pet-play' },
                   ].map(({ icon, label, to }) => (
                     <li key={to}>
                       <Link
@@ -240,7 +240,7 @@ export function Home() {
               { label: 'Pet Supplies', dog: '🐶🦴', badge: '🥣', kicker: 'Shop', tint: 'from-violet-200 to-violet-400', to: '/pet-supplies' },
               { label: 'Pet Shops', dog: '🐶', badge: '🏪', kicker: 'Local Shops', tint: 'from-teal-200 to-teal-400', to: '/petshops' },
               { label: 'Pet Stories', dog: '🐶', badge: '📖', kicker: 'Stories', tint: 'from-fuchsia-200 to-fuchsia-400', to: '/pet-stories' },
-              { label: 'Pet Games', dog: '🐶', badge: '🦴', kicker: 'Play', tint: 'from-indigo-200 to-indigo-400', to: '/pet-games' },
+              { label: 'Pet Play', dog: '🐶', badge: '🦴', kicker: 'Play', tint: 'from-indigo-200 to-indigo-400', to: '/pet-play' },
             ].map(({ label, dog, badge, kicker, tint, to }) => (
               <Link key={label} to={to} className="group block text-center">
                 <p className="text-xs text-warm-600 mb-3 tracking-wide">{kicker}</p>

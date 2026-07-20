@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { PageHead } from '@/components/PageHead';
-import './PetGames.css';
+import { HeroPaws } from '@/components/HeroPaws';
+import './PetPlay.css';
 
 // Nose Work: Treat Hunt — a treat is hidden in one of three bowls and the dog
 // (or the owner) picks. Front-end only for now: points are a local session
@@ -37,7 +38,7 @@ const STARS: { top: string; side: 'left' | 'right'; off: string; w: number; d: s
 
 const REWARD_GOAL = 500;
 
-export function PetGames() {
+export function PetPlay() {
   const [mode, setMode] = useState<Mode>('me');
   const [picked, setPicked] = useState<number | null>(null);
   const [sniffing, setSniffing] = useState(false);
@@ -92,9 +93,9 @@ export function PetGames() {
   return (
     <div className="min-h-screen bg-warm-50">
       <PageHead
-        title="Pet Games — Treat Hunt | HiSpike"
+        title="Pet Play — Treat Hunt | HiSpike"
         description="Play Treat Hunt with your dog on HiSpike. Hide a treat in one of three bowls and let your dog sniff out the right one — a nose-work game you play together."
-        path="/pet-games"
+        path="/pet-play"
       />
 
 
@@ -157,7 +158,7 @@ export function PetGames() {
           <span aria-hidden="true" className="text-4xl sm:text-5xl drop-shadow">🦴</span>
           <div className="flex-1">
             <p className="text-[11px] sm:text-xs font-semibold tracking-[0.3em] text-accent-400 uppercase mb-1">
-              Pet Games · Nose Work
+              Pet Play · Nose Work
             </p>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight leading-tight">Treat Hunt</h1>
             <div className="mt-2 h-0.5 w-16 bg-accent-400 rounded-full" />
