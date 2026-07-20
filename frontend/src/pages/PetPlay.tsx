@@ -154,6 +154,7 @@ export function PetPlay() {
 
       {/* Hero */}
       <section className="relative overflow-hidden bg-gradient-to-r from-primary-900 via-primary-800 to-primary-600 text-white">
+        <HeroPaws />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-6">
           <span aria-hidden="true" className="text-4xl sm:text-5xl drop-shadow">🦴</span>
           <div className="flex-1">
