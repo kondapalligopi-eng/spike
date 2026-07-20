@@ -5,7 +5,7 @@
 .nw-board {
   position: relative;
   border-radius: 22px;
-  padding: 22px 12px 44px;
+  padding: 16px 12px 30px;
   overflow: hidden;
   background:
     radial-gradient(72% 68% at 0% 0%, #1e45b4 0%, rgba(30, 69, 180, 0) 62%),
@@ -85,7 +85,7 @@
   position: relative;
   z-index: 1;
   display: block;
-  height: clamp(108px, 23vw, 168px);
+  height: clamp(96px, 20vw, 142px);
   width: auto;
   filter: drop-shadow(0 12px 11px rgba(0, 0, 0, 0.45));
 }
@@ -101,7 +101,7 @@
   justify-content: center;
   align-items: flex-end;
   gap: clamp(10px, 4vw, 26px);
-  margin-top: 22px;
+  margin-top: 14px;
   padding: 0 4px;
 }
 .nw-slot {
