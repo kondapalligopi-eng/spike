@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { PageHead } from '@/components/PageHead';
+import './PetGames.css';
 
 // Nose Work: Treat Hunt — a treat is hidden in one of three bowls and the dog
 // (or the owner) picks. Front-end only for now: points are a local session
@@ -91,67 +92,6 @@ export function PetGames() {
         path="/pet-games"
       />
 
-      <style>{`
-        .nw-board{position:relative;border-radius:22px;padding:22px 12px 44px;overflow:hidden;
-          background:
-            radial-gradient(72% 68% at 0% 0%,   #1E45B4 0%, rgba(30,69,180,0) 62%),
-            radial-gradient(74% 70% at 100% 2%, #8A2F9E 0%, rgba(138,47,158,0) 62%),
-            radial-gradient(72% 72% at 0% 100%, #0E8489 0%, rgba(14,132,137,0) 62%),
-            radial-gradient(76% 68% at 100% 100%, #9C7524 0%, rgba(156,117,36,0) 60%),
-            #111731;
-          box-shadow:inset 0 2px 0 rgba(255,255,255,.14),0 16px 34px -18px #0C1128}
-        .nw-spark{position:absolute;color:#fff;pointer-events:none;z-index:1;
-          filter:drop-shadow(0 0 6px rgba(255,255,255,.6));animation:nwTw 3.2s ease-in-out infinite}
-        .nw-spark.gold{color:#F7B518;filter:drop-shadow(0 0 7px rgba(247,181,24,.75))}
-        @keyframes nwTw{0%,100%{opacity:.28;transform:scale(.8)}50%{opacity:1;transform:scale(1.12)}}
-        .nw-rug{position:absolute;left:5%;right:5%;bottom:26px;height:124px;border-radius:50%;z-index:0;
-          background:radial-gradient(ellipse at 50% 50%,rgba(255,255,255,.24),rgba(255,255,255,.09) 54%,transparent 76%);
-          box-shadow:0 0 0 1.5px rgba(255,255,255,.10) inset}
-        .nw-dog{position:relative;z-index:5;display:flex;justify-content:center;
-          transition:transform .3s cubic-bezier(.34,1.56,.64,1)}
-        .nw-dog::after{content:"";position:absolute;bottom:4px;left:50%;transform:translateX(-50%);z-index:0;
-          width:clamp(66px,17vw,98px);height:15px;border-radius:50%;
-          background:radial-gradient(ellipse at 50% 50%,rgba(0,0,0,.5),rgba(0,0,0,.2) 50%,transparent 74%)}
-        .nw-dog.sniff{animation:nwSniff 1.2s ease-in-out}
-        @keyframes nwSniff{0%,100%{transform:translateY(0) rotate(0)}
-          25%{transform:translateY(10px) rotate(-6deg)}55%{transform:translateY(12px) rotate(7deg)}80%{transform:translateY(6px) rotate(-3deg)}}
-        .nw-dogphoto{position:relative;z-index:1;display:block;height:clamp(118px,29vw,168px);width:auto;
-          filter:drop-shadow(0 12px 11px rgba(0,0,0,.45))}
-        .nw-bowls{position:relative;z-index:2;display:flex;justify-content:center;align-items:flex-end;
-          gap:clamp(10px,4vw,26px);margin-top:22px;padding:0 4px}
-        .nw-slot{position:relative;flex:1;max-width:140px;display:flex;flex-direction:column;align-items:center}
-        .nw-bowlbtn{position:relative;width:100%;border:0;background:transparent;padding:0;cursor:pointer;display:block}
-        .nw-bowlbtn:disabled{cursor:default}
-        .nw-bowlbtn:focus-visible{outline:none}
-        .nw-bowlbtn:focus-visible .nw-bowlsvg{outline:3px solid #F7B518;outline-offset:5px;border-radius:12px}
-        .nw-bones{position:absolute;left:8%;right:8%;top:-13px;height:30px;z-index:3;pointer-events:none}
-        .nw-bone{position:absolute;width:clamp(26px,8.2vw,42px);height:auto;opacity:0;
-          transform:translateY(20px) rotate(var(--r)) scale(.25);
-          transition:transform .5s cubic-bezier(.34,1.7,.5,1),opacity .28s;transition-delay:var(--d,0s);
-          filter:drop-shadow(0 2px 2px rgba(0,0,0,.42))}
-        .nw-slot.win .nw-bone{opacity:1;transform:translateY(0) rotate(var(--r)) scale(var(--s))}
-        .nw-glow{position:absolute;left:-8%;right:-8%;bottom:0;height:80px;border-radius:50%;z-index:0;opacity:0;
-          background:radial-gradient(ellipse at 50% 50%,rgba(247,181,24,.7),rgba(247,181,24,.2) 45%,transparent 72%);
-          transition:opacity .5s}
-        .nw-slot.win .nw-glow{opacity:1}
-        .nw-contact{position:absolute;left:4%;right:4%;bottom:-6px;height:18px;border-radius:50%;z-index:1;
-          background:radial-gradient(ellipse at 50% 50%,rgba(0,0,0,.55),rgba(0,0,0,.28) 45%,transparent 72%);
-          transition:transform .35s,opacity .35s}
-        .nw-slot:not(.done) .nw-bowlbtn:hover .nw-contact{transform:scale(.9);opacity:.7}
-        .nw-slot.miss .nw-contact{opacity:.35}
-        .nw-bowlsvg{position:relative;z-index:2;width:100%;height:auto;display:block;
-          filter:drop-shadow(0 10px 10px rgba(0,0,0,.32));
-          transition:transform .35s cubic-bezier(.34,1.5,.5,1),opacity .3s}
-        .nw-slot:not(.done) .nw-bowlbtn:hover .nw-bowlsvg{transform:translateY(-7px) scale(1.04)}
-        .nw-slot.waiting .nw-bowlsvg{animation:nwWiggle 1.15s ease-in-out infinite}
-        .nw-slot.waiting:nth-child(2) .nw-bowlsvg{animation-delay:.16s}
-        .nw-slot.waiting:nth-child(3) .nw-bowlsvg{animation-delay:.32s}
-        @keyframes nwWiggle{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-7px) rotate(1.5deg)}}
-        .nw-slot.win .nw-bowlsvg{animation:nwHop .55s cubic-bezier(.34,1.5,.5,1)}
-        @keyframes nwHop{0%{transform:translateY(0)}35%{transform:translateY(-14px)}70%{transform:translateY(0)}85%{transform:translateY(-5px)}100%{transform:translateY(0)}}
-        .nw-slot.miss .nw-bowlsvg{opacity:.4;transform:scale(.95)}
-        @media (prefers-reduced-motion:reduce){.nw-board *{animation:none!important;transition-duration:.01ms!important}}
-      `}</style>
 
       {/* shared artwork */}
       <svg width="0" height="0" className="absolute" aria-hidden="true" focusable="false">

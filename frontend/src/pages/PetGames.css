@@ -78,7 +78,7 @@
   position: relative;
   z-index: 1;
   display: block;
-  height: clamp(118px, 29vw, 168px);
+  height: clamp(132px, 30vw, 208px);
   width: auto;
   filter: drop-shadow(0 12px 11px rgba(0, 0, 0, 0.45));
 }
