@@ -231,7 +231,7 @@ export function Home() {
       {/* Services / Categories — editorial thumbnail grid */}
       <section className="py-10 bg-primary-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-6 sm:gap-8">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-8 gap-6 sm:gap-8">
             {[
               { label: 'Hospital', dog: '🐶', badge: '🩺', kicker: 'Vet Care', tint: 'from-rose-200 to-rose-400', to: '/hospital' },
               { label: 'Park', dog: '🐕', badge: '🌳', kicker: 'Outdoors', tint: 'from-emerald-200 to-emerald-500', to: '/park' },
