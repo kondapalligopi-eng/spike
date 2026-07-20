@@ -45,12 +45,21 @@ export function PetPlay() {
   const [points, setPoints] = useState(0);
   const [gain, setGain] = useState(0);
   const [pawUp, setPawUp] = useState(false);
+  const [hitGoal, setHitGoal] = useState(false);
+  const [heroHidden, setHeroHidden] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pawTimer = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  useEffect(() => () => {
-    if (timer.current) clearTimeout(timer.current);
-    if (pawTimer.current) clearInterval(pawTimer.current);
+  useEffect(() => {
+    // Let the hero introduce the page, then fold it away so the board sits high
+    // on screen. Runs client-side only, so the pre-rendered HTML still ships the
+    // hero (and its h1) intact for crawlers.
+    const heroT = setTimeout(() => setHeroHidden(true), 2000);
+    return () => {
+      clearTimeout(heroT);
+      if (timer.current) clearTimeout(timer.current);
+      if (pawTimer.current) clearInterval(pawTimer.current);
+    };
   }, []);
 
   const done = picked !== null;
@@ -58,14 +67,20 @@ export function PetPlay() {
   // The chosen bowl is always the one holding the treat — the dog never comes
   // away empty. The other two grey out so the pick reads clearly.
   const pick = useCallback((i: number) => {
-    setPicked((prev) => {
-      if (prev !== null) return prev;
-      const g = 30 + Math.floor(Math.random() * 31);
-      setGain(g);
-      setPoints((p) => p + g);
-      return i;
-    });
-  }, []);
+    if (picked !== null) return;
+    const g = 30 + Math.floor(Math.random() * 31);
+    const next = points + g;
+    // The counter is a lap to 500, not a running total: once the goal is hit it
+    // rolls back to zero so the number can never read past the goal.
+    const reached = next >= REWARD_GOAL;
+    setGain(g);
+    setHitGoal(reached);
+    setPoints(reached ? 0 : next);
+    setPicked(i);
+    // if they play before the timer fires, fold the hero now so the result
+    // never lands below the fold
+    setHeroHidden(true);
+  }, [picked, points]);
 
   // Two real photos of Messi — sitting and with a paw raised — alternated so he
   // actually paws the air while he searches. Both frames are pre-aligned on his
@@ -86,6 +101,7 @@ export function PetPlay() {
   const again = useCallback(() => {
     setPicked(null);
     setGain(0);
+    setHitGoal(false);
   }, []);
 
   const pct = Math.min(100, (points / REWARD_GOAL) * 100);
@@ -152,23 +168,30 @@ export function PetPlay() {
         </defs>
       </svg>
 
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-r from-primary-900 via-primary-800 to-primary-600 text-white">
-        <HeroPaws />
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-6">
-          <span aria-hidden="true" className="text-4xl sm:text-5xl drop-shadow">🦴</span>
-          <div className="flex-1">
-            <p className="text-[11px] sm:text-xs font-semibold tracking-[0.3em] text-accent-400 uppercase mb-1">
-              Pet Play · Sniff & Find
-            </p>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight leading-tight">Treat Hunt</h1>
-            <div className="mt-2 h-0.5 w-16 bg-accent-400 rounded-full" />
-            <p className="mt-2 text-sm text-primary-100/90 max-w-2xl">
-              Hide a treat in one of three bowls, then let your dog sniff out the right one — a game you play together.
-            </p>
+      {/* Hero — shown on arrival for the page identity, then collapses a few
+          seconds later (or the moment you play) so the board gets the room. */}
+      <div
+        className="overflow-hidden transition-all duration-700 ease-in-out motion-reduce:transition-none"
+        style={{ maxHeight: heroHidden ? 0 : 420, opacity: heroHidden ? 0 : 1 }}
+        aria-hidden={heroHidden}
+      >
+        <section className="relative overflow-hidden bg-gradient-to-r from-primary-900 via-primary-800 to-primary-600 text-white">
+          <HeroPaws />
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-6">
+            <span aria-hidden="true" className="text-4xl sm:text-5xl drop-shadow">🦴</span>
+            <div className="flex-1">
+              <p className="text-[11px] sm:text-xs font-semibold tracking-[0.3em] text-accent-400 uppercase mb-1">
+                Pet Play · Sniff & Find
+              </p>
+              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight leading-tight">Treat Hunt</h1>
+              <div className="mt-2 h-0.5 w-16 bg-accent-400 rounded-full" />
+              <p className="mt-2 text-sm text-primary-100/90 max-w-2xl">
+                Hide a treat in one of three bowls, then let your dog sniff out the right one — a game you play together.
+              </p>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </div>
 
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
         {/* who picks */}
@@ -202,7 +225,7 @@ export function PetPlay() {
         </p>
 
         {/* board */}
-        <div className="nw-board mt-3">
+        <div className="nw-board mt-2">
           {STARS.map((s, i) => (
             <svg
               key={i}
@@ -278,14 +301,24 @@ export function PetPlay() {
         </div>
 
         {/* result / actions */}
-        <div className="text-center mt-6 min-h-[104px]" aria-live="polite">
+        <div className="text-center mt-4 min-h-[104px]" aria-live="polite">
           {done ? (
             <>
-              <p className="text-xl font-extrabold text-green-600">🎉 Nailed it! Good dog.</p>
-              <p className="mt-2 inline-flex items-center gap-2 rounded-full bg-accent-100 px-4 py-1.5 text-sm font-extrabold text-accent-700 tabular-nums">
-                ★ +{gain} pts
-              </p>
-              <div className="mt-4">
+              {/* headline and points share a row — stacking them pushed the whole
+                  block past the fold on laptop and small phones */}
+              <div className="flex items-center justify-center gap-2.5 flex-wrap">
+                <p className="text-lg sm:text-xl font-extrabold text-green-600">🎉 Nailed it! Good dog.</p>
+                <p className="inline-flex items-center gap-1.5 rounded-full bg-accent-100 px-3 py-1 text-sm font-extrabold text-accent-700 tabular-nums">
+                  ★ +{gain} pts
+                </p>
+              </div>
+              {/* say so explicitly, or the counter appears to lose the points */}
+              {hitGoal && (
+                <p className="mt-1.5 text-sm font-bold text-green-600">
+                  🏆 You hit {REWARD_GOAL} points! The counter starts over.
+                </p>
+              )}
+              <div className="mt-3">
                 <button
                   type="button"
                   onClick={again}
