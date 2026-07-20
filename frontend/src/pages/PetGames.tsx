@@ -217,7 +217,18 @@ export function PetGames() {
 
           <div className={`nw-dog${sniffing ? ' sniff' : ''}`}>
             <span className="nw-dogwrap">
-              <img className="nw-dogphoto" src="/spike/messi.png" alt="Messi, a golden retriever puppy, waiting to sniff out the treat" />
+              <img
+                className={`nw-dogphoto${pawUp ? ' is-hidden' : ''}`}
+                src="/spike/messi-sit.png"
+                alt="Messi, a golden retriever puppy, waiting to sniff out the treat"
+              />
+              {/* second frame stacked on top; both share a canvas so only the paw moves */}
+              <img
+                className={`nw-dogphoto nw-frame2${pawUp ? '' : ' is-hidden'}`}
+                src="/spike/messi-paw.png"
+                alt=""
+                aria-hidden="true"
+              />
             </span>
           </div>
 
