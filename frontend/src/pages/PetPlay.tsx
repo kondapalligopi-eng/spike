@@ -54,7 +54,7 @@ export function PetPlay() {
     // Let the hero introduce the page, then fold it away so the board sits high
     // on screen. Runs client-side only, so the pre-rendered HTML still ships the
     // hero (and its h1) intact for crawlers.
-    const heroT = setTimeout(() => setHeroHidden(true), 3500);
+    const heroT = setTimeout(() => setHeroHidden(true), 2000);
     return () => {
       clearTimeout(heroT);
       if (timer.current) clearTimeout(timer.current);
