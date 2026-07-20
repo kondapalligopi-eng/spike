@@ -45,6 +45,7 @@ export function PetPlay() {
   const [points, setPoints] = useState(0);
   const [gain, setGain] = useState(0);
   const [pawUp, setPawUp] = useState(false);
+  const [hitGoal, setHitGoal] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pawTimer = useRef<ReturnType<typeof setInterval> | null>(null);
 
