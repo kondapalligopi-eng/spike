@@ -73,7 +73,6 @@ export function PetGames() {
   const again = useCallback(() => {
     setPicked(null);
     setGain(0);
-    setTreat(Math.floor(Math.random() * 3));
   }, []);
 
   const pct = Math.min(100, (points / REWARD_GOAL) * 100);
