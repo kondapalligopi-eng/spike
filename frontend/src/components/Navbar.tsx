@@ -22,6 +22,7 @@ const DRAWER_TOP: DrawerItem[] = [
   { label: 'Pet Supplies', to: '/pet-supplies' },
   { label: 'Pet Shops', to: '/petshops' },
   { label: 'Pet Stories', to: '/pet-stories' },
+  { label: 'Pet Play', to: '/pet-play' },
 ];
 
 const DRAWER_BOTTOM: DrawerItem[] = [
@@ -43,6 +44,7 @@ const STATIC_SERVICES: SearchEntry[] = [
   { section: 'Services', title: 'Pet Supplies', subtitle: 'Food, treats, accessories', to: '/pet-supplies' },
   { section: 'Services', title: 'Pet Shops', subtitle: 'Local shops & their products', to: '/petshops' },
   { section: 'Services', title: 'Pet Stories', subtitle: 'A shareable page for your pet', to: '/pet-stories' },
+  { section: 'Services', title: 'Pet Play', subtitle: 'Treat Hunt — play with your dog', to: '/pet-play' },
 ];
 
 function SocialIcon({ label, children, href }: { label: string; children: React.ReactNode; href: string }) {
@@ -280,6 +282,7 @@ export function Navbar() {
               <NavLink to="/pet-supplies" className={navLinkClass}>Pet Supplies</NavLink>
               <NavLink to="/petshops" className={navLinkClass}>Pet Shops</NavLink>
               <NavLink to="/pet-stories" className={navLinkClass}>Pet Stories</NavLink>
+              <NavLink to="/pet-play" className={navLinkClass}>Pet Play</NavLink>
             </div>
           </div>
         </nav>

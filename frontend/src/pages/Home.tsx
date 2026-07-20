@@ -209,6 +209,7 @@ export function Home() {
                     { icon: '🛒', label: 'Pet Supplies', to: '/pet-supplies' },
                     { icon: '🏪', label: 'Pet Shops', to: '/petshops' },
                     { icon: '📖', label: 'Pet Stories', to: '/pet-stories' },
+                    { icon: '🦴', label: 'Pet Play', to: '/pet-play' },
                   ].map(({ icon, label, to }) => (
                     <li key={to}>
                       <Link
@@ -230,7 +231,7 @@ export function Home() {
       {/* Services / Categories — editorial thumbnail grid */}
       <section className="py-10 bg-primary-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-6 sm:gap-8">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-8 gap-6 sm:gap-8">
             {[
               { label: 'Hospital', dog: '🐶', badge: '🩺', kicker: 'Vet Care', tint: 'from-rose-200 to-rose-400', to: '/hospital' },
               { label: 'Park', dog: '🐕', badge: '🌳', kicker: 'Outdoors', tint: 'from-emerald-200 to-emerald-500', to: '/park' },
@@ -239,6 +240,7 @@ export function Home() {
               { label: 'Pet Supplies', dog: '🐶🦴', badge: '🥣', kicker: 'Shop', tint: 'from-violet-200 to-violet-400', to: '/pet-supplies' },
               { label: 'Pet Shops', dog: '🐶', badge: '🏪', kicker: 'Local Shops', tint: 'from-teal-200 to-teal-400', to: '/petshops' },
               { label: 'Pet Stories', dog: '🐶', badge: '📖', kicker: 'Stories', tint: 'from-fuchsia-200 to-fuchsia-400', to: '/pet-stories' },
+              { label: 'Pet Play', dog: '🐶', badge: '🦴', kicker: 'Play', tint: 'from-indigo-200 to-indigo-400', to: '/pet-play' },
             ].map(({ label, dog, badge, kicker, tint, to }) => (
               <Link key={label} to={to} className="group block text-center">
                 <p className="text-xs text-warm-600 mb-3 tracking-wide">{kicker}</p>
