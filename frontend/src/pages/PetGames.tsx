@@ -209,13 +209,13 @@ export function PetGames() {
 
           <div className="nw-bowls">
             {[0, 1, 2].map((i) => {
-              const isWin = done && i === treat;
-              const isMiss = done && i === picked && !found;
+              const isWin = done && i === picked;
+              const isDim = done && i !== picked;
               const waiting = !done && mode === 'dog';
               return (
                 <div
                   key={i}
-                  className={`nw-slot${done ? ' done' : ''}${isWin ? ' win' : ''}${isMiss ? ' miss' : ''}${waiting ? ' waiting' : ''}`}
+                  className={`nw-slot${done ? ' done' : ''}${isWin ? ' win' : ''}${isDim ? ' dim' : ''}${waiting ? ' waiting' : ''}`}
                 >
                   <button
                     type="button"
