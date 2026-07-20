@@ -66,10 +66,17 @@ export function PetGames() {
     });
   }, []);
 
+  // Two real photos of Messi — sitting and with a paw raised — alternated so he
+  // actually paws the air while he searches. Both frames are pre-aligned on his
+  // feet, so only the paw moves between them.
   const sniff = useCallback(() => {
     if (done || sniffing) return;
     setSniffing(true);
+    setPawUp(true);
+    pawTimer.current = setInterval(() => setPawUp((v) => !v), 195);
     timer.current = setTimeout(() => {
+      if (pawTimer.current) clearInterval(pawTimer.current);
+      setPawUp(false);
       setSniffing(false);
       pick(Math.floor(Math.random() * 3));
     }, 1250);
