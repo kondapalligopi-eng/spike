@@ -214,7 +214,10 @@ export function PetGames() {
           <div className="nw-rug" aria-hidden="true" />
 
           <div className={`nw-dog${sniffing ? ' sniff' : ''}`}>
-            <img className="nw-dogphoto" src="/spike/messi.png" alt="Messi, a golden retriever puppy, waiting to sniff out the treat" />
+            <span className="nw-dogwrap">
+              <img className="nw-dogphoto" src="/spike/messi.png" alt="Messi, a golden retriever puppy, waiting to sniff out the treat" />
+              <svg className="nw-paw" viewBox="0 0 64 112" aria-hidden="true"><use href="#nw-paw" /></svg>
+            </span>
           </div>
 
           <div className="nw-bowls">
