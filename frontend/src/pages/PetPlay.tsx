@@ -3,7 +3,7 @@ import { PageHead } from '@/components/PageHead';
 import { HeroPaws } from '@/components/HeroPaws';
 import './PetPlay.css';
 
-// Nose Work: Treat Hunt — a treat is hidden in one of three bowls and the dog
+// Sniff & Find: Treat Hunt — a treat is hidden in one of three bowls and the dog
 // (or the owner) picks. Front-end only for now: points are a local session
 // tally, and gift-card redemption is intentionally not live until scoring
 // moves server-side. See the "Rewards" note at the bottom of the page.
@@ -94,7 +94,7 @@ export function PetPlay() {
     <div className="min-h-screen bg-warm-50">
       <PageHead
         title="Pet Play — Treat Hunt | HiSpike"
-        description="Play Treat Hunt with your dog on HiSpike. Hide a treat in one of three bowls and let your dog sniff out the right one — a nose-work game you play together."
+        description="Play Treat Hunt with your dog on HiSpike. Hide a treat in one of three bowls and let your dog sniff out the right one — a sniff-and-find game you play together."
         path="/pet-play"
       />
 
@@ -159,7 +159,7 @@ export function PetPlay() {
           <span aria-hidden="true" className="text-4xl sm:text-5xl drop-shadow">🦴</span>
           <div className="flex-1">
             <p className="text-[11px] sm:text-xs font-semibold tracking-[0.3em] text-accent-400 uppercase mb-1">
-              Pet Play · Nose Work
+              Pet Play · Sniff & Find
             </p>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight leading-tight">Treat Hunt</h1>
             <div className="mt-2 h-0.5 w-16 bg-accent-400 rounded-full" />

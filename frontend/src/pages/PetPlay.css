@@ -1,4 +1,4 @@
-/* Nose Work: Treat Hunt board.
+/* Sniff & Find: Treat Hunt board.
    Kept in a real stylesheet rather than an inline <style> in JSX — React escapes
    CSS like content:"" differently on the server, which broke SSG hydration. */
 
