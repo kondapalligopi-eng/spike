@@ -254,9 +254,7 @@ export function PetGames() {
         <div className="text-center mt-6 min-h-[104px]" aria-live="polite">
           {done ? (
             <>
-              <p className={`text-xl font-extrabold ${found ? 'text-green-600' : 'text-warm-900'}`}>
-                {found ? '🎉 Nailed it! Good dog.' : `So close! It was in ${WHERE[treat]}.`}
-              </p>
+              <p className="text-xl font-extrabold text-green-600">🎉 Nailed it! Good dog.</p>
               <p className="mt-2 inline-flex items-center gap-2 rounded-full bg-accent-100 px-4 py-1.5 text-sm font-extrabold text-accent-700 tabular-nums">
                 ★ +{gain} pts
               </p>
