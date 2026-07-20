@@ -10,7 +10,6 @@ import './PetGames.css';
 type Mode = 'me' | 'dog';
 
 const ARIA = ['Left bowl', 'Middle bowl', 'Right bowl'];
-const WHERE = ['the left bowl', 'the middle bowl', 'the right bowl'];
 
 // Biscuit heap. c: 'g' golden bake / 'w' milk-white — alternated so neighbours differ.
 const PILE = [
