@@ -133,6 +133,16 @@ export function PetGames() {
             <ellipse cx="100" cy="36" rx="90" ry="25" fill="url(#nwRim)" />
             <ellipse cx="100" cy="34" rx="72" ry="17" fill="url(#nwHole)" />
           </symbol>
+          {/* raised front paw — drawn, since the photo's own paw can't move */}
+          <linearGradient id="nwPawFur" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#E3BC89" /><stop offset="60%" stopColor="#D2A468" /><stop offset="100%" stopColor="#BE8D52" />
+          </linearGradient>
+          <symbol id="nw-paw" viewBox="0 0 64 112">
+            <path d="M24 6 C16 28 13 56 17 80 C19 94 28 106 36 106 C48 106 55 94 53 80 C49 56 45 28 39 6 C35 -2 28 -2 24 6 Z" fill="url(#nwPawFur)" />
+            <path d="M17.4 80 C19 94 28 106 36 106 C48 106 55 94 53.2 80 Z" fill="#F7EBD5" />
+            <circle cx="25" cy="92" r="4.6" fill="#EBD8B6" /><circle cx="35" cy="88.5" r="4.6" fill="#EBD8B6" />
+            <circle cx="45" cy="92" r="4.6" fill="#EBD8B6" />
+          </symbol>
           <symbol id="nw-spark" viewBox="0 0 24 24">
             <path d="M12 0 C13.2 8.4 15.6 10.8 24 12 C15.6 13.2 13.2 15.6 12 24 C10.8 15.6 8.4 13.2 0 12 C8.4 10.8 10.8 8.4 12 0 Z" fill="currentColor" />
           </symbol>
