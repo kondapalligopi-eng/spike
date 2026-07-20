@@ -58,14 +58,17 @@ export function PetPlay() {
   // The chosen bowl is always the one holding the treat — the dog never comes
   // away empty. The other two grey out so the pick reads clearly.
   const pick = useCallback((i: number) => {
-    setPicked((prev) => {
-      if (prev !== null) return prev;
-      const g = 30 + Math.floor(Math.random() * 31);
-      setGain(g);
-      setPoints((p) => p + g);
-      return i;
-    });
-  }, []);
+    if (picked !== null) return;
+    const g = 30 + Math.floor(Math.random() * 31);
+    const next = points + g;
+    // The counter is a lap to 500, not a running total: once the goal is hit it
+    // rolls back to zero so the number can never read past the goal.
+    const reached = next >= REWARD_GOAL;
+    setGain(g);
+    setHitGoal(reached);
+    setPoints(reached ? 0 : next);
+    setPicked(i);
+  }, [picked, points]);
 
   // Two real photos of Messi — sitting and with a paw raised — alternated so he
   // actually paws the air while he searches. Both frames are pre-aligned on his
