@@ -77,6 +77,9 @@ export function PetPlay() {
     setHitGoal(reached);
     setPoints(reached ? 0 : next);
     setPicked(i);
+    // if they play before the timer fires, fold the hero now so the result
+    // never lands below the fold
+    setHeroHidden(true);
   }, [picked, points]);
 
   // Two real photos of Messi — sitting and with a paw raised — alternated so he
