@@ -79,16 +79,19 @@
   78%  { transform: translateY(-5px) rotate(-4deg); }
   100% { transform: translateY(0) rotate(0deg); }
 }
-/* wraps the photo so the paw can be positioned against the dog, not the board */
+/* wraps the two photo frames so they stack exactly on top of each other */
 .nw-dogwrap { position: relative; display: inline-block; line-height: 0; }
 .nw-dogphoto {
   position: relative;
   z-index: 1;
   display: block;
-  height: clamp(132px, 30vw, 208px);
+  height: clamp(108px, 23vw, 168px);
   width: auto;
   filter: drop-shadow(0 12px 11px rgba(0, 0, 0, 0.45));
 }
+/* the paw-raised frame sits over the sitting frame */
+.nw-frame2 { position: absolute; left: 0; top: 0; z-index: 2; }
+.nw-dogphoto.is-hidden { opacity: 0; }
 
 /* bowls */
 .nw-bowls {
