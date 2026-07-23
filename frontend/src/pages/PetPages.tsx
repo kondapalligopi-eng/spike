@@ -241,7 +241,9 @@ export function PetPages() {
 
   const saveMut = useMutation({
     mutationFn: async () => {
-      const payload = { slug, name, photos, highlights, memories };
+      // Upload any browser-held photos to storage now, then save the page.
+      const hostedPhotos = await resolvePhotosForPublish(photos);
+      const payload = { slug, name, photos: hostedPhotos, highlights, memories };
       return editingId ? updatePetPage(editingId, payload) : createPetPage(payload);
     },
     onSuccess: (page) => {
@@ -256,6 +258,17 @@ export function PetPages() {
       toast.error(err instanceof Error ? err.message : 'Could not save the page.');
     },
   });
+
+  // Publish gate: if you're not signed in yet, save the draft and send you to
+  // sign up — you come back here with everything intact and one tap to finish.
+  const onPublish = () => {
+    if (editingId === null && !isAuthenticated) {
+      writeDraft({ name, slug, slugTouched, photos, highlights, memories, pendingPublish: true });
+      navigate(`/register?redirect=${encodeURIComponent('/pet-stories')}`);
+      return;
+    }
+    saveMut.mutate();
+  };
 
   const deleteMut = useMutation({
     mutationFn: deletePetPage,
