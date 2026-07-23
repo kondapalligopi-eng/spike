@@ -539,7 +539,8 @@ export function PetPages() {
           </div>
         </div>
 
-        {/* Existing pages */}
+        {/* Existing pages — only meaningful once signed in. */}
+        {isAuthenticated && (
         <div className="mt-10">
           <h2 className="text-lg font-bold text-warm-900 mb-4">Your stories</h2>
           {isLoading ? (
