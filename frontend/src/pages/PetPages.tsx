@@ -200,17 +200,19 @@ export function PetPages() {
   };
 
   // Add several photos in one go (multi-select / multi-drop), capped at MAX_PHOTOS.
-  // Each file is uploaded via uploadPetPagePhoto — a hosted URL in real mode,
-  // an inline data URL in mock mode — and the returned strings go into `photos`.
+  // Photos are held in the browser as downscaled data URLs and only uploaded to
+  // storage at publish time (resolvePhotosForPublish) — this lets a not-yet-
+  // registered visitor add photos before signing up, and keeps the draft small
+  // enough to persist across the sign-up redirect.
   const onFilesSelect = async (files: File[]) => {
     const remaining = MAX_PHOTOS - photos.length;
     if (remaining <= 0) return;
     setUploading(true);
     try {
-      const urls = await Promise.all(files.slice(0, remaining).map(uploadPetPagePhoto));
+      const urls = await Promise.all(files.slice(0, remaining).map(fileToDownscaledDataUrl));
       setPhotos((prev) => [...prev, ...urls].slice(0, MAX_PHOTOS));
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Could not upload photo.');
+      toast.error(err instanceof Error ? err.message : 'Could not add that photo.');
     } finally {
       setUploading(false);
     }
