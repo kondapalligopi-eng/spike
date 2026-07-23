@@ -334,6 +334,20 @@ export function PetPages() {
 
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
 
+        {/* Returning from sign-up mid-publish — everything's restored, one tap left. */}
+        {resumed && (
+          <div className="mb-5 rounded-2xl border border-green-200 bg-green-50 p-4 flex items-start gap-3">
+            <span aria-hidden="true" className="text-xl">🎉</span>
+            <div>
+              <p className="font-bold text-green-800 text-sm">You're all set!</p>
+              <p className="text-sm text-green-700">
+                Your page is ready — tap <span className="font-semibold">Publish page</span> below to put
+                {name ? ` ${name}'s` : ' your'} story live.
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Create / edit form */}
         <div ref={formRef} className="rounded-2xl border border-warm-200 bg-white p-5 sm:p-6 shadow-sm">
           <h2 className="text-lg font-bold text-warm-900 mb-4">
