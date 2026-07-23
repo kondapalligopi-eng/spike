@@ -129,15 +129,20 @@ export function PetPages() {
   }, [hasHydrated, isAuthenticated]);
 
   // Persist the create-form draft as it changes (not while editing an existing
-  // page — that's server-backed). Empty forms clear the draft.
+  // page — that's server-backed). Debounced, because the draft carries base64
+  // photos and re-serialising ~2 MB of JSON on every keystroke would lag typing.
+  // Empty forms clear the draft.
   useEffect(() => {
     if (!draftLoaded.current || editingId !== null) return;
     const hasContent = name.trim() || memories.trim() || photos.length > 0;
-    if (hasContent) {
-      writeDraft({ name, slug, slugTouched, photos, highlights, memories });
-    } else {
-      clearDraft();
-    }
+    const handle = window.setTimeout(() => {
+      if (hasContent) {
+        writeDraft({ name, slug, slugTouched, photos, highlights, memories });
+      } else {
+        clearDraft();
+      }
+    }, 400);
+    return () => window.clearTimeout(handle);
   }, [name, slug, slugTouched, photos, highlights, memories, editingId]);
 
   // Auto-derive the slug from the name until the owner edits it by hand.
