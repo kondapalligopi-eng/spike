@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   checkSlugAvailable,
@@ -11,9 +11,9 @@ import {
   MAX_MEMORY_WORDS,
   MAX_PHOTOS,
   PET_HIGHLIGHTS,
+  resolvePhotosForPublish,
   slugify,
   updatePetPage,
-  uploadPetPagePhoto,
   type PetPageRead,
 } from '@/api/petPages';
 import { ImageUpload } from '@/components/ImageUpload';
@@ -22,10 +22,56 @@ import { HeroPaws } from '@/components/HeroPaws';
 import { PageHead } from '@/components/PageHead';
 import { PetPageView } from '@/components/PetPageView';
 import { toast } from '@/store/toastStore';
+import { useAuth } from '@/hooks/useAuth';
+import { useAuthStore } from '@/store/authStore';
+import { fileToDownscaledDataUrl } from '@/lib/imageResize';
 
 type SlugStatus = 'idle' | 'checking' | 'ok' | 'taken' | 'invalid';
 
 const SITE_HOST = 'hispike.in';
+
+// Draft held in the browser so a not-yet-registered visitor can build their
+// page first and sign up only at Publish — the work survives the trip to the
+// sign-up screen and back. Photos ride along as (downscaled) data URLs.
+const DRAFT_KEY = 'hispike_pet_draft';
+
+type Draft = {
+  name: string;
+  slug: string;
+  slugTouched: boolean;
+  photos: string[];
+  highlights: string[];
+  memories: string;
+  pendingPublish?: boolean; // set when an anonymous user tapped Publish
+};
+
+function readDraft(): Draft | null {
+  if (typeof localStorage === 'undefined') return null;
+  try {
+    const raw = localStorage.getItem(DRAFT_KEY);
+    return raw ? (JSON.parse(raw) as Draft) : null;
+  } catch {
+    return null;
+  }
+}
+
+function writeDraft(d: Draft): void {
+  if (typeof localStorage === 'undefined') return;
+  try {
+    localStorage.setItem(DRAFT_KEY, JSON.stringify(d));
+  } catch {
+    // Quota overflow (large photos) — the draft simply won't persist across a
+    // reload; the in-memory copy still works for this session.
+  }
+}
+
+function clearDraft(): void {
+  try {
+    localStorage.removeItem(DRAFT_KEY);
+  } catch {
+    /* ignore */
+  }
+}
 
 export function PetPages() {
   const qc = useQueryClient();
