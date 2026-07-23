@@ -75,9 +75,15 @@ function clearDraft(): void {
 
 export function PetPages() {
   const qc = useQueryClient();
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
+  const hasHydrated = useAuthStore((s) => s.hasHydrated);
+
+  // Only the signed-in owner has a "my pages" list; skip the (401) call otherwise.
   const { data: pages, isLoading } = useQuery({
     queryKey: ['my-pet-pages'],
     queryFn: listMyPetPages,
+    enabled: isAuthenticated,
   });
 
   // Form state
@@ -91,11 +97,48 @@ export function PetPages() {
   const [slugStatus, setSlugStatus] = useState<SlugStatus>('idle');
   const [showPreview, setShowPreview] = useState(false);
   const [uploading, setUploading] = useState(false);
+  // Shows the "Welcome — tap Publish" banner when someone returns from sign-up
+  // with a draft they were mid-publish on.
+  const [resumed, setResumed] = useState(false);
+  const draftLoaded = useRef(false);
 
   const formRef = useRef<HTMLDivElement>(null);
 
   const words = countWords(memories);
   const overLimit = words > MAX_MEMORY_WORDS;
+
+  // Restore a saved draft on first mount (once auth has hydrated so we know
+  // whether this is a returning-from-signup resume).
+  useEffect(() => {
+    if (draftLoaded.current || !hasHydrated) return;
+    draftLoaded.current = true;
+    const d = readDraft();
+    if (!d) return;
+    setName(d.name);
+    setSlug(d.slug);
+    setSlugTouched(d.slugTouched);
+    setPhotos(d.photos ?? []);
+    setHighlights(d.highlights ?? []);
+    setMemories(d.memories);
+    if (d.pendingPublish && isAuthenticated) {
+      setResumed(true);
+      // Clear the flag so a later reload doesn't nag, but keep the content.
+      writeDraft({ ...d, pendingPublish: false });
+      setTimeout(() => formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+    }
+  }, [hasHydrated, isAuthenticated]);
+
+  // Persist the create-form draft as it changes (not while editing an existing
+  // page — that's server-backed). Empty forms clear the draft.
+  useEffect(() => {
+    if (!draftLoaded.current || editingId !== null) return;
+    const hasContent = name.trim() || memories.trim() || photos.length > 0;
+    if (hasContent) {
+      writeDraft({ name, slug, slugTouched, photos, highlights, memories });
+    } else {
+      clearDraft();
+    }
+  }, [name, slug, slugTouched, photos, highlights, memories, editingId]);
 
   // Auto-derive the slug from the name until the owner edits it by hand.
   useEffect(() => {
