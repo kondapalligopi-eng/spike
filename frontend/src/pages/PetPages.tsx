@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   checkSlugAvailable,
@@ -11,9 +11,9 @@ import {
   MAX_MEMORY_WORDS,
   MAX_PHOTOS,
   PET_HIGHLIGHTS,
+  resolvePhotosForPublish,
   slugify,
   updatePetPage,
-  uploadPetPagePhoto,
   type PetPageRead,
 } from '@/api/petPages';
 import { ImageUpload } from '@/components/ImageUpload';
@@ -22,16 +22,68 @@ import { HeroPaws } from '@/components/HeroPaws';
 import { PageHead } from '@/components/PageHead';
 import { PetPageView } from '@/components/PetPageView';
 import { toast } from '@/store/toastStore';
+import { useAuth } from '@/hooks/useAuth';
+import { useAuthStore } from '@/store/authStore';
+import { fileToDownscaledDataUrl } from '@/lib/imageResize';
 
 type SlugStatus = 'idle' | 'checking' | 'ok' | 'taken' | 'invalid';
 
 const SITE_HOST = 'hispike.in';
 
+// Draft held in the browser so a not-yet-registered visitor can build their
+// page first and sign up only at Publish — the work survives the trip to the
+// sign-up screen and back. Photos ride along as (downscaled) data URLs.
+const DRAFT_KEY = 'hispike_pet_draft';
+
+type Draft = {
+  name: string;
+  slug: string;
+  slugTouched: boolean;
+  photos: string[];
+  highlights: string[];
+  memories: string;
+  pendingPublish?: boolean; // set when an anonymous user tapped Publish
+};
+
+function readDraft(): Draft | null {
+  if (typeof localStorage === 'undefined') return null;
+  try {
+    const raw = localStorage.getItem(DRAFT_KEY);
+    return raw ? (JSON.parse(raw) as Draft) : null;
+  } catch {
+    return null;
+  }
+}
+
+function writeDraft(d: Draft): void {
+  if (typeof localStorage === 'undefined') return;
+  try {
+    localStorage.setItem(DRAFT_KEY, JSON.stringify(d));
+  } catch {
+    // Quota overflow (large photos) — the draft simply won't persist across a
+    // reload; the in-memory copy still works for this session.
+  }
+}
+
+function clearDraft(): void {
+  try {
+    localStorage.removeItem(DRAFT_KEY);
+  } catch {
+    /* ignore */
+  }
+}
+
 export function PetPages() {
   const qc = useQueryClient();
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
+  const hasHydrated = useAuthStore((s) => s.hasHydrated);
+
+  // Only the signed-in owner has a "my pages" list; skip the (401) call otherwise.
   const { data: pages, isLoading } = useQuery({
     queryKey: ['my-pet-pages'],
     queryFn: listMyPetPages,
+    enabled: isAuthenticated,
   });
 
   // Form state
@@ -45,11 +97,53 @@ export function PetPages() {
   const [slugStatus, setSlugStatus] = useState<SlugStatus>('idle');
   const [showPreview, setShowPreview] = useState(false);
   const [uploading, setUploading] = useState(false);
+  // Shows the "Welcome — tap Publish" banner when someone returns from sign-up
+  // with a draft they were mid-publish on.
+  const [resumed, setResumed] = useState(false);
+  const draftLoaded = useRef(false);
 
   const formRef = useRef<HTMLDivElement>(null);
 
   const words = countWords(memories);
   const overLimit = words > MAX_MEMORY_WORDS;
+
+  // Restore a saved draft on first mount (once auth has hydrated so we know
+  // whether this is a returning-from-signup resume).
+  useEffect(() => {
+    if (draftLoaded.current || !hasHydrated) return;
+    draftLoaded.current = true;
+    const d = readDraft();
+    if (!d) return;
+    setName(d.name);
+    setSlug(d.slug);
+    setSlugTouched(d.slugTouched);
+    setPhotos(d.photos ?? []);
+    setHighlights(d.highlights ?? []);
+    setMemories(d.memories);
+    if (d.pendingPublish && isAuthenticated) {
+      setResumed(true);
+      // Clear the flag so a later reload doesn't nag, but keep the content.
+      writeDraft({ ...d, pendingPublish: false });
+      setTimeout(() => formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+    }
+  }, [hasHydrated, isAuthenticated]);
+
+  // Persist the create-form draft as it changes (not while editing an existing
+  // page — that's server-backed). Debounced, because the draft carries base64
+  // photos and re-serialising ~2 MB of JSON on every keystroke would lag typing.
+  // Empty forms clear the draft.
+  useEffect(() => {
+    if (!draftLoaded.current || editingId !== null) return;
+    const hasContent = name.trim() || memories.trim() || photos.length > 0;
+    const handle = window.setTimeout(() => {
+      if (hasContent) {
+        writeDraft({ name, slug, slugTouched, photos, highlights, memories });
+      } else {
+        clearDraft();
+      }
+    }, 400);
+    return () => window.clearTimeout(handle);
+  }, [name, slug, slugTouched, photos, highlights, memories, editingId]);
 
   // Auto-derive the slug from the name until the owner edits it by hand.
   useEffect(() => {
@@ -97,6 +191,8 @@ export function PetPages() {
     setHighlights([]);
     setMemories('');
     setSlugStatus('idle');
+    setResumed(false);
+    clearDraft();
   };
 
   const startEdit = (page: PetPageRead) => {
@@ -111,17 +207,19 @@ export function PetPages() {
   };
 
   // Add several photos in one go (multi-select / multi-drop), capped at MAX_PHOTOS.
-  // Each file is uploaded via uploadPetPagePhoto — a hosted URL in real mode,
-  // an inline data URL in mock mode — and the returned strings go into `photos`.
+  // Photos are held in the browser as downscaled data URLs and only uploaded to
+  // storage at publish time (resolvePhotosForPublish) — this lets a not-yet-
+  // registered visitor add photos before signing up, and keeps the draft small
+  // enough to persist across the sign-up redirect.
   const onFilesSelect = async (files: File[]) => {
     const remaining = MAX_PHOTOS - photos.length;
     if (remaining <= 0) return;
     setUploading(true);
     try {
-      const urls = await Promise.all(files.slice(0, remaining).map(uploadPetPagePhoto));
+      const urls = await Promise.all(files.slice(0, remaining).map(fileToDownscaledDataUrl));
       setPhotos((prev) => [...prev, ...urls].slice(0, MAX_PHOTOS));
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Could not upload photo.');
+      toast.error(err instanceof Error ? err.message : 'Could not add that photo.');
     } finally {
       setUploading(false);
     }
@@ -148,7 +246,9 @@ export function PetPages() {
 
   const saveMut = useMutation({
     mutationFn: async () => {
-      const payload = { slug, name, photos, highlights, memories };
+      // Upload any browser-held photos to storage now, then save the page.
+      const hostedPhotos = await resolvePhotosForPublish(photos);
+      const payload = { slug, name, photos: hostedPhotos, highlights, memories };
       return editingId ? updatePetPage(editingId, payload) : createPetPage(payload);
     },
     onSuccess: (page) => {
@@ -163,6 +263,17 @@ export function PetPages() {
       toast.error(err instanceof Error ? err.message : 'Could not save the page.');
     },
   });
+
+  // Publish gate: if you're not signed in yet, save the draft and send you to
+  // sign up — you come back here with everything intact and one tap to finish.
+  const onPublish = () => {
+    if (editingId === null && !isAuthenticated) {
+      writeDraft({ name, slug, slugTouched, photos, highlights, memories, pendingPublish: true });
+      navigate(`/register?redirect=${encodeURIComponent('/pet-stories')}`);
+      return;
+    }
+    saveMut.mutate();
+  };
 
   const deleteMut = useMutation({
     mutationFn: deletePetPage,
@@ -227,6 +338,20 @@ export function PetPages() {
       </section>
 
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
+
+        {/* Returning from sign-up mid-publish — everything's restored, one tap left. */}
+        {resumed && (
+          <div className="mb-5 rounded-2xl border border-green-200 bg-green-50 p-4 flex items-start gap-3">
+            <span aria-hidden="true" className="text-xl">🎉</span>
+            <div>
+              <p className="font-bold text-green-800 text-sm">You're all set!</p>
+              <p className="text-sm text-green-700">
+                Your page is ready — tap <span className="font-semibold">Publish page</span> below to put
+                {name ? ` ${name}'s` : ' your'} story live.
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Create / edit form */}
         <div ref={formRef} className="rounded-2xl border border-warm-200 bg-white p-5 sm:p-6 shadow-sm">
@@ -380,11 +505,11 @@ export function PetPages() {
               <button
                 type="button"
                 disabled={!canSubmit}
-                onClick={() => saveMut.mutate()}
+                onClick={onPublish}
                 className="inline-flex items-center gap-2 rounded-full bg-primary-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {saveMut.isPending
-                  ? 'Saving…'
+                  ? 'Publishing…'
                   : editingId
                     ? 'Save changes'
                     : 'Publish page'}
@@ -407,10 +532,20 @@ export function PetPages() {
                 </button>
               )}
             </div>
+
+            {/* Honest heads-up for visitors who aren't signed in yet — the
+                account is created at publish, not before, so this never reads
+                as a surprise redirect. */}
+            {hasHydrated && !isAuthenticated && !editingId && (
+              <p className="text-xs text-warm-500">
+                Build your page freely — publishing creates a quick free account to save it.
+              </p>
+            )}
           </div>
         </div>
 
-        {/* Existing pages */}
+        {/* Existing pages — only meaningful once signed in. */}
+        {isAuthenticated && (
         <div className="mt-10">
           <h2 className="text-lg font-bold text-warm-900 mb-4">Your stories</h2>
           {isLoading ? (
@@ -468,6 +603,7 @@ export function PetPages() {
             </ul>
           )}
         </div>
+        )}
       </div>
 
       {/* Preview overlay — renders the public page exactly, from the draft */}
