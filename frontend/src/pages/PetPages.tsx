@@ -486,11 +486,11 @@ export function PetPages() {
               <button
                 type="button"
                 disabled={!canSubmit}
-                onClick={() => saveMut.mutate()}
+                onClick={onPublish}
                 className="inline-flex items-center gap-2 rounded-full bg-primary-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {saveMut.isPending
-                  ? 'Saving…'
+                  ? 'Publishing…'
                   : editingId
                     ? 'Save changes'
                     : 'Publish page'}
@@ -513,6 +513,15 @@ export function PetPages() {
                 </button>
               )}
             </div>
+
+            {/* Honest heads-up for visitors who aren't signed in yet — the
+                account is created at publish, not before, so this never reads
+                as a surprise redirect. */}
+            {hasHydrated && !isAuthenticated && !editingId && (
+              <p className="text-xs text-warm-500">
+                Build your page freely — publishing creates a quick free account to save it.
+              </p>
+            )}
           </div>
         </div>
 
