@@ -186,6 +186,8 @@ export function PetPages() {
     setHighlights([]);
     setMemories('');
     setSlugStatus('idle');
+    setResumed(false);
+    clearDraft();
   };
 
   const startEdit = (page: PetPageRead) => {
