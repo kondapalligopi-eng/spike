@@ -238,6 +238,32 @@ export async function uploadPetPagePhoto(file: File): Promise<string> {
   return res.data.url;
 }
 
+/** Turn a base64 data URL back into a File so it can be uploaded. */
+async function dataUrlToFile(dataUrl: string, idx: number): Promise<File> {
+  const res = await fetch(dataUrl);
+  const blob = await res.blob();
+  const ext = (blob.type.split('/')[1] || 'jpg').replace('jpeg', 'jpg');
+  return new File([blob], `pet-photo-${idx}.${ext}`, { type: blob.type || 'image/jpeg' });
+}
+
+/**
+ * Resolve a mixed photo list to hosted URLs, ready to save.
+ * `data:` entries (held in the browser during the build-first flow) are uploaded
+ * now; already-hosted `http(s):` entries (from editing an existing page) pass
+ * through untouched. Call this at publish time, once the user is signed in.
+ */
+export async function resolvePhotosForPublish(photos: string[]): Promise<string[]> {
+  return Promise.all(
+    photos.map(async (p, i) => {
+      if (p.startsWith('data:')) {
+        const file = await dataUrlToFile(p, i);
+        return uploadPetPagePhoto(file);
+      }
+      return p;
+    }),
+  );
+}
+
 export async function createPetPage(data: PetPageCreate): Promise<PetPageRead> {
   if (USE_MOCK) {
     await delay(300);
