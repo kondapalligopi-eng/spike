@@ -598,6 +598,7 @@ export function PetPages() {
             </ul>
           )}
         </div>
+        )}
       </div>
 
       {/* Preview overlay — renders the public page exactly, from the draft */}
