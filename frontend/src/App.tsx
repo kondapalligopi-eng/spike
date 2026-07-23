@@ -71,14 +71,10 @@ export const routes: RouteRecord[] = [
           { path: 'petshops', Component: PetShops },
           // Public pet-shop storefront — same client-rendered, slug-based pattern.
           { path: 'petshop/:slug', Component: PetShop },
-          {
-            path: 'pet-stories',
-            element: (
-              <ProtectedRoute>
-                <PetPages />
-              </ProtectedRoute>
-            ),
-          },
+          // Public so visitors can build a pet page before signing up — the
+          // sign-up happens at Publish (see PetPages). Pre-rendered, so it
+          // needs a /pet-stories -> /pet-stories/index.html rewrite in Render.
+          { path: 'pet-stories', Component: PetPages },
           {
             path: 'my-shop',
             element: (
