@@ -43,7 +43,7 @@ export const PET_HIGHLIGHTS: PetHighlight[] = [
   { key: 'good_with_dogs', emoji: '🐕', label: 'Good with other dogs' },
   { key: 'good_with_cats', emoji: '🐈', label: 'Good with cats' },
   { key: 'loves_walks', emoji: '🦮', label: 'Loves walks' },
-  { key: 'loves_swimming', emoji: '🏊', label: 'Loves swimming' },
+  { key: 'loves_swimming', emoji: '🐕‍💦', label: 'Loves swimming' },
   { key: 'microchipped', emoji: '🔖', label: 'Microchipped' },
   { key: 'friendly', emoji: '😊', label: 'Super friendly' },
   { key: 'trained', emoji: '🎓', label: 'Knows commands' },
