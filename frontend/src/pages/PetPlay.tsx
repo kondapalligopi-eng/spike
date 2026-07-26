@@ -9,8 +9,13 @@ import './PetPlay.css';
 // moves server-side. See the "Rewards" note at the bottom of the page.
 
 type Mode = 'me' | 'dog';
+type Game = 'bowls' | 'hands';
 
-const ARIA = ['Left bowl', 'Middle bowl', 'Right bowl'];
+const ARIA: Record<Game, string[]> = {
+  bowls: ['Left bowl', 'Middle bowl', 'Right bowl'],
+  hands: ['Left hand', 'Right hand'],
+};
+const CHOICES: Record<Game, number> = { bowls: 3, hands: 2 };
 
 // Biscuit heap. c: 'g' golden bake / 'w' milk-white — alternated so neighbours differ.
 const PILE = [
