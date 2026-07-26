@@ -72,8 +72,6 @@ export function Register() {
     setRedirectTo(readStoredRedirect() ?? '/');
   }, [searchParams]);
 
-  const resolveTarget = () =>
-    searchParams.get('redirect') ?? readStoredRedirect() ?? '/';
 
   // Method driven by the URL (?method=otp) so the tabs are links that work on
   // the first tap even before hydration (fixes the cold-load mobile issue).
