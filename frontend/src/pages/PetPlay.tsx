@@ -243,9 +243,28 @@ export function PetPlay() {
       </div>
 
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
+        {/* pick a game */}
+        <div className="flex justify-center mb-3">
+          <div className="inline-flex gap-1 bg-white border border-warm-200 rounded-full p-1" role="group" aria-label="Choose a game">
+            {([['bowls', '🥣 Treat Hunt'], ['hands', '✋ Pick a Hand']] as [Game, string][]).map(([g, label]) => (
+              <button
+                key={g}
+                type="button"
+                onClick={() => switchGame(g)}
+                aria-pressed={game === g}
+                className={`px-4 py-2 rounded-full text-sm font-bold transition-colors ${
+                  game === g ? 'bg-accent-400 text-warm-900 shadow' : 'text-warm-500 hover:text-warm-900'
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* who picks */}
         <div className="flex justify-center">
-          <div className="inline-flex gap-1 bg-white border border-warm-200 rounded-full p-1" role="group" aria-label="Who picks the bowl">
+          <div className="inline-flex gap-1 bg-white border border-warm-200 rounded-full p-1" role="group" aria-label="Who picks">
             {([['me', "🙋 I'll pick"], ['dog', '🐕 Dog picks']] as [Mode, string][]).map(([m, label]) => (
               <button
                 key={m}
@@ -262,15 +281,17 @@ export function PetPlay() {
           </div>
         </div>
 
-        {/* instruction sits with the mode toggle, above the board */}
+        {/* instruction sits with the toggles, above the board */}
         <p className="text-center text-warm-500 text-sm mt-3 min-h-[20px]">
           {done
             ? ''
             : sniffing
               ? 'Sniff… sniff… 🐾'
               : mode === 'dog'
-                ? 'Ready? Send your dog in to sniff out the treat.'
-                : 'Tap a bowl — which one is your dog sniffing at?'}
+                ? 'Ready? Send your dog in to find the treat.'
+                : game === 'bowls'
+                  ? 'Tap a bowl — which one is your dog sniffing at?'
+                  : 'Tap a hand — which one is the treat in?'}
         </p>
 
         {/* board */}
