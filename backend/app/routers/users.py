@@ -51,3 +51,35 @@ async def update_me(
 ) -> UserResponse:
     updated_user = await UserService.update(db, current_user, payload)
     return UserResponse.model_validate(updated_user)
+
+
+@router.delete(
+    "/{user_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Delete a user and all their content (admin only)",
+)
+async def delete_user(
+    user_id: uuid.UUID,
+    _admin: User = Depends(require_admin),
+    db: AsyncSession = Depends(get_db),
+) -> Response:
+    result = await db.execute(select(User).where(User.id == user_id))
+    target = result.scalar_one_or_none()
+    if target is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
+    # Guard the admin account(s): this endpoint is for clearing out test users,
+    # and blocking admins also stops an admin deleting themselves and locking
+    # everyone out.
+    if target.role == UserRole.admin:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Admin accounts can't be deleted here.",
+        )
+    # A Core DELETE lets Postgres' ON DELETE CASCADE remove the user's pet
+    # pages, shops, dogs, adoption requests, OTPs and reset tokens in one shot —
+    # every FK to users.id is CASCADE. (Avoids the async ORM trying to null out
+    # non-cascade relationships.)
+    await db.execute(sa_delete(User).where(User.id == user_id))
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
