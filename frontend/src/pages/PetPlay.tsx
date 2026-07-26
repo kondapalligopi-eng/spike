@@ -124,8 +124,8 @@ export function PetPlay() {
   return (
     <div className="min-h-screen bg-warm-50">
       <PageHead
-        title="Pet Play — Treat Hunt | HiSpike"
-        description="Play Treat Hunt with your dog on HiSpike. Hide a treat in one of three bowls and let your dog sniff out the right one — a sniff-and-find game you play together."
+        title="Pet Play — Games for you & your dog | HiSpike"
+        description="Play with your dog on HiSpike — Treat Hunt (find the treat under three bowls) and Pick a Hand (guess which hand it's in). Simple games you play together, with points as you go."
         path="/pet-play"
       />
 
