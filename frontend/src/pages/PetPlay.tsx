@@ -218,7 +218,7 @@ export function PetPlay() {
           {done
             ? ''
             : sniffing
-              ? 'Sniff… sniff… 🐽'
+              ? 'Sniff… sniff… 🐾'
               : mode === 'dog'
                 ? 'Ready? Send your dog in to sniff out the treat.'
                 : 'Tap a bowl — which one is your dog sniffing at?'}
