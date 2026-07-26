@@ -85,15 +85,22 @@ export function Register() {
   const [otpCode, setOtpCode] = useState('');
   const [resendIn, setResendIn] = useState(0);
 
-  // Single source of post-auth navigation. Uses `redirectTo` (resolved on mount
-  // from ?redirect= or sessionStorage) so it's stable even when a tab switch
-  // dropped ?redirect= from the URL — which is why OTP sign-up used to land on
-  // the homepage.
+  // Read the destination fresh from ?redirect= or sessionStorage (not the
+  // redirectTo state, which lags a render behind on mount).
+  const resolveTarget = () =>
+    searchParams.get('redirect') ?? readStoredRedirect() ?? '/';
+
+  // The SINGLE place that navigates after auth. onAuthSuccess only logs the
+  // user in; letting this effect own navigation (and the storage clear) fixes
+  // OTP sign-up landing on the homepage — previously onAuthSuccess cleared the
+  // stored redirect and then this effect re-read it as empty and fell back to '/'.
   useEffect(() => {
     if (!isAuthenticated) return;
+    const target = resolveTarget();
     clearStoredRedirect();
-    navigate(redirectTo, { replace: true });
-  }, [isAuthenticated, navigate, redirectTo]);
+    navigate(target, { replace: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated, navigate, searchParams]);
 
   useEffect(() => {
     if (resendIn <= 0) return;
