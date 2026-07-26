@@ -44,6 +44,7 @@ const STARS: { top: string; side: 'left' | 'right'; off: string; w: number; d: s
 const REWARD_GOAL = 500;
 
 export function PetPlay() {
+  const [game, setGame] = useState<Game>('bowls');
   const [mode, setMode] = useState<Mode>('me');
   const [picked, setPicked] = useState<number | null>(null);
   const [sniffing, setSniffing] = useState(false);
