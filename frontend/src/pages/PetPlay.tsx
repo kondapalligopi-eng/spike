@@ -183,23 +183,24 @@ export function PetPlay() {
 
           {/* --- Pick a Hand game: a closed fist that opens to a cupped palm --- */}
           <linearGradient id="nwSkin" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#F6CDA1" /><stop offset="60%" stopColor="#E9B27E" /><stop offset="100%" stopColor="#D89A63" />
+            <stop offset="0%" stopColor="#FFC793" /><stop offset="55%" stopColor="#FFB784" /><stop offset="100%" stopColor="#F3A06B" />
           </linearGradient>
           <linearGradient id="nwSkinBack" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#EBBF92" /><stop offset="100%" stopColor="#D2925C" />
+            <stop offset="0%" stopColor="#FBB27B" /><stop offset="100%" stopColor="#EC9A61" />
           </linearGradient>
-          {/* closed hand — a dome (back of hand) with knuckles, hiding the treat */}
+          {/* closed fist — curled fingers with a knuckle crease, thumb, coral cuff */}
           <symbol id="nw-fist" viewBox="0 0 200 150">
-            <ellipse cx="100" cy="132" rx="78" ry="9" fill="#000" opacity=".16" />
-            <path d="M22 122 C22 62 60 34 100 34 C140 34 178 62 178 122 Z" fill="url(#nwSkin)" />
-            <g fill="url(#nwSkin)">
-              <circle cx="62" cy="72" r="15" /><circle cx="88" cy="56" r="16" />
-              <circle cx="112" cy="56" r="16" /><circle cx="138" cy="72" r="15" />
+            <ellipse cx="100" cy="140" rx="62" ry="8" fill="#000" opacity=".15" />
+            <path d="M60 116 q40 16 80 0 l0 16 q0 9 -11 11 l-58 0 q-11 -2 -11 -11 Z" fill="#EF8163" />
+            <rect x="42" y="48" width="116" height="78" rx="32" fill="url(#nwSkin)" />
+            <g fill="url(#nwSkin)" stroke="#E79B6C" strokeWidth="2">
+              <rect x="50" y="40" width="25" height="68" rx="12.5" />
+              <rect x="75" y="36" width="25" height="72" rx="12.5" />
+              <rect x="100" y="36" width="25" height="72" rx="12.5" />
+              <rect x="125" y="42" width="25" height="66" rx="12.5" />
             </g>
-            <g stroke="#CE9160" strokeWidth="2.4" opacity=".5" strokeLinecap="round" fill="none">
-              <path d="M74 66 q-5 32 -10 54" /><path d="M100 54 v58" /><path d="M126 66 q5 32 10 54" />
-            </g>
-            <path d="M22 122 q-15 -5 -13 -25 q2 -15 18 -13 q11 2 13 15" fill="url(#nwSkin)" />
+            <path d="M54 78 Q100 90 146 78" fill="none" stroke="#E79B6C" strokeWidth="2.4" strokeLinecap="round" opacity=".7" />
+            <path d="M42 90 q-17 2 -15 25 q3 19 23 15 q12 -3 12 -17" fill="url(#nwSkin)" stroke="#E79B6C" strokeWidth="2" />
           </symbol>
           {/* open cupped palm — fingers splayed up, ready to hold the biscuit pile */}
           <symbol id="nw-palm" viewBox="0 0 200 150">
