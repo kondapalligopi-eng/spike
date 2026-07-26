@@ -121,6 +121,7 @@ export function PetPages() {
     setName(d.name);
     setSlug(d.slug);
     setSlugTouched(d.slugTouched);
+    if (d.slugTouched) setCustomizingSlug(true);
     setPhotos(d.photos ?? []);
     setHighlights(d.highlights ?? []);
     setMemories(d.memories);
