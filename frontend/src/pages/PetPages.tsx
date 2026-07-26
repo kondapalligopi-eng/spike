@@ -120,6 +120,13 @@ export function PetPages() {
     draftLoaded.current = true;
     const d = readDraft();
     if (!d) return;
+    // A logged-in user should only see a draft when it's their own pending-publish
+    // resume. Any other saved draft belongs to an earlier anonymous session on
+    // this browser — don't load someone else's work into their form.
+    if (isAuthenticated && !d.pendingPublish) {
+      clearDraft();
+      return;
+    }
     setName(d.name);
     setSlug(d.slug);
     setSlugTouched(d.slugTouched);
