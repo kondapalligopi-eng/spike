@@ -64,7 +64,7 @@ import {
 } from '@/lib/visitTracker';
 import { readSheetRows, downloadTemplate, downloadRows, type SheetRow } from '@/lib/spreadsheet';
 import { getCounter } from '@/api/counters';
-import { listUsers } from '@/api/users';
+import { listUsers, deleteUser } from '@/api/users';
 import { listAllShops, deleteShop } from '@/api/petShops';
 
 const BANGALORE_NEIGHBOURHOODS = [
