@@ -95,6 +95,10 @@ export function PetPages() {
   const [highlights, setHighlights] = useState<string[]>([]);
   const [memories, setMemories] = useState('');
   const [slugStatus, setSlugStatus] = useState<SlugStatus>('idle');
+  // The page link is auto-made from the name; the editable field only appears
+  // when someone chooses to customise it, so it never looks like a second field
+  // they must fill in.
+  const [customizingSlug, setCustomizingSlug] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [uploading, setUploading] = useState(false);
   // Shows the "Welcome — tap Publish" banner when someone returns from sign-up
