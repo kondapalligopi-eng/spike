@@ -2542,6 +2542,28 @@ function UsersSection() {
                       </span>
                     )}
                   </td>
+                  <td className="px-4 py-3 text-right whitespace-nowrap">
+                    {u.role === 'admin' ? (
+                      <span className="text-xs text-warm-400">Protected</span>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => handleDelete(u.id)}
+                        disabled={deleteMutation.isPending && confirmId === u.id}
+                        className={`px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-colors ${
+                          confirmId === u.id
+                            ? 'bg-red-600 text-white hover:bg-red-700 disabled:opacity-60'
+                            : 'border-2 border-warm-300 bg-white text-warm-700 hover:border-red-500 hover:text-red-600'
+                        }`}
+                      >
+                        {deleteMutation.isPending && confirmId === u.id
+                          ? 'Deleting…'
+                          : confirmId === u.id
+                            ? 'Confirm'
+                            : 'Delete'}
+                      </button>
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>
