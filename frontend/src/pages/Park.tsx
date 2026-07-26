@@ -722,26 +722,16 @@ export function Park() {
                   />
                 </label>
 
-                <label className="block">
+                <div className="block">
                   <span className="block text-sm font-semibold text-warm-900 mb-1">Locality <span className="text-red-500">*</span></span>
-                  <select
-                    required
+                  <SelectMenu
                     value={form.locality}
-                    onChange={(e) => setForm({ ...form, locality: e.target.value })}
-                    className={`w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors bg-white ${
-                      form.locality ? 'text-warm-900' : 'text-warm-400'
-                    }`}
-                  >
-                    <option value="" disabled>
-                      Please select a locality
-                    </option>
-                    {BANGALORE_NEIGHBOURHOODS.map((n) => (
-                      <option key={n} value={n} className="text-warm-900">
-                        {n}
-                      </option>
-                    ))}
-                  </select>
-                </label>
+                    onChange={(v) => setForm({ ...form, locality: v })}
+                    options={BANGALORE_NEIGHBOURHOODS}
+                    placeholder="Please select a locality"
+                    ariaLabel="Locality"
+                  />
+                </div>
 
                 <label className="block">
                   <span className="block text-sm font-semibold text-warm-900 mb-1">Full address <span className="text-red-500">*</span></span>
