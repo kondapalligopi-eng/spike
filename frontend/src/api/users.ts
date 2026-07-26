@@ -45,3 +45,13 @@ export async function listUsers(): Promise<AdminUser[]> {
   const res = await apiClient.get<AdminUser[]>('/users');
   return res.data;
 }
+
+/**
+ * Admin-only: permanently delete a user and everything they own (pet pages,
+ * shops, dogs, adoption requests) via DB cascade. Admin accounts are rejected
+ * by the backend. Handy for clearing out test accounts.
+ */
+export async function deleteUser(id: string): Promise<void> {
+  if (USE_MOCK) return;
+  await apiClient.delete(`/users/${id}`);
+}
