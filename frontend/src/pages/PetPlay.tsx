@@ -230,12 +230,12 @@ export function PetPlay() {
             <span aria-hidden="true" className="text-4xl sm:text-5xl drop-shadow">🦴</span>
             <div className="flex-1">
               <p className="text-[11px] sm:text-xs font-semibold tracking-[0.3em] text-accent-400 uppercase mb-1">
-                Pet Play · Sniff & Find
+                Pet Play · Play together
               </p>
-              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight leading-tight">Treat Hunt</h1>
+              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight leading-tight">Games for you &amp; your dog</h1>
               <div className="mt-2 h-0.5 w-16 bg-accent-400 rounded-full" />
               <p className="mt-2 text-sm text-primary-100/90 max-w-2xl">
-                Hide a treat in one of three bowls, then let your dog sniff out the right one — a game you play together.
+                Two quick games — find the treat, or pick the right hand. Play together and rack up points.
               </p>
             </div>
           </div>
