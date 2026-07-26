@@ -76,12 +76,14 @@ function clearDraft(): void {
 export function PetPages() {
   const qc = useQueryClient();
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const hasHydrated = useAuthStore((s) => s.hasHydrated);
 
   // Only the signed-in owner has a "my pages" list; skip the (401) call otherwise.
+  // The key is scoped to the user id so switching accounts doesn't briefly show
+  // the previous user's pages from cache (a hard refresh was needed otherwise).
   const { data: pages, isLoading } = useQuery({
-    queryKey: ['my-pet-pages'],
+    queryKey: ['my-pet-pages', user?.id],
     queryFn: listMyPetPages,
     enabled: isAuthenticated,
   });
