@@ -101,22 +101,21 @@ export function Feedback() {
                 </label>
               </div>
 
-              <label className="block">
+              <div className="block">
                 <span className="block text-sm font-semibold text-warm-900 mb-1">Topic <span className="text-red-500">*</span></span>
-                <select
-                  required
+                <SelectMenu
                   value={form.topic}
-                  onChange={(e) => setForm({ ...form, topic: e.target.value })}
-                  className={`w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors bg-white ${
-                    form.topic ? 'text-warm-900' : 'text-warm-400'
-                  }`}
-                >
-                  <option value="" disabled>Choose a topic</option>
-                  {TOPICS.map((t) => (
-                    <option key={t} value={t} className="text-warm-900">{t}</option>
-                  ))}
-                </select>
-              </label>
+                  onChange={(v) => setForm({ ...form, topic: v })}
+                  options={TOPICS}
+                  placeholder="Choose a topic"
+                  ariaLabel="Topic"
+                  icon={
+                    <svg viewBox="0 0 24 24" fill="none" className="w-full h-full" aria-hidden="true">
+                      <path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  }
+                />
+              </div>
 
               <label className="block">
                 <span className="block text-sm font-semibold text-warm-900 mb-1">Your message <span className="text-red-500">*</span></span>
