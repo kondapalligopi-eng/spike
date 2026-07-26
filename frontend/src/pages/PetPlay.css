@@ -213,6 +213,35 @@
   transform: scale(0.94);
 }
 
+/* ---- Pick a Hand variant ---- */
+.nw-bowls.hands { gap: clamp(28px, 12vw, 72px); align-items: flex-end; }
+.nw-slot.hand { max-width: 150px; }
+
+.nw-handsvg {
+  width: 100%;
+  height: auto;
+  display: block;
+  filter: drop-shadow(0 10px 10px rgba(0, 0, 0, 0.32));
+  transition: transform 0.35s cubic-bezier(0.34, 1.5, 0.5, 1), opacity 0.3s;
+}
+/* the fist defines the box; the open palm overlays it and cross-fades on win */
+.nw-fist { position: relative; z-index: 2; }
+.nw-palm { position: absolute; left: 0; top: 0; z-index: 2; opacity: 0; }
+.nw-slot.win .nw-fist { opacity: 0; }
+.nw-slot.win .nw-palm { opacity: 1; }
+
+.nw-bowlbtn:focus-visible .nw-handsvg { outline: 3px solid #f7b518; outline-offset: 5px; border-radius: 12px; }
+.nw-slot.hand:not(.done) .nw-bowlbtn:hover .nw-fist { transform: translateY(-7px) scale(1.04); }
+.nw-slot.hand.waiting .nw-fist { animation: nwWiggle 1.15s ease-in-out infinite; }
+.nw-slot.hand.win .nw-palm { animation: nwHop 0.55s cubic-bezier(0.34, 1.5, 0.5, 1); }
+.nw-slot.hand.dim .nw-handsvg {
+  opacity: 0.45;
+  filter: grayscale(0.9) drop-shadow(0 6px 8px rgba(0, 0, 0, 0.28));
+  transform: scale(0.94);
+}
+/* biscuits sit IN the cupped palm rather than cresting a bowl rim */
+.nw-slot.hand .nw-bones { top: 40px; height: 26px; left: 20%; right: 20%; }
+
 @media (prefers-reduced-motion: reduce) {
   .nw-board * { animation: none !important; transition-duration: 0.01ms !important; }
 }
