@@ -381,39 +381,30 @@ export function Hospital() {
               />
             </label>
 
-            {/* Specialty — wrap in <label> so clicking the icon or wrapper
-                area opens the native select, not just the arrow. */}
-            <label className="flex items-center gap-2 px-3 py-2 border-2 border-warm-400 rounded-md bg-white w-full sm:w-auto sm:min-w-[200px] cursor-pointer">
-              <svg aria-hidden="true" className="w-4 h-4 text-warm-500 pointer-events-none shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-              </svg>
-              <select
-                value={specialty}
-                onChange={(e) => setSpecialty(e.target.value)}
-                className="w-full text-sm outline-none bg-transparent text-warm-700 cursor-pointer"
-              >
-                {SPECIALTIES.map((s) => (
-                  <option key={s}>{s}</option>
-                ))}
-              </select>
-            </label>
+            {/* Specialty */}
+            <SelectMenu
+              value={specialty}
+              onChange={setSpecialty}
+              options={SPECIALTIES}
+              ariaLabel="Filter by specialty"
+              className="w-full sm:w-auto sm:min-w-[210px]"
+              icon={
+                <svg viewBox="0 0 24 24" fill="none" className="w-full h-full" aria-hidden="true">
+                  <path d="M6 3v5a4 4 0 008 0V3" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+                  <path d="M10 12v3a5 5 0 0010 0v-2" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+                  <circle cx="20" cy="12" r="2" stroke="currentColor" strokeWidth="1.7" />
+                </svg>
+              }
+            />
 
             {/* Location */}
-            <label className="flex items-center gap-2 px-3 py-2 border-2 border-warm-400 rounded-md bg-white w-full sm:w-auto sm:min-w-[200px] cursor-pointer">
-              <svg aria-hidden="true" className="w-4 h-4 text-warm-500 pointer-events-none shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-              <select
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                className="w-full text-sm outline-none bg-transparent text-warm-700 cursor-pointer"
-              >
-                {LOCATIONS.map((l) => (
-                  <option key={l}>{l}</option>
-                ))}
-              </select>
-            </label>
+            <SelectMenu
+              value={location}
+              onChange={setLocation}
+              options={LOCATIONS}
+              ariaLabel="Filter by location"
+              className="w-full sm:w-auto sm:min-w-[210px]"
+            />
 
             {/* Primary CTA — Search the directory */}
             <button
