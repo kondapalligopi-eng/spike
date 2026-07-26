@@ -377,25 +377,63 @@ export function PetPages() {
               />
             </div>
 
-            {/* Slug */}
+            {/* Page link — created automatically from the pet's name. Shown as a
+                read-only preview so it doesn't read as a second field to fill;
+                a Customize button reveals the editable input on demand. */}
             <div>
               <label className="block text-sm font-semibold text-warm-800 mb-1.5">Page link</label>
-              <div className="flex items-center rounded-lg border border-warm-300 focus-within:border-primary-500 overflow-hidden">
-                <span className="pl-3 py-2.5 text-sm text-warm-400 select-none whitespace-nowrap">
-                  {SITE_HOST}/pet/
-                </span>
-                <input
-                  type="text"
-                  value={slug}
-                  onChange={(e) => {
-                    setSlugTouched(true);
-                    setSlug(slugify(e.target.value));
-                  }}
-                  placeholder="coco"
-                  className="flex-1 pl-0 pr-3 py-2.5 outline-none text-sm font-medium text-warm-900"
-                />
-              </div>
-              {slugHint && <p className={`mt-1.5 text-xs ${slugHint.cls}`}>{slugHint.text}</p>}
+              {customizingSlug ? (
+                <>
+                  <div className="flex items-center rounded-lg border border-warm-300 focus-within:border-primary-500 overflow-hidden">
+                    <span className="pl-3 py-2.5 text-sm text-warm-400 select-none whitespace-nowrap">
+                      {SITE_HOST}/pet/
+                    </span>
+                    <input
+                      type="text"
+                      autoFocus
+                      value={slug}
+                      onChange={(e) => {
+                        setSlugTouched(true);
+                        setSlug(slugify(e.target.value));
+                      }}
+                      placeholder="coco"
+                      className="flex-1 pl-0 pr-3 py-2.5 outline-none text-sm font-medium text-warm-900"
+                    />
+                  </div>
+                  {slugHint && <p className={`mt-1.5 text-xs ${slugHint.cls}`}>{slugHint.text}</p>}
+                </>
+              ) : (
+                <div className="flex items-center justify-between gap-2 rounded-lg border border-warm-200 bg-warm-50 px-3 py-2.5">
+                  <span className="min-w-0 truncate text-sm text-warm-500">
+                    {SITE_HOST}/pet/
+                    {slug ? (
+                      <span className="font-semibold text-warm-900">{slug}</span>
+                    ) : (
+                      <span className="text-warm-400">your-pet</span>
+                    )}
+                  </span>
+                  <div className="flex items-center gap-2 shrink-0">
+                    {slug && slugStatus === 'ok' && (
+                      <span className="text-xs font-medium text-green-600">✓ Available</span>
+                    )}
+                    {slug && slugStatus === 'taken' && (
+                      <span className="text-xs font-medium text-red-600">✗ Taken</span>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => setCustomizingSlug(true)}
+                      className="text-xs font-bold text-primary-600 hover:text-primary-700"
+                    >
+                      Customize
+                    </button>
+                  </div>
+                </div>
+              )}
+              <p className="mt-1.5 text-xs text-warm-400">
+                {customizingSlug
+                  ? 'Use 2–60 letters, numbers and dashes.'
+                  : "Created automatically from your pet's name — tap Customize to change it."}
+              </p>
             </div>
 
             {/* Photos — gallery */}
