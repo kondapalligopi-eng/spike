@@ -368,17 +368,20 @@ export function Hospital() {
       <section className="border-b border-warm-200 bg-primary-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <form onSubmit={applySearch} className="flex flex-wrap items-center gap-2 lg:gap-3">
-            {/* Search input */}
-            <label className="flex items-center gap-2 px-3 py-2 border-2 border-warm-400 rounded-md bg-white flex-1 w-full sm:w-auto sm:min-w-[200px]">
-              <svg className="w-4 h-4 text-warm-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z" />
-              </svg>
+            {/* Search input — mirrors the SelectMenu trigger (same height, radius,
+                border and icon chip) so the whole toolbar lines up. */}
+            <label className="flex items-center gap-2.5 rounded-xl border-2 border-warm-200 bg-white px-3 py-2.5 flex-1 w-full sm:w-auto sm:min-w-[200px] hover:border-warm-300 focus-within:border-primary-500 transition-colors">
+              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-primary-50 p-1.5 text-primary-600">
+                <svg className="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z" />
+                </svg>
+              </span>
               <input
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search Vet"
-                className="w-full text-sm outline-none bg-transparent placeholder:text-warm-400"
+                className="w-full text-sm outline-none bg-transparent placeholder:text-warm-400 text-warm-900"
               />
             </label>
 
