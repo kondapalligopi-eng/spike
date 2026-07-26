@@ -110,6 +110,15 @@ export function PetPlay() {
     setHitGoal(false);
   }, []);
 
+  // Switching games resets the round (points carry over — they're one shared tally).
+  const switchGame = useCallback((g: Game) => {
+    setGame(g);
+    setPicked(null);
+    setGain(0);
+    setHitGoal(false);
+    setSniffing(false);
+  }, []);
+
   const pct = Math.min(100, (points / REWARD_GOAL) * 100);
 
   return (
