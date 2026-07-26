@@ -76,12 +76,14 @@ function clearDraft(): void {
 export function PetPages() {
   const qc = useQueryClient();
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const hasHydrated = useAuthStore((s) => s.hasHydrated);
 
   // Only the signed-in owner has a "my pages" list; skip the (401) call otherwise.
+  // The key is scoped to the user id so switching accounts doesn't briefly show
+  // the previous user's pages from cache (a hard refresh was needed otherwise).
   const { data: pages, isLoading } = useQuery({
-    queryKey: ['my-pet-pages'],
+    queryKey: ['my-pet-pages', user?.id],
     queryFn: listMyPetPages,
     enabled: isAuthenticated,
   });
@@ -95,6 +97,10 @@ export function PetPages() {
   const [highlights, setHighlights] = useState<string[]>([]);
   const [memories, setMemories] = useState('');
   const [slugStatus, setSlugStatus] = useState<SlugStatus>('idle');
+  // The page link is auto-made from the name; the editable field only appears
+  // when someone chooses to customise it, so it never looks like a second field
+  // they must fill in.
+  const [customizingSlug, setCustomizingSlug] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [uploading, setUploading] = useState(false);
   // Shows the "Welcome — tap Publish" banner when someone returns from sign-up
@@ -114,9 +120,17 @@ export function PetPages() {
     draftLoaded.current = true;
     const d = readDraft();
     if (!d) return;
+    // A logged-in user should only see a draft when it's their own pending-publish
+    // resume. Any other saved draft belongs to an earlier anonymous session on
+    // this browser — don't load someone else's work into their form.
+    if (isAuthenticated && !d.pendingPublish) {
+      clearDraft();
+      return;
+    }
     setName(d.name);
     setSlug(d.slug);
     setSlugTouched(d.slugTouched);
+    if (d.slugTouched) setCustomizingSlug(true);
     setPhotos(d.photos ?? []);
     setHighlights(d.highlights ?? []);
     setMemories(d.memories);
@@ -191,6 +205,7 @@ export function PetPages() {
     setHighlights([]);
     setMemories('');
     setSlugStatus('idle');
+    setCustomizingSlug(false);
     setResumed(false);
     clearDraft();
   };
@@ -373,25 +388,63 @@ export function PetPages() {
               />
             </div>
 
-            {/* Slug */}
+            {/* Page link — created automatically from the pet's name. Shown as a
+                read-only preview so it doesn't read as a second field to fill;
+                a Customize button reveals the editable input on demand. */}
             <div>
               <label className="block text-sm font-semibold text-warm-800 mb-1.5">Page link</label>
-              <div className="flex items-center rounded-lg border border-warm-300 focus-within:border-primary-500 overflow-hidden">
-                <span className="pl-3 py-2.5 text-sm text-warm-400 select-none whitespace-nowrap">
-                  {SITE_HOST}/pet/
-                </span>
-                <input
-                  type="text"
-                  value={slug}
-                  onChange={(e) => {
-                    setSlugTouched(true);
-                    setSlug(slugify(e.target.value));
-                  }}
-                  placeholder="coco"
-                  className="flex-1 pl-0 pr-3 py-2.5 outline-none text-sm font-medium text-warm-900"
-                />
-              </div>
-              {slugHint && <p className={`mt-1.5 text-xs ${slugHint.cls}`}>{slugHint.text}</p>}
+              {customizingSlug ? (
+                <>
+                  <div className="flex items-center rounded-lg border border-warm-300 focus-within:border-primary-500 overflow-hidden">
+                    <span className="pl-3 py-2.5 text-sm text-warm-400 select-none whitespace-nowrap">
+                      {SITE_HOST}/pet/
+                    </span>
+                    <input
+                      type="text"
+                      autoFocus
+                      value={slug}
+                      onChange={(e) => {
+                        setSlugTouched(true);
+                        setSlug(slugify(e.target.value));
+                      }}
+                      placeholder="coco"
+                      className="flex-1 pl-0 pr-3 py-2.5 outline-none text-sm font-medium text-warm-900"
+                    />
+                  </div>
+                  {slugHint && <p className={`mt-1.5 text-xs ${slugHint.cls}`}>{slugHint.text}</p>}
+                </>
+              ) : (
+                <div className="flex items-center justify-between gap-2 rounded-lg border border-warm-200 bg-warm-50 px-3 py-2.5">
+                  <span className="min-w-0 truncate text-sm text-warm-500">
+                    {SITE_HOST}/pet/
+                    {slug ? (
+                      <span className="font-semibold text-warm-900">{slug}</span>
+                    ) : (
+                      <span className="text-warm-400">your-pet</span>
+                    )}
+                  </span>
+                  <div className="flex items-center gap-2 shrink-0">
+                    {slug && slugStatus === 'ok' && (
+                      <span className="text-xs font-medium text-green-600">✓ Available</span>
+                    )}
+                    {slug && slugStatus === 'taken' && (
+                      <span className="text-xs font-medium text-red-600">✗ Taken</span>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => setCustomizingSlug(true)}
+                      className="text-xs font-bold text-primary-600 hover:text-primary-700"
+                    >
+                      Customize
+                    </button>
+                  </div>
+                </div>
+              )}
+              <p className="mt-1.5 text-xs text-warm-400">
+                {customizingSlug
+                  ? 'Use 2–60 letters, numbers and dashes.'
+                  : "Created automatically from your pet's name — tap Customize to change it."}
+              </p>
             </div>
 
             {/* Photos — gallery */}

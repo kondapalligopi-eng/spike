@@ -220,11 +220,10 @@ export function Login() {
   });
 
   const onLoginSuccess = (data: AuthResponse) => {
-    const target = resolveTarget();
-    clearStoredRedirect();
     storeLogin(data.access_token, data.user, data.refresh_token);
     toast.success(`Welcome back, ${data.user.full_name}!`);
-    navigate(target, { replace: true });
+    // Navigation is owned by the isAuthenticated effect (single navigator).
+    // A second navigate/clear here raced it and won with '/' on the OTP tab.
   };
 
   const passwordMutation = useMutation({

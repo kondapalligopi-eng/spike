@@ -72,8 +72,6 @@ export function Register() {
     setRedirectTo(readStoredRedirect() ?? '/');
   }, [searchParams]);
 
-  const resolveTarget = () =>
-    searchParams.get('redirect') ?? readStoredRedirect() ?? '/';
 
   // Method driven by the URL (?method=otp) so the tabs are links that work on
   // the first tap even before hydration (fixes the cold-load mobile issue).
@@ -87,6 +85,15 @@ export function Register() {
   const [otpCode, setOtpCode] = useState('');
   const [resendIn, setResendIn] = useState(0);
 
+  // Read the destination fresh from ?redirect= or sessionStorage (not the
+  // redirectTo state, which lags a render behind on mount).
+  const resolveTarget = () =>
+    searchParams.get('redirect') ?? readStoredRedirect() ?? '/';
+
+  // The SINGLE place that navigates after auth. onAuthSuccess only logs the
+  // user in; letting this effect own navigation (and the storage clear) fixes
+  // OTP sign-up landing on the homepage — previously onAuthSuccess cleared the
+  // stored redirect and then this effect re-read it as empty and fell back to '/'.
   useEffect(() => {
     if (!isAuthenticated) return;
     const target = resolveTarget();
@@ -118,11 +125,10 @@ export function Register() {
   });
 
   const onAuthSuccess = (data: AuthResponse) => {
-    const target = resolveTarget();
-    clearStoredRedirect();
     storeLogin(data.access_token, data.user, data.refresh_token);
     toast.success(`Welcome to HiSpike, ${data.user.full_name}!`);
-    navigate(target, { replace: true });
+    // Navigation is handled by the isAuthenticated effect above (stable
+    // redirectTo) — a second navigate here raced it and won with '/'.
   };
 
   const passwordMutation = useMutation({

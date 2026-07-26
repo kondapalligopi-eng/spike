@@ -19,6 +19,7 @@ import {
 } from '@/api/petShops';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { SelectMenu } from '@/components/SelectMenu';
+import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/store/toastStore';
 
 const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -284,7 +285,10 @@ function UpdatesManager({ shop, onChanged }: { shop: PetShopRead; onChanged: () 
 
 export function MyShop() {
   const qc = useQueryClient();
-  const { data: shops, isLoading } = useQuery({ queryKey: ['my-shops'], queryFn: listMyShops });
+  const { user } = useAuth();
+  // Scoped to the user id so switching accounts doesn't show the previous
+  // owner's shops from cache (see the same fix on Pet Stories).
+  const { data: shops, isLoading } = useQuery({ queryKey: ['my-shops', user?.id], queryFn: listMyShops });
   const [creating, setCreating] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
