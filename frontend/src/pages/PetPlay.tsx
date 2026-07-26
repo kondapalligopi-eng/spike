@@ -401,7 +401,7 @@ export function PetPlay() {
                   onClick={again}
                   className="rounded-full bg-primary-600 hover:bg-primary-700 px-7 py-3 text-sm font-bold text-white transition-colors"
                 >
-                  Hide another treat ↻
+                  {game === 'bowls' ? 'Hide another treat ↻' : 'Play again ↻'}
                 </button>
               </div>
             </>
