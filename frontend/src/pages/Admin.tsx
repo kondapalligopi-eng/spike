@@ -2432,12 +2432,36 @@ function SubmissionsSection() {
 }
 
 function UsersSection() {
+  const queryClient = useQueryClient();
   const { data, isLoading, isError } = useQuery({
     queryKey: ['admin-users'],
     queryFn: listUsers,
     refetchInterval: 60_000,
   });
   const users = data ?? [];
+
+  const [confirmId, setConfirmId] = useState<string | null>(null);
+
+  const deleteMutation = useMutation({
+    mutationFn: deleteUser,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-users'] });
+      // Their pages/shops are gone too — refresh the moderation lists.
+      queryClient.invalidateQueries({ queryKey: ['admin-pet-pages'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-pet-shops'] });
+      toast.success('User and all their content deleted.');
+      setConfirmId(null);
+    },
+    onError: (err: Error) => toast.error(err.message || 'Could not delete the user.'),
+  });
+
+  const handleDelete = (id: string) => {
+    if (confirmId !== id) {
+      setConfirmId(id);
+      return;
+    }
+    deleteMutation.mutate(id);
+  };
 
   const fmtDate = (iso: string) => {
     const d = new Date(iso);
