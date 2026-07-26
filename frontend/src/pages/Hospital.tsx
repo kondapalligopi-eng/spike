@@ -8,6 +8,7 @@ import { PageHead } from '@/components/PageHead';
 import { ShareButtons } from '@/components/ShareButtons';
 import { FaqSchema, type FaqItem } from '@/components/FaqSchema';
 import { HeroPaws } from '@/components/HeroPaws';
+import { SelectMenu } from '@/components/SelectMenu';
 import { useBackendWarmup } from '@/lib/warmupBackend';
 
 const HOSPITAL_FAQS: FaqItem[] = [
@@ -367,58 +368,52 @@ export function Hospital() {
       <section className="border-b border-warm-200 bg-primary-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <form onSubmit={applySearch} className="flex flex-wrap items-center gap-2 lg:gap-3">
-            {/* Search input */}
-            <label className="flex items-center gap-2 px-3 py-2 border-2 border-warm-400 rounded-md bg-white flex-1 w-full sm:w-auto sm:min-w-[200px]">
-              <svg className="w-4 h-4 text-warm-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z" />
-              </svg>
+            {/* Search input — mirrors the SelectMenu trigger (same height, radius,
+                border and icon chip) so the whole toolbar lines up. */}
+            <label className="flex items-center gap-2.5 rounded-xl border-2 border-warm-200 bg-white px-3 py-2.5 flex-1 w-full sm:w-auto sm:min-w-[200px] hover:border-warm-300 focus-within:border-primary-500 transition-colors">
+              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-primary-50 p-1.5 text-primary-600">
+                <svg className="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z" />
+                </svg>
+              </span>
               <input
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search Vet"
-                className="w-full text-sm outline-none bg-transparent placeholder:text-warm-400"
+                className="w-full text-sm outline-none bg-transparent placeholder:text-warm-400 text-warm-900"
               />
             </label>
 
-            {/* Specialty — wrap in <label> so clicking the icon or wrapper
-                area opens the native select, not just the arrow. */}
-            <label className="flex items-center gap-2 px-3 py-2 border-2 border-warm-400 rounded-md bg-white w-full sm:w-auto sm:min-w-[200px] cursor-pointer">
-              <svg aria-hidden="true" className="w-4 h-4 text-warm-500 pointer-events-none shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-              </svg>
-              <select
-                value={specialty}
-                onChange={(e) => setSpecialty(e.target.value)}
-                className="w-full text-sm outline-none bg-transparent text-warm-700 cursor-pointer"
-              >
-                {SPECIALTIES.map((s) => (
-                  <option key={s}>{s}</option>
-                ))}
-              </select>
-            </label>
+            {/* Specialty */}
+            <SelectMenu
+              value={specialty}
+              onChange={setSpecialty}
+              options={SPECIALTIES}
+              ariaLabel="Filter by specialty"
+              className="w-full sm:w-auto sm:min-w-[210px]"
+              icon={
+                <svg viewBox="0 0 24 24" fill="none" className="w-full h-full" aria-hidden="true">
+                  <path d="M6 3v5a4 4 0 008 0V3" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+                  <path d="M10 12v3a5 5 0 0010 0v-2" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+                  <circle cx="20" cy="12" r="2" stroke="currentColor" strokeWidth="1.7" />
+                </svg>
+              }
+            />
 
             {/* Location */}
-            <label className="flex items-center gap-2 px-3 py-2 border-2 border-warm-400 rounded-md bg-white w-full sm:w-auto sm:min-w-[200px] cursor-pointer">
-              <svg aria-hidden="true" className="w-4 h-4 text-warm-500 pointer-events-none shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-              <select
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                className="w-full text-sm outline-none bg-transparent text-warm-700 cursor-pointer"
-              >
-                {LOCATIONS.map((l) => (
-                  <option key={l}>{l}</option>
-                ))}
-              </select>
-            </label>
+            <SelectMenu
+              value={location}
+              onChange={setLocation}
+              options={LOCATIONS}
+              ariaLabel="Filter by location"
+              className="w-full sm:w-auto sm:min-w-[210px]"
+            />
 
             {/* Primary CTA — Search the directory */}
             <button
               type="submit"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full bg-accent-400 hover:bg-accent-300 text-warm-900 text-sm font-bold tracking-[0.15em] uppercase ring-2 ring-accent-300/50 hover:ring-accent-200 transition-all shadow-md"
+              className="w-full sm:w-auto sm:h-14 inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full bg-accent-400 hover:bg-accent-300 text-warm-900 text-sm font-bold tracking-[0.15em] uppercase ring-2 ring-accent-300/50 hover:ring-accent-200 transition-all shadow-md"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z" />
@@ -430,7 +425,7 @@ export function Hospital() {
             <button
               type="button"
               onClick={resetFilters}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full border-2 border-warm-400 bg-white hover:border-primary-500 hover:text-primary-700 text-warm-700 text-sm font-bold tracking-[0.15em] uppercase transition-colors"
+              className="w-full sm:w-auto sm:h-14 inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full border-2 border-warm-400 bg-white hover:border-primary-500 hover:text-primary-700 text-warm-700 text-sm font-bold tracking-[0.15em] uppercase transition-colors"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
@@ -676,26 +671,16 @@ export function Hospital() {
                   />
                 </label>
 
-                <label className="block">
+                <div className="block">
                   <span className="block text-sm font-semibold text-warm-900 mb-1">Locality <span className="text-red-500">*</span></span>
-                  <select
-                    required
+                  <SelectMenu
                     value={form.locality}
-                    onChange={(e) => setForm({ ...form, locality: e.target.value })}
-                    className={`w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors bg-white ${
-                      form.locality ? 'text-warm-900' : 'text-warm-400'
-                    }`}
-                  >
-                    <option value="" disabled>
-                      Please select a locality
-                    </option>
-                    {BANGALORE_NEIGHBOURHOODS.map((n) => (
-                      <option key={n} value={n} className="text-warm-900">
-                        {n}
-                      </option>
-                    ))}
-                  </select>
-                </label>
+                    onChange={(v) => setForm({ ...form, locality: v })}
+                    options={BANGALORE_NEIGHBOURHOODS}
+                    placeholder="Please select a locality"
+                    ariaLabel="Locality"
+                  />
+                </div>
 
                 <label className="block">
                   <span className="block text-sm font-semibold text-warm-900 mb-1">Full address <span className="text-red-500">*</span></span>

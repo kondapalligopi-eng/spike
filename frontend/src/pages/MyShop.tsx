@@ -18,6 +18,7 @@ import {
   type ShopProduct,
 } from '@/api/petShops';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { SelectMenu } from '@/components/SelectMenu';
 import { toast } from '@/store/toastStore';
 
 const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -336,9 +337,20 @@ export function MyShop() {
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-3">
                 {shops.length > 1 && (
-                  <select value={selected.id} onChange={(e) => setSelectedId(e.target.value)} className="px-3 py-2 border-2 border-warm-200 rounded-xl text-sm font-semibold bg-white">
-                    {shops.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
-                  </select>
+                  <SelectMenu
+                    value={selected.id}
+                    onChange={setSelectedId}
+                    options={shops.map((s) => ({ value: s.id, label: s.name }))}
+                    ariaLabel="Switch shop"
+                    className="min-w-[220px]"
+                    icon={
+                      <svg viewBox="0 0 24 24" fill="none" className="w-full h-full" aria-hidden="true">
+                        <path d="M4 9h16l-1-5H5L4 9z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+                        <path d="M4 9v10a1 1 0 001 1h14a1 1 0 001-1V9" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+                        <path d="M9 20v-6h6v6" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+                      </svg>
+                    }
+                  />
                 )}
                 <button onClick={() => setCreating(true)} className="text-sm font-bold text-primary-600 hover:text-primary-700">＋ New shop</button>
               </div>

@@ -64,7 +64,7 @@ import {
 } from '@/lib/visitTracker';
 import { readSheetRows, downloadTemplate, downloadRows, type SheetRow } from '@/lib/spreadsheet';
 import { getCounter } from '@/api/counters';
-import { listUsers } from '@/api/users';
+import { listUsers, deleteUser } from '@/api/users';
 import { listAllShops, deleteShop } from '@/api/petShops';
 
 const BANGALORE_NEIGHBOURHOODS = [
@@ -2432,12 +2432,36 @@ function SubmissionsSection() {
 }
 
 function UsersSection() {
+  const queryClient = useQueryClient();
   const { data, isLoading, isError } = useQuery({
     queryKey: ['admin-users'],
     queryFn: listUsers,
     refetchInterval: 60_000,
   });
   const users = data ?? [];
+
+  const [confirmId, setConfirmId] = useState<string | null>(null);
+
+  const deleteMutation = useMutation({
+    mutationFn: deleteUser,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-users'] });
+      // Their pages/shops are gone too — refresh the moderation lists.
+      queryClient.invalidateQueries({ queryKey: ['admin-pet-pages'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-pet-shops'] });
+      toast.success('User and all their content deleted.');
+      setConfirmId(null);
+    },
+    onError: (err: Error) => toast.error(err.message || 'Could not delete the user.'),
+  });
+
+  const handleDelete = (id: string) => {
+    if (confirmId !== id) {
+      setConfirmId(id);
+      return;
+    }
+    deleteMutation.mutate(id);
+  };
 
   const fmtDate = (iso: string) => {
     const d = new Date(iso);
@@ -2482,6 +2506,7 @@ function UsersSection() {
                 <th className="px-4 py-3 font-semibold">Role</th>
                 <th className="px-4 py-3 font-semibold">Joined</th>
                 <th className="px-4 py-3 font-semibold">Status</th>
+                <th className="px-4 py-3 font-semibold text-right">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -2515,6 +2540,28 @@ function UsersSection() {
                         <span className="w-2 h-2 rounded-full bg-warm-400" />
                         Inactive
                       </span>
+                    )}
+                  </td>
+                  <td className="px-4 py-3 text-right whitespace-nowrap">
+                    {u.role === 'admin' ? (
+                      <span className="text-xs text-warm-400">Protected</span>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => handleDelete(u.id)}
+                        disabled={deleteMutation.isPending && confirmId === u.id}
+                        className={`px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-colors ${
+                          confirmId === u.id
+                            ? 'bg-red-600 text-white hover:bg-red-700 disabled:opacity-60'
+                            : 'border-2 border-warm-300 bg-white text-warm-700 hover:border-red-500 hover:text-red-600'
+                        }`}
+                      >
+                        {deleteMutation.isPending && confirmId === u.id
+                          ? 'Deleting…'
+                          : confirmId === u.id
+                            ? 'Confirm'
+                            : 'Delete'}
+                      </button>
                     )}
                   </td>
                 </tr>
