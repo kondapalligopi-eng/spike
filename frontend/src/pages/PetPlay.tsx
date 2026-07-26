@@ -180,6 +180,40 @@ export function PetPlay() {
           <symbol id="nw-spark" viewBox="0 0 24 24">
             <path d="M12 0 C13.2 8.4 15.6 10.8 24 12 C15.6 13.2 13.2 15.6 12 24 C10.8 15.6 8.4 13.2 0 12 C8.4 10.8 10.8 8.4 12 0 Z" fill="currentColor" />
           </symbol>
+
+          {/* --- Pick a Hand game: a closed fist that opens to a cupped palm --- */}
+          <linearGradient id="nwSkin" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#F6CDA1" /><stop offset="60%" stopColor="#E9B27E" /><stop offset="100%" stopColor="#D89A63" />
+          </linearGradient>
+          <linearGradient id="nwSkinBack" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#EBBF92" /><stop offset="100%" stopColor="#D2925C" />
+          </linearGradient>
+          {/* closed hand — a dome (back of hand) with knuckles, hiding the treat */}
+          <symbol id="nw-fist" viewBox="0 0 200 150">
+            <ellipse cx="100" cy="132" rx="78" ry="9" fill="#000" opacity=".16" />
+            <path d="M22 122 C22 62 60 34 100 34 C140 34 178 62 178 122 Z" fill="url(#nwSkin)" />
+            <g fill="url(#nwSkin)">
+              <circle cx="62" cy="72" r="15" /><circle cx="88" cy="56" r="16" />
+              <circle cx="112" cy="56" r="16" /><circle cx="138" cy="72" r="15" />
+            </g>
+            <g stroke="#CE9160" strokeWidth="2.4" opacity=".5" strokeLinecap="round" fill="none">
+              <path d="M74 66 q-5 32 -10 54" /><path d="M100 54 v58" /><path d="M126 66 q5 32 10 54" />
+            </g>
+            <path d="M22 122 q-15 -5 -13 -25 q2 -15 18 -13 q11 2 13 15" fill="url(#nwSkin)" />
+          </symbol>
+          {/* open cupped palm — fingers splayed up, ready to hold the biscuit pile */}
+          <symbol id="nw-palm" viewBox="0 0 200 150">
+            <ellipse cx="100" cy="138" rx="72" ry="8" fill="#000" opacity=".16" />
+            <g fill="url(#nwSkinBack)">
+              <rect x="28" y="30" width="22" height="66" rx="11" transform="rotate(-17 39 63)" />
+              <rect x="60" y="16" width="22" height="80" rx="11" transform="rotate(-8 71 56)" />
+              <rect x="90" y="12" width="22" height="84" rx="11" />
+              <rect x="120" y="16" width="22" height="80" rx="11" transform="rotate(8 131 56)" />
+              <rect x="150" y="30" width="22" height="66" rx="11" transform="rotate(17 161 63)" />
+            </g>
+            <path d="M24 82 C24 68 42 64 58 73 C74 61 126 61 142 73 C158 64 176 68 176 82 C176 120 144 142 100 142 C56 142 24 120 24 82 Z" fill="url(#nwSkin)" />
+            <ellipse cx="100" cy="98" rx="56" ry="28" fill="#C0824F" opacity=".25" />
+          </symbol>
         </defs>
       </svg>
 
