@@ -333,10 +333,10 @@ export function PetPlay() {
                     {game === 'bowls' ? (
                       <svg className="nw-bowlsvg" viewBox="0 0 200 142" aria-hidden="true"><use href="#nw-bowl" /></svg>
                     ) : (
-                      <>
-                        <svg className="nw-handsvg nw-fist" viewBox="0 0 200 150" aria-hidden="true"><use href="#nw-fist" /></svg>
-                        <svg className="nw-handsvg nw-palm" viewBox="0 0 200 150" aria-hidden="true"><use href="#nw-palm" /></svg>
-                      </>
+                      <span className="nw-handemoji" aria-hidden="true">
+                        <span className="nw-fistE">✊</span>
+                        <span className="nw-palmE">🖐</span>
+                      </span>
                     )}
                   </button>
                 </div>
