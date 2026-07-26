@@ -100,9 +100,9 @@ export function PetPlay() {
       if (pawTimer.current) clearInterval(pawTimer.current);
       setPawUp(false);
       setSniffing(false);
-      pick(Math.floor(Math.random() * 3));
+      pick(Math.floor(Math.random() * CHOICES[game]));
     }, 1250);
-  }, [done, sniffing, pick]);
+  }, [done, sniffing, pick, game]);
 
   const again = useCallback(() => {
     setPicked(null);
