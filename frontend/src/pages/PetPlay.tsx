@@ -327,20 +327,20 @@ export function PetPlay() {
             </span>
           </div>
 
-          <div className="nw-bowls">
-            {[0, 1, 2].map((i) => {
+          <div className={`nw-bowls${game === 'hands' ? ' hands' : ''}`}>
+            {Array.from({ length: CHOICES[game] }).map((_, i) => {
               const isWin = done && i === picked;
               const isDim = done && i !== picked;
               const waiting = !done && mode === 'dog';
               return (
                 <div
                   key={i}
-                  className={`nw-slot${done ? ' done' : ''}${isWin ? ' win' : ''}${isDim ? ' dim' : ''}${waiting ? ' waiting' : ''}`}
+                  className={`nw-slot${game === 'hands' ? ' hand' : ''}${done ? ' done' : ''}${isWin ? ' win' : ''}${isDim ? ' dim' : ''}${waiting ? ' waiting' : ''}`}
                 >
                   <button
                     type="button"
                     className="nw-bowlbtn"
-                    aria-label={ARIA[i]}
+                    aria-label={ARIA[game][i]}
                     disabled={done || mode === 'dog'}
                     onClick={() => pick(i)}
                   >
@@ -362,7 +362,14 @@ export function PetPlay() {
                         </svg>
                       ))}
                     </span>
-                    <svg className="nw-bowlsvg" viewBox="0 0 200 142" aria-hidden="true"><use href="#nw-bowl" /></svg>
+                    {game === 'bowls' ? (
+                      <svg className="nw-bowlsvg" viewBox="0 0 200 142" aria-hidden="true"><use href="#nw-bowl" /></svg>
+                    ) : (
+                      <>
+                        <svg className="nw-handsvg nw-fist" viewBox="0 0 200 150" aria-hidden="true"><use href="#nw-fist" /></svg>
+                        <svg className="nw-handsvg nw-palm" viewBox="0 0 200 150" aria-hidden="true"><use href="#nw-palm" /></svg>
+                      </>
+                    )}
                   </button>
                 </div>
               );
