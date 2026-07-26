@@ -9,8 +9,13 @@ import './PetPlay.css';
 // moves server-side. See the "Rewards" note at the bottom of the page.
 
 type Mode = 'me' | 'dog';
+type Game = 'bowls' | 'hands';
 
-const ARIA = ['Left bowl', 'Middle bowl', 'Right bowl'];
+const ARIA: Record<Game, string[]> = {
+  bowls: ['Left bowl', 'Middle bowl', 'Right bowl'],
+  hands: ['Left hand', 'Right hand'],
+};
+const CHOICES: Record<Game, number> = { bowls: 3, hands: 2 };
 
 // Biscuit heap. c: 'g' golden bake / 'w' milk-white — alternated so neighbours differ.
 const PILE = [
@@ -39,6 +44,7 @@ const STARS: { top: string; side: 'left' | 'right'; off: string; w: number; d: s
 const REWARD_GOAL = 500;
 
 export function PetPlay() {
+  const [game, setGame] = useState<Game>('bowls');
   const [mode, setMode] = useState<Mode>('me');
   const [picked, setPicked] = useState<number | null>(null);
   const [sniffing, setSniffing] = useState(false);
@@ -54,7 +60,7 @@ export function PetPlay() {
     // Let the hero introduce the page, then fold it away so the board sits high
     // on screen. Runs client-side only, so the pre-rendered HTML still ships the
     // hero (and its h1) intact for crawlers.
-    const heroT = setTimeout(() => setHeroHidden(true), 2000);
+    const heroT = setTimeout(() => setHeroHidden(true), 1000);
     return () => {
       clearTimeout(heroT);
       if (timer.current) clearTimeout(timer.current);
@@ -94,9 +100,9 @@ export function PetPlay() {
       if (pawTimer.current) clearInterval(pawTimer.current);
       setPawUp(false);
       setSniffing(false);
-      pick(Math.floor(Math.random() * 3));
+      pick(Math.floor(Math.random() * CHOICES[game]));
     }, 1250);
-  }, [done, sniffing, pick]);
+  }, [done, sniffing, pick, game]);
 
   const again = useCallback(() => {
     setPicked(null);
@@ -104,13 +110,22 @@ export function PetPlay() {
     setHitGoal(false);
   }, []);
 
+  // Switching games resets the round (points carry over — they're one shared tally).
+  const switchGame = useCallback((g: Game) => {
+    setGame(g);
+    setPicked(null);
+    setGain(0);
+    setHitGoal(false);
+    setSniffing(false);
+  }, []);
+
   const pct = Math.min(100, (points / REWARD_GOAL) * 100);
 
   return (
     <div className="min-h-screen bg-warm-50">
       <PageHead
-        title="Pet Play — Treat Hunt | HiSpike"
-        description="Play Treat Hunt with your dog on HiSpike. Hide a treat in one of three bowls and let your dog sniff out the right one — a sniff-and-find game you play together."
+        title="Pet Play — Games for you & your dog | HiSpike"
+        description="Play with your dog on HiSpike — Treat Hunt (find the treat under three bowls) and Pick a Hand (guess which hand it's in). Simple games you play together, with points as you go."
         path="/pet-play"
       />
 
@@ -165,6 +180,8 @@ export function PetPlay() {
           <symbol id="nw-spark" viewBox="0 0 24 24">
             <path d="M12 0 C13.2 8.4 15.6 10.8 24 12 C15.6 13.2 13.2 15.6 12 24 C10.8 15.6 8.4 13.2 0 12 C8.4 10.8 10.8 8.4 12 0 Z" fill="currentColor" />
           </symbol>
+
+          {/* Pick a Hand uses emoji fists (✊ → 🖐 on reveal), not SVG — see render. */}
         </defs>
       </svg>
 
@@ -181,12 +198,12 @@ export function PetPlay() {
             <span aria-hidden="true" className="text-4xl sm:text-5xl drop-shadow">🦴</span>
             <div className="flex-1">
               <p className="text-[11px] sm:text-xs font-semibold tracking-[0.3em] text-accent-400 uppercase mb-1">
-                Pet Play · Sniff & Find
+                Pet Play · Play together
               </p>
-              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight leading-tight">Treat Hunt</h1>
+              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight leading-tight">Games for you &amp; your dog</h1>
               <div className="mt-2 h-0.5 w-16 bg-accent-400 rounded-full" />
               <p className="mt-2 text-sm text-primary-100/90 max-w-2xl">
-                Hide a treat in one of three bowls, then let your dog sniff out the right one — a game you play together.
+                Two quick games — find the treat, or pick the right hand. Play together and rack up points.
               </p>
             </div>
           </div>
@@ -194,9 +211,28 @@ export function PetPlay() {
       </div>
 
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
+        {/* pick a game */}
+        <div className="flex justify-center mb-3">
+          <div className="inline-flex gap-1 bg-white border border-warm-200 rounded-full p-1" role="group" aria-label="Choose a game">
+            {([['bowls', '🥣 Treat Hunt'], ['hands', '✋ Pick a Hand']] as [Game, string][]).map(([g, label]) => (
+              <button
+                key={g}
+                type="button"
+                onClick={() => switchGame(g)}
+                aria-pressed={game === g}
+                className={`px-4 py-2 rounded-full text-sm font-bold transition-colors ${
+                  game === g ? 'bg-accent-400 text-warm-900 shadow' : 'text-warm-500 hover:text-warm-900'
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* who picks */}
         <div className="flex justify-center">
-          <div className="inline-flex gap-1 bg-white border border-warm-200 rounded-full p-1" role="group" aria-label="Who picks the bowl">
+          <div className="inline-flex gap-1 bg-white border border-warm-200 rounded-full p-1" role="group" aria-label="Who picks">
             {([['me', "🙋 I'll pick"], ['dog', '🐕 Dog picks']] as [Mode, string][]).map(([m, label]) => (
               <button
                 key={m}
@@ -213,15 +249,17 @@ export function PetPlay() {
           </div>
         </div>
 
-        {/* instruction sits with the mode toggle, above the board */}
+        {/* instruction sits with the toggles, above the board */}
         <p className="text-center text-warm-500 text-sm mt-3 min-h-[20px]">
           {done
             ? ''
             : sniffing
-              ? 'Sniff… sniff… 🐽'
+              ? 'Sniff… sniff… 🐾'
               : mode === 'dog'
-                ? 'Ready? Send your dog in to sniff out the treat.'
-                : 'Tap a bowl — which one is your dog sniffing at?'}
+                ? 'Ready? Send your dog in to find the treat.'
+                : game === 'bowls'
+                  ? 'Tap a bowl — which one is your dog sniffing at?'
+                  : 'Tap a hand — which one is the treat in?'}
         </p>
 
         {/* board */}
@@ -257,20 +295,20 @@ export function PetPlay() {
             </span>
           </div>
 
-          <div className="nw-bowls">
-            {[0, 1, 2].map((i) => {
+          <div className={`nw-bowls${game === 'hands' ? ' hands' : ''}`}>
+            {Array.from({ length: CHOICES[game] }).map((_, i) => {
               const isWin = done && i === picked;
               const isDim = done && i !== picked;
               const waiting = !done && mode === 'dog';
               return (
                 <div
                   key={i}
-                  className={`nw-slot${done ? ' done' : ''}${isWin ? ' win' : ''}${isDim ? ' dim' : ''}${waiting ? ' waiting' : ''}`}
+                  className={`nw-slot${game === 'hands' ? ' hand' : ''}${done ? ' done' : ''}${isWin ? ' win' : ''}${isDim ? ' dim' : ''}${waiting ? ' waiting' : ''}`}
                 >
                   <button
                     type="button"
                     className="nw-bowlbtn"
-                    aria-label={ARIA[i]}
+                    aria-label={ARIA[game][i]}
                     disabled={done || mode === 'dog'}
                     onClick={() => pick(i)}
                   >
@@ -292,7 +330,14 @@ export function PetPlay() {
                         </svg>
                       ))}
                     </span>
-                    <svg className="nw-bowlsvg" viewBox="0 0 200 142" aria-hidden="true"><use href="#nw-bowl" /></svg>
+                    {game === 'bowls' ? (
+                      <svg className="nw-bowlsvg" viewBox="0 0 200 142" aria-hidden="true"><use href="#nw-bowl" /></svg>
+                    ) : (
+                      <span className="nw-handemoji" aria-hidden="true">
+                        <span className="nw-fistE">✊</span>
+                        <span className="nw-palmE">🖐</span>
+                      </span>
+                    )}
                   </button>
                 </div>
               );
@@ -324,7 +369,7 @@ export function PetPlay() {
                   onClick={again}
                   className="rounded-full bg-primary-600 hover:bg-primary-700 px-7 py-3 text-sm font-bold text-white transition-colors"
                 >
-                  Hide another treat ↻
+                  {game === 'bowls' ? 'Hide another treat ↻' : 'Play again ↻'}
                 </button>
               </div>
             </>
@@ -335,7 +380,7 @@ export function PetPlay() {
               disabled={sniffing}
               className="rounded-full bg-accent-400 hover:bg-accent-300 disabled:opacity-50 px-7 py-3 text-sm font-bold text-warm-900 shadow transition-colors"
             >
-              Let your dog sniff 🐽
+              {game === 'bowls' ? 'Let your dog sniff 🐾' : 'Let your dog pick 🐾'}
             </button>
           ) : null}
         </div>

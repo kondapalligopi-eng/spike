@@ -213,6 +213,38 @@
   transform: scale(0.94);
 }
 
+/* ---- Pick a Hand variant (emoji fists) ---- */
+.nw-bowls.hands { gap: clamp(28px, 12vw, 72px); align-items: flex-end; }
+.nw-slot.hand { max-width: 150px; }
+
+.nw-handemoji {
+  position: relative;
+  z-index: 2;
+  display: block;
+  text-align: center;
+  font-size: clamp(66px, 19vw, 104px);
+  line-height: 1;
+  filter: drop-shadow(0 12px 9px rgba(0, 0, 0, 0.4));
+  transition: transform 0.35s cubic-bezier(0.34, 1.5, 0.5, 1), opacity 0.3s;
+}
+/* the fist defines the box; the open hand overlays it and cross-fades on win */
+.nw-fistE { display: inline-block; }
+.nw-palmE { position: absolute; left: 0; right: 0; top: 0; opacity: 0; }
+.nw-slot.win .nw-fistE { opacity: 0; }
+.nw-slot.win .nw-palmE { opacity: 1; }
+
+.nw-bowlbtn:focus-visible .nw-handemoji { outline: 3px solid #f7b518; outline-offset: 5px; border-radius: 12px; }
+.nw-slot.hand:not(.done) .nw-bowlbtn:hover .nw-handemoji { transform: translateY(-7px) scale(1.04); }
+.nw-slot.hand.waiting .nw-handemoji { animation: nwWiggle 1.15s ease-in-out infinite; }
+.nw-slot.hand.win .nw-handemoji { animation: nwHop 0.55s cubic-bezier(0.34, 1.5, 0.5, 1); }
+.nw-slot.hand.dim .nw-handemoji {
+  opacity: 0.4;
+  filter: grayscale(0.85) drop-shadow(0 6px 8px rgba(0, 0, 0, 0.28));
+  transform: scale(0.92);
+}
+/* biscuits crest just above the open hand on reveal */
+.nw-slot.hand .nw-bones { top: -6px; height: 26px; left: 14%; right: 14%; }
+
 @media (prefers-reduced-motion: reduce) {
   .nw-board * { animation: none !important; transition-duration: 0.01ms !important; }
 }
