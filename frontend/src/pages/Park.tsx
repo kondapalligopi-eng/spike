@@ -8,6 +8,7 @@ import { PageHead } from '@/components/PageHead';
 import { ShareButtons } from '@/components/ShareButtons';
 import { FaqSchema, type FaqItem } from '@/components/FaqSchema';
 import { HeroPaws } from '@/components/HeroPaws';
+import { SelectMenu } from '@/components/SelectMenu';
 import { useBackendWarmup } from '@/lib/warmupBackend';
 
 const PARK_FAQS: FaqItem[] = [
