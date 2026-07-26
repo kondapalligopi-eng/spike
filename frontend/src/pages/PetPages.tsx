@@ -196,6 +196,7 @@ export function PetPages() {
     setHighlights([]);
     setMemories('');
     setSlugStatus('idle');
+    setCustomizingSlug(false);
     setResumed(false);
     clearDraft();
   };
