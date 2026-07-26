@@ -18,6 +18,7 @@ import {
   type ShopProduct,
 } from '@/api/petShops';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { SelectMenu } from '@/components/SelectMenu';
 import { toast } from '@/store/toastStore';
 
 const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
