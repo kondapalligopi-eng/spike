@@ -338,7 +338,7 @@ export function Grooming() {
             <button
               type="button"
               onClick={resetFilters}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full border-2 border-warm-400 bg-white hover:border-primary-500 hover:text-primary-700 text-warm-700 text-sm font-bold tracking-[0.15em] uppercase transition-colors"
+              className="w-full sm:w-auto sm:h-14 inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full border-2 border-warm-400 bg-white hover:border-primary-500 hover:text-primary-700 text-warm-700 text-sm font-bold tracking-[0.15em] uppercase transition-colors"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
