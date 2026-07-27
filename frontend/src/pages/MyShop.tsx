@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
+  addGalleryPhoto,
   addProduct,
   addUpdate,
   createShop,
+  deleteGalleryPhoto,
   deleteProduct,
   deleteShop,
   deleteUpdate,
