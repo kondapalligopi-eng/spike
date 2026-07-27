@@ -137,6 +137,14 @@ async def _update_or_404(db: AsyncSession, update_id: uuid.UUID) -> ShopUpdate:
     return upd
 
 
+async def _photo_or_404(db: AsyncSession, photo_id: uuid.UUID) -> ShopPhoto:
+    result = await db.execute(select(ShopPhoto).where(ShopPhoto.id == photo_id))
+    photo = result.scalar_one_or_none()
+    if photo is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Photo not found")
+    return photo
+
+
 # --- specific routes before "/{shop_id}" so they aren't captured --------------
 
 
