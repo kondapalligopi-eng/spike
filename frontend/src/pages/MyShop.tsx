@@ -485,6 +485,7 @@ export function MyShop() {
               <>
                 <div className="bg-white rounded-3xl shadow-sm border border-warm-200 p-6 sm:p-8"><ProductsManager key={`p-${fullShop.id}`} shop={fullShop} onChanged={invalidate} /></div>
                 <div className="bg-white rounded-3xl shadow-sm border border-warm-200 p-6 sm:p-8"><UpdatesManager key={`u-${fullShop.id}`} shop={fullShop} onChanged={invalidate} /></div>
+                <div className="bg-white rounded-3xl shadow-sm border border-warm-200 p-6 sm:p-8"><PhotosManager key={`g-${fullShop.id}`} shop={fullShop} onChanged={invalidate} /></div>
               </>
             )}
 
