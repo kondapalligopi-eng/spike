@@ -4,6 +4,10 @@ const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
 const MOCK_KEY = 'hispike_mock_pet_shops';
 
 // A pet shop's storefront page — owner-created, lives at hispike.in/petshop/<slug>.
+// Fixed category list so products group into clean shelves on the storefront.
+export const SHOP_CATEGORIES = ['Food', 'Treats', 'Toys', 'Grooming', 'Accessories', 'Health', 'Other'] as const;
+export type ShopCategory = (typeof SHOP_CATEGORIES)[number];
+
 export type ShopProduct = {
   id: string;
   shop_id: string;
@@ -11,6 +15,7 @@ export type ShopProduct = {
   price: string | null;
   description: string;
   photo_url: string | null;
+  category: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -20,6 +25,7 @@ export type ShopUpdate = {
   shop_id: string;
   title: string;
   body: string;
+  badge: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -29,11 +35,15 @@ export type PetShopSummary = {
   slug: string;
   name: string;
   logo_url: string | null;
+  hero_url: string | null;
   about: string;
+  offer: string | null;
   area: string | null;
   hours: string | null;
   phone: string | null;
   whatsapp: string | null;
+  free_delivery_over: string | null;
+  delivery_radius: string | null;
   owner_id: string;
   created_at: string;
   updated_at: string;
@@ -48,11 +58,15 @@ export type PetShopCreate = {
   slug: string;
   name: string;
   logo_url: string | null;
+  hero_url: string | null;
   about: string;
+  offer: string | null;
   area: string | null;
   hours: string | null;
   phone: string | null;
   whatsapp: string | null;
+  free_delivery_over: string | null;
+  delivery_radius: string | null;
 };
 
 export type ShopProductCreate = {
@@ -60,9 +74,10 @@ export type ShopProductCreate = {
   price: string | null;
   description: string;
   photo_url: string | null;
+  category: string | null;
 };
 
-export type ShopUpdateCreate = { title: string; body: string };
+export type ShopUpdateCreate = { title: string; body: string; badge: string | null };
 
 const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
 function status404(err: unknown): boolean {
@@ -98,21 +113,32 @@ function writeStore(rows: PetShopRead[]): void {
 function sampleShop(slug: string): PetShopRead {
   const now = new Date().toISOString();
   const day = (n: number) => new Date(Date.now() - n * 86_400_000).toISOString();
+  const p = (id: string, name: string, price: string, description: string, category: string): ShopProduct =>
+    ({ id, shop_id: 'mock-shop', name, price, description, photo_url: null, category, created_at: now, updated_at: now });
   return {
-    id: 'mock-shop', slug, name: 'Paws & Whiskers', logo_url: null,
-    about: "Your neighbourhood pet store — premium food, toys, grooming supplies & everything your pet needs. Home delivery within 5 km.",
+    id: 'mock-shop', slug, name: 'Paws & Whiskers', logo_url: null, hero_url: null,
+    about: "Your neighbourhood pet store — premium food, toys, grooming supplies & everything your pet needs. Message us on WhatsApp to order.",
+    offer: 'Monsoon Sale — 15% off beds & raincoats',
     area: 'Indiranagar, Bengaluru', hours: '10am–9pm', phone: '+919876543210', whatsapp: '+919876543210',
+    free_delivery_over: '₹499', delivery_radius: '5 km',
     owner_id: 'mock-me', created_at: now, updated_at: now,
     products: [
-      { id: 'p1', shop_id: 'mock-shop', name: 'Royal Canin Adult 3kg', price: '₹1,299', description: 'Complete, balanced nutrition for adult dogs.', photo_url: null, created_at: now, updated_at: now },
-      { id: 'p2', shop_id: 'mock-shop', name: 'Chew Toy Bundle', price: '₹499', description: 'Durable rubber toys — pack of 3.', photo_url: null, created_at: now, updated_at: now },
-      { id: 'p3', shop_id: 'mock-shop', name: 'Cozy Pet Bed (M)', price: '₹1,899', description: 'Soft, washable bed for a snug nap.', photo_url: null, created_at: now, updated_at: now },
-      { id: 'p4', shop_id: 'mock-shop', name: 'Grooming Kit', price: '₹749', description: 'Brush, nail clipper & gentle shampoo.', photo_url: null, created_at: now, updated_at: now },
+      p('p1', 'Royal Canin Adult 3kg', '₹1,299', 'Complete, balanced nutrition for adult dogs.', 'Food'),
+      p('p2', 'Farmina N&D Fish 2kg', '₹1,650', 'Grain-free, fish-based dry food.', 'Food'),
+      p('p3', 'Pedigree Adult 10kg', '₹899', 'Everyday nutrition, value pack.', 'Food'),
+      p('p4', 'Chicken Jerky 100g', '₹349', 'High-protein training treats.', 'Treats'),
+      p('p5', 'Dental Chews (7)', '₹280', 'Freshen breath, clean teeth.', 'Treats'),
+      p('p6', 'Squeaky Ball 3-pack', '₹249', 'Bouncy fetch toys.', 'Toys'),
+      p('p7', 'Rope Tug Toy', '₹199', 'Durable cotton tug.', 'Toys'),
+      p('p8', 'Oatmeal Shampoo 200ml', '₹399', 'Gentle, soothing wash.', 'Grooming'),
+      p('p9', 'Slicker Brush', '₹320', 'De-shed & detangle.', 'Grooming'),
+      p('p10', 'Cozy Pet Bed (M)', '₹1,899', 'Soft, washable bed for a snug nap.', 'Accessories'),
+      p('p11', 'Adjustable Collar & Leash', '₹549', 'Comfortable everyday set.', 'Accessories'),
     ],
     updates: [
-      { id: 'u1', shop_id: 'mock-shop', title: '🆕 Fresh stock just arrived!', body: 'New batches of Royal Canin & Farmina are in — grab them before they\'re gone.', created_at: day(2), updated_at: day(2) },
-      { id: 'u2', shop_id: 'mock-shop', title: '🎉 Monsoon sale — 15% off', body: 'Flat 15% off all raincoats & cozy beds this week only.', created_at: day(5), updated_at: day(5) },
-      { id: 'u3', shop_id: 'mock-shop', title: '🐾 Now delivering to your door', body: 'Free home delivery within 5 km on orders above ₹499.', created_at: day(8), updated_at: day(8) },
+      { id: 'u1', shop_id: 'mock-shop', title: 'Monsoon Sale', body: '15% off all raincoats & cozy beds — this week only.', badge: '15% OFF', created_at: day(2), updated_at: day(2) },
+      { id: 'u2', shop_id: 'mock-shop', title: 'Free home delivery', body: 'On every order above ₹499, within 5 km.', badge: 'FREE', created_at: day(5), updated_at: day(5) },
+      { id: 'u3', shop_id: 'mock-shop', title: 'Treats combo', body: 'Buy 2 packs of dog treats, get 1 free.', badge: '2 + 1', created_at: day(8), updated_at: day(8) },
     ],
   };
 }

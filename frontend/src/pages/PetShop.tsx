@@ -48,18 +48,18 @@ export function PetShop() {
     `${shop.name}${shop.area ? ` in ${shop.area}` : ''} — products & updates on HiSpike.`;
 
   return (
-    <div className="min-h-screen bg-warm-50">
+    <div className="min-h-screen bg-primary-50">
       <PageHead
         title={`${shop.name} — Pet Shop`}
         description={desc}
         path={`/petshop/${shop.slug}`}
-        image={shop.logo_url ?? undefined}
+        image={shop.hero_url ?? shop.logo_url ?? undefined}
       />
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
-        <PetShopView data={shop} />
+      <PetShopView data={shop} />
 
-        {/* CTA — points at the owner area (Phase 2) */}
-        <div className="mt-11 rounded-2xl bg-primary-50 border border-primary-100 p-5 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+      {/* CTA — points at the owner area (Phase 2) */}
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 pb-12 pt-8">
+        <div className="rounded-2xl bg-white border border-primary-100 p-5 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
           <p className="text-base font-semibold text-warm-700">Own a pet shop in Bengaluru?</p>
           <Link
             to="/my-shop"

@@ -13,6 +13,7 @@ import {
   updateProduct,
   updateShop,
   uploadShopPhoto,
+  SHOP_CATEGORIES,
   type PetShopRead,
   type PetShopSummary,
   type ShopProduct,
@@ -76,11 +77,15 @@ function ShopDetailsForm({ shop, onSaved }: { shop: PetShopRead | null; onSaved:
   const [slug, setSlug] = useState(shop?.slug ?? '');
   const [slugTouched, setSlugTouched] = useState(editing);
   const [logo, setLogo] = useState<string | null>(shop?.logo_url ?? null);
+  const [hero, setHero] = useState<string | null>(shop?.hero_url ?? null);
   const [about, setAbout] = useState(shop?.about ?? '');
+  const [offer, setOffer] = useState(shop?.offer ?? '');
   const [area, setArea] = useState(shop?.area ?? '');
   const [hours, setHours] = useState(shop?.hours ?? '');
   const [phone, setPhone] = useState(shop?.phone ?? '');
   const [whatsapp, setWhatsapp] = useState(shop?.whatsapp ?? '');
+  const [freeDeliveryOver, setFreeDeliveryOver] = useState(shop?.free_delivery_over ?? '');
+  const [deliveryRadius, setDeliveryRadius] = useState(shop?.delivery_radius ?? '');
   const [slugStatus, setSlugStatus] = useState<SlugStatus>('idle');
 
   // Auto-fill slug from the name until the user edits it directly.
@@ -107,9 +112,12 @@ function ShopDetailsForm({ shop, onSaved }: { shop: PetShopRead | null; onSaved:
   const saveMut = useMutation({
     mutationFn: () => {
       const payload = {
-        slug, name: name.trim(), logo_url: logo, about: about.trim(),
+        slug, name: name.trim(), logo_url: logo, hero_url: hero, about: about.trim(),
+        offer: offer.trim() || null,
         area: area.trim() || null, hours: hours.trim() || null,
         phone: phone.trim() || null, whatsapp: whatsapp.trim() || null,
+        free_delivery_over: freeDeliveryOver.trim() || null,
+        delivery_radius: deliveryRadius.trim() || null,
       };
       return editing ? updateShop(shop!.id, payload) : createShop(payload);
     },
@@ -141,11 +149,30 @@ function ShopDetailsForm({ shop, onSaved }: { shop: PetShopRead | null; onSaved:
         </p>
       </div>
 
-      <PhotoField value={logo} onChange={setLogo} label="Shop logo" round />
+      <div className="grid sm:grid-cols-2 gap-4">
+        <PhotoField value={logo} onChange={setLogo} label="Shop logo" round />
+        <PhotoField value={hero} onChange={setHero} label="Banner photo (wide storefront header)" />
+      </div>
+
+      <div>
+        <label className={label} htmlFor="shop-offer">Headline offer <span className="text-warm-400 font-normal">(optional — gold sale ribbon)</span></label>
+        <input id="shop-offer" className={input} placeholder="Monsoon Sale — 15% off beds & raincoats" value={offer} onChange={(e) => setOffer(e.target.value)} />
+      </div>
 
       <div>
         <label className={label} htmlFor="shop-about">About the shop</label>
         <textarea id="shop-about" rows={3} className={input} placeholder="What you sell, what makes you special, delivery info…" value={about} onChange={(e) => setAbout(e.target.value)} />
+      </div>
+
+      <div className="grid sm:grid-cols-2 gap-4">
+        <div>
+          <label className={label} htmlFor="shop-fdo">Free delivery over <span className="text-warm-400 font-normal">(optional)</span></label>
+          <input id="shop-fdo" className={input} placeholder="₹499" value={freeDeliveryOver} onChange={(e) => setFreeDeliveryOver(e.target.value)} />
+        </div>
+        <div>
+          <label className={label} htmlFor="shop-radius">Delivery radius <span className="text-warm-400 font-normal">(optional)</span></label>
+          <input id="shop-radius" className={input} placeholder="5 km" value={deliveryRadius} onChange={(e) => setDeliveryRadius(e.target.value)} />
+        </div>
       </div>
 
       <div className="grid sm:grid-cols-2 gap-4">
@@ -174,21 +201,33 @@ function ShopDetailsForm({ shop, onSaved }: { shop: PetShopRead | null; onSaved:
   );
 }
 
-function ProductForm({ initial, onSubmit, onCancel, busy }: { initial?: ShopProduct; onSubmit: (p: { name: string; price: string | null; description: string; photo_url: string | null }) => void; onCancel: () => void; busy: boolean; }) {
+function ProductForm({ initial, onSubmit, onCancel, busy }: { initial?: ShopProduct; onSubmit: (p: { name: string; price: string | null; description: string; photo_url: string | null; category: string | null }) => void; onCancel: () => void; busy: boolean; }) {
   const [name, setName] = useState(initial?.name ?? '');
   const [price, setPrice] = useState(initial?.price ?? '');
   const [description, setDescription] = useState(initial?.description ?? '');
   const [photo, setPhoto] = useState<string | null>(initial?.photo_url ?? null);
+  const [category, setCategory] = useState<string>(initial?.category ?? 'Food');
   return (
     <div className="rounded-2xl border-2 border-primary-100 bg-primary-50/40 p-4 space-y-3">
       <PhotoField value={photo} onChange={setPhoto} label="Product photo" />
       <div className="grid sm:grid-cols-2 gap-3">
         <div><label className={label}>Name</label><input className={input} placeholder="Royal Canin Adult 3kg" value={name} onChange={(e) => setName(e.target.value)} /></div>
-        <div><label className={label}>Price <span className="text-warm-400 font-normal">(optional)</span></label><input className={input} placeholder="₹1,299" value={price} onChange={(e) => setPrice(e.target.value)} /></div>
+        <div>
+          <label className={label}>Category</label>
+          <SelectMenu
+            value={category}
+            onChange={setCategory}
+            options={SHOP_CATEGORIES.map((c) => ({ value: c, label: c }))}
+            ariaLabel="Product category"
+          />
+        </div>
       </div>
-      <div><label className={label}>Description <span className="text-warm-400 font-normal">(optional)</span></label><input className={input} placeholder="Complete nutrition for adult dogs." value={description} onChange={(e) => setDescription(e.target.value)} /></div>
+      <div className="grid sm:grid-cols-2 gap-3">
+        <div><label className={label}>Price <span className="text-warm-400 font-normal">(optional)</span></label><input className={input} placeholder="₹1,299" value={price} onChange={(e) => setPrice(e.target.value)} /></div>
+        <div><label className={label}>Description <span className="text-warm-400 font-normal">(optional)</span></label><input className={input} placeholder="Complete nutrition for adult dogs." value={description} onChange={(e) => setDescription(e.target.value)} /></div>
+      </div>
       <div className="flex gap-2">
-        <button type="button" disabled={busy || !name.trim()} className={btnPrimary} onClick={() => onSubmit({ name: name.trim(), price: price.trim() || null, description: description.trim(), photo_url: photo })}>
+        <button type="button" disabled={busy || !name.trim()} className={btnPrimary} onClick={() => onSubmit({ name: name.trim(), price: price.trim() || null, description: description.trim(), photo_url: photo, category })}>
           {busy ? 'Saving…' : initial ? 'Update product' : 'Add product'}
         </button>
         <button type="button" onClick={onCancel} className="text-sm font-semibold text-warm-500 hover:text-warm-700 px-3">Cancel</button>
@@ -227,7 +266,10 @@ function ProductsManager({ shop, onChanged }: { shop: PetShopRead; onChanged: ()
                     {p.photo_url ? <img src={p.photo_url} alt="" className="w-full h-full object-cover" /> : '🛍️'}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="font-bold text-warm-900 truncate">{p.name}</p>
+                    <div className="flex items-center gap-2">
+                      <p className="font-bold text-warm-900 truncate">{p.name}</p>
+                      {p.category && <span className="shrink-0 text-[10px] font-bold uppercase tracking-wide text-primary-600 bg-primary-50 border border-primary-100 px-1.5 py-0.5 rounded-full">{p.category}</span>}
+                    </div>
                     <p className="text-sm text-primary-700 font-semibold">{p.price || '—'}</p>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
@@ -251,25 +293,44 @@ function ProductsManager({ shop, onChanged }: { shop: PetShopRead; onChanged: ()
 function UpdatesManager({ shop, onChanged }: { shop: PetShopRead; onChanged: () => void }) {
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
+  const [badge, setBadge] = useState('');
   const [confirmId, setConfirmId] = useState<string | null>(null);
 
-  const addMut = useMutation({ mutationFn: () => addUpdate(shop.id, { title: title.trim(), body: body.trim() }), onSuccess: () => { setTitle(''); setBody(''); onChanged(); toast.success('Update posted.'); }, onError: (e: Error) => toast.error(e.message) });
+  const addMut = useMutation({ mutationFn: () => addUpdate(shop.id, { title: title.trim(), body: body.trim(), badge: badge.trim() || null }), onSuccess: () => { setTitle(''); setBody(''); setBadge(''); onChanged(); toast.success('Promotion posted.'); }, onError: (e: Error) => toast.error(e.message) });
   const delMut = useMutation({ mutationFn: deleteUpdate, onSuccess: () => { setConfirmId(null); onChanged(); }, onError: (e: Error) => toast.error(e.message) });
 
   return (
     <section>
-      <h2 className="text-lg font-extrabold text-warm-900 mb-1">Updates</h2>
-      <p className="text-sm text-warm-500 mb-4">Post a "new arrival" or offer — it shows on your shop page.</p>
+      <h2 className="text-lg font-extrabold text-warm-900 mb-1">Promotions</h2>
+      <p className="text-sm text-warm-500 mb-4">Post an offer or new arrival — it shows as a promo card on your shop page.</p>
       <div className="rounded-2xl border-2 border-accent-200 bg-accent-50/40 p-4 space-y-3 mb-4">
-        <input className={input} placeholder="🆕 New stock just arrived!" value={title} onChange={(e) => setTitle(e.target.value)} />
-        <input className={input} placeholder="A line or two about it (optional)" value={body} onChange={(e) => setBody(e.target.value)} />
-        <button disabled={!title.trim() || addMut.isPending} className={btnPrimary} onClick={() => addMut.mutate()}>{addMut.isPending ? 'Posting…' : 'Post update'}</button>
+        <div className="grid sm:grid-cols-[1fr_120px] gap-3">
+          <div>
+            <label className={label}>Title</label>
+            <input className={input} placeholder="Monsoon Sale on beds" value={title} onChange={(e) => setTitle(e.target.value)} />
+          </div>
+          <div>
+            <label className={label}>Badge <span className="text-warm-400 font-normal">(short)</span></label>
+            <input className={input} placeholder="15% OFF" maxLength={24} value={badge} onChange={(e) => setBadge(e.target.value)} />
+          </div>
+        </div>
+        <div>
+          <label className={label}>Details <span className="text-warm-400 font-normal">(optional)</span></label>
+          <input className={input} placeholder="A line or two about it" value={body} onChange={(e) => setBody(e.target.value)} />
+        </div>
+        <button disabled={!title.trim() || addMut.isPending} className={btnPrimary} onClick={() => addMut.mutate()}>{addMut.isPending ? 'Posting…' : 'Post promotion'}</button>
       </div>
       {shop.updates.length > 0 && (
         <ul className="space-y-2">
           {shop.updates.map((u) => (
             <li key={u.id} className="flex items-start justify-between gap-3 rounded-xl border border-warm-200 bg-white p-3">
-              <div className="min-w-0"><p className="font-bold text-warm-900">{u.title}</p>{u.body && <p className="text-sm text-warm-600">{u.body}</p>}</div>
+              <div className="min-w-0">
+                <div className="flex items-center gap-2">
+                  <p className="font-bold text-warm-900">{u.title}</p>
+                  {u.badge && <span className="shrink-0 bg-accent-400 text-warm-900 text-[10px] font-extrabold px-2 py-0.5 rounded-full">{u.badge}</span>}
+                </div>
+                {u.body && <p className="text-sm text-warm-600">{u.body}</p>}
+              </div>
               {confirmId === u.id ? (
                 <button onClick={() => delMut.mutate(u.id)} className="text-sm font-bold text-red-600 shrink-0">Confirm?</button>
               ) : (
