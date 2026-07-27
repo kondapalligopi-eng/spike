@@ -197,7 +197,11 @@ async def get_shop_by_slug(
 ) -> PetShopRead:
     result = await db.execute(
         select(PetShop)
-        .options(selectinload(PetShop.products), selectinload(PetShop.updates))
+        .options(
+            selectinload(PetShop.products),
+            selectinload(PetShop.updates),
+            selectinload(PetShop.photos),
+        )
         .where(func.lower(PetShop.slug) == slug.lower())
     )
     shop = result.scalar_one_or_none()
