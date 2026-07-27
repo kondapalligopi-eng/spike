@@ -27,11 +27,19 @@ class PetShop(UUIDBase):
     slug: Mapped[str] = mapped_column(String(80), nullable=False, unique=True, index=True)
     name: Mapped[str] = mapped_column(String(120), nullable=False)
     logo_url: Mapped[str | None] = mapped_column(String(1024), nullable=True)
+    # A wide banner photo shown behind the storefront hero (owner-uploaded).
+    hero_url: Mapped[str | None] = mapped_column(String(1024), nullable=True)
     about: Mapped[str] = mapped_column(Text, nullable=False, default="")
+    # The shop's current headline offer, shown as the gold sale ribbon.
+    offer: Mapped[str | None] = mapped_column(String(200), nullable=True)
     area: Mapped[str | None] = mapped_column(String(160), nullable=True)
     hours: Mapped[str | None] = mapped_column(String(120), nullable=True)
     phone: Mapped[str | None] = mapped_column(String(40), nullable=True)
     whatsapp: Mapped[str | None] = mapped_column(String(40), nullable=True)
+    # Delivery facts shown in the trust strip — free-text so shops set their own
+    # (e.g. free_delivery_over="₹499", delivery_radius="5 km"). Blank = hidden.
+    free_delivery_over: Mapped[str | None] = mapped_column(String(40), nullable=True)
+    delivery_radius: Mapped[str | None] = mapped_column(String(40), nullable=True)
 
     owner_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
