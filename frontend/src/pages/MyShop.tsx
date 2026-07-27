@@ -201,21 +201,33 @@ function ShopDetailsForm({ shop, onSaved }: { shop: PetShopRead | null; onSaved:
   );
 }
 
-function ProductForm({ initial, onSubmit, onCancel, busy }: { initial?: ShopProduct; onSubmit: (p: { name: string; price: string | null; description: string; photo_url: string | null }) => void; onCancel: () => void; busy: boolean; }) {
+function ProductForm({ initial, onSubmit, onCancel, busy }: { initial?: ShopProduct; onSubmit: (p: { name: string; price: string | null; description: string; photo_url: string | null; category: string | null }) => void; onCancel: () => void; busy: boolean; }) {
   const [name, setName] = useState(initial?.name ?? '');
   const [price, setPrice] = useState(initial?.price ?? '');
   const [description, setDescription] = useState(initial?.description ?? '');
   const [photo, setPhoto] = useState<string | null>(initial?.photo_url ?? null);
+  const [category, setCategory] = useState<string>(initial?.category ?? 'Food');
   return (
     <div className="rounded-2xl border-2 border-primary-100 bg-primary-50/40 p-4 space-y-3">
       <PhotoField value={photo} onChange={setPhoto} label="Product photo" />
       <div className="grid sm:grid-cols-2 gap-3">
         <div><label className={label}>Name</label><input className={input} placeholder="Royal Canin Adult 3kg" value={name} onChange={(e) => setName(e.target.value)} /></div>
-        <div><label className={label}>Price <span className="text-warm-400 font-normal">(optional)</span></label><input className={input} placeholder="₹1,299" value={price} onChange={(e) => setPrice(e.target.value)} /></div>
+        <div>
+          <label className={label}>Category</label>
+          <SelectMenu
+            value={category}
+            onChange={setCategory}
+            options={SHOP_CATEGORIES.map((c) => ({ value: c, label: c }))}
+            ariaLabel="Product category"
+          />
+        </div>
       </div>
-      <div><label className={label}>Description <span className="text-warm-400 font-normal">(optional)</span></label><input className={input} placeholder="Complete nutrition for adult dogs." value={description} onChange={(e) => setDescription(e.target.value)} /></div>
+      <div className="grid sm:grid-cols-2 gap-3">
+        <div><label className={label}>Price <span className="text-warm-400 font-normal">(optional)</span></label><input className={input} placeholder="₹1,299" value={price} onChange={(e) => setPrice(e.target.value)} /></div>
+        <div><label className={label}>Description <span className="text-warm-400 font-normal">(optional)</span></label><input className={input} placeholder="Complete nutrition for adult dogs." value={description} onChange={(e) => setDescription(e.target.value)} /></div>
+      </div>
       <div className="flex gap-2">
-        <button type="button" disabled={busy || !name.trim()} className={btnPrimary} onClick={() => onSubmit({ name: name.trim(), price: price.trim() || null, description: description.trim(), photo_url: photo })}>
+        <button type="button" disabled={busy || !name.trim()} className={btnPrimary} onClick={() => onSubmit({ name: name.trim(), price: price.trim() || null, description: description.trim(), photo_url: photo, category })}>
           {busy ? 'Saving…' : initial ? 'Update product' : 'Add product'}
         </button>
         <button type="button" onClick={onCancel} className="text-sm font-semibold text-warm-500 hover:text-warm-700 px-3">Cancel</button>
