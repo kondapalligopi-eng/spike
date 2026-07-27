@@ -149,11 +149,30 @@ function ShopDetailsForm({ shop, onSaved }: { shop: PetShopRead | null; onSaved:
         </p>
       </div>
 
-      <PhotoField value={logo} onChange={setLogo} label="Shop logo" round />
+      <div className="grid sm:grid-cols-2 gap-4">
+        <PhotoField value={logo} onChange={setLogo} label="Shop logo" round />
+        <PhotoField value={hero} onChange={setHero} label="Banner photo (wide storefront header)" />
+      </div>
+
+      <div>
+        <label className={label} htmlFor="shop-offer">Headline offer <span className="text-warm-400 font-normal">(optional — gold sale ribbon)</span></label>
+        <input id="shop-offer" className={input} placeholder="Monsoon Sale — 15% off beds & raincoats" value={offer} onChange={(e) => setOffer(e.target.value)} />
+      </div>
 
       <div>
         <label className={label} htmlFor="shop-about">About the shop</label>
         <textarea id="shop-about" rows={3} className={input} placeholder="What you sell, what makes you special, delivery info…" value={about} onChange={(e) => setAbout(e.target.value)} />
+      </div>
+
+      <div className="grid sm:grid-cols-2 gap-4">
+        <div>
+          <label className={label} htmlFor="shop-fdo">Free delivery over <span className="text-warm-400 font-normal">(optional)</span></label>
+          <input id="shop-fdo" className={input} placeholder="₹499" value={freeDeliveryOver} onChange={(e) => setFreeDeliveryOver(e.target.value)} />
+        </div>
+        <div>
+          <label className={label} htmlFor="shop-radius">Delivery radius <span className="text-warm-400 font-normal">(optional)</span></label>
+          <input id="shop-radius" className={input} placeholder="5 km" value={deliveryRadius} onChange={(e) => setDeliveryRadius(e.target.value)} />
+        </div>
       </div>
 
       <div className="grid sm:grid-cols-2 gap-4">
