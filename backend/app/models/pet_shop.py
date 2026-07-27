@@ -61,6 +61,12 @@ class PetShop(UUIDBase):
         cascade="all, delete-orphan",
         order_by="ShopUpdate.created_at.desc()",
     )
+    photos: Mapped[List["ShopPhoto"]] = relationship(
+        "ShopPhoto",
+        back_populates="shop",
+        cascade="all, delete-orphan",
+        order_by="ShopPhoto.created_at",
+    )
 
     def __repr__(self) -> str:
         return f"<PetShop id={self.id} slug={self.slug}>"
