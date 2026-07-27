@@ -89,6 +89,8 @@ export type ShopProductCreate = {
 
 export type ShopUpdateCreate = { title: string; body: string; badge: string | null };
 
+export type ShopPhotoCreate = { photo_url: string; caption: string | null };
+
 const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
 function status404(err: unknown): boolean {
   return (err as { response?: { status?: number } } | undefined)?.response?.status === 404;
