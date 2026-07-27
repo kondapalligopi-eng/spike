@@ -77,11 +77,15 @@ function ShopDetailsForm({ shop, onSaved }: { shop: PetShopRead | null; onSaved:
   const [slug, setSlug] = useState(shop?.slug ?? '');
   const [slugTouched, setSlugTouched] = useState(editing);
   const [logo, setLogo] = useState<string | null>(shop?.logo_url ?? null);
+  const [hero, setHero] = useState<string | null>(shop?.hero_url ?? null);
   const [about, setAbout] = useState(shop?.about ?? '');
+  const [offer, setOffer] = useState(shop?.offer ?? '');
   const [area, setArea] = useState(shop?.area ?? '');
   const [hours, setHours] = useState(shop?.hours ?? '');
   const [phone, setPhone] = useState(shop?.phone ?? '');
   const [whatsapp, setWhatsapp] = useState(shop?.whatsapp ?? '');
+  const [freeDeliveryOver, setFreeDeliveryOver] = useState(shop?.free_delivery_over ?? '');
+  const [deliveryRadius, setDeliveryRadius] = useState(shop?.delivery_radius ?? '');
   const [slugStatus, setSlugStatus] = useState<SlugStatus>('idle');
 
   // Auto-fill slug from the name until the user edits it directly.
