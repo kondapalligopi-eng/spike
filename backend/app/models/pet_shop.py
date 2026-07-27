@@ -94,12 +94,14 @@ class ShopProduct(UUIDBase):
 
 
 class ShopUpdate(UUIDBase):
-    """A shop's "what's new" post — the customer-facing updates feed."""
+    """A shop's promotion / offer card on the storefront (was the updates feed)."""
 
     __tablename__ = "shop_updates"
 
     title: Mapped[str] = mapped_column(String(160), nullable=False)
     body: Mapped[str] = mapped_column(Text, nullable=False, default="")
+    # Short highlight on the promo card, e.g. "15% OFF", "FREE", "2 + 1".
+    badge: Mapped[str | None] = mapped_column(String(24), nullable=True)
 
     shop_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
