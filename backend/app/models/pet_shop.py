@@ -77,6 +77,8 @@ class ShopProduct(UUIDBase):
     price: Mapped[str | None] = mapped_column(String(40), nullable=True)
     description: Mapped[str] = mapped_column(Text, nullable=False, default="")
     photo_url: Mapped[str | None] = mapped_column(String(1024), nullable=True)
+    # Groups products into shelves on the storefront (Food, Treats, Toys …).
+    category: Mapped[str | None] = mapped_column(String(60), nullable=True)
 
     shop_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
