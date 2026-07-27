@@ -354,7 +354,7 @@ export function PetPlay() {
         </div>
 
         {/* result / actions */}
-        <div className="text-center mt-4 min-h-[104px]" aria-live="polite">
+        <div className="text-center mt-3 min-h-[56px]" aria-live="polite">
           {done ? (
             <>
               {/* headline and points share a row — stacking them pushed the whole
