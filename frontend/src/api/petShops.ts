@@ -30,6 +30,15 @@ export type ShopUpdate = {
   updated_at: string;
 };
 
+export type ShopPhoto = {
+  id: string;
+  shop_id: string;
+  photo_url: string;
+  caption: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
 export type PetShopSummary = {
   id: string;
   slug: string;
