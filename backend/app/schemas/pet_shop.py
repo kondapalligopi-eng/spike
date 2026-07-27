@@ -21,6 +21,7 @@ class ShopProductBase(BaseModel):
     price: str | None = Field(default=None, max_length=40)
     description: str = Field("", max_length=2000)
     photo_url: str | None = Field(default=None, max_length=1024)
+    category: str | None = Field(default=None, max_length=60)
 
 
 class ShopProductCreate(ShopProductBase):
