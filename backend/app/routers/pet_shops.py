@@ -395,6 +395,51 @@ async def delete_update(
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
+# --- Gallery photos (owner or admin) ------------------------------------------
+
+
+@router.post(
+    "/{shop_id}/gallery",
+    response_model=ShopPhotoRead,
+    status_code=status.HTTP_201_CREATED,
+    summary="Add a photo to a shop's 'Our shop' gallery",
+)
+async def add_gallery_photo(
+    shop_id: uuid.UUID,
+    payload: ShopPhotoCreate,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+) -> ShopPhotoRead:
+    shop = await _get_shop_or_404(db, shop_id)
+    _require_owner_or_admin(shop, current_user)
+    photo = ShopPhoto(
+        shop_id=shop.id,
+        photo_url=payload.photo_url,
+        caption=payload.caption.strip() if payload.caption else None,
+    )
+    db.add(photo)
+    await db.flush()
+    await db.refresh(photo)
+    return ShopPhotoRead.model_validate(photo)
+
+
+@router.delete(
+    "/gallery/{photo_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Remove a photo from a shop's gallery",
+)
+async def delete_gallery_photo(
+    photo_id: uuid.UUID,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+) -> Response:
+    photo = await _photo_or_404(db, photo_id)
+    shop = await _get_shop_or_404(db, photo.shop_id)
+    _require_owner_or_admin(shop, current_user)
+    await db.delete(photo)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
 # --- Shop CRUD ----------------------------------------------------------------
 
 
