@@ -371,15 +371,7 @@ export function PetPlay() {
                   🏆 You hit {REWARD_GOAL} points! The counter starts over.
                 </p>
               )}
-              <div className="mt-3">
-                <button
-                  type="button"
-                  onClick={again}
-                  className="rounded-full bg-primary-600 hover:bg-primary-700 px-7 py-3 text-sm font-bold text-white transition-colors"
-                >
-                  {game === 'bowls' ? 'Hide another treat ↻' : 'Play again ↻'}
-                </button>
-              </div>
+              <p className="mt-2 text-xs text-warm-400">Next round coming up…</p>
             </>
           ) : mode === 'dog' ? (
             <button
