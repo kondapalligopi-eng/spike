@@ -250,15 +250,12 @@ export function PetShopView({ data }: { data: PetShopRead }) {
           <h2 className="mt-0.5 text-xl sm:text-2xl font-extrabold text-warm-900 mb-3">Our shop</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {photos.map((ph, i) => (
-              <figure
-                key={ph.id}
-                className={`relative rounded-2xl overflow-hidden bg-primary-100 ${i === 0 ? 'col-span-2 row-span-2 sm:col-span-2 sm:row-span-2' : ''}`}
-              >
+              <figure key={ph.id} className="relative rounded-2xl overflow-hidden bg-primary-100">
                 <img
                   src={ph.photo_url}
                   alt={ph.caption ?? `${data.name} photo ${i + 1}`}
                   loading="lazy"
-                  className={`w-full object-cover ${i === 0 ? 'aspect-[4/3] sm:h-full' : 'aspect-[4/3]'}`}
+                  className="w-full aspect-[4/3] object-cover"
                 />
                 {ph.caption && (
                   <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent text-white text-xs sm:text-sm font-semibold px-3 py-2">
