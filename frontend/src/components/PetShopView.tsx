@@ -98,6 +98,7 @@ export function PetShopView({ data }: { data: PetShopRead }) {
   const waTarget = data.whatsapp || data.phone || null;
   const products = data.products ?? [];
   const updates = data.updates ?? [];
+  const photos = data.photos ?? [];
 
   // Group products into category shelves, ordered by SHOP_CATEGORIES.
   const shelves = useMemo(() => {
