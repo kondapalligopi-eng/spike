@@ -348,7 +348,12 @@ async def add_update(
 ) -> ShopUpdateRead:
     shop = await _get_shop_or_404(db, shop_id)
     _require_owner_or_admin(shop, current_user)
-    upd = ShopUpdate(shop_id=shop.id, title=payload.title.strip(), body=payload.body.strip())
+    upd = ShopUpdate(
+        shop_id=shop.id,
+        title=payload.title.strip(),
+        body=payload.body.strip(),
+        badge=payload.badge.strip() if payload.badge else None,
+    )
     db.add(upd)
     await db.flush()
     await db.refresh(upd)
