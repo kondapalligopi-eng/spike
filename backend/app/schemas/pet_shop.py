@@ -43,6 +43,7 @@ class ShopProductRead(ShopProductBase):
 class ShopUpdateBase(BaseModel):
     title: str = Field(..., min_length=1, max_length=160)
     body: str = Field("", max_length=2000)
+    badge: str | None = Field(default=None, max_length=24)
 
 
 class ShopUpdateCreate(ShopUpdateBase):
