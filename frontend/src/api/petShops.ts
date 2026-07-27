@@ -235,7 +235,7 @@ export async function createShop(payload: PetShopCreate): Promise<PetShopRead> {
   if (USE_MOCK) {
     await delay(300);
     const now = new Date().toISOString();
-    const shop: PetShopRead = { ...payload, id: makeId(), owner_id: 'mock-me', created_at: now, updated_at: now, products: [], updates: [] };
+    const shop: PetShopRead = { ...payload, id: makeId(), owner_id: 'mock-me', created_at: now, updated_at: now, products: [], updates: [], photos: [] };
     writeStore([shop, ...readStore()]);
     return shop;
   }
