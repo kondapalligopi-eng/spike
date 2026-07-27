@@ -128,3 +128,4 @@ class PetShopRead(PetShopSummary):
 
     products: list[ShopProductRead] = Field(default_factory=list)
     updates: list[ShopUpdateRead] = Field(default_factory=list)
+    photos: list[ShopPhotoRead] = Field(default_factory=list)
