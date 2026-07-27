@@ -119,6 +119,14 @@ export function PetPlay() {
     setSniffing(false);
   }, []);
 
+  // Auto-reset a couple of seconds after a win, so players don't have to tap a
+  // "play again" button every round — they just keep picking.
+  useEffect(() => {
+    if (picked === null) return;
+    const t = setTimeout(() => again(), 2000);
+    return () => clearTimeout(t);
+  }, [picked, again]);
+
   const pct = Math.min(100, (points / REWARD_GOAL) * 100);
 
   return (
