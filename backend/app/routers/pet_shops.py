@@ -74,10 +74,14 @@ async def _get_shop_or_404(db: AsyncSession, shop_id: uuid.UUID) -> PetShop:
 
 
 async def _get_full_shop(db: AsyncSession, shop_id: uuid.UUID) -> PetShop:
-    """Shop with products + updates eagerly loaded (async can't lazy-load)."""
+    """Shop with products + updates + photos eagerly loaded (async can't lazy-load)."""
     result = await db.execute(
         select(PetShop)
-        .options(selectinload(PetShop.products), selectinload(PetShop.updates))
+        .options(
+            selectinload(PetShop.products),
+            selectinload(PetShop.updates),
+            selectinload(PetShop.photos),
+        )
         .where(PetShop.id == shop_id)
     )
     shop = result.scalar_one_or_none()
