@@ -104,11 +104,15 @@ def _apply_shop_payload(shop: PetShop, payload: PetShopCreate) -> None:
     shop.slug = payload.slug
     shop.name = payload.name.strip()
     shop.logo_url = payload.logo_url
+    shop.hero_url = payload.hero_url
     shop.about = payload.about.strip()
+    shop.offer = payload.offer.strip() if payload.offer else None
     shop.area = payload.area.strip() if payload.area else None
     shop.hours = payload.hours.strip() if payload.hours else None
     shop.phone = payload.phone.strip() if payload.phone else None
     shop.whatsapp = payload.whatsapp.strip() if payload.whatsapp else None
+    shop.free_delivery_over = payload.free_delivery_over.strip() if payload.free_delivery_over else None
+    shop.delivery_radius = payload.delivery_radius.strip() if payload.delivery_radius else None
 
 
 async def _product_or_404(db: AsyncSession, product_id: uuid.UUID) -> ShopProduct:
