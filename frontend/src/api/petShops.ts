@@ -152,12 +152,19 @@ function sampleShop(slug: string): PetShopRead {
       { id: 'u2', shop_id: 'mock-shop', title: 'Free home delivery', body: 'On every order above ₹499, within 5 km.', badge: 'FREE', created_at: day(5), updated_at: day(5) },
       { id: 'u3', shop_id: 'mock-shop', title: 'Treats combo', body: 'Buy 2 packs of dog treats, get 1 free.', badge: '2 + 1', created_at: day(8), updated_at: day(8) },
     ],
+    photos: [
+      { id: 'g1', shop_id: 'mock-shop', photo_url: 'https://picsum.photos/seed/pawshop1/600/450', caption: 'Our storefront', created_at: now, updated_at: now },
+      { id: 'g2', shop_id: 'mock-shop', photo_url: 'https://picsum.photos/seed/pawshop2/600/450', caption: 'Fully stocked food aisle', created_at: now, updated_at: now },
+      { id: 'g3', shop_id: 'mock-shop', photo_url: 'https://picsum.photos/seed/pawshop3/600/450', caption: 'Toys & accessories', created_at: now, updated_at: now },
+      { id: 'g4', shop_id: 'mock-shop', photo_url: 'https://picsum.photos/seed/pawshop4/600/450', caption: null, created_at: now, updated_at: now },
+      { id: 'g5', shop_id: 'mock-shop', photo_url: 'https://picsum.photos/seed/pawshop5/600/450', caption: 'Grooming corner', created_at: now, updated_at: now },
+    ],
   };
 }
 
 const toSummary = (s: PetShopRead): PetShopSummary => {
-  const { products: _p, updates: _u, ...rest } = s;
-  void _p; void _u;
+  const { products: _p, updates: _u, photos: _g, ...rest } = s;
+  void _p; void _u; void _g;
   return rest;
 };
 
