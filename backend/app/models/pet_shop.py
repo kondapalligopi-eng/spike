@@ -61,6 +61,12 @@ class PetShop(UUIDBase):
         cascade="all, delete-orphan",
         order_by="ShopUpdate.created_at.desc()",
     )
+    photos: Mapped[List["ShopPhoto"]] = relationship(
+        "ShopPhoto",
+        back_populates="shop",
+        cascade="all, delete-orphan",
+        order_by="ShopPhoto.created_at",
+    )
 
     def __repr__(self) -> str:
         return f"<PetShop id={self.id} slug={self.slug}>"
@@ -114,3 +120,25 @@ class ShopUpdate(UUIDBase):
 
     def __repr__(self) -> str:
         return f"<ShopUpdate id={self.id} title={self.title}>"
+
+
+class ShopPhoto(UUIDBase):
+    """A photo in a shop's "Our shop" gallery (owner-uploaded, images only)."""
+
+    __tablename__ = "shop_photos"
+
+    photo_url: Mapped[str] = mapped_column(String(1024), nullable=False)
+    # Optional short caption shown under the photo.
+    caption: Mapped[str | None] = mapped_column(String(160), nullable=True)
+
+    shop_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("pet_shops.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+
+    shop: Mapped["PetShop"] = relationship("PetShop", back_populates="photos")
+
+    def __repr__(self) -> str:
+        return f"<ShopPhoto id={self.id} shop_id={self.shop_id}>"

@@ -30,6 +30,15 @@ export type ShopUpdate = {
   updated_at: string;
 };
 
+export type ShopPhoto = {
+  id: string;
+  shop_id: string;
+  photo_url: string;
+  caption: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
 export type PetShopSummary = {
   id: string;
   slug: string;
@@ -52,6 +61,7 @@ export type PetShopSummary = {
 export type PetShopRead = PetShopSummary & {
   products: ShopProduct[];
   updates: ShopUpdate[];
+  photos: ShopPhoto[];
 };
 
 export type PetShopCreate = {
@@ -78,6 +88,8 @@ export type ShopProductCreate = {
 };
 
 export type ShopUpdateCreate = { title: string; body: string; badge: string | null };
+
+export type ShopPhotoCreate = { photo_url: string; caption: string | null };
 
 const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
 function status404(err: unknown): boolean {
@@ -140,12 +152,19 @@ function sampleShop(slug: string): PetShopRead {
       { id: 'u2', shop_id: 'mock-shop', title: 'Free home delivery', body: 'On every order above ₹499, within 5 km.', badge: 'FREE', created_at: day(5), updated_at: day(5) },
       { id: 'u3', shop_id: 'mock-shop', title: 'Treats combo', body: 'Buy 2 packs of dog treats, get 1 free.', badge: '2 + 1', created_at: day(8), updated_at: day(8) },
     ],
+    photos: [
+      { id: 'g1', shop_id: 'mock-shop', photo_url: 'https://picsum.photos/seed/pawshop1/600/450', caption: 'Our storefront', created_at: now, updated_at: now },
+      { id: 'g2', shop_id: 'mock-shop', photo_url: 'https://picsum.photos/seed/pawshop2/600/450', caption: 'Fully stocked food aisle', created_at: now, updated_at: now },
+      { id: 'g3', shop_id: 'mock-shop', photo_url: 'https://picsum.photos/seed/pawshop3/600/450', caption: 'Toys & accessories', created_at: now, updated_at: now },
+      { id: 'g4', shop_id: 'mock-shop', photo_url: 'https://picsum.photos/seed/pawshop4/600/450', caption: null, created_at: now, updated_at: now },
+      { id: 'g5', shop_id: 'mock-shop', photo_url: 'https://picsum.photos/seed/pawshop5/600/450', caption: 'Grooming corner', created_at: now, updated_at: now },
+    ],
   };
 }
 
 const toSummary = (s: PetShopRead): PetShopSummary => {
-  const { products: _p, updates: _u, ...rest } = s;
-  void _p; void _u;
+  const { products: _p, updates: _u, photos: _g, ...rest } = s;
+  void _p; void _u; void _g;
   return rest;
 };
 
@@ -216,7 +235,7 @@ export async function createShop(payload: PetShopCreate): Promise<PetShopRead> {
   if (USE_MOCK) {
     await delay(300);
     const now = new Date().toISOString();
-    const shop: PetShopRead = { ...payload, id: makeId(), owner_id: 'mock-me', created_at: now, updated_at: now, products: [], updates: [] };
+    const shop: PetShopRead = { ...payload, id: makeId(), owner_id: 'mock-me', created_at: now, updated_at: now, products: [], updates: [], photos: [] };
     writeStore([shop, ...readStore()]);
     return shop;
   }
@@ -328,4 +347,29 @@ export async function deleteUpdate(updateId: string): Promise<void> {
     return;
   }
   await apiClient.delete(`/pet-shops/updates/${updateId}`);
+}
+
+// --- owner: gallery photos ---------------------------------------------------
+
+export async function addGalleryPhoto(shopId: string, payload: ShopPhotoCreate): Promise<ShopPhoto> {
+  if (USE_MOCK) {
+    await delay(250);
+    const now = new Date().toISOString();
+    const photo: ShopPhoto = { ...payload, id: makeId(), shop_id: shopId, created_at: now, updated_at: now };
+    mutateStoreShop(shopId, (s) => { (s.photos ??= []).push(photo); });
+    return photo;
+  }
+  const res = await apiClient.post<ShopPhoto>(`/pet-shops/${shopId}/gallery`, payload);
+  return res.data;
+}
+
+export async function deleteGalleryPhoto(photoId: string): Promise<void> {
+  if (USE_MOCK) {
+    await delay(200);
+    const store = readStore();
+    for (const s of store) s.photos = (s.photos ?? []).filter((x) => x.id !== photoId);
+    writeStore(store);
+    return;
+  }
+  await apiClient.delete(`/pet-shops/gallery/${photoId}`);
 }

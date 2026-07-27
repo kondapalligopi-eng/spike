@@ -59,6 +59,27 @@ class ShopUpdateRead(ShopUpdateBase):
     updated_at: datetime
 
 
+# --- Gallery photos -----------------------------------------------------------
+
+
+class ShopPhotoBase(BaseModel):
+    photo_url: str = Field(..., min_length=1, max_length=1024)
+    caption: str | None = Field(default=None, max_length=160)
+
+
+class ShopPhotoCreate(ShopPhotoBase):
+    pass
+
+
+class ShopPhotoRead(ShopPhotoBase):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: uuid.UUID
+    shop_id: uuid.UUID
+    created_at: datetime
+    updated_at: datetime
+
+
 # --- Shop ---------------------------------------------------------------------
 
 
@@ -107,3 +128,4 @@ class PetShopRead(PetShopSummary):
 
     products: list[ShopProductRead] = Field(default_factory=list)
     updates: list[ShopUpdateRead] = Field(default_factory=list)
+    photos: list[ShopPhotoRead] = Field(default_factory=list)
