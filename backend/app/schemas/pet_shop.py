@@ -66,11 +66,15 @@ class PetShopBase(BaseModel):
     slug: str = Field(..., min_length=2, max_length=60)
     name: str = Field(..., min_length=1, max_length=120)
     logo_url: str | None = Field(default=None, max_length=1024)
+    hero_url: str | None = Field(default=None, max_length=1024)
     about: str = Field("", max_length=4000)
+    offer: str | None = Field(default=None, max_length=200)
     area: str | None = Field(default=None, max_length=160)
     hours: str | None = Field(default=None, max_length=120)
     phone: str | None = Field(default=None, max_length=40)
     whatsapp: str | None = Field(default=None, max_length=40)
+    free_delivery_over: str | None = Field(default=None, max_length=40)
+    delivery_radius: str | None = Field(default=None, max_length=40)
 
     @field_validator("slug")
     @classmethod
