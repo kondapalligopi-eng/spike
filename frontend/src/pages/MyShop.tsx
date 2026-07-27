@@ -13,6 +13,7 @@ import {
   updateProduct,
   updateShop,
   uploadShopPhoto,
+  SHOP_CATEGORIES,
   type PetShopRead,
   type PetShopSummary,
   type ShopProduct,
