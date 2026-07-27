@@ -346,6 +346,52 @@ function UpdatesManager({ shop, onChanged }: { shop: PetShopRead; onChanged: () 
   );
 }
 
+function PhotosManager({ shop, onChanged }: { shop: PetShopRead; onChanged: () => void }) {
+  const [photo, setPhoto] = useState<string | null>(null);
+  const [caption, setCaption] = useState('');
+  const [confirmId, setConfirmId] = useState<string | null>(null);
+  const photos = shop.photos ?? [];
+
+  const addMut = useMutation({
+    mutationFn: () => addGalleryPhoto(shop.id, { photo_url: photo!, caption: caption.trim() || null }),
+    onSuccess: () => { setPhoto(null); setCaption(''); onChanged(); toast.success('Photo added.'); },
+    onError: (e: Error) => toast.error(e.message),
+  });
+  const delMut = useMutation({ mutationFn: deleteGalleryPhoto, onSuccess: () => { setConfirmId(null); onChanged(); }, onError: (e: Error) => toast.error(e.message) });
+
+  return (
+    <section>
+      <h2 className="text-lg font-extrabold text-warm-900 mb-1">Shop photos</h2>
+      <p className="text-sm text-warm-500 mb-4">Show customers around — your storefront, shelves, grooming corner. Shows as the "Our shop" gallery.</p>
+      <div className="rounded-2xl border-2 border-primary-100 bg-primary-50/40 p-4 space-y-3 mb-4">
+        <PhotoField value={photo} onChange={setPhoto} label="Add a photo" />
+        <div>
+          <label className={label}>Caption <span className="text-warm-400 font-normal">(optional)</span></label>
+          <input className={input} placeholder="e.g. Our food aisle" maxLength={160} value={caption} onChange={(e) => setCaption(e.target.value)} />
+        </div>
+        <button disabled={!photo || addMut.isPending} className={btnPrimary} onClick={() => addMut.mutate()}>
+          {addMut.isPending ? 'Adding…' : 'Add to gallery'}
+        </button>
+      </div>
+      {photos.length > 0 && (
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          {photos.map((ph) => (
+            <div key={ph.id} className="relative rounded-2xl overflow-hidden border border-warm-200 group">
+              <img src={ph.photo_url} alt={ph.caption ?? ''} className="w-full aspect-[4/3] object-cover" />
+              {ph.caption && <p className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent text-white text-xs font-semibold px-2 py-1.5">{ph.caption}</p>}
+              {confirmId === ph.id ? (
+                <button onClick={() => delMut.mutate(ph.id)} className="absolute top-2 right-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-lg">Delete?</button>
+              ) : (
+                <button onClick={() => setConfirmId(ph.id)} aria-label="Remove photo" className="absolute top-2 right-2 bg-white/90 hover:bg-white text-warm-700 hover:text-red-600 w-7 h-7 rounded-full grid place-items-center font-bold shadow">✕</button>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
+
 export function MyShop() {
   const qc = useQueryClient();
   const { user } = useAuth();
