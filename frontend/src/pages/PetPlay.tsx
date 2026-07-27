@@ -119,6 +119,14 @@ export function PetPlay() {
     setSniffing(false);
   }, []);
 
+  // Auto-reset a couple of seconds after a win, so players don't have to tap a
+  // "play again" button every round — they just keep picking.
+  useEffect(() => {
+    if (picked === null) return;
+    const t = setTimeout(() => again(), 2000);
+    return () => clearTimeout(t);
+  }, [picked, again]);
+
   const pct = Math.min(100, (points / REWARD_GOAL) * 100);
 
   return (
@@ -346,7 +354,7 @@ export function PetPlay() {
         </div>
 
         {/* result / actions */}
-        <div className="text-center mt-4 min-h-[104px]" aria-live="polite">
+        <div className="text-center mt-3 min-h-[56px]" aria-live="polite">
           {done ? (
             <>
               {/* headline and points share a row — stacking them pushed the whole
@@ -363,15 +371,7 @@ export function PetPlay() {
                   🏆 You hit {REWARD_GOAL} points! The counter starts over.
                 </p>
               )}
-              <div className="mt-3">
-                <button
-                  type="button"
-                  onClick={again}
-                  className="rounded-full bg-primary-600 hover:bg-primary-700 px-7 py-3 text-sm font-bold text-white transition-colors"
-                >
-                  {game === 'bowls' ? 'Hide another treat ↻' : 'Play again ↻'}
-                </button>
-              </div>
+              <p className="mt-2 text-xs text-warm-400">Next round coming up…</p>
             </>
           ) : mode === 'dog' ? (
             <button

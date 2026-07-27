@@ -104,11 +104,15 @@ def _apply_shop_payload(shop: PetShop, payload: PetShopCreate) -> None:
     shop.slug = payload.slug
     shop.name = payload.name.strip()
     shop.logo_url = payload.logo_url
+    shop.hero_url = payload.hero_url
     shop.about = payload.about.strip()
+    shop.offer = payload.offer.strip() if payload.offer else None
     shop.area = payload.area.strip() if payload.area else None
     shop.hours = payload.hours.strip() if payload.hours else None
     shop.phone = payload.phone.strip() if payload.phone else None
     shop.whatsapp = payload.whatsapp.strip() if payload.whatsapp else None
+    shop.free_delivery_over = payload.free_delivery_over.strip() if payload.free_delivery_over else None
+    shop.delivery_radius = payload.delivery_radius.strip() if payload.delivery_radius else None
 
 
 async def _product_or_404(db: AsyncSession, product_id: uuid.UUID) -> ShopProduct:
@@ -278,6 +282,7 @@ async def add_product(
         price=payload.price.strip() if payload.price else None,
         description=payload.description.strip(),
         photo_url=payload.photo_url,
+        category=payload.category.strip() if payload.category else None,
     )
     db.add(product)
     await db.flush()
@@ -303,6 +308,7 @@ async def update_product(
     product.price = payload.price.strip() if payload.price else None
     product.description = payload.description.strip()
     product.photo_url = payload.photo_url
+    product.category = payload.category.strip() if payload.category else None
     await db.flush()
     await db.refresh(product)
     return ShopProductRead.model_validate(product)
@@ -342,7 +348,12 @@ async def add_update(
 ) -> ShopUpdateRead:
     shop = await _get_shop_or_404(db, shop_id)
     _require_owner_or_admin(shop, current_user)
-    upd = ShopUpdate(shop_id=shop.id, title=payload.title.strip(), body=payload.body.strip())
+    upd = ShopUpdate(
+        shop_id=shop.id,
+        title=payload.title.strip(),
+        body=payload.body.strip(),
+        badge=payload.badge.strip() if payload.badge else None,
+    )
     db.add(upd)
     await db.flush()
     await db.refresh(upd)

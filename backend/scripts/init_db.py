@@ -55,6 +55,13 @@ SCHEMA_PATCHES: list[str] = [
     "ALTER TABLE grooming_salons ADD COLUMN IF NOT EXISTS email VARCHAR(255)",
     "ALTER TABLE grooming_salons ADD COLUMN IF NOT EXISTS website VARCHAR(500)",
     "ALTER TABLE grooming_salons ADD COLUMN IF NOT EXISTS image_url VARCHAR(500)",
+    # Pet-shop storefront redesign
+    "ALTER TABLE pet_shops ADD COLUMN IF NOT EXISTS hero_url VARCHAR(1024)",
+    "ALTER TABLE pet_shops ADD COLUMN IF NOT EXISTS offer VARCHAR(200)",
+    "ALTER TABLE pet_shops ADD COLUMN IF NOT EXISTS free_delivery_over VARCHAR(40)",
+    "ALTER TABLE pet_shops ADD COLUMN IF NOT EXISTS delivery_radius VARCHAR(40)",
+    "ALTER TABLE shop_products ADD COLUMN IF NOT EXISTS category VARCHAR(60)",
+    "ALTER TABLE shop_updates ADD COLUMN IF NOT EXISTS badge VARCHAR(24)",
 ]
 
 
