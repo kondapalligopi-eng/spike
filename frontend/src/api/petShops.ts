@@ -58,11 +58,15 @@ export type PetShopCreate = {
   slug: string;
   name: string;
   logo_url: string | null;
+  hero_url: string | null;
   about: string;
+  offer: string | null;
   area: string | null;
   hours: string | null;
   phone: string | null;
   whatsapp: string | null;
+  free_delivery_over: string | null;
+  delivery_radius: string | null;
 };
 
 export type ShopProductCreate = {
@@ -70,9 +74,10 @@ export type ShopProductCreate = {
   price: string | null;
   description: string;
   photo_url: string | null;
+  category: string | null;
 };
 
-export type ShopUpdateCreate = { title: string; body: string };
+export type ShopUpdateCreate = { title: string; body: string; badge: string | null };
 
 const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
 function status404(err: unknown): boolean {
