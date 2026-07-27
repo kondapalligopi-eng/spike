@@ -4,6 +4,10 @@ const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
 const MOCK_KEY = 'hispike_mock_pet_shops';
 
 // A pet shop's storefront page — owner-created, lives at hispike.in/petshop/<slug>.
+// Fixed category list so products group into clean shelves on the storefront.
+export const SHOP_CATEGORIES = ['Food', 'Treats', 'Toys', 'Grooming', 'Accessories', 'Health', 'Other'] as const;
+export type ShopCategory = (typeof SHOP_CATEGORIES)[number];
+
 export type ShopProduct = {
   id: string;
   shop_id: string;
@@ -11,6 +15,7 @@ export type ShopProduct = {
   price: string | null;
   description: string;
   photo_url: string | null;
+  category: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -20,6 +25,7 @@ export type ShopUpdate = {
   shop_id: string;
   title: string;
   body: string;
+  badge: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -29,11 +35,15 @@ export type PetShopSummary = {
   slug: string;
   name: string;
   logo_url: string | null;
+  hero_url: string | null;
   about: string;
+  offer: string | null;
   area: string | null;
   hours: string | null;
   phone: string | null;
   whatsapp: string | null;
+  free_delivery_over: string | null;
+  delivery_radius: string | null;
   owner_id: string;
   created_at: string;
   updated_at: string;
