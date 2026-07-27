@@ -348,3 +348,28 @@ export async function deleteUpdate(updateId: string): Promise<void> {
   }
   await apiClient.delete(`/pet-shops/updates/${updateId}`);
 }
+
+// --- owner: gallery photos ---------------------------------------------------
+
+export async function addGalleryPhoto(shopId: string, payload: ShopPhotoCreate): Promise<ShopPhoto> {
+  if (USE_MOCK) {
+    await delay(250);
+    const now = new Date().toISOString();
+    const photo: ShopPhoto = { ...payload, id: makeId(), shop_id: shopId, created_at: now, updated_at: now };
+    mutateStoreShop(shopId, (s) => { (s.photos ??= []).push(photo); });
+    return photo;
+  }
+  const res = await apiClient.post<ShopPhoto>(`/pet-shops/${shopId}/gallery`, payload);
+  return res.data;
+}
+
+export async function deleteGalleryPhoto(photoId: string): Promise<void> {
+  if (USE_MOCK) {
+    await delay(200);
+    const store = readStore();
+    for (const s of store) s.photos = (s.photos ?? []).filter((x) => x.id !== photoId);
+    writeStore(store);
+    return;
+  }
+  await apiClient.delete(`/pet-shops/gallery/${photoId}`);
+}
