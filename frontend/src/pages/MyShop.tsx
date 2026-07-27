@@ -293,25 +293,44 @@ function ProductsManager({ shop, onChanged }: { shop: PetShopRead; onChanged: ()
 function UpdatesManager({ shop, onChanged }: { shop: PetShopRead; onChanged: () => void }) {
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
+  const [badge, setBadge] = useState('');
   const [confirmId, setConfirmId] = useState<string | null>(null);
 
-  const addMut = useMutation({ mutationFn: () => addUpdate(shop.id, { title: title.trim(), body: body.trim() }), onSuccess: () => { setTitle(''); setBody(''); onChanged(); toast.success('Update posted.'); }, onError: (e: Error) => toast.error(e.message) });
+  const addMut = useMutation({ mutationFn: () => addUpdate(shop.id, { title: title.trim(), body: body.trim(), badge: badge.trim() || null }), onSuccess: () => { setTitle(''); setBody(''); setBadge(''); onChanged(); toast.success('Promotion posted.'); }, onError: (e: Error) => toast.error(e.message) });
   const delMut = useMutation({ mutationFn: deleteUpdate, onSuccess: () => { setConfirmId(null); onChanged(); }, onError: (e: Error) => toast.error(e.message) });
 
   return (
     <section>
-      <h2 className="text-lg font-extrabold text-warm-900 mb-1">Updates</h2>
-      <p className="text-sm text-warm-500 mb-4">Post a "new arrival" or offer — it shows on your shop page.</p>
+      <h2 className="text-lg font-extrabold text-warm-900 mb-1">Promotions</h2>
+      <p className="text-sm text-warm-500 mb-4">Post an offer or new arrival — it shows as a promo card on your shop page.</p>
       <div className="rounded-2xl border-2 border-accent-200 bg-accent-50/40 p-4 space-y-3 mb-4">
-        <input className={input} placeholder="🆕 New stock just arrived!" value={title} onChange={(e) => setTitle(e.target.value)} />
-        <input className={input} placeholder="A line or two about it (optional)" value={body} onChange={(e) => setBody(e.target.value)} />
-        <button disabled={!title.trim() || addMut.isPending} className={btnPrimary} onClick={() => addMut.mutate()}>{addMut.isPending ? 'Posting…' : 'Post update'}</button>
+        <div className="grid sm:grid-cols-[1fr_120px] gap-3">
+          <div>
+            <label className={label}>Title</label>
+            <input className={input} placeholder="Monsoon Sale on beds" value={title} onChange={(e) => setTitle(e.target.value)} />
+          </div>
+          <div>
+            <label className={label}>Badge <span className="text-warm-400 font-normal">(short)</span></label>
+            <input className={input} placeholder="15% OFF" maxLength={24} value={badge} onChange={(e) => setBadge(e.target.value)} />
+          </div>
+        </div>
+        <div>
+          <label className={label}>Details <span className="text-warm-400 font-normal">(optional)</span></label>
+          <input className={input} placeholder="A line or two about it" value={body} onChange={(e) => setBody(e.target.value)} />
+        </div>
+        <button disabled={!title.trim() || addMut.isPending} className={btnPrimary} onClick={() => addMut.mutate()}>{addMut.isPending ? 'Posting…' : 'Post promotion'}</button>
       </div>
       {shop.updates.length > 0 && (
         <ul className="space-y-2">
           {shop.updates.map((u) => (
             <li key={u.id} className="flex items-start justify-between gap-3 rounded-xl border border-warm-200 bg-white p-3">
-              <div className="min-w-0"><p className="font-bold text-warm-900">{u.title}</p>{u.body && <p className="text-sm text-warm-600">{u.body}</p>}</div>
+              <div className="min-w-0">
+                <div className="flex items-center gap-2">
+                  <p className="font-bold text-warm-900">{u.title}</p>
+                  {u.badge && <span className="shrink-0 bg-accent-400 text-warm-900 text-[10px] font-extrabold px-2 py-0.5 rounded-full">{u.badge}</span>}
+                </div>
+                {u.body && <p className="text-sm text-warm-600">{u.body}</p>}
+              </div>
               {confirmId === u.id ? (
                 <button onClick={() => delMut.mutate(u.id)} className="text-sm font-bold text-red-600 shrink-0">Confirm?</button>
               ) : (
