@@ -112,9 +112,12 @@ function ShopDetailsForm({ shop, onSaved }: { shop: PetShopRead | null; onSaved:
   const saveMut = useMutation({
     mutationFn: () => {
       const payload = {
-        slug, name: name.trim(), logo_url: logo, about: about.trim(),
+        slug, name: name.trim(), logo_url: logo, hero_url: hero, about: about.trim(),
+        offer: offer.trim() || null,
         area: area.trim() || null, hours: hours.trim() || null,
         phone: phone.trim() || null, whatsapp: whatsapp.trim() || null,
+        free_delivery_over: freeDeliveryOver.trim() || null,
+        delivery_radius: deliveryRadius.trim() || null,
       };
       return editing ? updateShop(shop!.id, payload) : createShop(payload);
     },
