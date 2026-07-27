@@ -266,7 +266,10 @@ function ProductsManager({ shop, onChanged }: { shop: PetShopRead; onChanged: ()
                     {p.photo_url ? <img src={p.photo_url} alt="" className="w-full h-full object-cover" /> : '🛍️'}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="font-bold text-warm-900 truncate">{p.name}</p>
+                    <div className="flex items-center gap-2">
+                      <p className="font-bold text-warm-900 truncate">{p.name}</p>
+                      {p.category && <span className="shrink-0 text-[10px] font-bold uppercase tracking-wide text-primary-600 bg-primary-50 border border-primary-100 px-1.5 py-0.5 rounded-full">{p.category}</span>}
+                    </div>
                     <p className="text-sm text-primary-700 font-semibold">{p.price || '—'}</p>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
