@@ -98,6 +98,7 @@ export function PetShopView({ data }: { data: PetShopRead }) {
   const waTarget = data.whatsapp || data.phone || null;
   const products = data.products ?? [];
   const updates = data.updates ?? [];
+  const photos = data.photos ?? [];
 
   // Group products into category shelves, ordered by SHOP_CATEGORIES.
   const shelves = useMemo(() => {
@@ -237,6 +238,31 @@ export function PetShopView({ data }: { data: PetShopRead }) {
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
             {updates.map((u) => (
               <PromoCard key={u.id} update={u} waTarget={waTarget} shopName={data.name} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Our shop — owner photo gallery */}
+      {photos.length > 0 && (
+        <div className={`${WRAP} pt-8`}>
+          <p className="text-[11px] font-extrabold tracking-[0.2em] uppercase text-accent-600">Take a look inside</p>
+          <h2 className="mt-0.5 text-xl sm:text-2xl font-extrabold text-warm-900 mb-3">Our shop</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {photos.map((ph, i) => (
+              <figure key={ph.id} className="relative rounded-2xl overflow-hidden bg-primary-100">
+                <img
+                  src={ph.photo_url}
+                  alt={ph.caption ?? `${data.name} photo ${i + 1}`}
+                  loading="lazy"
+                  className="w-full aspect-[4/3] object-cover"
+                />
+                {ph.caption && (
+                  <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent text-white text-xs sm:text-sm font-semibold px-3 py-2">
+                    {ph.caption}
+                  </figcaption>
+                )}
+              </figure>
             ))}
           </div>
         </div>

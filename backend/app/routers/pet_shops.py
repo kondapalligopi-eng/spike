@@ -11,12 +11,14 @@ from sqlalchemy.orm import selectinload
 
 from app.core.dependencies import get_current_active_user, require_admin
 from app.database import get_db
-from app.models.pet_shop import PetShop, ShopProduct, ShopUpdate
+from app.models.pet_shop import PetShop, ShopPhoto, ShopProduct, ShopUpdate
 from app.models.user import User, UserRole
 from app.schemas.pet_shop import (
     PetShopCreate,
     PetShopRead,
     PetShopSummary,
+    ShopPhotoCreate,
+    ShopPhotoRead,
     ShopProductCreate,
     ShopProductRead,
     ShopUpdateCreate,
@@ -72,10 +74,14 @@ async def _get_shop_or_404(db: AsyncSession, shop_id: uuid.UUID) -> PetShop:
 
 
 async def _get_full_shop(db: AsyncSession, shop_id: uuid.UUID) -> PetShop:
-    """Shop with products + updates eagerly loaded (async can't lazy-load)."""
+    """Shop with products + updates + photos eagerly loaded (async can't lazy-load)."""
     result = await db.execute(
         select(PetShop)
-        .options(selectinload(PetShop.products), selectinload(PetShop.updates))
+        .options(
+            selectinload(PetShop.products),
+            selectinload(PetShop.updates),
+            selectinload(PetShop.photos),
+        )
         .where(PetShop.id == shop_id)
     )
     shop = result.scalar_one_or_none()
@@ -129,6 +135,14 @@ async def _update_or_404(db: AsyncSession, update_id: uuid.UUID) -> ShopUpdate:
     if upd is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Update not found")
     return upd
+
+
+async def _photo_or_404(db: AsyncSession, photo_id: uuid.UUID) -> ShopPhoto:
+    result = await db.execute(select(ShopPhoto).where(ShopPhoto.id == photo_id))
+    photo = result.scalar_one_or_none()
+    if photo is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Photo not found")
+    return photo
 
 
 # --- specific routes before "/{shop_id}" so they aren't captured --------------
@@ -191,7 +205,11 @@ async def get_shop_by_slug(
 ) -> PetShopRead:
     result = await db.execute(
         select(PetShop)
-        .options(selectinload(PetShop.products), selectinload(PetShop.updates))
+        .options(
+            selectinload(PetShop.products),
+            selectinload(PetShop.updates),
+            selectinload(PetShop.photos),
+        )
         .where(func.lower(PetShop.slug) == slug.lower())
     )
     shop = result.scalar_one_or_none()
@@ -374,6 +392,51 @@ async def delete_update(
     shop = await _get_shop_or_404(db, upd.shop_id)
     _require_owner_or_admin(shop, current_user)
     await db.delete(upd)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+# --- Gallery photos (owner or admin) ------------------------------------------
+
+
+@router.post(
+    "/{shop_id}/gallery",
+    response_model=ShopPhotoRead,
+    status_code=status.HTTP_201_CREATED,
+    summary="Add a photo to a shop's 'Our shop' gallery",
+)
+async def add_gallery_photo(
+    shop_id: uuid.UUID,
+    payload: ShopPhotoCreate,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+) -> ShopPhotoRead:
+    shop = await _get_shop_or_404(db, shop_id)
+    _require_owner_or_admin(shop, current_user)
+    photo = ShopPhoto(
+        shop_id=shop.id,
+        photo_url=payload.photo_url,
+        caption=payload.caption.strip() if payload.caption else None,
+    )
+    db.add(photo)
+    await db.flush()
+    await db.refresh(photo)
+    return ShopPhotoRead.model_validate(photo)
+
+
+@router.delete(
+    "/gallery/{photo_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Remove a photo from a shop's gallery",
+)
+async def delete_gallery_photo(
+    photo_id: uuid.UUID,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+) -> Response:
+    photo = await _photo_or_404(db, photo_id)
+    shop = await _get_shop_or_404(db, photo.shop_id)
+    _require_owner_or_admin(shop, current_user)
+    await db.delete(photo)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
