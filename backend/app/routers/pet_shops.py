@@ -282,6 +282,7 @@ async def add_product(
         price=payload.price.strip() if payload.price else None,
         description=payload.description.strip(),
         photo_url=payload.photo_url,
+        category=payload.category.strip() if payload.category else None,
     )
     db.add(product)
     await db.flush()
