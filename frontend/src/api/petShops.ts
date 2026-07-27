@@ -61,6 +61,7 @@ export type PetShopSummary = {
 export type PetShopRead = PetShopSummary & {
   products: ShopProduct[];
   updates: ShopUpdate[];
+  photos: ShopPhoto[];
 };
 
 export type PetShopCreate = {
