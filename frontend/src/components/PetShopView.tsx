@@ -370,8 +370,8 @@ export function PetShopView({ data }: { data: PetShopRead }) {
         <div className="border-t border-warm-100">
           <p className={`${WRAP} py-4 text-center text-xs leading-relaxed text-warm-400`}>
             Orders and payments are made directly with {data.name}. HiSpike lists this shop and is not a
-            party to any purchase, and is not responsible for products, prices, or delivery. By contacting
-            this shop, you agree to HiSpike&apos;s{' '}
+            party to any purchase, and is not responsible for products, prices, payments, or delivery. By
+            contacting or paying this shop, you agree to HiSpike&apos;s{' '}
             <Link to="/terms" className="underline hover:text-warm-600">Terms of Use</Link>{' '}and have read the{' '}
             <Link to="/privacy" className="underline hover:text-warm-600">Privacy Notice</Link>.
           </p>
