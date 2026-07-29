@@ -226,7 +226,13 @@ function ProductForm({ initial, onSubmit, onCancel, busy }: { initial?: ShopProd
         </div>
       </div>
       <div className="grid sm:grid-cols-2 gap-3">
-        <div><label className={label}>Price <span className="text-warm-400 font-normal">(optional)</span></label><input className={input} placeholder="₹1,299" value={price} onChange={(e) => setPrice(e.target.value)} /></div>
+        <div>
+          <label className={label}>Price <span className="text-warm-400 font-normal">(optional)</span></label>
+          <div className="relative">
+            <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-warm-500 font-semibold pointer-events-none">₹</span>
+            <input className={`${input} pl-8`} placeholder="1,299" value={price} onChange={(e) => setPrice(e.target.value)} />
+          </div>
+        </div>
         <div><label className={label}>Description <span className="text-warm-400 font-normal">(optional)</span></label><input className={input} placeholder="Complete nutrition for adult dogs." value={description} onChange={(e) => setDescription(e.target.value)} /></div>
       </div>
       <div className="flex gap-2">
