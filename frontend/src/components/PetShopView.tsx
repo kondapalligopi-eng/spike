@@ -147,7 +147,9 @@ export function PetShopView({ data }: { data: PetShopRead }) {
         {data.hero_url && (
           <>
             <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${data.hero_url})` }} aria-hidden="true" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/45 to-black/10" aria-hidden="true" />
+            {/* Soft scrim only across the bottom third — just enough to keep the
+                offer/facts/buttons legible while the banner photo stays bright. */}
+            <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/65 via-black/25 to-transparent" aria-hidden="true" />
           </>
         )}
         <div className={`relative ${WRAP} w-full py-6 sm:py-7`}>
