@@ -140,53 +140,58 @@ export function PetShopView({ data }: { data: PetShopRead }) {
         </div>
       )}
 
-      {/* Hero — owner banner photo; brand now lives in the header above, so
-          only the offer, quick facts and CTAs sit over the image (anchored to
-          the bottom so they stay readable against the scrim). */}
-      <section className="relative overflow-hidden text-white bg-gradient-to-br from-primary-700 to-primary-900 min-h-[220px] sm:min-h-[280px] flex flex-col justify-end">
-        {data.hero_url && (
-          <>
-            <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${data.hero_url})` }} aria-hidden="true" />
-            {/* Scrim across the bottom half — dark enough at the base to keep
-                the facts/description legible, fading to clear so the top of the
-                banner photo stays bright. */}
-            <div className="absolute inset-x-0 bottom-0 h-3/4 bg-gradient-to-t from-black/85 via-black/45 to-transparent" aria-hidden="true" />
-          </>
-        )}
-        <div className={`relative ${WRAP} w-full py-6 sm:py-7`}>
-          {data.offer && (
-            <div className="inline-flex items-center gap-2 bg-accent-400 text-warm-900 font-extrabold text-xs sm:text-sm px-3 py-1.5 rounded-lg mb-3 shadow">
-              <span className="text-[10px] uppercase tracking-[0.15em] bg-warm-900 text-accent-400 px-1.5 py-0.5 rounded">Sale</span>
-              {data.offer}
+      {/* Hero — split layout (Chewy style): text on the left, banner photo on
+          the right. On mobile the photo is hidden, so the text never sits over
+          an image and stays perfectly readable. */}
+      <section className="bg-white border-b border-warm-200">
+        <div className={`${WRAP} py-6 sm:py-8 grid gap-6 md:gap-8 items-center ${data.hero_url ? 'md:grid-cols-2' : ''}`}>
+          {/* Left — offer, quick facts, description, CTAs */}
+          <div>
+            {data.offer && (
+              <div className="inline-flex items-center gap-2 bg-accent-400 text-warm-900 font-extrabold text-xs sm:text-sm px-3 py-1.5 rounded-lg mb-3 shadow-sm">
+                <span className="text-[10px] uppercase tracking-[0.15em] bg-warm-900 text-accent-400 px-1.5 py-0.5 rounded">Sale</span>
+                {data.offer}
+              </div>
+            )}
+            <div className="flex flex-wrap gap-x-4 gap-y-1 text-[13px] sm:text-sm text-warm-500 font-semibold">
+              {data.area && <span>📍 {data.area}</span>}
+              {data.hours && <span>🕙 {data.hours}</span>}
+              {products.length > 0 && <span>🛍️ {products.length} products</span>}
+            </div>
+            {data.about && <p className="mt-2.5 text-sm sm:text-[15px] text-warm-600 leading-relaxed">{data.about}</p>}
+            <div className="mt-4 flex flex-wrap gap-2.5">
+              {waTarget && (
+                <a
+                  href={waLink(waTarget, `Hi ${data.name}! I found you on HiSpike.`)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold text-sm px-5 py-2.5 rounded-full transition-colors shadow-sm"
+                >
+                  <WhatsAppIcon /> WhatsApp
+                </a>
+              )}
+              {data.phone && (
+                <a
+                  href={`tel:${data.phone}`}
+                  className="inline-flex items-center gap-2 bg-white border-2 border-primary-200 text-primary-700 font-bold text-sm px-5 py-2.5 rounded-full hover:bg-primary-50 transition-colors"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="#EC4899" aria-hidden="true"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.6.1.4 0 .8-.3 1l-2.2 2.2z" /></svg>
+                  Call
+                </a>
+              )}
+            </div>
+          </div>
+
+          {/* Right — banner photo, desktop only (hidden on mobile) */}
+          {data.hero_url && (
+            <div className="hidden md:block">
+              <img
+                src={data.hero_url}
+                alt={`${data.name} banner`}
+                className="w-full h-56 lg:h-64 object-cover rounded-2xl border border-warm-200"
+              />
             </div>
           )}
-          <div className="flex flex-wrap gap-x-4 gap-y-1 text-[13px] sm:text-sm text-white font-semibold [text-shadow:0_1px_3px_rgba(0,0,0,0.9)]">
-            {data.area && <span>📍 {data.area}</span>}
-            {data.hours && <span>🕙 {data.hours}</span>}
-            {products.length > 0 && <span>🛍️ {products.length} products</span>}
-          </div>
-          {data.about && <p className="mt-2 text-sm sm:text-[15px] text-white leading-relaxed max-w-2xl [text-shadow:0_1px_4px_rgba(0,0,0,0.95)]">{data.about}</p>}
-          <div className="mt-4 flex flex-wrap gap-2.5">
-            {waTarget && (
-              <a
-                href={waLink(waTarget, `Hi ${data.name}! I found you on HiSpike.`)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold text-sm px-5 py-2.5 rounded-full transition-colors shadow-lg"
-              >
-                <WhatsAppIcon /> WhatsApp
-              </a>
-            )}
-            {data.phone && (
-              <a
-                href={`tel:${data.phone}`}
-                className="inline-flex items-center gap-2 bg-white text-primary-700 font-bold text-sm px-5 py-2.5 rounded-full hover:bg-primary-50 transition-colors shadow"
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="#EC4899" aria-hidden="true"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.6.1.4 0 .8-.3 1l-2.2 2.2z" /></svg>
-                Call
-              </a>
-            )}
-          </div>
         </div>
       </section>
 
