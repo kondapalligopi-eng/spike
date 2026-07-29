@@ -69,10 +69,12 @@ function hashCode(s: string): number {
   return h;
 }
 
-function ProductCard({ product, waTarget, shopName }: { product: ShopProduct; waTarget: string | null; shopName: string }) {
+function ProductCard({ product, shop }: { product: ShopProduct; shop: PetShopRead }) {
   const idx = Math.abs(hashCode(product.id)) % PRODUCT_TILES.length;
+  const waTarget = shop.whatsapp || shop.phone || null;
+  const pay = payAction(shop, product.price);
   const order = waTarget
-    ? waLink(waTarget, `Hi ${shopName}! I'm interested in "${product.name}" (seen on HiSpike). Is it available?`)
+    ? waLink(waTarget, `Hi ${shop.name}! I'm interested in "${product.name}" (seen on HiSpike). Is it available?`)
     : null;
   return (
     <article className="w-44 shrink-0 snap-start bg-white border border-primary-100 rounded-2xl overflow-hidden flex flex-col shadow-sm">
@@ -91,7 +93,15 @@ function ProductCard({ product, waTarget, shopName }: { product: ShopProduct; wa
       <div className="p-3 flex flex-col gap-1 flex-1">
         <p className="font-bold text-sm text-warm-900 leading-snug">{product.name}</p>
         {displayPrice(product.price) && <p className="text-base font-extrabold text-warm-900 tabular-nums">{displayPrice(product.price)}</p>}
-        {order && (
+        {pay ? (
+          <a
+            href={pay.href}
+            {...(pay.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+            className="mt-auto inline-flex items-center justify-center gap-1.5 bg-green-500 hover:bg-green-600 text-white font-bold text-xs py-2 rounded-lg transition-colors"
+          >
+            <CardIcon className="w-3.5 h-3.5" /> {pay.label}
+          </a>
+        ) : order ? (
           <a
             href={order}
             target="_blank"
@@ -100,7 +110,7 @@ function ProductCard({ product, waTarget, shopName }: { product: ShopProduct; wa
           >
             <WhatsAppIcon className="w-3.5 h-3.5 fill-current" /> WhatsApp to order
           </a>
-        )}
+        ) : null}
       </div>
     </article>
   );
