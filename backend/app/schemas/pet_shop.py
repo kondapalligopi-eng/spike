@@ -96,6 +96,8 @@ class PetShopBase(BaseModel):
     whatsapp: str | None = Field(default=None, max_length=40)
     free_delivery_over: str | None = Field(default=None, max_length=40)
     delivery_radius: str | None = Field(default=None, max_length=40)
+    payment_url: str | None = Field(default=None, max_length=1024)
+    upi_id: str | None = Field(default=None, max_length=100)
 
     @field_validator("slug")
     @classmethod
