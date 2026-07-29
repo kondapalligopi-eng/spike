@@ -18,22 +18,31 @@ function upiAmount(price?: string | null): string | null {
   return /^\d+(\.\d+)?$/.test(m) ? m : null;
 }
 
-// Direct-to-shop pay action (no HiSpike checkout). Prefers the shop's own
-// Razorpay Payment Link (works everywhere, all methods); falls back to a UPI
-// deep link with the amount pre-filled when possible. null = no online
-// payment set up, so the caller shows the WhatsApp-to-order fallback instead.
+// Direct-to-shop pay action (no HiSpike checkout). null = no online payment set
+// up, so the caller shows the WhatsApp-to-order fallback instead.
+//
+// For a specific product we prefer UPI: the deep link carries the amount AND
+// the product name as the transaction note (`tn`), so the customer doesn't
+// retype the amount and the owner sees exactly which item sold in their UPI/
+// bank statement. For the shop-level button (no item) we prefer the Razorpay
+// link, which also works on desktop.
 function payAction(
   shop: Pick<PetShopRead, 'payment_url' | 'upi_id' | 'name'>,
   amount?: string | null,
+  note?: string | null,
 ): { href: string; external: boolean; label: string } | null {
-  if (shop.payment_url) return { href: shop.payment_url, external: true, label: 'Pay online' };
+  const amt = upiAmount(amount);
+  let upi: { href: string; external: boolean; label: string } | null = null;
   if (shop.upi_id) {
     const params = new URLSearchParams({ pa: shop.upi_id, pn: shop.name, cu: 'INR' });
-    const amt = upiAmount(amount);
     if (amt) params.set('am', amt);
-    return { href: `upi://pay?${params.toString()}`, external: false, label: amt ? `Pay ₹${amt}` : 'Pay via UPI' };
+    if (note) params.set('tn', note);
+    upi = { href: `upi://pay?${params.toString()}`, external: false, label: amt ? `Pay ₹${amt}` : 'Pay via UPI' };
   }
-  return null;
+  const rzp = shop.payment_url
+    ? { href: shop.payment_url, external: true, label: 'Pay online' as const }
+    : null;
+  return amt ? (upi ?? rzp) : (rzp ?? upi);
 }
 
 function CardIcon({ className = 'w-4 h-4' }: { className?: string }) {
