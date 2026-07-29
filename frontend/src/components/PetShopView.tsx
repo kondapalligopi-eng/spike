@@ -37,7 +37,8 @@ function payAction(
     const params = new URLSearchParams({ pa: shop.upi_id, pn: shop.name, cu: 'INR' });
     if (amt) params.set('am', amt);
     if (note) params.set('tn', note);
-    upi = { href: `upi://pay?${params.toString()}`, external: false, label: amt ? `Pay ₹${amt}` : 'Pay via UPI' };
+    const shown = amt ? Number(amt).toLocaleString('en-IN') : null;
+    upi = { href: `upi://pay?${params.toString()}`, external: false, label: shown ? `Pay ₹${shown}` : 'Pay via UPI' };
   }
   const rzp = shop.payment_url
     ? { href: shop.payment_url, external: true, label: 'Pay online' as const }
