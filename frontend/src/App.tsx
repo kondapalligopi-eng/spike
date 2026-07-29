@@ -131,6 +131,17 @@ export const routes: RouteRecord[] = [
           { path: '*', Component: NotFound },
         ],
       },
+      {
+        // Public pet-shop storefront — client-rendered, slug-based. Rendered
+        // in its own chrome-free shell (no HiSpike navbar/footer) so owners
+        // can share it with customers as if it were the shop's own site.
+        path: '/',
+        element: <StorefrontLayout />,
+        errorElement: <RouteError />,
+        children: [
+          { path: 'petshop/:slug', Component: PetShop },
+        ],
+      },
     ],
   },
 ];
