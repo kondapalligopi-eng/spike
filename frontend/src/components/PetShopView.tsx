@@ -81,7 +81,7 @@ function hashCode(s: string): number {
 function ProductCard({ product, shop }: { product: ShopProduct; shop: PetShopRead }) {
   const idx = Math.abs(hashCode(product.id)) % PRODUCT_TILES.length;
   const waTarget = shop.whatsapp || shop.phone || null;
-  const pay = payAction(shop, product.price);
+  const pay = payAction(shop, product.price, product.name);
   const order = waTarget
     ? waLink(waTarget, `Hi ${shop.name}! I'm interested in "${product.name}" (seen on HiSpike). Is it available?`)
     : null;
