@@ -54,7 +54,7 @@ function ProductCard({ product, waTarget, shopName }: { product: ShopProduct; wa
       </div>
       <div className="p-3 flex flex-col gap-1 flex-1">
         <p className="font-bold text-sm text-warm-900 leading-snug">{product.name}</p>
-        {product.price && <p className="text-base font-extrabold text-warm-900 tabular-nums">{product.price}</p>}
+        {displayPrice(product.price) && <p className="text-base font-extrabold text-warm-900 tabular-nums">{displayPrice(product.price)}</p>}
         {order && (
           <a
             href={order}
