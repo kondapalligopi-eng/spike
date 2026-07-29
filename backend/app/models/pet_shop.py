@@ -40,6 +40,11 @@ class PetShop(UUIDBase):
     # (e.g. free_delivery_over="₹499", delivery_radius="5 km"). Blank = hidden.
     free_delivery_over: Mapped[str | None] = mapped_column(String(40), nullable=True)
     delivery_radius: Mapped[str | None] = mapped_column(String(40), nullable=True)
+    # Direct-to-shop online payment (no HiSpike-side checkout): the shop's own
+    # Razorpay Payment Link/Page URL and/or a UPI ID. When either is set, the
+    # storefront shows a "Pay online" button instead of "WhatsApp to order".
+    payment_url: Mapped[str | None] = mapped_column(String(1024), nullable=True)
+    upi_id: Mapped[str | None] = mapped_column(String(100), nullable=True)
 
     owner_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
