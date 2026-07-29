@@ -273,7 +273,7 @@ function ProductsManager({ shop, onChanged }: { shop: PetShopRead; onChanged: ()
                       <p className="font-bold text-warm-900 truncate">{p.name}</p>
                       {p.category && <span className="shrink-0 text-[10px] font-bold uppercase tracking-wide text-primary-600 bg-primary-50 border border-primary-100 px-1.5 py-0.5 rounded-full">{p.category}</span>}
                     </div>
-                    <p className="text-sm text-primary-700 font-semibold">{p.price || '—'}</p>
+                    <p className="text-sm text-primary-700 font-semibold">{displayPrice(p.price) || '—'}</p>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
                     <button onClick={() => { setEditId(p.id); setAdding(false); }} className="text-sm font-semibold text-primary-600 hover:text-primary-700">Edit</button>
