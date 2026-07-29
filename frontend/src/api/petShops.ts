@@ -146,6 +146,7 @@ function sampleShop(slug: string): PetShopRead {
     offer: 'Monsoon Sale — 15% off beds & raincoats',
     area: 'Indiranagar, Bengaluru', hours: '10am–9pm', phone: '+919876543210', whatsapp: '+919876543210',
     free_delivery_over: '₹499', delivery_radius: '5 km',
+    payment_url: 'https://razorpay.me/@pawsandwhiskers', upi_id: 'pawswhiskers@okhdfcbank',
     owner_id: 'mock-me', created_at: now, updated_at: now,
     products: [
       p('p1', 'Royal Canin Adult 3kg', '₹1,299', 'Complete, balanced nutrition for adult dogs.', 'Food'),
