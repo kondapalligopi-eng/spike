@@ -208,14 +208,14 @@ function ShopDetailsForm({ shop, onSaved }: { shop: PetShopRead | null; onSaved:
         <p className="text-xs text-warm-500 mt-0.5 mb-3">Add either and customers get a “Pay online” button. Money goes straight to you — HiSpike doesn’t handle it.</p>
         <div className="grid sm:grid-cols-2 gap-4">
           <div>
-            <label className={label} htmlFor="shop-pay">Razorpay Payment Link</label>
-            <input id="shop-pay" className={input} placeholder="https://razorpay.me/@yourshop" value={paymentUrl} onChange={(e) => setPaymentUrl(e.target.value)} />
-            <p className="mt-1 text-xs text-warm-400">Cards, UPI, RuPay & Net Banking. Works on any device.</p>
+            <label className={label} htmlFor="shop-upi">UPI ID <span className="text-green-600 font-bold">✓ Recommended</span></label>
+            <input id="shop-upi" className={input} placeholder="yourshop@okhdfcbank" value={upiId} onChange={(e) => setUpiId(e.target.value)} />
+            <p className="mt-1 text-xs text-warm-400">Free & instant. The customer taps a product, their UPI app opens with the amount filled in and the item name in the note — so you know exactly what to deliver.</p>
           </div>
           <div>
-            <label className={label} htmlFor="shop-upi">UPI ID</label>
-            <input id="shop-upi" className={input} placeholder="yourshop@okhdfcbank" value={upiId} onChange={(e) => setUpiId(e.target.value)} />
-            <p className="mt-1 text-xs text-warm-400">Free & instant. Opens the customer’s UPI app on mobile.</p>
+            <label className={label} htmlFor="shop-pay">Razorpay Payment Link</label>
+            <input id="shop-pay" className={input} placeholder="https://razorpay.me/@yourshop" value={paymentUrl} onChange={(e) => setPaymentUrl(e.target.value)} />
+            <p className="mt-1 text-xs text-warm-400">Cards, UPI, RuPay & Net Banking; works on desktop too. Note: it won’t show which item was bought.</p>
           </div>
         </div>
       </div>
