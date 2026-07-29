@@ -146,6 +146,8 @@ export function PetShopView({ data }: { data: PetShopRead }) {
   const products = data.products ?? [];
   const updates = data.updates ?? [];
   const photos = data.photos ?? [];
+  const heroPay = payAction(data);
+  const hasOnlinePay = !!(data.payment_url || data.upi_id);
 
   // Group products into category shelves, ordered by SHOP_CATEGORIES.
   const shelves = useMemo(() => {
