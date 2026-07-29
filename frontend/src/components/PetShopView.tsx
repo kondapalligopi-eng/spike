@@ -186,13 +186,13 @@ export function PetShopView({ data }: { data: PetShopRead }) {
             </div>
           </div>
 
-          {/* Right — banner photo floated as a card, desktop only */}
+          {/* Right — banner photo fills the band top-to-bottom, desktop only */}
           {data.hero_url && (
-            <div className="hidden md:block">
+            <div className="hidden md:block py-4">
               <img
                 src={data.hero_url}
                 alt={`${data.name} banner`}
-                className="w-full h-56 lg:h-64 object-cover rounded-2xl shadow-xl ring-1 ring-white/20"
+                className="w-full h-full object-cover rounded-2xl shadow-xl ring-1 ring-white/20"
               />
             </div>
           )}
