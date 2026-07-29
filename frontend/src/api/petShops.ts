@@ -88,6 +88,8 @@ export type PetShopCreate = {
   whatsapp: string | null;
   free_delivery_over: string | null;
   delivery_radius: string | null;
+  payment_url: string | null;
+  upi_id: string | null;
 };
 
 export type ShopProductCreate = {
