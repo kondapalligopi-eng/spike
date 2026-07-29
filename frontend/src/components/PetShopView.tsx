@@ -119,13 +119,13 @@ export function PetShopView({ data }: { data: PetShopRead }) {
 
   return (
     <div>
-      {/* Brand header — logo + shop name, top-left, like the shop's own site */}
-      <header className="bg-primary-600 text-white">
+      {/* Brand header — logo + shop name, top-left on white, like the shop's own site */}
+      <header className="bg-white border-b border-warm-200">
         <div className={`${WRAP} py-3 sm:py-4 flex items-center gap-3`}>
-          <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-white shrink-0 grid place-items-center text-2xl overflow-hidden shadow">
+          <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-white border border-warm-200 shrink-0 grid place-items-center text-2xl overflow-hidden">
             {data.logo_url ? <img src={data.logo_url} alt={data.name} className="w-full h-full object-cover" /> : <span aria-hidden="true">🏪</span>}
           </div>
-          <h1 className="text-xl sm:text-2xl font-black tracking-tight truncate">{data.name}</h1>
+          <h1 className="text-xl sm:text-2xl font-black tracking-tight truncate text-warm-900">{data.name}</h1>
         </div>
       </header>
 
