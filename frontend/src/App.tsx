@@ -68,10 +68,8 @@ export const routes: RouteRecord[] = [
           { path: 'pet/:slug', Component: PetPage },
           // Nose-work game — front-end only, no scoring backend yet.
           { path: 'pet-play', Component: PetPlay },
-          // Pet Shops directory (browse) + individual storefronts.
+          // Pet Shops directory (browse) — inside HiSpike chrome.
           { path: 'petshops', Component: PetShops },
-          // Public pet-shop storefront — same client-rendered, slug-based pattern.
-          { path: 'petshop/:slug', Component: PetShop },
           // Public so visitors can build a pet page before signing up — the
           // sign-up happens at Publish (see PetPages). Pre-rendered, so it
           // needs a /pet-stories -> /pet-stories/index.html rewrite in Render.
