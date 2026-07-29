@@ -2,6 +2,7 @@ import type { RouteRecord } from 'vite-react-ssg';
 import { RootShell } from '@/components/RootShell';
 import { RouteError } from '@/components/RouteError';
 import { Layout } from '@/components/Layout';
+import { StorefrontLayout } from '@/components/StorefrontLayout';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { Home } from '@/pages/Home';
 import { Dogs } from '@/pages/Dogs';
