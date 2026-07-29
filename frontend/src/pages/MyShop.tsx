@@ -123,6 +123,8 @@ function ShopDetailsForm({ shop, onSaved }: { shop: PetShopRead | null; onSaved:
         phone: phone.trim() || null, whatsapp: whatsapp.trim() || null,
         free_delivery_over: freeDeliveryOver.trim() || null,
         delivery_radius: deliveryRadius.trim() || null,
+        payment_url: paymentUrl.trim() || null,
+        upi_id: upiId.trim() || null,
       };
       return editing ? updateShop(shop!.id, payload) : createShop(payload);
     },
