@@ -15,6 +15,7 @@ import {
   updateProduct,
   updateShop,
   uploadShopPhoto,
+  displayPrice,
   SHOP_CATEGORIES,
   type PetShopRead,
   type PetShopSummary,
