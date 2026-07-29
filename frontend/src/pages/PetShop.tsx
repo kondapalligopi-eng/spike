@@ -55,20 +55,10 @@ export function PetShop() {
         path={`/petshop/${shop.slug}`}
         image={shop.hero_url ?? shop.logo_url ?? undefined}
       />
+      {/* No "create your own shop" CTA here — this is a customer-facing page
+          the owner shares directly. The "on HiSpike" strip inside PetShopView
+          is the last element (the footer). */}
       <PetShopView data={shop} />
-
-      {/* CTA — points at the owner area (Phase 2) */}
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 pb-12 pt-8">
-        <div className="rounded-2xl bg-white border border-primary-100 p-5 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
-          <p className="text-base font-semibold text-warm-700">Own a pet shop in Bengaluru?</p>
-          <Link
-            to="/my-shop"
-            className="inline-flex items-center justify-center rounded-full bg-primary-600 px-6 py-3 text-sm font-bold text-white hover:bg-primary-700 transition-colors whitespace-nowrap"
-          >
-            Create your shop page — free
-          </Link>
-        </div>
-      </div>
     </div>
   );
 }

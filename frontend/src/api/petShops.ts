@@ -8,6 +8,15 @@ const MOCK_KEY = 'hispike_mock_pet_shops';
 export const SHOP_CATEGORIES = ['Food', 'Treats', 'Toys', 'Grooming', 'Accessories', 'Health', 'Other'] as const;
 export type ShopCategory = (typeof SHOP_CATEGORIES)[number];
 
+// Prices are stored as free text (e.g. "629", "₹499", "From ₹1,299",
+// "Ask for price"). For display, prefix a ₹ when the owner typed a bare
+// number; leave anything that already has a currency/label as-is.
+export function displayPrice(price: string | null | undefined): string | null {
+  const p = price?.trim();
+  if (!p) return null;
+  return /^\d/.test(p) ? `₹${p}` : p;
+}
+
 export type ShopProduct = {
   id: string;
   shop_id: string;
@@ -53,6 +62,8 @@ export type PetShopSummary = {
   whatsapp: string | null;
   free_delivery_over: string | null;
   delivery_radius: string | null;
+  payment_url: string | null;
+  upi_id: string | null;
   owner_id: string;
   created_at: string;
   updated_at: string;
@@ -77,6 +88,8 @@ export type PetShopCreate = {
   whatsapp: string | null;
   free_delivery_over: string | null;
   delivery_radius: string | null;
+  payment_url: string | null;
+  upi_id: string | null;
 };
 
 export type ShopProductCreate = {
@@ -128,11 +141,12 @@ function sampleShop(slug: string): PetShopRead {
   const p = (id: string, name: string, price: string, description: string, category: string): ShopProduct =>
     ({ id, shop_id: 'mock-shop', name, price, description, photo_url: null, category, created_at: now, updated_at: now });
   return {
-    id: 'mock-shop', slug, name: 'Paws & Whiskers', logo_url: null, hero_url: null,
+    id: 'mock-shop', slug, name: 'Paws & Whiskers', logo_url: null, hero_url: 'https://picsum.photos/seed/pawsbanner/1400/500',
     about: "Your neighbourhood pet store — premium food, toys, grooming supplies & everything your pet needs. Message us on WhatsApp to order.",
     offer: 'Monsoon Sale — 15% off beds & raincoats',
     area: 'Indiranagar, Bengaluru', hours: '10am–9pm', phone: '+919876543210', whatsapp: '+919876543210',
     free_delivery_over: '₹499', delivery_radius: '5 km',
+    payment_url: 'https://razorpay.me/@pawsandwhiskers', upi_id: 'pawswhiskers@okhdfcbank',
     owner_id: 'mock-me', created_at: now, updated_at: now,
     products: [
       p('p1', 'Royal Canin Adult 3kg', '₹1,299', 'Complete, balanced nutrition for adult dogs.', 'Food'),

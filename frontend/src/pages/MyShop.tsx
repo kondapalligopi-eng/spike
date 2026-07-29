@@ -15,6 +15,7 @@ import {
   updateProduct,
   updateShop,
   uploadShopPhoto,
+  displayPrice,
   SHOP_CATEGORIES,
   type PetShopRead,
   type PetShopSummary,
@@ -88,6 +89,8 @@ function ShopDetailsForm({ shop, onSaved }: { shop: PetShopRead | null; onSaved:
   const [whatsapp, setWhatsapp] = useState(shop?.whatsapp ?? '');
   const [freeDeliveryOver, setFreeDeliveryOver] = useState(shop?.free_delivery_over ?? '');
   const [deliveryRadius, setDeliveryRadius] = useState(shop?.delivery_radius ?? '');
+  const [paymentUrl, setPaymentUrl] = useState(shop?.payment_url ?? '');
+  const [upiId, setUpiId] = useState(shop?.upi_id ?? '');
   const [slugStatus, setSlugStatus] = useState<SlugStatus>('idle');
 
   // Auto-fill slug from the name until the user edits it directly.
@@ -120,6 +123,8 @@ function ShopDetailsForm({ shop, onSaved }: { shop: PetShopRead | null; onSaved:
         phone: phone.trim() || null, whatsapp: whatsapp.trim() || null,
         free_delivery_over: freeDeliveryOver.trim() || null,
         delivery_radius: deliveryRadius.trim() || null,
+        payment_url: paymentUrl.trim() || null,
+        upi_id: upiId.trim() || null,
       };
       return editing ? updateShop(shop!.id, payload) : createShop(payload);
     },
@@ -196,6 +201,25 @@ function ShopDetailsForm({ shop, onSaved }: { shop: PetShopRead | null; onSaved:
         </div>
       </div>
 
+      {/* Online payments — direct to the shop. When either is set, the storefront
+          shows a "Pay online" button in place of "WhatsApp to order". */}
+      <div className="rounded-2xl border border-primary-100 bg-primary-50/40 p-4">
+        <p className="text-sm font-bold text-warm-900">Online payments <span className="text-warm-400 font-normal">(optional)</span></p>
+        <p className="text-xs text-warm-500 mt-0.5 mb-3">Add either and customers get a “Pay online” button. Money goes straight to you — HiSpike doesn’t handle it.</p>
+        <div className="grid sm:grid-cols-2 gap-4">
+          <div>
+            <label className={label} htmlFor="shop-upi">UPI ID <span className="text-green-600 font-bold">✓ Recommended</span></label>
+            <input id="shop-upi" className={input} placeholder="yourshop@okhdfcbank" value={upiId} onChange={(e) => setUpiId(e.target.value)} />
+            <p className="mt-1 text-xs text-warm-400">Free & instant. The customer taps a product, their UPI app opens with the amount filled in and the item name in the note — so you know exactly what to deliver.</p>
+          </div>
+          <div>
+            <label className={label} htmlFor="shop-pay">Razorpay Payment Link</label>
+            <input id="shop-pay" className={input} placeholder="https://razorpay.me/@yourshop" value={paymentUrl} onChange={(e) => setPaymentUrl(e.target.value)} />
+            <p className="mt-1 text-xs text-warm-400">Cards, UPI, RuPay & Net Banking; works on desktop too. Note: it won’t show which item was bought.</p>
+          </div>
+        </div>
+      </div>
+
       <button type="submit" disabled={!canSave} className={btnPrimary}>
         {saveMut.isPending ? (<><LoadingSpinner size="sm" />Saving…</>) : editing ? 'Save changes' : 'Create shop'}
       </button>
@@ -225,7 +249,13 @@ function ProductForm({ initial, onSubmit, onCancel, busy }: { initial?: ShopProd
         </div>
       </div>
       <div className="grid sm:grid-cols-2 gap-3">
-        <div><label className={label}>Price <span className="text-warm-400 font-normal">(optional)</span></label><input className={input} placeholder="₹1,299" value={price} onChange={(e) => setPrice(e.target.value)} /></div>
+        <div>
+          <label className={label}>Price <span className="text-warm-400 font-normal">(optional)</span></label>
+          <div className="relative">
+            <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-warm-500 font-semibold pointer-events-none">₹</span>
+            <input className={`${input} pl-8`} placeholder="1,299" value={price} onChange={(e) => setPrice(e.target.value)} />
+          </div>
+        </div>
         <div><label className={label}>Description <span className="text-warm-400 font-normal">(optional)</span></label><input className={input} placeholder="Complete nutrition for adult dogs." value={description} onChange={(e) => setDescription(e.target.value)} /></div>
       </div>
       <div className="flex gap-2">
@@ -272,7 +302,7 @@ function ProductsManager({ shop, onChanged }: { shop: PetShopRead; onChanged: ()
                       <p className="font-bold text-warm-900 truncate">{p.name}</p>
                       {p.category && <span className="shrink-0 text-[10px] font-bold uppercase tracking-wide text-primary-600 bg-primary-50 border border-primary-100 px-1.5 py-0.5 rounded-full">{p.category}</span>}
                     </div>
-                    <p className="text-sm text-primary-700 font-semibold">{p.price || '—'}</p>
+                    <p className="text-sm text-primary-700 font-semibold">{displayPrice(p.price) || '—'}</p>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
                     <button onClick={() => { setEditId(p.id); setAdding(false); }} className="text-sm font-semibold text-primary-600 hover:text-primary-700">Edit</button>

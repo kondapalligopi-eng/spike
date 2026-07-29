@@ -2,6 +2,7 @@ import type { RouteRecord } from 'vite-react-ssg';
 import { RootShell } from '@/components/RootShell';
 import { RouteError } from '@/components/RouteError';
 import { Layout } from '@/components/Layout';
+import { StorefrontLayout } from '@/components/StorefrontLayout';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { Home } from '@/pages/Home';
 import { Dogs } from '@/pages/Dogs';
@@ -67,10 +68,8 @@ export const routes: RouteRecord[] = [
           { path: 'pet/:slug', Component: PetPage },
           // Nose-work game — front-end only, no scoring backend yet.
           { path: 'pet-play', Component: PetPlay },
-          // Pet Shops directory (browse) + individual storefronts.
+          // Pet Shops directory (browse) — inside HiSpike chrome.
           { path: 'petshops', Component: PetShops },
-          // Public pet-shop storefront — same client-rendered, slug-based pattern.
-          { path: 'petshop/:slug', Component: PetShop },
           // Public so visitors can build a pet page before signing up — the
           // sign-up happens at Publish (see PetPages). Pre-rendered, so it
           // needs a /pet-stories -> /pet-stories/index.html rewrite in Render.
@@ -130,6 +129,17 @@ export const routes: RouteRecord[] = [
             ),
           },
           { path: '*', Component: NotFound },
+        ],
+      },
+      {
+        // Public pet-shop storefront — client-rendered, slug-based. Rendered
+        // in its own chrome-free shell (no HiSpike navbar/footer) so owners
+        // can share it with customers as if it were the shop's own site.
+        // Pathless layout route so it doesn't collide with the '/' Layout above.
+        element: <StorefrontLayout />,
+        errorElement: <RouteError />,
+        children: [
+          { path: 'petshop/:slug', Component: PetShop },
         ],
       },
     ],

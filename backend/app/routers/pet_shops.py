@@ -119,6 +119,8 @@ def _apply_shop_payload(shop: PetShop, payload: PetShopCreate) -> None:
     shop.whatsapp = payload.whatsapp.strip() if payload.whatsapp else None
     shop.free_delivery_over = payload.free_delivery_over.strip() if payload.free_delivery_over else None
     shop.delivery_radius = payload.delivery_radius.strip() if payload.delivery_radius else None
+    shop.payment_url = payload.payment_url.strip() if payload.payment_url else None
+    shop.upi_id = payload.upi_id.strip() if payload.upi_id else None
 
 
 async def _product_or_404(db: AsyncSession, product_id: uuid.UUID) -> ShopProduct:

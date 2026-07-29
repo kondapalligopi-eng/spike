@@ -62,6 +62,8 @@ SCHEMA_PATCHES: list[str] = [
     "ALTER TABLE pet_shops ADD COLUMN IF NOT EXISTS delivery_radius VARCHAR(40)",
     "ALTER TABLE shop_products ADD COLUMN IF NOT EXISTS category VARCHAR(60)",
     "ALTER TABLE shop_updates ADD COLUMN IF NOT EXISTS badge VARCHAR(24)",
+    "ALTER TABLE pet_shops ADD COLUMN IF NOT EXISTS payment_url VARCHAR(1024)",
+    "ALTER TABLE pet_shops ADD COLUMN IF NOT EXISTS upi_id VARCHAR(100)",
 ]
 
 

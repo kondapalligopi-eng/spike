@@ -1,11 +1,58 @@
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { SHOP_CATEGORIES, type PetShopRead, type ShopProduct, type ShopUpdate } from '@/api/petShops';
+import { HeroPaws } from './HeroPaws';
+import { PaymentBadges } from './PaymentBadges';
+import { SHOP_CATEGORIES, displayPrice, type PetShopRead, type ShopProduct, type ShopUpdate } from '@/api/petShops';
 
 // wa.me deep link with a pre-filled message.
 function waLink(number: string, text: string): string {
   const digits = number.replace(/\D/g, '');
   return `https://wa.me/${digits}?text=${encodeURIComponent(text)}`;
+}
+
+// A bare numeric amount for a UPI deep link (e.g. "₹1,299" -> "1299"); null if
+// the price isn't a plain number (e.g. "Ask for price", "From ₹999").
+function upiAmount(price?: string | null): string | null {
+  if (!price) return null;
+  const m = price.replace(/[,₹\s]/g, '');
+  return /^\d+(\.\d+)?$/.test(m) ? m : null;
+}
+
+// Direct-to-shop pay action (no HiSpike checkout). null = no online payment set
+// up, so the caller shows the WhatsApp-to-order fallback instead.
+//
+// For a specific product we prefer UPI: the deep link carries the amount AND
+// the product name as the transaction note (`tn`), so the customer doesn't
+// retype the amount and the owner sees exactly which item sold in their UPI/
+// bank statement. For the shop-level button (no item) we prefer the Razorpay
+// link, which also works on desktop.
+function payAction(
+  shop: Pick<PetShopRead, 'payment_url' | 'upi_id' | 'name'>,
+  amount?: string | null,
+  note?: string | null,
+): { href: string; external: boolean; label: string } | null {
+  const amt = upiAmount(amount);
+  let upi: { href: string; external: boolean; label: string } | null = null;
+  if (shop.upi_id) {
+    const params = new URLSearchParams({ pa: shop.upi_id, pn: shop.name, cu: 'INR' });
+    if (amt) params.set('am', amt);
+    if (note) params.set('tn', note);
+    const shown = amt ? Number(amt).toLocaleString('en-IN') : null;
+    upi = { href: `upi://pay?${params.toString()}`, external: false, label: shown ? `Pay ₹${shown}` : 'Pay via UPI' };
+  }
+  const rzp = shop.payment_url
+    ? { href: shop.payment_url, external: true, label: 'Pay online' as const }
+    : null;
+  return amt ? (upi ?? rzp) : (rzp ?? upi);
+}
+
+function CardIcon({ className = 'w-4 h-4' }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+      <rect x="2" y="5" width="20" height="14" rx="2" />
+      <path d="M2 10h20" strokeLinecap="round" />
+    </svg>
+  );
 }
 
 const PRODUCT_TILES = [
@@ -32,10 +79,12 @@ function hashCode(s: string): number {
   return h;
 }
 
-function ProductCard({ product, waTarget, shopName }: { product: ShopProduct; waTarget: string | null; shopName: string }) {
+function ProductCard({ product, shop }: { product: ShopProduct; shop: PetShopRead }) {
   const idx = Math.abs(hashCode(product.id)) % PRODUCT_TILES.length;
+  const waTarget = shop.whatsapp || shop.phone || null;
+  const pay = payAction(shop, product.price, product.name);
   const order = waTarget
-    ? waLink(waTarget, `Hi ${shopName}! I'm interested in "${product.name}" (seen on HiSpike). Is it available?`)
+    ? waLink(waTarget, `Hi ${shop.name}! I'm interested in "${product.name}" (seen on HiSpike). Is it available?`)
     : null;
   return (
     <article className="w-44 shrink-0 snap-start bg-white border border-primary-100 rounded-2xl overflow-hidden flex flex-col shadow-sm">
@@ -53,8 +102,16 @@ function ProductCard({ product, waTarget, shopName }: { product: ShopProduct; wa
       </div>
       <div className="p-3 flex flex-col gap-1 flex-1">
         <p className="font-bold text-sm text-warm-900 leading-snug">{product.name}</p>
-        {product.price && <p className="text-base font-extrabold text-warm-900 tabular-nums">{product.price}</p>}
-        {order && (
+        {displayPrice(product.price) && <p className="text-base font-extrabold text-warm-900 tabular-nums">{displayPrice(product.price)}</p>}
+        {pay ? (
+          <a
+            href={pay.href}
+            {...(pay.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+            className="mt-auto inline-flex items-center justify-center gap-1.5 bg-green-500 hover:bg-green-600 text-white font-bold text-xs py-2 rounded-lg transition-colors"
+          >
+            <CardIcon className="w-3.5 h-3.5" /> {pay.label}
+          </a>
+        ) : order ? (
           <a
             href={order}
             target="_blank"
@@ -63,7 +120,7 @@ function ProductCard({ product, waTarget, shopName }: { product: ShopProduct; wa
           >
             <WhatsAppIcon className="w-3.5 h-3.5 fill-current" /> WhatsApp to order
           </a>
-        )}
+        ) : null}
       </div>
     </article>
   );
@@ -99,6 +156,8 @@ export function PetShopView({ data }: { data: PetShopRead }) {
   const products = data.products ?? [];
   const updates = data.updates ?? [];
   const photos = data.photos ?? [];
+  const heroPay = payAction(data);
+  const hasOnlinePay = !!(data.payment_url || data.upi_id);
 
   // Group products into category shelves, ordered by SHOP_CATEGORIES.
   const shelves = useMemo(() => {
@@ -119,6 +178,16 @@ export function PetShopView({ data }: { data: PetShopRead }) {
 
   return (
     <div>
+      {/* Brand header — logo + shop name, top-left on white, like the shop's own site */}
+      <header className="bg-white border-b border-warm-200">
+        <div className={`${WRAP} py-3 sm:py-4 flex items-center gap-3`}>
+          <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-white border border-warm-200 shrink-0 grid place-items-center text-2xl overflow-hidden">
+            {data.logo_url ? <img src={data.logo_url} alt={data.name} className="w-full h-full object-cover" /> : <span aria-hidden="true">🏪</span>}
+          </div>
+          <h1 className="text-xl sm:text-2xl font-black tracking-tight truncate text-warm-900">{data.name}</h1>
+        </div>
+      </header>
+
       {/* Trust strip */}
       {trust.length > 0 && (
         <div className="bg-primary-900 text-white text-xs sm:text-[13px] font-semibold">
@@ -130,56 +199,69 @@ export function PetShopView({ data }: { data: PetShopRead }) {
         </div>
       )}
 
-      {/* Hero — owner banner behind a scrim */}
-      <section className="relative overflow-hidden text-white bg-gradient-to-br from-primary-700 to-primary-900">
-        {data.hero_url && (
-          <>
-            <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${data.hero_url})` }} aria-hidden="true" />
-            <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/55 to-black/25" aria-hidden="true" />
-          </>
-        )}
-        <div className={`relative ${WRAP} py-7 sm:py-9`}>
-          {data.offer && (
-            <div className="inline-flex items-center gap-2 bg-accent-400 text-warm-900 font-extrabold text-xs sm:text-sm px-3 py-1.5 rounded-lg mb-3 shadow">
-              <span className="text-[10px] uppercase tracking-[0.15em] bg-warm-900 text-accent-400 px-1.5 py-0.5 rounded">Sale</span>
-              {data.offer}
-            </div>
-          )}
-          <div className="flex items-start gap-4 sm:gap-5">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-white shrink-0 grid place-items-center text-3xl sm:text-4xl shadow-lg overflow-hidden">
-              {data.logo_url ? <img src={data.logo_url} alt={data.name} className="w-full h-full object-cover" /> : <span aria-hidden="true">🏪</span>}
-            </div>
-            <div className="min-w-0 flex-1">
-              <h1 className="text-2xl sm:text-4xl font-black tracking-tight leading-tight">{data.name}</h1>
-              <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1 text-[13px] sm:text-sm text-white/90 font-medium">
-                {data.area && <span>📍 {data.area}</span>}
-                {data.hours && <span>🕙 {data.hours}</span>}
-                {products.length > 0 && <span>🛍️ {products.length} products</span>}
+      {/* Hero — HiSpike-style animated blue band (pulsing paws + sparkles).
+          Split layout: text on the left, banner photo floated as a card on the
+          right. On mobile the photo is hidden, so it reads like the HiSpike
+          hero — text on the animated blue, always readable. */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-primary-700 to-primary-900 text-white">
+        <HeroPaws />
+        <div className={`relative ${WRAP} grid gap-6 md:gap-8 items-stretch ${data.hero_url ? 'md:grid-cols-2 md:min-h-[300px]' : ''}`}>
+          {/* Left — offer, quick facts, description, CTAs (padding lives here so
+              the image column can fill the band top-to-bottom) */}
+          <div className="py-7 sm:py-9 flex flex-col justify-center">
+            {data.offer && (
+              <div className="inline-flex items-center gap-2 bg-accent-400 text-warm-900 font-extrabold text-xs sm:text-sm px-3 py-1.5 rounded-lg mb-3 shadow">
+                <span className="text-[10px] uppercase tracking-[0.15em] bg-warm-900 text-accent-400 px-1.5 py-0.5 rounded">Sale</span>
+                {data.offer}
               </div>
-              {data.about && <p className="mt-2.5 text-sm sm:text-[15px] text-white/90 leading-relaxed max-w-2xl">{data.about}</p>}
-              <div className="mt-4 flex flex-wrap gap-2.5">
-                {waTarget && (
-                  <a
-                    href={waLink(waTarget, `Hi ${data.name}! I found you on HiSpike.`)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold text-sm px-5 py-2.5 rounded-full transition-colors shadow-lg"
-                  >
-                    <WhatsAppIcon /> WhatsApp
-                  </a>
-                )}
-                {data.phone && (
-                  <a
-                    href={`tel:${data.phone}`}
-                    className="inline-flex items-center gap-2 bg-white text-primary-700 font-bold text-sm px-5 py-2.5 rounded-full hover:bg-primary-50 transition-colors shadow"
-                  >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#EC4899" aria-hidden="true"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.6.1.4 0 .8-.3 1l-2.2 2.2z" /></svg>
-                    Call
-                  </a>
-                )}
-              </div>
+            )}
+            <div className="flex flex-wrap gap-x-4 gap-y-1 text-[13px] sm:text-sm text-white/90 font-semibold">
+              {data.area && <span>📍 {data.area}</span>}
+              {data.hours && <span>🕙 {data.hours}</span>}
+              {products.length > 0 && <span>🛍️ {products.length} products</span>}
+            </div>
+            {data.about && <p className="mt-2.5 text-sm sm:text-[15px] text-white/90 leading-relaxed max-w-xl">{data.about}</p>}
+            <div className="mt-4 flex flex-wrap gap-2.5">
+              {heroPay ? (
+                <a
+                  href={heroPay.href}
+                  {...(heroPay.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                  className="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold text-sm px-5 py-2.5 rounded-full transition-colors shadow-lg"
+                >
+                  <CardIcon /> {heroPay.label}
+                </a>
+              ) : waTarget ? (
+                <a
+                  href={waLink(waTarget, `Hi ${data.name}! I found you on HiSpike.`)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold text-sm px-5 py-2.5 rounded-full transition-colors shadow-lg"
+                >
+                  <WhatsAppIcon /> WhatsApp
+                </a>
+              ) : null}
+              {data.phone && (
+                <a
+                  href={`tel:${data.phone}`}
+                  className="inline-flex items-center gap-2 bg-white text-primary-700 font-bold text-sm px-5 py-2.5 rounded-full hover:bg-primary-50 transition-colors shadow"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="#EC4899" aria-hidden="true"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.6.1.4 0 .8-.3 1l-2.2 2.2z" /></svg>
+                  Call
+                </a>
+              )}
             </div>
           </div>
+
+          {/* Right — banner photo fills the band top-to-bottom, desktop only */}
+          {data.hero_url && (
+            <div className="hidden md:block py-4">
+              <img
+                src={data.hero_url}
+                alt={`${data.name} banner`}
+                className="w-full h-full object-cover rounded-2xl shadow-xl ring-1 ring-white/20"
+              />
+            </div>
+          )}
         </div>
       </section>
 
@@ -204,6 +286,18 @@ export function PetShopView({ data }: { data: PetShopRead }) {
         </nav>
       )}
 
+      {/* Payment trust strip — shown when the shop accepts online payment */}
+      {hasOnlinePay && (
+        <div className={`${WRAP} pt-6`}>
+          <PaymentBadges payLink={data.payment_url ?? undefined} />
+          {data.upi_id && (
+            <p className="mt-2 text-center text-xs text-warm-500">
+              Or pay by UPI to <span className="font-semibold text-warm-700">{data.upi_id}</span>
+            </p>
+          )}
+        </div>
+      )}
+
       {/* Product shelves */}
       <div className={`${WRAP} pt-7`}>
         <p className="text-[11px] font-extrabold tracking-[0.2em] uppercase text-accent-600">Shop the store</p>
@@ -222,7 +316,7 @@ export function PetShopView({ data }: { data: PetShopRead }) {
               </div>
               <div className="flex gap-3.5 overflow-x-auto pb-3 snap-x [scrollbar-width:thin]">
                 {items.map((p) => (
-                  <ProductCard key={p.id} product={p} waTarget={waTarget} shopName={data.name} />
+                  <ProductCard key={p.id} product={p} shop={data} />
                 ))}
               </div>
             </section>
@@ -278,6 +372,19 @@ export function PetShopView({ data }: { data: PetShopRead }) {
           <Link to="/petshops" className="text-sm font-extrabold text-primary-600 hover:underline whitespace-nowrap">
             Browse more pet shops →
           </Link>
+        </div>
+
+        {/* Purchase disclaimer — orders happen directly with the shop over
+            WhatsApp/Call; HiSpike only lists the shop and isn't a party to
+            the sale. Keeps HiSpike out of any buyer↔shop transaction dispute. */}
+        <div className="border-t border-warm-100">
+          <p className={`${WRAP} py-4 text-center text-xs leading-relaxed text-warm-400`}>
+            Orders and payments are made directly with {data.name}. HiSpike lists this shop and is not a
+            party to any purchase, and is not responsible for products, prices, payments, or delivery. By
+            contacting or paying this shop, you agree to HiSpike&apos;s{' '}
+            <Link to="/terms" className="underline hover:text-warm-600">Terms of Use</Link>{' '}and have read the{' '}
+            <Link to="/privacy" className="underline hover:text-warm-600">Privacy Notice</Link>.
+          </p>
         </div>
       </div>
     </div>
