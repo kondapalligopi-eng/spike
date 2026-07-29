@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { HeroPaws } from './HeroPaws';
-import { SHOP_CATEGORIES, type PetShopRead, type ShopProduct, type ShopUpdate } from '@/api/petShops';
+import { SHOP_CATEGORIES, displayPrice, type PetShopRead, type ShopProduct, type ShopUpdate } from '@/api/petShops';
 
 // wa.me deep link with a pre-filled message.
 function waLink(number: string, text: string): string {
