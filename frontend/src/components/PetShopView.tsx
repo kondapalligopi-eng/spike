@@ -119,6 +119,16 @@ export function PetShopView({ data }: { data: PetShopRead }) {
 
   return (
     <div>
+      {/* Brand header — logo + shop name, top-left, like the shop's own site */}
+      <header className="bg-primary-600 text-white">
+        <div className={`${WRAP} py-3 sm:py-4 flex items-center gap-3`}>
+          <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-white shrink-0 grid place-items-center text-2xl overflow-hidden shadow">
+            {data.logo_url ? <img src={data.logo_url} alt={data.name} className="w-full h-full object-cover" /> : <span aria-hidden="true">🏪</span>}
+          </div>
+          <h1 className="text-xl sm:text-2xl font-black tracking-tight truncate">{data.name}</h1>
+        </div>
+      </header>
+
       {/* Trust strip */}
       {trust.length > 0 && (
         <div className="bg-primary-900 text-white text-xs sm:text-[13px] font-semibold">
@@ -130,55 +140,49 @@ export function PetShopView({ data }: { data: PetShopRead }) {
         </div>
       )}
 
-      {/* Hero — owner banner behind a scrim */}
-      <section className="relative overflow-hidden text-white bg-gradient-to-br from-primary-700 to-primary-900">
+      {/* Hero — owner banner photo; brand now lives in the header above, so
+          only the offer, quick facts and CTAs sit over the image (anchored to
+          the bottom so they stay readable against the scrim). */}
+      <section className="relative overflow-hidden text-white bg-gradient-to-br from-primary-700 to-primary-900 min-h-[220px] sm:min-h-[280px] flex flex-col justify-end">
         {data.hero_url && (
           <>
             <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${data.hero_url})` }} aria-hidden="true" />
-            <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/55 to-black/25" aria-hidden="true" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/45 to-black/10" aria-hidden="true" />
           </>
         )}
-        <div className={`relative ${WRAP} py-7 sm:py-9`}>
+        <div className={`relative ${WRAP} w-full py-6 sm:py-7`}>
           {data.offer && (
             <div className="inline-flex items-center gap-2 bg-accent-400 text-warm-900 font-extrabold text-xs sm:text-sm px-3 py-1.5 rounded-lg mb-3 shadow">
               <span className="text-[10px] uppercase tracking-[0.15em] bg-warm-900 text-accent-400 px-1.5 py-0.5 rounded">Sale</span>
               {data.offer}
             </div>
           )}
-          <div className="flex items-start gap-4 sm:gap-5">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-white shrink-0 grid place-items-center text-3xl sm:text-4xl shadow-lg overflow-hidden">
-              {data.logo_url ? <img src={data.logo_url} alt={data.name} className="w-full h-full object-cover" /> : <span aria-hidden="true">🏪</span>}
-            </div>
-            <div className="min-w-0 flex-1">
-              <h1 className="text-2xl sm:text-4xl font-black tracking-tight leading-tight">{data.name}</h1>
-              <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1 text-[13px] sm:text-sm text-white/90 font-medium">
-                {data.area && <span>📍 {data.area}</span>}
-                {data.hours && <span>🕙 {data.hours}</span>}
-                {products.length > 0 && <span>🛍️ {products.length} products</span>}
-              </div>
-              {data.about && <p className="mt-2.5 text-sm sm:text-[15px] text-white/90 leading-relaxed max-w-2xl">{data.about}</p>}
-              <div className="mt-4 flex flex-wrap gap-2.5">
-                {waTarget && (
-                  <a
-                    href={waLink(waTarget, `Hi ${data.name}! I found you on HiSpike.`)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold text-sm px-5 py-2.5 rounded-full transition-colors shadow-lg"
-                  >
-                    <WhatsAppIcon /> WhatsApp
-                  </a>
-                )}
-                {data.phone && (
-                  <a
-                    href={`tel:${data.phone}`}
-                    className="inline-flex items-center gap-2 bg-white text-primary-700 font-bold text-sm px-5 py-2.5 rounded-full hover:bg-primary-50 transition-colors shadow"
-                  >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#EC4899" aria-hidden="true"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.6.1.4 0 .8-.3 1l-2.2 2.2z" /></svg>
-                    Call
-                  </a>
-                )}
-              </div>
-            </div>
+          <div className="flex flex-wrap gap-x-4 gap-y-1 text-[13px] sm:text-sm text-white/90 font-semibold drop-shadow">
+            {data.area && <span>📍 {data.area}</span>}
+            {data.hours && <span>🕙 {data.hours}</span>}
+            {products.length > 0 && <span>🛍️ {products.length} products</span>}
+          </div>
+          {data.about && <p className="mt-2 text-sm sm:text-[15px] text-white/90 leading-relaxed max-w-2xl drop-shadow">{data.about}</p>}
+          <div className="mt-4 flex flex-wrap gap-2.5">
+            {waTarget && (
+              <a
+                href={waLink(waTarget, `Hi ${data.name}! I found you on HiSpike.`)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold text-sm px-5 py-2.5 rounded-full transition-colors shadow-lg"
+              >
+                <WhatsAppIcon /> WhatsApp
+              </a>
+            )}
+            {data.phone && (
+              <a
+                href={`tel:${data.phone}`}
+                className="inline-flex items-center gap-2 bg-white text-primary-700 font-bold text-sm px-5 py-2.5 rounded-full hover:bg-primary-50 transition-colors shadow"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="#EC4899" aria-hidden="true"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.6.1.4 0 .8-.3 1l-2.2 2.2z" /></svg>
+                Call
+              </a>
+            )}
           </div>
         </div>
       </section>
