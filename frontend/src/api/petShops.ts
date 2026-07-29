@@ -8,6 +8,15 @@ const MOCK_KEY = 'hispike_mock_pet_shops';
 export const SHOP_CATEGORIES = ['Food', 'Treats', 'Toys', 'Grooming', 'Accessories', 'Health', 'Other'] as const;
 export type ShopCategory = (typeof SHOP_CATEGORIES)[number];
 
+// Prices are stored as free text (e.g. "629", "₹499", "From ₹1,299",
+// "Ask for price"). For display, prefix a ₹ when the owner typed a bare
+// number; leave anything that already has a currency/label as-is.
+export function displayPrice(price: string | null | undefined): string | null {
+  const p = price?.trim();
+  if (!p) return null;
+  return /^\d/.test(p) ? `₹${p}` : p;
+}
+
 export type ShopProduct = {
   id: string;
   shop_id: string;
