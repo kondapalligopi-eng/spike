@@ -276,6 +276,18 @@ export function PetShopView({ data }: { data: PetShopRead }) {
         </nav>
       )}
 
+      {/* Payment trust strip — shown when the shop accepts online payment */}
+      {hasOnlinePay && (
+        <div className={`${WRAP} pt-6`}>
+          <PaymentBadges payLink={data.payment_url ?? undefined} />
+          {data.upi_id && (
+            <p className="mt-2 text-center text-xs text-warm-500">
+              Or pay by UPI to <span className="font-semibold text-warm-700">{data.upi_id}</span>
+            </p>
+          )}
+        </div>
+      )}
+
       {/* Product shelves */}
       <div className={`${WRAP} pt-7`}>
         <p className="text-[11px] font-extrabold tracking-[0.2em] uppercase text-accent-600">Shop the store</p>
