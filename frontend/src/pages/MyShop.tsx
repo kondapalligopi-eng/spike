@@ -89,6 +89,8 @@ function ShopDetailsForm({ shop, onSaved }: { shop: PetShopRead | null; onSaved:
   const [whatsapp, setWhatsapp] = useState(shop?.whatsapp ?? '');
   const [freeDeliveryOver, setFreeDeliveryOver] = useState(shop?.free_delivery_over ?? '');
   const [deliveryRadius, setDeliveryRadius] = useState(shop?.delivery_radius ?? '');
+  const [paymentUrl, setPaymentUrl] = useState(shop?.payment_url ?? '');
+  const [upiId, setUpiId] = useState(shop?.upi_id ?? '');
   const [slugStatus, setSlugStatus] = useState<SlugStatus>('idle');
 
   // Auto-fill slug from the name until the user edits it directly.
