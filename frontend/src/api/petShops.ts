@@ -62,6 +62,8 @@ export type PetShopSummary = {
   whatsapp: string | null;
   free_delivery_over: string | null;
   delivery_radius: string | null;
+  payment_url: string | null;
+  upi_id: string | null;
   owner_id: string;
   created_at: string;
   updated_at: string;
