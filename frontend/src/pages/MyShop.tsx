@@ -201,6 +201,25 @@ function ShopDetailsForm({ shop, onSaved }: { shop: PetShopRead | null; onSaved:
         </div>
       </div>
 
+      {/* Online payments — direct to the shop. When either is set, the storefront
+          shows a "Pay online" button in place of "WhatsApp to order". */}
+      <div className="rounded-2xl border border-primary-100 bg-primary-50/40 p-4">
+        <p className="text-sm font-bold text-warm-900">Online payments <span className="text-warm-400 font-normal">(optional)</span></p>
+        <p className="text-xs text-warm-500 mt-0.5 mb-3">Add either and customers get a “Pay online” button. Money goes straight to you — HiSpike doesn’t handle it.</p>
+        <div className="grid sm:grid-cols-2 gap-4">
+          <div>
+            <label className={label} htmlFor="shop-pay">Razorpay Payment Link</label>
+            <input id="shop-pay" className={input} placeholder="https://razorpay.me/@yourshop" value={paymentUrl} onChange={(e) => setPaymentUrl(e.target.value)} />
+            <p className="mt-1 text-xs text-warm-400">Cards, UPI, RuPay & Net Banking. Works on any device.</p>
+          </div>
+          <div>
+            <label className={label} htmlFor="shop-upi">UPI ID</label>
+            <input id="shop-upi" className={input} placeholder="yourshop@okhdfcbank" value={upiId} onChange={(e) => setUpiId(e.target.value)} />
+            <p className="mt-1 text-xs text-warm-400">Free & instant. Opens the customer’s UPI app on mobile.</p>
+          </div>
+        </div>
+      </div>
+
       <button type="submit" disabled={!canSave} className={btnPrimary}>
         {saveMut.isPending ? (<><LoadingSpinner size="sm" />Saving…</>) : editing ? 'Save changes' : 'Create shop'}
       </button>
