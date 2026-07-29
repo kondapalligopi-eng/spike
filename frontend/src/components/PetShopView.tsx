@@ -160,12 +160,12 @@ export function PetShopView({ data }: { data: PetShopRead }) {
               {data.offer}
             </div>
           )}
-          <div className="flex flex-wrap gap-x-4 gap-y-1 text-[13px] sm:text-sm text-white/90 font-semibold drop-shadow">
+          <div className="flex flex-wrap gap-x-4 gap-y-1 text-[13px] sm:text-sm text-white font-semibold [text-shadow:0_1px_3px_rgba(0,0,0,0.9)]">
             {data.area && <span>📍 {data.area}</span>}
             {data.hours && <span>🕙 {data.hours}</span>}
             {products.length > 0 && <span>🛍️ {products.length} products</span>}
           </div>
-          {data.about && <p className="mt-2 text-sm sm:text-[15px] text-white/90 leading-relaxed max-w-2xl drop-shadow">{data.about}</p>}
+          {data.about && <p className="mt-2 text-sm sm:text-[15px] text-white leading-relaxed max-w-2xl [text-shadow:0_1px_4px_rgba(0,0,0,0.95)]">{data.about}</p>}
           <div className="mt-4 flex flex-wrap gap-2.5">
             {waTarget && (
               <a
