@@ -284,7 +284,7 @@ export function PetShopView({ data }: { data: PetShopRead }) {
               </div>
               <div className="flex gap-3.5 overflow-x-auto pb-3 snap-x [scrollbar-width:thin]">
                 {items.map((p) => (
-                  <ProductCard key={p.id} product={p} waTarget={waTarget} shopName={data.name} />
+                  <ProductCard key={p.id} product={p} shop={data} />
                 ))}
               </div>
             </section>
