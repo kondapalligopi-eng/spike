@@ -128,7 +128,7 @@ function sampleShop(slug: string): PetShopRead {
   const p = (id: string, name: string, price: string, description: string, category: string): ShopProduct =>
     ({ id, shop_id: 'mock-shop', name, price, description, photo_url: null, category, created_at: now, updated_at: now });
   return {
-    id: 'mock-shop', slug, name: 'Paws & Whiskers', logo_url: null, hero_url: null,
+    id: 'mock-shop', slug, name: 'Paws & Whiskers', logo_url: null, hero_url: 'https://picsum.photos/seed/pawsbanner/1400/500',
     about: "Your neighbourhood pet store — premium food, toys, grooming supplies & everything your pet needs. Message us on WhatsApp to order.",
     offer: 'Monsoon Sale — 15% off beds & raincoats',
     area: 'Indiranagar, Bengaluru', hours: '10am–9pm', phone: '+919876543210', whatsapp: '+919876543210',
