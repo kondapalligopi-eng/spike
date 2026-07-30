@@ -39,9 +39,11 @@ function hashCode(s: string): number {
 function ProductCard({ product, shop }: { product: ShopProduct; shop: PetShopRead }) {
   const idx = Math.abs(hashCode(product.id)) % PRODUCT_TILES.length;
   const waTarget = shop.whatsapp || shop.phone || null;
-  const pay = payAction(shop, product.price, product.name);
-  const order = waTarget
-    ? waLink(waTarget, `Hi ${shop.name}! I'm interested in "${product.name}" (seen on HiSpike). Is it available?`)
+  const unitPrice = numericPrice(product.price); // null => can't be carted (no clean number)
+  const add = useCartStore((s) => s.add);
+  const inCart = useCartStore((s) => (s.carts[shop.id] ?? []).find((i) => i.product_id === product.id)?.qty ?? 0);
+  const ask = waTarget
+    ? waLink(waTarget, `Hi ${shop.name}! Is "${product.name}" available, and what's the price? (seen on HiSpike)`)
     : null;
   return (
     <article className="w-44 shrink-0 snap-start bg-white border border-primary-100 rounded-2xl overflow-hidden flex flex-col shadow-sm">
@@ -60,22 +62,22 @@ function ProductCard({ product, shop }: { product: ShopProduct; shop: PetShopRea
       <div className="p-3 flex flex-col gap-1 flex-1">
         <p className="font-bold text-sm text-warm-900 leading-snug">{product.name}</p>
         {displayPrice(product.price) && <p className="text-base font-extrabold text-warm-900 tabular-nums">{displayPrice(product.price)}</p>}
-        {pay ? (
-          <a
-            href={pay.href}
-            {...(pay.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-            className="mt-auto inline-flex items-center justify-center gap-1.5 bg-green-500 hover:bg-green-600 text-white font-bold text-xs py-2 rounded-lg transition-colors"
+        {unitPrice != null ? (
+          <button
+            type="button"
+            onClick={() => add(shop.id, { product_id: product.id, name: product.name, unit_price: unitPrice, photo_url: product.photo_url })}
+            className="mt-auto inline-flex items-center justify-center gap-1.5 bg-primary-600 hover:bg-primary-700 text-white font-bold text-xs py-2 rounded-lg transition-colors"
           >
-            <CardIcon className="w-3.5 h-3.5" /> {pay.label}
-          </a>
-        ) : order ? (
+            {inCart > 0 ? `Added (${inCart}) · Add more` : '+ Add to cart'}
+          </button>
+        ) : ask ? (
           <a
-            href={order}
+            href={ask}
             target="_blank"
             rel="noopener noreferrer"
             className="mt-auto inline-flex items-center justify-center gap-1.5 bg-green-100 hover:bg-green-500 text-green-700 hover:text-white font-bold text-xs py-2 rounded-lg transition-colors"
           >
-            <WhatsAppIcon className="w-3.5 h-3.5 fill-current" /> WhatsApp to order
+            <WhatsAppIcon className="w-3.5 h-3.5 fill-current" /> Ask price
           </a>
         ) : null}
       </div>
