@@ -104,6 +104,30 @@ export type ShopUpdateCreate = { title: string; body: string; badge: string | nu
 
 export type ShopPhotoCreate = { photo_url: string; caption: string | null };
 
+export type OrderItemInput = { product_id: string; name: string; unit_price: number; qty: number };
+export type OrderStatus = 'placed' | 'paid' | 'delivered' | 'cancelled';
+export type ShopOrder = {
+  id: string;
+  shop_id: string;
+  user_id: string | null;
+  buyer_name: string;
+  buyer_phone: string;
+  buyer_address: string;
+  note: string;
+  items: OrderItemInput[];
+  total: number;
+  status: OrderStatus;
+  created_at: string;
+  updated_at: string;
+};
+export type ShopOrderCreate = {
+  buyer_name: string;
+  buyer_phone: string;
+  buyer_address: string;
+  note: string;
+  items: OrderItemInput[];
+};
+
 const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
 function status404(err: unknown): boolean {
   return (err as { response?: { status?: number } } | undefined)?.response?.status === 404;
