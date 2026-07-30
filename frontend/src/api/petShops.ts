@@ -17,6 +17,15 @@ export function displayPrice(price: string | null | undefined): string | null {
   return /^\d/.test(p) ? `₹${p}` : p;
 }
 
+// A plain number from a free-text price ("₹1,299" -> 1299), or null when it's
+// not a clean number ("Ask for price", "From ₹999"). Cart needs a real number
+// to total, so only numeric-priced products are cart-eligible.
+export function numericPrice(price: string | null | undefined): number | null {
+  if (!price) return null;
+  const m = price.replace(/[,₹\s]/g, '');
+  return /^\d+(\.\d+)?$/.test(m) ? Number(m) : null;
+}
+
 export type ShopProduct = {
   id: string;
   shop_id: string;
