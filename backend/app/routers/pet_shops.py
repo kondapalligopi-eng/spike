@@ -11,12 +11,15 @@ from sqlalchemy.orm import selectinload
 
 from app.core.dependencies import get_current_active_user, require_admin
 from app.database import get_db
-from app.models.pet_shop import PetShop, ShopPhoto, ShopProduct, ShopUpdate
+from app.models.pet_shop import PetShop, ShopOrder, ShopPhoto, ShopProduct, ShopUpdate
 from app.models.user import User, UserRole
 from app.schemas.pet_shop import (
+    OrderStatusUpdate,
     PetShopCreate,
     PetShopRead,
     PetShopSummary,
+    ShopOrderCreate,
+    ShopOrderRead,
     ShopPhotoCreate,
     ShopPhotoRead,
     ShopProductCreate,
