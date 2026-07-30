@@ -1,7 +1,9 @@
+import { useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import { ScrollToTop } from './ScrollToTop';
 import { ToastContainer } from './Toast';
 import { VisitTracker } from './VisitTracker';
+import { useCartStore } from '@/store/cartStore';
 
 // A chrome-free shell for the public pet-shop storefront (/petshop/<slug>).
 // Shop owners share this link directly with their customers, so it must feel
