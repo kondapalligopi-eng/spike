@@ -292,7 +292,7 @@ export function PetShopView({ data }: { data: PetShopRead }) {
       {/* Payment trust strip — kept at the narrower width so the pills and card
           logos stay grouped (the wide layout stretched them too far apart) */}
       {hasOnlinePay && (
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-6">
+        <div className={`${INNER} pt-6`}>
           <PaymentBadges payLink={data.payment_url ?? undefined} />
           {data.upi_id && (
             <p className="mt-2 text-center text-xs text-warm-500">
