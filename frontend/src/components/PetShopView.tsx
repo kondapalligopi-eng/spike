@@ -378,7 +378,7 @@ export function PetShopView({ data }: { data: PetShopRead }) {
             WhatsApp/Call; HiSpike only lists the shop and isn't a party to
             the sale. Keeps HiSpike out of any buyer↔shop transaction dispute. */}
         <div className="border-t border-warm-100">
-          <p className={`${WRAP} py-4 text-center text-xs leading-relaxed text-warm-400`}>
+          <p className="max-w-3xl mx-auto px-4 py-4 text-center text-xs leading-relaxed text-warm-400">
             Orders and payments are made directly with {data.name}. HiSpike lists this shop and is not a
             party to any purchase, and is not responsible for products, prices, payments, or delivery. By
             contacting or paying this shop, you agree to HiSpike&apos;s{' '}
