@@ -6,6 +6,10 @@ import { placeOrder, type PetShopRead, type ShopOrder } from '@/api/petShops';
 
 const rupee = (n: number) => `₹${n.toLocaleString('en-IN')}`;
 
+// Stable reference so the zustand selector doesn't return a new [] each render
+// (which would loop "Maximum update depth exceeded").
+const EMPTY: never[] = [];
+
 // A pay target for the whole order total (manual-confirm). UPI carries the
 // amount + an order reference in the note; else the Razorpay link; else null
 // (shop takes payment on contact / delivery).
