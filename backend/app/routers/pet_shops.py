@@ -150,6 +150,14 @@ async def _photo_or_404(db: AsyncSession, photo_id: uuid.UUID) -> ShopPhoto:
     return photo
 
 
+async def _order_or_404(db: AsyncSession, order_id: uuid.UUID) -> ShopOrder:
+    result = await db.execute(select(ShopOrder).where(ShopOrder.id == order_id))
+    order = result.scalar_one_or_none()
+    if order is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Order not found")
+    return order
+
+
 # --- specific routes before "/{shop_id}" so they aren't captured --------------
 
 
