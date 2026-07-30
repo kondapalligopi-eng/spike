@@ -184,7 +184,8 @@ export function PetShopView({ data }: { data: PetShopRead }) {
           <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-white border border-warm-200 shrink-0 grid place-items-center text-2xl overflow-hidden">
             {data.logo_url ? <img src={data.logo_url} alt={data.name} className="w-full h-full object-cover" /> : <span aria-hidden="true">🏪</span>}
           </div>
-          <h1 className="text-xl sm:text-2xl font-black tracking-tight truncate text-warm-900">{data.name}</h1>
+          <h1 className="text-xl sm:text-2xl font-black tracking-tight truncate text-warm-900 min-w-0">{data.name}</h1>
+          <HeaderIcons shopId={data.id} />
         </div>
       </header>
 
