@@ -10,6 +10,12 @@ import { useCartStore } from '@/store/cartStore';
 // like the shop's own site — no HiSpike navbar or global footer. The
 // storefront supplies its own light "on HiSpike" strip at the bottom.
 export function StorefrontLayout() {
+  // Read the persisted cart on the client only (skipHydration) — avoids an
+  // SSG hydration mismatch against the empty-cart prerender.
+  useEffect(() => {
+    void useCartStore.persist.rehydrate();
+  }, []);
+
   return (
     <div className="min-h-screen bg-primary-50 flex flex-col">
       <ScrollToTop />
