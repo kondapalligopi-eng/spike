@@ -368,7 +368,7 @@ export function PetShopView({ data }: { data: PetShopRead }) {
 
       {/* HiSpike strip — for visitors who arrive via a shared link */}
       <div className="mt-10 bg-white border-t border-primary-100">
-        <div className={`${WRAP} py-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-center`}>
+        <div className={`${INNER} py-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-center`}>
           <img src="/logo.png" alt="HiSpike" className="w-12 h-12 rounded-full" />
           <span className="text-sm font-semibold text-warm-700">
             This shop is on <b className="text-warm-900">Hi</b><b className="text-primary-600">Spike</b> — Bengaluru&apos;s pet-care network
