@@ -342,7 +342,7 @@ export function PetShopView({ data }: { data: PetShopRead }) {
         <div className={`${WRAP} pt-8`}>
           <p className="text-[11px] font-extrabold tracking-[0.2em] uppercase text-accent-600">Take a look inside</p>
           <h2 className="mt-0.5 text-xl sm:text-2xl font-extrabold text-warm-900 mb-3">Our shop</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
             {photos.map((ph, i) => (
               <figure key={ph.id} className="relative rounded-2xl overflow-hidden bg-primary-100">
                 <img
