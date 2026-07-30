@@ -183,15 +183,7 @@ export function PetShopView({ data }: { data: PetShopRead }) {
             </div>
             {data.about && <p className="mt-2.5 text-sm sm:text-[15px] text-white/90 leading-relaxed max-w-xl">{data.about}</p>}
             <div className="mt-4 flex flex-wrap gap-2.5">
-              {heroPay ? (
-                <a
-                  href={heroPay.href}
-                  {...(heroPay.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                  className="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold text-sm px-5 py-2.5 rounded-full transition-colors shadow-lg"
-                >
-                  <CardIcon /> {heroPay.label}
-                </a>
-              ) : waTarget ? (
+              {waTarget && (
                 <a
                   href={waLink(waTarget, `Hi ${data.name}! I found you on HiSpike.`)}
                   target="_blank"
@@ -200,7 +192,7 @@ export function PetShopView({ data }: { data: PetShopRead }) {
                 >
                   <WhatsAppIcon /> WhatsApp
                 </a>
-              ) : null}
+              )}
               {data.phone && (
                 <a
                   href={`tel:${data.phone}`}
