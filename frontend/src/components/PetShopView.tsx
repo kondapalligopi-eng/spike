@@ -2,7 +2,12 @@ import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { HeroPaws } from './HeroPaws';
 import { PaymentBadges } from './PaymentBadges';
-import { SHOP_CATEGORIES, displayPrice, type PetShopRead, type ShopProduct, type ShopUpdate } from '@/api/petShops';
+import { StorefrontCart } from './StorefrontCart';
+import { useCartStore, type CartItem } from '@/store/cartStore';
+import { useAuth } from '@/hooks/useAuth';
+import { SHOP_CATEGORIES, displayPrice, numericPrice, type PetShopRead, type ShopProduct, type ShopUpdate } from '@/api/petShops';
+
+const EMPTY_CART: CartItem[] = [];
 
 // wa.me deep link with a pre-filled message.
 function waLink(number: string, text: string): string {
@@ -10,48 +15,41 @@ function waLink(number: string, text: string): string {
   return `https://wa.me/${digits}?text=${encodeURIComponent(text)}`;
 }
 
-// A bare numeric amount for a UPI deep link (e.g. "₹1,299" -> "1299"); null if
-// the price isn't a plain number (e.g. "Ask for price", "From ₹999").
-function upiAmount(price?: string | null): string | null {
-  if (!price) return null;
-  const m = price.replace(/[,₹\s]/g, '');
-  return /^\d+(\.\d+)?$/.test(m) ? m : null;
-}
-
-// Direct-to-shop pay action (no HiSpike checkout). null = no online payment set
-// up, so the caller shows the WhatsApp-to-order fallback instead.
-//
-// For a specific product we prefer UPI: the deep link carries the amount AND
-// the product name as the transaction note (`tn`), so the customer doesn't
-// retype the amount and the owner sees exactly which item sold in their UPI/
-// bank statement. For the shop-level button (no item) we prefer the Razorpay
-// link, which also works on desktop.
-function payAction(
-  shop: Pick<PetShopRead, 'payment_url' | 'upi_id' | 'name'>,
-  amount?: string | null,
-  note?: string | null,
-): { href: string; external: boolean; label: string } | null {
-  const amt = upiAmount(amount);
-  let upi: { href: string; external: boolean; label: string } | null = null;
-  if (shop.upi_id) {
-    const params = new URLSearchParams({ pa: shop.upi_id, pn: shop.name, cu: 'INR' });
-    if (amt) params.set('am', amt);
-    if (note) params.set('tn', note);
-    const shown = amt ? Number(amt).toLocaleString('en-IN') : null;
-    upi = { href: `upi://pay?${params.toString()}`, external: false, label: shown ? `Pay ₹${shown}` : 'Pay via UPI' };
-  }
-  const rzp = shop.payment_url
-    ? { href: shop.payment_url, external: true, label: 'Pay online' as const }
-    : null;
-  return amt ? (upi ?? rzp) : (rzp ?? upi);
-}
-
-function CardIcon({ className = 'w-4 h-4' }: { className?: string }) {
+// Cart + account icons for the storefront header (right of the shop logo),
+// mirroring the hispike.in navbar's icon cluster. The cart icon opens the same
+// drawer as the floating button (shared store state).
+function HeaderIcons({ shopId }: { shopId: string }) {
+  const { isAuthenticated } = useAuth();
+  const hasHydrated = useCartStore((s) => s.hasHydrated);
+  const count = useCartStore((s) => (s.carts[shopId] ?? EMPTY_CART).reduce((n, i) => n + i.qty, 0));
+  const setOpen = useCartStore((s) => s.setOpen);
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
-      <rect x="2" y="5" width="20" height="14" rx="2" />
-      <path d="M2 10h20" strokeLinecap="round" />
-    </svg>
+    <div className="ml-auto flex items-center gap-1 shrink-0">
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        aria-label="Cart"
+        className="relative w-10 h-10 grid place-items-center rounded-full hover:bg-warm-100 text-warm-700 transition-colors"
+      >
+        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.9} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <circle cx="9" cy="21" r="1" />
+          <circle cx="20" cy="21" r="1" />
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+        </svg>
+        {hasHydrated && count > 0 && (
+          <span className="absolute top-0.5 right-0.5 bg-accent-400 text-warm-900 text-[10px] font-extrabold w-4 h-4 rounded-full grid place-items-center">{count}</span>
+        )}
+      </button>
+      <Link
+        to={isAuthenticated ? '/profile' : '/login'}
+        aria-label="Account"
+        className="w-10 h-10 grid place-items-center rounded-full hover:bg-warm-100 text-warm-700 transition-colors"
+      >
+        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+        </svg>
+      </Link>
+    </div>
   );
 }
 
@@ -82,9 +80,11 @@ function hashCode(s: string): number {
 function ProductCard({ product, shop }: { product: ShopProduct; shop: PetShopRead }) {
   const idx = Math.abs(hashCode(product.id)) % PRODUCT_TILES.length;
   const waTarget = shop.whatsapp || shop.phone || null;
-  const pay = payAction(shop, product.price, product.name);
-  const order = waTarget
-    ? waLink(waTarget, `Hi ${shop.name}! I'm interested in "${product.name}" (seen on HiSpike). Is it available?`)
+  const unitPrice = numericPrice(product.price); // null => can't be carted (no clean number)
+  const add = useCartStore((s) => s.add);
+  const inCart = useCartStore((s) => (s.carts[shop.id] ?? []).find((i) => i.product_id === product.id)?.qty ?? 0);
+  const ask = waTarget
+    ? waLink(waTarget, `Hi ${shop.name}! Is "${product.name}" available, and what's the price? (seen on HiSpike)`)
     : null;
   return (
     <article className="w-44 shrink-0 snap-start bg-white border border-primary-100 rounded-2xl overflow-hidden flex flex-col shadow-sm">
@@ -103,22 +103,22 @@ function ProductCard({ product, shop }: { product: ShopProduct; shop: PetShopRea
       <div className="p-3 flex flex-col gap-1 flex-1">
         <p className="font-bold text-sm text-warm-900 leading-snug">{product.name}</p>
         {displayPrice(product.price) && <p className="text-base font-extrabold text-warm-900 tabular-nums">{displayPrice(product.price)}</p>}
-        {pay ? (
-          <a
-            href={pay.href}
-            {...(pay.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-            className="mt-auto inline-flex items-center justify-center gap-1.5 bg-green-500 hover:bg-green-600 text-white font-bold text-xs py-2 rounded-lg transition-colors"
+        {unitPrice != null ? (
+          <button
+            type="button"
+            onClick={() => add(shop.id, { product_id: product.id, name: product.name, unit_price: unitPrice, photo_url: product.photo_url })}
+            className="mt-auto inline-flex items-center justify-center gap-1.5 bg-primary-600 hover:bg-primary-700 text-white font-bold text-xs py-2 rounded-lg transition-colors"
           >
-            <CardIcon className="w-3.5 h-3.5" /> {pay.label}
-          </a>
-        ) : order ? (
+            {inCart > 0 ? `Added (${inCart}) · Add more` : '+ Add to cart'}
+          </button>
+        ) : ask ? (
           <a
-            href={order}
+            href={ask}
             target="_blank"
             rel="noopener noreferrer"
             className="mt-auto inline-flex items-center justify-center gap-1.5 bg-green-100 hover:bg-green-500 text-green-700 hover:text-white font-bold text-xs py-2 rounded-lg transition-colors"
           >
-            <WhatsAppIcon className="w-3.5 h-3.5 fill-current" /> WhatsApp to order
+            <WhatsAppIcon className="w-3.5 h-3.5 fill-current" /> Ask price
           </a>
         ) : null}
       </div>
@@ -149,14 +149,16 @@ function PromoCard({ update, waTarget, shopName }: { update: ShopUpdate; waTarge
   );
 }
 
-const WRAP = 'max-w-5xl mx-auto px-4 sm:px-6';
+// Wide container for the top band (header + hero) so the logo/banner fill the
+// screen; the narrower INNER is used for everything below the hero.
+const WRAP = 'max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10';
+const INNER = 'max-w-5xl mx-auto px-4 sm:px-6';
 
 export function PetShopView({ data }: { data: PetShopRead }) {
   const waTarget = data.whatsapp || data.phone || null;
   const products = data.products ?? [];
   const updates = data.updates ?? [];
   const photos = data.photos ?? [];
-  const heroPay = payAction(data);
   const hasOnlinePay = !!(data.payment_url || data.upi_id);
 
   // Group products into category shelves, ordered by SHOP_CATEGORIES.
@@ -184,7 +186,8 @@ export function PetShopView({ data }: { data: PetShopRead }) {
           <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-white border border-warm-200 shrink-0 grid place-items-center text-2xl overflow-hidden">
             {data.logo_url ? <img src={data.logo_url} alt={data.name} className="w-full h-full object-cover" /> : <span aria-hidden="true">🏪</span>}
           </div>
-          <h1 className="text-xl sm:text-2xl font-black tracking-tight truncate text-warm-900">{data.name}</h1>
+          <h1 className="text-xl sm:text-2xl font-black tracking-tight truncate text-warm-900 min-w-0">{data.name}</h1>
+          <HeaderIcons shopId={data.id} />
         </div>
       </header>
 
@@ -222,15 +225,7 @@ export function PetShopView({ data }: { data: PetShopRead }) {
             </div>
             {data.about && <p className="mt-2.5 text-sm sm:text-[15px] text-white/90 leading-relaxed max-w-xl">{data.about}</p>}
             <div className="mt-4 flex flex-wrap gap-2.5">
-              {heroPay ? (
-                <a
-                  href={heroPay.href}
-                  {...(heroPay.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                  className="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold text-sm px-5 py-2.5 rounded-full transition-colors shadow-lg"
-                >
-                  <CardIcon /> {heroPay.label}
-                </a>
-              ) : waTarget ? (
+              {waTarget && (
                 <a
                   href={waLink(waTarget, `Hi ${data.name}! I found you on HiSpike.`)}
                   target="_blank"
@@ -239,7 +234,7 @@ export function PetShopView({ data }: { data: PetShopRead }) {
                 >
                   <WhatsAppIcon /> WhatsApp
                 </a>
-              ) : null}
+              )}
               {data.phone && (
                 <a
                   href={`tel:${data.phone}`}
@@ -268,7 +263,7 @@ export function PetShopView({ data }: { data: PetShopRead }) {
       {/* Category jump band */}
       {shelves.length > 0 && (
         <nav className="bg-primary-100 border-b border-primary-200" aria-label="Shop by category">
-          <div className={`${WRAP} py-3 flex items-center gap-3`}>
+          <div className={`${INNER} py-3 flex items-center gap-3`}>
             <span className="shrink-0 text-[11px] font-extrabold uppercase tracking-wider text-warm-500 hidden sm:inline">🐾 Shop by category</span>
             <div className="flex gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {shelves.map(({ category, items }) => (
@@ -286,9 +281,10 @@ export function PetShopView({ data }: { data: PetShopRead }) {
         </nav>
       )}
 
-      {/* Payment trust strip — shown when the shop accepts online payment */}
+      {/* Payment trust strip — kept at the narrower width so the pills and card
+          logos stay grouped (the wide layout stretched them too far apart) */}
       {hasOnlinePay && (
-        <div className={`${WRAP} pt-6`}>
+        <div className={`${INNER} pt-6`}>
           <PaymentBadges payLink={data.payment_url ?? undefined} />
           {data.upi_id && (
             <p className="mt-2 text-center text-xs text-warm-500">
@@ -299,7 +295,7 @@ export function PetShopView({ data }: { data: PetShopRead }) {
       )}
 
       {/* Product shelves */}
-      <div className={`${WRAP} pt-7`}>
+      <div className={`${INNER} pt-7`}>
         <p className="text-[11px] font-extrabold tracking-[0.2em] uppercase text-accent-600">Shop the store</p>
         <h2 className="mt-0.5 text-xl sm:text-2xl font-extrabold text-warm-900">Browse by category</h2>
         {products.length === 0 ? (
@@ -326,7 +322,7 @@ export function PetShopView({ data }: { data: PetShopRead }) {
 
       {/* Promotions */}
       {updates.length > 0 && (
-        <div className={`${WRAP} pt-8`}>
+        <div className={`${INNER} pt-8`}>
           <p className="text-[11px] font-extrabold tracking-[0.2em] uppercase text-accent-600">Offers</p>
           <h2 className="mt-0.5 text-xl sm:text-2xl font-extrabold text-warm-900 mb-3">Promotions</h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
@@ -339,7 +335,7 @@ export function PetShopView({ data }: { data: PetShopRead }) {
 
       {/* Our shop — owner photo gallery */}
       {photos.length > 0 && (
-        <div className={`${WRAP} pt-8`}>
+        <div className={`${INNER} pt-8`}>
           <p className="text-[11px] font-extrabold tracking-[0.2em] uppercase text-accent-600">Take a look inside</p>
           <h2 className="mt-0.5 text-xl sm:text-2xl font-extrabold text-warm-900 mb-3">Our shop</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -364,7 +360,7 @@ export function PetShopView({ data }: { data: PetShopRead }) {
 
       {/* HiSpike strip — for visitors who arrive via a shared link */}
       <div className="mt-10 bg-white border-t border-primary-100">
-        <div className={`${WRAP} py-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-center`}>
+        <div className={`${INNER} py-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-center`}>
           <img src="/logo.png" alt="HiSpike" className="w-12 h-12 rounded-full" />
           <span className="text-sm font-semibold text-warm-700">
             This shop is on <b className="text-warm-900">Hi</b><b className="text-primary-600">Spike</b> — Bengaluru&apos;s pet-care network
@@ -378,7 +374,7 @@ export function PetShopView({ data }: { data: PetShopRead }) {
             WhatsApp/Call; HiSpike only lists the shop and isn't a party to
             the sale. Keeps HiSpike out of any buyer↔shop transaction dispute. */}
         <div className="border-t border-warm-100">
-          <p className={`${WRAP} py-4 text-center text-xs leading-relaxed text-warm-400`}>
+          <p className="max-w-3xl mx-auto px-4 py-4 text-center text-xs leading-relaxed text-warm-400">
             Orders and payments are made directly with {data.name}. HiSpike lists this shop and is not a
             party to any purchase, and is not responsible for products, prices, payments, or delivery. By
             contacting or paying this shop, you agree to HiSpike&apos;s{' '}
@@ -387,6 +383,9 @@ export function PetShopView({ data }: { data: PetShopRead }) {
           </p>
         </div>
       </div>
+
+      {/* Floating cart + checkout drawer */}
+      <StorefrontCart shop={data} />
     </div>
   );
 }

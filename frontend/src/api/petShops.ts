@@ -17,6 +17,15 @@ export function displayPrice(price: string | null | undefined): string | null {
   return /^\d/.test(p) ? `₹${p}` : p;
 }
 
+// A plain number from a free-text price ("₹1,299" -> 1299), or null when it's
+// not a clean number ("Ask for price", "From ₹999"). Cart needs a real number
+// to total, so only numeric-priced products are cart-eligible.
+export function numericPrice(price: string | null | undefined): number | null {
+  if (!price) return null;
+  const m = price.replace(/[,₹\s]/g, '');
+  return /^\d+(\.\d+)?$/.test(m) ? Number(m) : null;
+}
+
 export type ShopProduct = {
   id: string;
   shop_id: string;
@@ -103,6 +112,30 @@ export type ShopProductCreate = {
 export type ShopUpdateCreate = { title: string; body: string; badge: string | null };
 
 export type ShopPhotoCreate = { photo_url: string; caption: string | null };
+
+export type OrderItemInput = { product_id: string; name: string; unit_price: number; qty: number };
+export type OrderStatus = 'placed' | 'paid' | 'delivered' | 'cancelled';
+export type ShopOrder = {
+  id: string;
+  shop_id: string;
+  user_id: string | null;
+  buyer_name: string;
+  buyer_phone: string;
+  buyer_address: string;
+  note: string;
+  items: OrderItemInput[];
+  total: number;
+  status: OrderStatus;
+  created_at: string;
+  updated_at: string;
+};
+export type ShopOrderCreate = {
+  buyer_name: string;
+  buyer_phone: string;
+  buyer_address: string;
+  note: string;
+  items: OrderItemInput[];
+};
 
 const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
 function status404(err: unknown): boolean {
@@ -386,4 +419,59 @@ export async function deleteGalleryPhoto(photoId: string): Promise<void> {
     return;
   }
   await apiClient.delete(`/pet-shops/gallery/${photoId}`);
+}
+
+// --- orders ------------------------------------------------------------------
+
+const ORDERS_KEY = 'hispike_mock_shop_orders';
+function readOrders(): ShopOrder[] {
+  if (typeof localStorage === 'undefined') return [];
+  try {
+    const raw = localStorage.getItem(ORDERS_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+function writeOrders(rows: ShopOrder[]): void {
+  try { localStorage.setItem(ORDERS_KEY, JSON.stringify(rows)); } catch { /* ignore quota */ }
+}
+
+// Public — guest checkout allowed (no auth required).
+export async function placeOrder(shopId: string, payload: ShopOrderCreate): Promise<ShopOrder> {
+  if (USE_MOCK) {
+    await delay(300);
+    const now = new Date().toISOString();
+    const total = Math.round(payload.items.reduce((s, i) => s + i.unit_price * i.qty, 0) * 100) / 100;
+    const order: ShopOrder = { ...payload, id: makeId(), shop_id: shopId, user_id: null, total, status: 'placed', created_at: now, updated_at: now };
+    writeOrders([order, ...readOrders()]);
+    return order;
+  }
+  const res = await apiClient.post<ShopOrder>(`/pet-shops/${shopId}/orders`, payload);
+  return res.data;
+}
+
+export async function listShopOrders(shopId: string): Promise<ShopOrder[]> {
+  if (USE_MOCK) {
+    await delay(150);
+    return readOrders().filter((o) => o.shop_id === shopId);
+  }
+  const res = await apiClient.get<ShopOrder[]>(`/pet-shops/${shopId}/orders`);
+  return res.data;
+}
+
+export async function updateOrderStatus(orderId: string, status: OrderStatus): Promise<ShopOrder> {
+  if (USE_MOCK) {
+    await delay(150);
+    const rows = readOrders();
+    const o = rows.find((x) => x.id === orderId);
+    if (!o) throw new Error('Order not found');
+    o.status = status;
+    o.updated_at = new Date().toISOString();
+    writeOrders(rows);
+    return o;
+  }
+  const res = await apiClient.patch<ShopOrder>(`/pet-shops/orders/${orderId}`, { status });
+  return res.data;
 }

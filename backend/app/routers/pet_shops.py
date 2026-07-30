@@ -11,12 +11,15 @@ from sqlalchemy.orm import selectinload
 
 from app.core.dependencies import get_current_active_user, require_admin
 from app.database import get_db
-from app.models.pet_shop import PetShop, ShopPhoto, ShopProduct, ShopUpdate
+from app.models.pet_shop import PetShop, ShopOrder, ShopPhoto, ShopProduct, ShopUpdate
 from app.models.user import User, UserRole
 from app.schemas.pet_shop import (
+    OrderStatusUpdate,
     PetShopCreate,
     PetShopRead,
     PetShopSummary,
+    ShopOrderCreate,
+    ShopOrderRead,
     ShopPhotoCreate,
     ShopPhotoRead,
     ShopProductCreate,
@@ -145,6 +148,14 @@ async def _photo_or_404(db: AsyncSession, photo_id: uuid.UUID) -> ShopPhoto:
     if photo is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Photo not found")
     return photo
+
+
+async def _order_or_404(db: AsyncSession, order_id: uuid.UUID) -> ShopOrder:
+    result = await db.execute(select(ShopOrder).where(ShopOrder.id == order_id))
+    order = result.scalar_one_or_none()
+    if order is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Order not found")
+    return order
 
 
 # --- specific routes before "/{shop_id}" so they aren't captured --------------
@@ -440,6 +451,78 @@ async def delete_gallery_photo(
     _require_owner_or_admin(shop, current_user)
     await db.delete(photo)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+# --- Orders -------------------------------------------------------------------
+
+
+@router.post(
+    "/{shop_id}/orders",
+    response_model=ShopOrderRead,
+    status_code=status.HTTP_201_CREATED,
+    summary="Place an order from a shop's cart (public — guest checkout allowed)",
+)
+async def place_order(
+    shop_id: uuid.UUID,
+    payload: ShopOrderCreate,
+    db: AsyncSession = Depends(get_db),
+) -> ShopOrderRead:
+    shop = await _get_shop_or_404(db, shop_id)
+    # Recompute the total server-side from the submitted line items (don't trust
+    # a client-sent total). Prices are a snapshot taken at order time.
+    total = round(sum(i.unit_price * i.qty for i in payload.items), 2)
+    order = ShopOrder(
+        shop_id=shop.id,
+        buyer_name=payload.buyer_name.strip(),
+        buyer_phone=payload.buyer_phone.strip(),
+        buyer_address=payload.buyer_address.strip(),
+        note=payload.note.strip(),
+        items=[i.model_dump() for i in payload.items],
+        total=total,
+        status="placed",
+    )
+    db.add(order)
+    await db.flush()
+    await db.refresh(order)
+    return ShopOrderRead.model_validate(order)
+
+
+@router.get(
+    "/{shop_id}/orders",
+    response_model=list[ShopOrderRead],
+    summary="List a shop's orders (owner or admin)",
+)
+async def list_orders(
+    shop_id: uuid.UUID,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+) -> list[ShopOrderRead]:
+    shop = await _get_shop_or_404(db, shop_id)
+    _require_owner_or_admin(shop, current_user)
+    result = await db.execute(
+        select(ShopOrder).where(ShopOrder.shop_id == shop_id).order_by(desc(ShopOrder.created_at))
+    )
+    return [ShopOrderRead.model_validate(o) for o in result.scalars().all()]
+
+
+@router.patch(
+    "/orders/{order_id}",
+    response_model=ShopOrderRead,
+    summary="Update an order's status (owner or admin)",
+)
+async def update_order_status(
+    order_id: uuid.UUID,
+    payload: OrderStatusUpdate,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+) -> ShopOrderRead:
+    order = await _order_or_404(db, order_id)
+    shop = await _get_shop_or_404(db, order.shop_id)
+    _require_owner_or_admin(shop, current_user)
+    order.status = payload.status
+    await db.flush()
+    await db.refresh(order)
+    return ShopOrderRead.model_validate(order)
 
 
 # --- Shop CRUD ----------------------------------------------------------------

@@ -15,11 +15,14 @@ import {
   updateProduct,
   updateShop,
   uploadShopPhoto,
+  listShopOrders,
+  updateOrderStatus,
   displayPrice,
   SHOP_CATEGORIES,
   type PetShopRead,
   type PetShopSummary,
   type ShopProduct,
+  type OrderStatus,
 } from '@/api/petShops';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { SelectMenu } from '@/components/SelectMenu';
@@ -422,6 +425,78 @@ function PhotosManager({ shop, onChanged }: { shop: PetShopRead; onChanged: () =
   );
 }
 
+const ORDER_STATUS_STYLE: Record<OrderStatus, string> = {
+  placed: 'bg-accent-100 text-accent-700',
+  paid: 'bg-primary-100 text-primary-700',
+  delivered: 'bg-green-100 text-green-700',
+  cancelled: 'bg-warm-100 text-warm-500',
+};
+
+function OrdersManager({ shop }: { shop: PetShopRead }) {
+  const qc = useQueryClient();
+  const { user } = useAuth();
+  const { data: orders, isLoading } = useQuery({
+    queryKey: ['shop-orders', shop.id, user?.id],
+    queryFn: () => listShopOrders(shop.id),
+  });
+  const statusMut = useMutation({
+    mutationFn: ({ id, status }: { id: string; status: OrderStatus }) => updateOrderStatus(id, status),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['shop-orders', shop.id] }); },
+    onError: (e: Error) => toast.error(e.message),
+  });
+  const rupee = (n: number) => `₹${n.toLocaleString('en-IN')}`;
+
+  return (
+    <section>
+      <h2 className="text-lg font-extrabold text-warm-900 mb-1">Orders</h2>
+      <p className="text-sm text-warm-500 mb-4">Customer orders from your storefront. Mark <b>Paid</b> once you receive payment, then <b>Delivered</b> after handover.</p>
+      {isLoading ? (
+        <div className="py-8 flex justify-center"><LoadingSpinner /></div>
+      ) : !orders || orders.length === 0 ? (
+        <p className="text-sm text-warm-500 rounded-2xl border border-dashed border-warm-300 p-6 text-center">No orders yet.</p>
+      ) : (
+        <ul className="space-y-3">
+          {orders.map((o) => (
+            <li key={o.id} className="rounded-2xl border border-warm-200 bg-white p-4">
+              <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+                <div className="flex items-center gap-2">
+                  <span className="font-mono text-xs font-bold text-warm-500">#{o.id.slice(0, 8).toUpperCase()}</span>
+                  <span className={`text-[11px] font-extrabold uppercase tracking-wide px-2 py-0.5 rounded-full ${ORDER_STATUS_STYLE[o.status]}`}>{o.status}</span>
+                </div>
+                <span className="text-lg font-extrabold text-warm-900 tabular-nums">{rupee(o.total)}</span>
+              </div>
+              <div className="text-sm text-warm-700">
+                <p className="font-bold">{o.buyer_name} · <a href={`tel:${o.buyer_phone}`} className="text-primary-600 font-semibold">{o.buyer_phone}</a></p>
+                <p className="text-warm-500 mt-0.5">{o.buyer_address}</p>
+                {o.note && <p className="text-warm-500 mt-0.5 italic">“{o.note}”</p>}
+              </div>
+              <ul className="mt-2 text-sm text-warm-600 border-t border-warm-100 pt-2 space-y-0.5">
+                {o.items.map((it, idx) => (
+                  <li key={idx} className="flex justify-between">
+                    <span className="truncate pr-2">{it.name} × {it.qty}</span>
+                    <span className="tabular-nums">{rupee(it.unit_price * it.qty)}</span>
+                  </li>
+                ))}
+              </ul>
+              {o.status !== 'delivered' && o.status !== 'cancelled' && (
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {o.status === 'placed' && (
+                    <button onClick={() => statusMut.mutate({ id: o.id, status: 'paid' })} className="rounded-full bg-primary-600 hover:bg-primary-700 text-white font-bold text-xs px-4 py-2">Mark paid</button>
+                  )}
+                  {o.status === 'paid' && (
+                    <button onClick={() => statusMut.mutate({ id: o.id, status: 'delivered' })} className="rounded-full bg-green-500 hover:bg-green-600 text-white font-bold text-xs px-4 py-2">Mark delivered</button>
+                  )}
+                  <button onClick={() => statusMut.mutate({ id: o.id, status: 'cancelled' })} className="rounded-full text-warm-400 hover:text-red-600 font-semibold text-xs px-3 py-2">Cancel</button>
+                </div>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+  );
+}
+
 export function MyShop() {
   const qc = useQueryClient();
   const { user } = useAuth();
@@ -513,6 +588,7 @@ export function MyShop() {
 
             {fullShop && (
               <>
+                <div className="bg-white rounded-3xl shadow-sm border border-warm-200 p-6 sm:p-8"><OrdersManager key={`o-${fullShop.id}`} shop={fullShop} /></div>
                 <div className="bg-white rounded-3xl shadow-sm border border-warm-200 p-6 sm:p-8"><ProductsManager key={`p-${fullShop.id}`} shop={fullShop} onChanged={invalidate} /></div>
                 <div className="bg-white rounded-3xl shadow-sm border border-warm-200 p-6 sm:p-8"><UpdatesManager key={`u-${fullShop.id}`} shop={fullShop} onChanged={invalidate} /></div>
                 <div className="bg-white rounded-3xl shadow-sm border border-warm-200 p-6 sm:p-8"><PhotosManager key={`g-${fullShop.id}`} shop={fullShop} onChanged={invalidate} /></div>
