@@ -303,7 +303,7 @@ export function PetShopView({ data }: { data: PetShopRead }) {
       )}
 
       {/* Product shelves */}
-      <div className={`${WRAP} pt-7`}>
+      <div className={`${INNER} pt-7`}>
         <p className="text-[11px] font-extrabold tracking-[0.2em] uppercase text-accent-600">Shop the store</p>
         <h2 className="mt-0.5 text-xl sm:text-2xl font-extrabold text-warm-900">Browse by category</h2>
         {products.length === 0 ? (
