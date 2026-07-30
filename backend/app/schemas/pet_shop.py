@@ -80,6 +80,45 @@ class ShopPhotoRead(ShopPhotoBase):
     updated_at: datetime
 
 
+# --- Orders -------------------------------------------------------------------
+
+
+class OrderItem(BaseModel):
+    product_id: str = Field(..., max_length=64)
+    name: str = Field(..., min_length=1, max_length=200)
+    unit_price: float = Field(..., ge=0)
+    qty: int = Field(..., ge=1, le=999)
+
+
+class ShopOrderCreate(BaseModel):
+    buyer_name: str = Field(..., min_length=1, max_length=120)
+    buyer_phone: str = Field(..., min_length=3, max_length=40)
+    buyer_address: str = Field(..., min_length=1, max_length=1000)
+    note: str = Field("", max_length=1000)
+    items: list[OrderItem] = Field(..., min_length=1)
+
+
+class OrderStatusUpdate(BaseModel):
+    status: str = Field(..., pattern="^(placed|paid|delivered|cancelled)$")
+
+
+class ShopOrderRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: uuid.UUID
+    shop_id: uuid.UUID
+    user_id: uuid.UUID | None = None
+    buyer_name: str
+    buyer_phone: str
+    buyer_address: str
+    note: str
+    items: list[OrderItem]
+    total: float
+    status: str
+    created_at: datetime
+    updated_at: datetime
+
+
 # --- Shop ---------------------------------------------------------------------
 
 
