@@ -329,7 +329,7 @@ export function PetShopView({ data }: { data: PetShopRead }) {
         <div className={`${WRAP} pt-8`}>
           <p className="text-[11px] font-extrabold tracking-[0.2em] uppercase text-accent-600">Offers</p>
           <h2 className="mt-0.5 text-xl sm:text-2xl font-extrabold text-warm-900 mb-3">Promotions</h2>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5">
             {updates.map((u) => (
               <PromoCard key={u.id} update={u} waTarget={waTarget} shopName={data.name} />
             ))}
