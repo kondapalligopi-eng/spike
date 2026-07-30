@@ -3,7 +3,7 @@ from __future__ import annotations
 import uuid
 from typing import TYPE_CHECKING, List
 
-from sqlalchemy import ForeignKey, String, Text
+from sqlalchemy import JSON, ForeignKey, Numeric, String, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -147,3 +147,48 @@ class ShopPhoto(UUIDBase):
 
     def __repr__(self) -> str:
         return f"<ShopPhoto id={self.id} shop_id={self.shop_id}>"
+
+
+class ShopOrder(UUIDBase):
+    """A customer order placed from a shop's storefront cart.
+
+    Manual-confirm flow (no gateway on our side): the customer places the order
+    (status "placed") and pays the shop directly via UPI/link; the owner sees
+    the buyer details + items, marks it "paid" once money lands, then
+    "delivered" after handing it over. `items` is a JSON snapshot taken at order
+    time so later product edits don't rewrite past orders.
+    """
+
+    __tablename__ = "shop_orders"
+
+    STATUSES = ("placed", "paid", "delivered", "cancelled")
+
+    shop_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("pet_shops.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    # Set when the buyer was logged in; guest orders leave it null. SET NULL so a
+    # buyer deleting their account doesn't wipe the shop's order records.
+    user_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("users.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,
+    )
+
+    buyer_name: Mapped[str] = mapped_column(String(120), nullable=False)
+    buyer_phone: Mapped[str] = mapped_column(String(40), nullable=False)
+    buyer_address: Mapped[str] = mapped_column(Text, nullable=False)
+    note: Mapped[str] = mapped_column(Text, nullable=False, default="")
+
+    # [{product_id, name, unit_price, qty}] captured at order time.
+    items: Mapped[list] = mapped_column(JSON, nullable=False, default=list)
+    total: Mapped[float] = mapped_column(Numeric(10, 2), nullable=False, default=0)
+    status: Mapped[str] = mapped_column(String(20), nullable=False, default="placed")
+
+    shop: Mapped["PetShop"] = relationship("PetShop")
+
+    def __repr__(self) -> str:
+        return f"<ShopOrder id={self.id} shop_id={self.shop_id} status={self.status}>"
