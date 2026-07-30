@@ -36,7 +36,7 @@ function CartIcon({ className = 'w-5 h-5' }: { className?: string }) {
 
 export function StorefrontCart({ shop }: { shop: PetShopRead }) {
   const { user } = useAuth();
-  const items = useCartStore((s) => s.carts[shop.id] ?? []);
+  const items = useCartStore((s) => s.carts[shop.id] ?? EMPTY);
   const hasHydrated = useCartStore((s) => s.hasHydrated);
   const setQty = useCartStore((s) => s.setQty);
   const remove = useCartStore((s) => s.remove);
