@@ -3,13 +3,52 @@ import { Link } from 'react-router-dom';
 import { HeroPaws } from './HeroPaws';
 import { PaymentBadges } from './PaymentBadges';
 import { StorefrontCart } from './StorefrontCart';
-import { useCartStore } from '@/store/cartStore';
+import { useCartStore, type CartItem } from '@/store/cartStore';
+import { useAuth } from '@/hooks/useAuth';
 import { SHOP_CATEGORIES, displayPrice, numericPrice, type PetShopRead, type ShopProduct, type ShopUpdate } from '@/api/petShops';
+
+const EMPTY_CART: CartItem[] = [];
 
 // wa.me deep link with a pre-filled message.
 function waLink(number: string, text: string): string {
   const digits = number.replace(/\D/g, '');
   return `https://wa.me/${digits}?text=${encodeURIComponent(text)}`;
+}
+
+// Cart + account icons for the storefront header (right of the shop logo),
+// mirroring the hispike.in navbar's icon cluster. The cart icon opens the same
+// drawer as the floating button (shared store state).
+function HeaderIcons({ shopId }: { shopId: string }) {
+  const { isAuthenticated } = useAuth();
+  const hasHydrated = useCartStore((s) => s.hasHydrated);
+  const count = useCartStore((s) => (s.carts[shopId] ?? EMPTY_CART).reduce((n, i) => n + i.qty, 0));
+  const setOpen = useCartStore((s) => s.setOpen);
+  return (
+    <div className="ml-auto flex items-center gap-1 shrink-0">
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        aria-label="Cart"
+        className="relative w-10 h-10 grid place-items-center rounded-full hover:bg-warm-100 text-warm-700 transition-colors"
+      >
+        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M3 3h2l.4 2M7 13h10l3-8H5.4M7 13L5.4 5M7 13l-1.6 4M17 13l1.6 4M6 21a1 1 0 100-2 1 1 0 000 2zm12 0a1 1 0 100-2 1 1 0 000 2z" />
+        </svg>
+        {hasHydrated && count > 0 && (
+          <span className="absolute top-0.5 right-0.5 bg-accent-400 text-warm-900 text-[10px] font-extrabold w-4 h-4 rounded-full grid place-items-center">{count}</span>
+        )}
+      </button>
+      <Link
+        to={isAuthenticated ? '/profile' : '/login'}
+        aria-label="Account"
+        className="w-10 h-10 grid place-items-center rounded-full hover:bg-warm-100 text-warm-700 transition-colors"
+      >
+        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM4 21v-1a6 6 0 0112 0v1" />
+        </svg>
+      </Link>
+    </div>
+  );
 }
 
 const PRODUCT_TILES = [
