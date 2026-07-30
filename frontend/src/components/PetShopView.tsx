@@ -2,57 +2,14 @@ import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { HeroPaws } from './HeroPaws';
 import { PaymentBadges } from './PaymentBadges';
-import { SHOP_CATEGORIES, displayPrice, type PetShopRead, type ShopProduct, type ShopUpdate } from '@/api/petShops';
+import { StorefrontCart } from './StorefrontCart';
+import { useCartStore } from '@/store/cartStore';
+import { SHOP_CATEGORIES, displayPrice, numericPrice, type PetShopRead, type ShopProduct, type ShopUpdate } from '@/api/petShops';
 
 // wa.me deep link with a pre-filled message.
 function waLink(number: string, text: string): string {
   const digits = number.replace(/\D/g, '');
   return `https://wa.me/${digits}?text=${encodeURIComponent(text)}`;
-}
-
-// A bare numeric amount for a UPI deep link (e.g. "₹1,299" -> "1299"); null if
-// the price isn't a plain number (e.g. "Ask for price", "From ₹999").
-function upiAmount(price?: string | null): string | null {
-  if (!price) return null;
-  const m = price.replace(/[,₹\s]/g, '');
-  return /^\d+(\.\d+)?$/.test(m) ? m : null;
-}
-
-// Direct-to-shop pay action (no HiSpike checkout). null = no online payment set
-// up, so the caller shows the WhatsApp-to-order fallback instead.
-//
-// For a specific product we prefer UPI: the deep link carries the amount AND
-// the product name as the transaction note (`tn`), so the customer doesn't
-// retype the amount and the owner sees exactly which item sold in their UPI/
-// bank statement. For the shop-level button (no item) we prefer the Razorpay
-// link, which also works on desktop.
-function payAction(
-  shop: Pick<PetShopRead, 'payment_url' | 'upi_id' | 'name'>,
-  amount?: string | null,
-  note?: string | null,
-): { href: string; external: boolean; label: string } | null {
-  const amt = upiAmount(amount);
-  let upi: { href: string; external: boolean; label: string } | null = null;
-  if (shop.upi_id) {
-    const params = new URLSearchParams({ pa: shop.upi_id, pn: shop.name, cu: 'INR' });
-    if (amt) params.set('am', amt);
-    if (note) params.set('tn', note);
-    const shown = amt ? Number(amt).toLocaleString('en-IN') : null;
-    upi = { href: `upi://pay?${params.toString()}`, external: false, label: shown ? `Pay ₹${shown}` : 'Pay via UPI' };
-  }
-  const rzp = shop.payment_url
-    ? { href: shop.payment_url, external: true, label: 'Pay online' as const }
-    : null;
-  return amt ? (upi ?? rzp) : (rzp ?? upi);
-}
-
-function CardIcon({ className = 'w-4 h-4' }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
-      <rect x="2" y="5" width="20" height="14" rx="2" />
-      <path d="M2 10h20" strokeLinecap="round" />
-    </svg>
-  );
 }
 
 const PRODUCT_TILES = [
