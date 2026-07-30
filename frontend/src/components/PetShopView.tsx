@@ -31,8 +31,10 @@ function HeaderIcons({ shopId }: { shopId: string }) {
         aria-label="Cart"
         className="relative w-10 h-10 grid place-items-center rounded-full hover:bg-warm-100 text-warm-700 transition-colors"
       >
-        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M3 3h2l.4 2M7 13h10l3-8H5.4M7 13L5.4 5M7 13l-1.6 4M17 13l1.6 4M6 21a1 1 0 100-2 1 1 0 000 2zm12 0a1 1 0 100-2 1 1 0 000 2z" />
+        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.9} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <circle cx="9" cy="21" r="1" />
+          <circle cx="20" cy="21" r="1" />
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
         </svg>
         {hasHydrated && count > 0 && (
           <span className="absolute top-0.5 right-0.5 bg-accent-400 text-warm-900 text-[10px] font-extrabold w-4 h-4 rounded-full grid place-items-center">{count}</span>
@@ -44,7 +46,7 @@ function HeaderIcons({ shopId }: { shopId: string }) {
         className="w-10 h-10 grid place-items-center rounded-full hover:bg-warm-100 text-warm-700 transition-colors"
       >
         <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM4 21v-1a6 6 0 0112 0v1" />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
         </svg>
       </Link>
     </div>
