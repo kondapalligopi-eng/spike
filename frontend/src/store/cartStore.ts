@@ -33,6 +33,8 @@ export const useCartStore = create<CartState>()(
   persist(
     (set) => ({
       carts: {},
+      open: false,
+      setOpen: (open) => set({ open }),
       hasHydrated: false,
       setHydrated: () => set({ hasHydrated: true }),
 
