@@ -341,6 +341,9 @@ export function PetShopView({ data }: { data: PetShopRead }) {
           </p>
         </div>
       </div>
+
+      {/* Floating cart + checkout drawer */}
+      <StorefrontCart shop={data} />
     </div>
   );
 }
