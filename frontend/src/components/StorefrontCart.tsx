@@ -41,8 +41,9 @@ export function StorefrontCart({ shop }: { shop: PetShopRead }) {
   const setQty = useCartStore((s) => s.setQty);
   const remove = useCartStore((s) => s.remove);
   const clear = useCartStore((s) => s.clear);
+  const open = useCartStore((s) => s.open);
+  const setOpen = useCartStore((s) => s.setOpen);
 
-  const [open, setOpen] = useState(false);
   const [step, setStep] = useState<'cart' | 'checkout' | 'done'>('cart');
   const [placed, setPlaced] = useState<ShopOrder | null>(null);
   const [name, setName] = useState(user?.full_name ?? '');
