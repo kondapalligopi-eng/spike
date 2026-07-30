@@ -149,7 +149,7 @@ function PromoCard({ update, waTarget, shopName }: { update: ShopUpdate; waTarge
   );
 }
 
-const WRAP = 'max-w-5xl mx-auto px-4 sm:px-6';
+const WRAP = 'max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10';
 
 export function PetShopView({ data }: { data: PetShopRead }) {
   const waTarget = data.whatsapp || data.phone || null;
