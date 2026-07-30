@@ -149,7 +149,10 @@ function PromoCard({ update, waTarget, shopName }: { update: ShopUpdate; waTarge
   );
 }
 
+// Wide container for the top band (header + hero) so the logo/banner fill the
+// screen; the narrower INNER is used for everything below the hero.
 const WRAP = 'max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10';
+const INNER = 'max-w-5xl mx-auto px-4 sm:px-6';
 
 export function PetShopView({ data }: { data: PetShopRead }) {
   const waTarget = data.whatsapp || data.phone || null;
