@@ -411,3 +411,58 @@ export async function deleteGalleryPhoto(photoId: string): Promise<void> {
   }
   await apiClient.delete(`/pet-shops/gallery/${photoId}`);
 }
+
+// --- orders ------------------------------------------------------------------
+
+const ORDERS_KEY = 'hispike_mock_shop_orders';
+function readOrders(): ShopOrder[] {
+  if (typeof localStorage === 'undefined') return [];
+  try {
+    const raw = localStorage.getItem(ORDERS_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+function writeOrders(rows: ShopOrder[]): void {
+  try { localStorage.setItem(ORDERS_KEY, JSON.stringify(rows)); } catch { /* ignore quota */ }
+}
+
+// Public — guest checkout allowed (no auth required).
+export async function placeOrder(shopId: string, payload: ShopOrderCreate): Promise<ShopOrder> {
+  if (USE_MOCK) {
+    await delay(300);
+    const now = new Date().toISOString();
+    const total = Math.round(payload.items.reduce((s, i) => s + i.unit_price * i.qty, 0) * 100) / 100;
+    const order: ShopOrder = { ...payload, id: makeId(), shop_id: shopId, user_id: null, total, status: 'placed', created_at: now, updated_at: now };
+    writeOrders([order, ...readOrders()]);
+    return order;
+  }
+  const res = await apiClient.post<ShopOrder>(`/pet-shops/${shopId}/orders`, payload);
+  return res.data;
+}
+
+export async function listShopOrders(shopId: string): Promise<ShopOrder[]> {
+  if (USE_MOCK) {
+    await delay(150);
+    return readOrders().filter((o) => o.shop_id === shopId);
+  }
+  const res = await apiClient.get<ShopOrder[]>(`/pet-shops/${shopId}/orders`);
+  return res.data;
+}
+
+export async function updateOrderStatus(orderId: string, status: OrderStatus): Promise<ShopOrder> {
+  if (USE_MOCK) {
+    await delay(150);
+    const rows = readOrders();
+    const o = rows.find((x) => x.id === orderId);
+    if (!o) throw new Error('Order not found');
+    o.status = status;
+    o.updated_at = new Date().toISOString();
+    writeOrders(rows);
+    return o;
+  }
+  const res = await apiClient.patch<ShopOrder>(`/pet-shops/orders/${orderId}`, { status });
+  return res.data;
+}
