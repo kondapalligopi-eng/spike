@@ -172,7 +172,7 @@ function ShopDetailsForm({ shop, onSaved }: { shop: PetShopRead | null; onSaved:
 
       <div>
         <label className={label} htmlFor="shop-about">About the shop</label>
-        <textarea id="shop-about" rows={3} maxLength={500} className={input} placeholder="A short tagline — e.g. Food, treats, supplies, toys & more" value={about} onChange={(e) => setAbout(e.target.value)} />
+        <textarea id="shop-about" rows={3} maxLength={500} className={input} placeholder="What you sell, what makes you special, delivery info…" value={about} onChange={(e) => setAbout(e.target.value)} />
         <p className="mt-1 text-xs text-warm-400 text-right">{about.length}/500</p>
       </div>
 
