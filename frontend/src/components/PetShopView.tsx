@@ -212,7 +212,7 @@ export function PetShopView({ data }: { data: PetShopRead }) {
         <div
           role="region"
           aria-label="Current offer"
-          className="bg-gradient-to-r from-accent-300 via-accent-400 to-accent-300 text-warm-900 text-sm sm:text-base font-semibold text-center py-2.5 px-4 border-b border-accent-500/30"
+          className="bg-gradient-to-r from-accent-300 via-accent-400 to-accent-300 text-warm-900 text-xs sm:text-sm font-semibold text-center py-1.5 px-4 border-b border-accent-500/30"
         >
           <span aria-hidden="true" className="mr-1.5">🏷️</span>
           {data.offer}
@@ -245,8 +245,8 @@ export function PetShopView({ data }: { data: PetShopRead }) {
           </div>
         )}
         <div className={`relative ${WRAP}`}>
-          <div className={`py-10 sm:py-14 md:min-h-[380px] flex flex-col justify-center max-w-2xl ${data.hero_url ? 'md:max-w-[54%] md:pr-6' : ''}`}>
-            <h2 className="text-2xl sm:text-4xl lg:text-[2.75rem] font-black leading-[1.1] tracking-tight line-clamp-3">
+          <div className={`py-8 sm:py-11 md:min-h-[330px] flex flex-col justify-center max-w-2xl ${data.hero_url ? 'md:max-w-[54%] md:pr-6' : ''}`}>
+            <h2 className="text-2xl sm:text-4xl lg:text-[2.75rem] font-black leading-[1.18] tracking-tight line-clamp-3 pb-1">
               {data.about || `Welcome to ${data.name}`}
             </h2>
             <div className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-[13px] sm:text-sm text-white/90 font-semibold">
@@ -292,7 +292,7 @@ export function PetShopView({ data }: { data: PetShopRead }) {
       {/* Category jump band */}
       {shelves.length > 0 && (
         <nav className="bg-primary-100 border-b border-primary-200" aria-label="Shop by category">
-          <div className={`${INNER} py-3 flex items-center gap-3`}>
+          <div className={`${INNER} py-2 flex items-center gap-3`}>
             <span className="shrink-0 text-[11px] font-extrabold uppercase tracking-wider text-warm-500 hidden sm:inline">🐾 Shop by category</span>
             <div className="flex gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {shelves.map(({ category, items }) => (
