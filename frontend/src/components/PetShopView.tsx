@@ -230,28 +230,25 @@ export function PetShopView({ data }: { data: PetShopRead }) {
         </div>
       )}
 
-      {/* Hero — HiSpike-style animated blue band (pulsing paws + sparkles).
-          Split layout: text on the left, banner photo floated as a card on the
-          right. On mobile the photo is hidden, so it reads like the HiSpike
-          hero — text on the animated blue, always readable. */}
+      {/* Hero — Chewy-style animated blue band: big headline + CTAs on the left,
+          banner photo bleeding to the right screen edge. The image is absolutely
+          positioned so it never drives the hero height — the text column does. */}
       <section className="relative overflow-hidden bg-gradient-to-br from-primary-700 to-primary-900 text-white">
         <HeroPaws />
-        <div className={`relative ${WRAP} grid gap-6 md:gap-8 items-stretch ${data.hero_url ? 'md:grid-cols-2' : ''}`}>
-          {/* Left — offer, quick facts, description, CTAs. This column's content
-              defines the hero height (the image conforms). Centred so short text
-              sits balanced in the min-height band and long text fills it. */}
-          <div className="py-8 sm:py-12 flex flex-col justify-center items-start max-w-xl">
-            {data.offer && (
-              <span className="inline-block bg-accent-400 text-warm-900 text-[10px] sm:text-[11px] font-extrabold uppercase tracking-[0.18em] px-2.5 py-1 rounded mb-3">🏷️ Sale</span>
-            )}
-            {/* Headline — the offer reads as a real headline (Chewy-style); when
-                there's no offer the description leads, so the hero is never bare. */}
-            <h2 className="text-2xl sm:text-4xl font-black leading-[1.12] tracking-tight line-clamp-2">
-              {data.offer || data.about || `Welcome to ${data.name}`}
+        {data.hero_url && (
+          <div className="hidden md:block absolute inset-y-0 right-0 w-[44%] lg:w-[40%]">
+            <img
+              src={data.hero_url}
+              alt={`${data.name} banner`}
+              className="w-full h-full object-cover rounded-l-[2.5rem]"
+            />
+          </div>
+        )}
+        <div className={`relative ${WRAP}`}>
+          <div className={`py-10 sm:py-14 md:min-h-[380px] flex flex-col justify-center max-w-2xl ${data.hero_url ? 'md:max-w-[54%] md:pr-6' : ''}`}>
+            <h2 className="text-2xl sm:text-4xl lg:text-[2.75rem] font-black leading-[1.1] tracking-tight line-clamp-3">
+              {data.about || `Welcome to ${data.name}`}
             </h2>
-            {data.offer && data.about && (
-              <p className="mt-3 text-sm sm:text-base text-white/85 leading-relaxed line-clamp-2">{data.about}</p>
-            )}
             <div className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-[13px] sm:text-sm text-white/90 font-semibold">
               {data.area && (
                 <a
@@ -289,19 +286,6 @@ export function PetShopView({ data }: { data: PetShopRead }) {
               )}
             </div>
           </div>
-
-          {/* Right — banner photo, desktop only. Absolutely positioned so it can
-              never inflate the hero: it fills whatever height the text sets and
-              crops (object-cover). min-h keeps a sensible floor for short text. */}
-          {data.hero_url && (
-            <div className="hidden md:block relative min-h-[380px]">
-              <img
-                src={data.hero_url}
-                alt={`${data.name} banner`}
-                className="absolute inset-0 w-full h-full object-cover rounded-2xl shadow-xl ring-1 ring-white/20"
-              />
-            </div>
-          )}
         </div>
       </section>
 
