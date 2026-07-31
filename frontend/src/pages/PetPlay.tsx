@@ -123,6 +123,21 @@ export function PetPlay() {
     setSniffing(false);
   }, []);
 
+  // Picking who plays. Choosing "Dog picks" arms the dog so it goes in on its
+  // own (see the effect below) — no extra button. Cancels any in-flight sniff
+  // and clears the current round so it starts clean either way.
+  const chooseMode = useCallback((m: Mode) => {
+    if (timer.current) clearTimeout(timer.current);
+    if (pawTimer.current) clearInterval(pawTimer.current);
+    setSniffing(false);
+    setPawUp(false);
+    setPicked(null);
+    setGain(0);
+    setHitGoal(false);
+    setMode(m);
+    setDogArmed(m === 'dog');
+  }, []);
+
   // Auto-reset a couple of seconds after a win, so players don't have to tap a
   // "play again" button every round — they just keep picking.
   useEffect(() => {
@@ -130,6 +145,13 @@ export function PetPlay() {
     const t = setTimeout(() => again(), 2000);
     return () => clearTimeout(t);
   }, [picked, again]);
+
+  // When the dog is armed and the board is idle, send it in automatically.
+  useEffect(() => {
+    if (mode !== 'dog' || !dogArmed || picked !== null || sniffing) return;
+    setDogArmed(false);
+    sniff();
+  }, [mode, dogArmed, picked, sniffing, sniff]);
 
   const pct = Math.min(100, (points / REWARD_GOAL) * 100);
 
