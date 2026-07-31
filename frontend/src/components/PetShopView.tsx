@@ -292,7 +292,7 @@ export function PetShopView({ data }: { data: PetShopRead }) {
       {/* Category jump band */}
       {shelves.length > 0 && (
         <nav className="bg-primary-100 border-b border-primary-200" aria-label="Shop by category">
-          <div className={`${INNER} py-3 flex items-center gap-3`}>
+          <div className={`${INNER} py-2 flex items-center gap-3`}>
             <span className="shrink-0 text-[11px] font-extrabold uppercase tracking-wider text-warm-500 hidden sm:inline">🐾 Shop by category</span>
             <div className="flex gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {shelves.map(({ category, items }) => (
