@@ -246,7 +246,7 @@ export function PetShopView({ data }: { data: PetShopRead }) {
         )}
         <div className={`relative ${WRAP}`}>
           <div className={`py-8 sm:py-11 md:min-h-[330px] flex flex-col justify-center max-w-2xl ${data.hero_url ? 'md:max-w-[54%] md:pr-6' : ''}`}>
-            <h2 className="text-2xl sm:text-4xl lg:text-[2.75rem] font-black leading-[1.1] tracking-tight line-clamp-3">
+            <h2 className="text-2xl sm:text-4xl lg:text-[2.75rem] font-black leading-[1.18] tracking-tight line-clamp-3 pb-1">
               {data.about || `Welcome to ${data.name}`}
             </h2>
             <div className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-[13px] sm:text-sm text-white/90 font-semibold">
