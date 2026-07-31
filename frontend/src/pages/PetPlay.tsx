@@ -271,7 +271,7 @@ export function PetPlay() {
               <button
                 key={m}
                 type="button"
-                onClick={() => setMode(m)}
+                onClick={() => chooseMode(m)}
                 aria-pressed={mode === m}
                 className={`px-4 py-2 rounded-full text-sm font-bold transition-colors ${
                   mode === m ? 'bg-primary-600 text-white shadow' : 'text-warm-500 hover:text-warm-900'
