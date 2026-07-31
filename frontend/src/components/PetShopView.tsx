@@ -205,6 +205,20 @@ export function PetShopView({ data }: { data: PetShopRead }) {
         </div>
       </header>
 
+      {/* Offer announcement strip — full-width gold band, same style as the
+          HiSpike home banner. The headline offer lives here (Chewy-style),
+          instead of inside the hero body. */}
+      {data.offer && (
+        <div
+          role="region"
+          aria-label="Current offer"
+          className="bg-gradient-to-r from-accent-300 via-accent-400 to-accent-300 text-warm-900 text-sm sm:text-base font-semibold text-center py-2.5 px-4 border-b border-accent-500/30"
+        >
+          <span aria-hidden="true" className="mr-1.5">🏷️</span>
+          {data.offer}
+        </div>
+      )}
+
       {/* Trust strip */}
       {trust.length > 0 && (
         <div className="bg-primary-900 text-white text-xs sm:text-[13px] font-semibold">
