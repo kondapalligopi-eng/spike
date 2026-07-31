@@ -212,7 +212,7 @@ export function PetShopView({ data }: { data: PetShopRead }) {
         <div
           role="region"
           aria-label="Current offer"
-          className="bg-gradient-to-r from-accent-300 via-accent-400 to-accent-300 text-warm-900 text-sm sm:text-base font-semibold text-center py-2.5 px-4 border-b border-accent-500/30"
+          className="bg-gradient-to-r from-accent-300 via-accent-400 to-accent-300 text-warm-900 text-xs sm:text-sm font-semibold text-center py-1.5 px-4 border-b border-accent-500/30"
         >
           <span aria-hidden="true" className="mr-1.5">🏷️</span>
           {data.offer}
