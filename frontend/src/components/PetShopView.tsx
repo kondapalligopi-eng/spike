@@ -222,10 +222,11 @@ export function PetShopView({ data }: { data: PetShopRead }) {
           hero — text on the animated blue, always readable. */}
       <section className="relative overflow-hidden bg-gradient-to-br from-primary-700 to-primary-900 text-white">
         <HeroPaws />
-        <div className={`relative ${WRAP} grid gap-6 md:gap-8 items-stretch ${data.hero_url ? 'md:grid-cols-2 md:h-[300px]' : ''}`}>
-          {/* Left — offer, quick facts, description, CTAs (padding lives here so
-              the image column can fill the band top-to-bottom) */}
-          <div className="py-7 sm:py-9 flex flex-col justify-center">
+        <div className={`relative ${WRAP} grid gap-6 md:gap-8 items-stretch ${data.hero_url ? 'md:grid-cols-2' : ''}`}>
+          {/* Left — offer, quick facts, description, CTAs. This column's content
+              defines the hero height (the image conforms), so the text starts at
+              the top with no floating dead space. */}
+          <div className="py-7 sm:py-9">
             {data.offer && (
               <div className="inline-flex items-center gap-2 bg-accent-400 text-warm-900 font-extrabold text-xs sm:text-sm px-3 py-1.5 rounded-lg mb-3 shadow">
                 <span className="text-[10px] uppercase tracking-[0.15em] bg-warm-900 text-accent-400 px-1.5 py-0.5 rounded">Sale</span>
