@@ -77,9 +77,15 @@ export function PetShops() {
                   key={s.id}
                   className="group relative flex flex-col rounded-3xl border border-warm-200 bg-white p-5 hover:border-primary-300 hover:shadow-md transition"
                 >
-                  {/* Stretched link makes the whole card open the storefront,
-                      while the Edit link below sits above it (z-10). */}
-                  <Link to={`/petshop/${s.slug}`} className="absolute inset-0 rounded-3xl" aria-label={`View ${s.name}`} />
+                  {/* Stretched link makes the whole card open the storefront in
+                      a new tab, while the Edit link below sits above it (z-10). */}
+                  <Link
+                    to={`/petshop/${s.slug}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="absolute inset-0 rounded-3xl"
+                    aria-label={`View ${s.name}`}
+                  />
                   {isOwner && (
                     <Link
                       to="/my-shop"
