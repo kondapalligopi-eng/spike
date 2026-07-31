@@ -399,15 +399,6 @@ export function PetPlay() {
               )}
               <p className="mt-2 text-xs text-warm-400">Next round coming up…</p>
             </>
-          ) : mode === 'dog' ? (
-            <button
-              type="button"
-              onClick={sniff}
-              disabled={sniffing}
-              className="rounded-full bg-accent-400 hover:bg-accent-300 disabled:opacity-50 px-7 py-3 text-sm font-bold text-warm-900 shadow transition-colors"
-            >
-              {game === 'bowls' ? 'Let your dog sniff 🐾' : 'Let your dog pick 🐾'}
-            </button>
           ) : null}
         </div>
 
