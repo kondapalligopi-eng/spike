@@ -23,7 +23,9 @@ function HeaderIcons({ shopId, ownerId }: { shopId: string; ownerId: string }) {
   const hasHydrated = useCartStore((s) => s.hasHydrated);
   const count = useCartStore((s) => (s.carts[shopId] ?? EMPTY_CART).reduce((n, i) => n + i.qty, 0));
   const setOpen = useCartStore((s) => s.setOpen);
-  const isOwner = !!user && user.id === ownerId;
+  // User.id is typed number in the codebase but is a UUID string at runtime
+  // (like owner_id) — compare as strings.
+  const isOwner = !!user && String(user.id) === String(ownerId);
   return (
     <div className="ml-auto flex items-center gap-1 shrink-0">
       {isOwner && (
