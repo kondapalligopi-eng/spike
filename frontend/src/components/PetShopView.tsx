@@ -262,13 +262,15 @@ export function PetShopView({ data }: { data: PetShopRead }) {
             </div>
           </div>
 
-          {/* Right — banner photo fills the band top-to-bottom, desktop only */}
+          {/* Right — banner photo, desktop only. Absolutely positioned so it can
+              never inflate the hero: it fills whatever height the text sets and
+              crops (object-cover). min-h keeps a sensible floor for short text. */}
           {data.hero_url && (
-            <div className="hidden md:block py-4">
+            <div className="hidden md:block relative min-h-[240px]">
               <img
                 src={data.hero_url}
                 alt={`${data.name} banner`}
-                className="w-full h-full object-cover rounded-2xl shadow-xl ring-1 ring-white/20"
+                className="absolute inset-0 w-full h-full object-cover rounded-2xl shadow-xl ring-1 ring-white/20"
               />
             </div>
           )}
