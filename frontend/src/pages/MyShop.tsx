@@ -166,12 +166,14 @@ function ShopDetailsForm({ shop, onSaved }: { shop: PetShopRead | null; onSaved:
 
       <div>
         <label className={label} htmlFor="shop-offer">Headline offer <span className="text-warm-400 font-normal">(optional — gold sale ribbon)</span></label>
-        <input id="shop-offer" className={input} placeholder="Monsoon Sale — 15% off beds & raincoats" value={offer} onChange={(e) => setOffer(e.target.value)} />
+        <input id="shop-offer" className={input} maxLength={100} placeholder="Monsoon Sale — 15% off beds & raincoats" value={offer} onChange={(e) => setOffer(e.target.value)} />
+        <p className="mt-1 text-xs text-warm-400 text-right">{offer.length}/100</p>
       </div>
 
       <div>
         <label className={label} htmlFor="shop-about">About the shop</label>
-        <textarea id="shop-about" rows={3} className={input} placeholder="What you sell, what makes you special, delivery info…" value={about} onChange={(e) => setAbout(e.target.value)} />
+        <textarea id="shop-about" rows={3} maxLength={500} className={input} placeholder="What you sell, what makes you special, delivery info…" value={about} onChange={(e) => setAbout(e.target.value)} />
+        <p className="mt-1 text-xs text-warm-400 text-right">{about.length}/500</p>
       </div>
 
       <div className="grid sm:grid-cols-2 gap-4">
