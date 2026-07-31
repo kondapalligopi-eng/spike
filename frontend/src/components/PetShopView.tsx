@@ -224,13 +224,13 @@ export function PetShopView({ data }: { data: PetShopRead }) {
         <HeroPaws />
         <div className={`relative ${WRAP} grid gap-6 md:gap-8 items-stretch ${data.hero_url ? 'md:grid-cols-2' : ''}`}>
           {/* Left — offer, quick facts, description, CTAs. This column's content
-              defines the hero height (the image conforms), so the text starts at
-              the top with no floating dead space. */}
-          <div className="py-7 sm:py-9">
+              defines the hero height (the image conforms). Centred so short text
+              sits balanced in the min-height band and long text fills it. */}
+          <div className="py-7 sm:py-9 flex flex-col justify-center">
             {data.offer && (
-              <div className="inline-flex items-center gap-2 bg-accent-400 text-warm-900 font-extrabold text-xs sm:text-sm px-3 py-1.5 rounded-lg mb-3 shadow">
-                <span className="text-[10px] uppercase tracking-[0.15em] bg-warm-900 text-accent-400 px-1.5 py-0.5 rounded">Sale</span>
-                {data.offer}
+              <div className="inline-flex items-start gap-2 bg-accent-400 text-warm-900 font-extrabold text-xs sm:text-sm px-3 py-1.5 rounded-lg mb-3 shadow max-w-full">
+                <span className="text-[10px] uppercase tracking-[0.15em] bg-warm-900 text-accent-400 px-1.5 py-0.5 rounded shrink-0 mt-0.5">Sale</span>
+                <span className="line-clamp-2">{data.offer}</span>
               </div>
             )}
             <div className="flex flex-wrap gap-x-4 gap-y-1 text-[13px] sm:text-sm text-white/90 font-semibold">
