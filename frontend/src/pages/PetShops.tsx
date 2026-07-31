@@ -71,7 +71,7 @@ export function PetShops() {
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {shops.map((s) => {
-              const isOwner = !!user && s.owner_id === user.id;
+              const isOwner = !!user && String(s.owner_id) === String(user.id);
               return (
                 <div
                   key={s.id}
