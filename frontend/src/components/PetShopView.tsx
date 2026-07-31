@@ -226,14 +226,19 @@ export function PetShopView({ data }: { data: PetShopRead }) {
           {/* Left — offer, quick facts, description, CTAs. This column's content
               defines the hero height (the image conforms). Centred so short text
               sits balanced in the min-height band and long text fills it. */}
-          <div className="py-7 sm:py-9 flex flex-col justify-center">
+          <div className="py-8 sm:py-12 flex flex-col justify-center items-start max-w-xl">
             {data.offer && (
-              <div className="inline-flex items-start gap-2 bg-accent-400 text-warm-900 font-extrabold text-xs sm:text-sm px-3 py-1.5 rounded-lg mb-3 shadow max-w-full">
-                <span className="text-[10px] uppercase tracking-[0.15em] bg-warm-900 text-accent-400 px-1.5 py-0.5 rounded shrink-0 mt-0.5">Sale</span>
-                <span className="line-clamp-2">{data.offer}</span>
-              </div>
+              <span className="inline-block bg-accent-400 text-warm-900 text-[10px] sm:text-[11px] font-extrabold uppercase tracking-[0.18em] px-2.5 py-1 rounded mb-3">🏷️ Sale</span>
             )}
-            <div className="flex flex-wrap gap-x-4 gap-y-1 text-[13px] sm:text-sm text-white/90 font-semibold">
+            {/* Headline — the offer reads as a real headline (Chewy-style); when
+                there's no offer the description leads, so the hero is never bare. */}
+            <h2 className="text-2xl sm:text-4xl font-black leading-[1.12] tracking-tight line-clamp-2">
+              {data.offer || data.about || `Welcome to ${data.name}`}
+            </h2>
+            {data.offer && data.about && (
+              <p className="mt-3 text-sm sm:text-base text-white/85 leading-relaxed line-clamp-2">{data.about}</p>
+            )}
+            <div className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-[13px] sm:text-sm text-white/90 font-semibold">
               {data.area && (
                 <a
                   href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${data.name}, ${data.area}`)}`}
@@ -248,14 +253,13 @@ export function PetShopView({ data }: { data: PetShopRead }) {
               {data.hours && <span>🕙 {data.hours}</span>}
               {products.length > 0 && <span>🛍️ {products.length} products</span>}
             </div>
-            {data.about && <p className="mt-2.5 text-sm sm:text-[15px] text-white/90 leading-relaxed max-w-xl line-clamp-2">{data.about}</p>}
-            <div className="mt-4 flex flex-wrap gap-2.5">
+            <div className="mt-5 sm:mt-6 flex flex-wrap gap-2.5">
               {waTarget && (
                 <a
                   href={waLink(waTarget, `Hi ${data.name}! I found you on HiSpike.`)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold text-sm px-5 py-2.5 rounded-full transition-colors shadow-lg"
+                  className="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold text-sm px-6 py-3 rounded-full transition-colors shadow-lg"
                 >
                   <WhatsAppIcon /> WhatsApp
                 </a>
@@ -263,7 +267,7 @@ export function PetShopView({ data }: { data: PetShopRead }) {
               {data.phone && (
                 <a
                   href={`tel:${data.phone}`}
-                  className="inline-flex items-center gap-2 bg-white text-primary-700 font-bold text-sm px-5 py-2.5 rounded-full hover:bg-primary-50 transition-colors shadow"
+                  className="inline-flex items-center gap-2 bg-white text-primary-700 font-bold text-sm px-6 py-3 rounded-full hover:bg-primary-50 transition-colors shadow"
                 >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="#EC4899" aria-hidden="true"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.6.1.4 0 .8-.3 1l-2.2 2.2z" /></svg>
                   Call
@@ -276,7 +280,7 @@ export function PetShopView({ data }: { data: PetShopRead }) {
               never inflate the hero: it fills whatever height the text sets and
               crops (object-cover). min-h keeps a sensible floor for short text. */}
           {data.hero_url && (
-            <div className="hidden md:block relative min-h-[240px]">
+            <div className="hidden md:block relative min-h-[380px]">
               <img
                 src={data.hero_url}
                 alt={`${data.name} banner`}
