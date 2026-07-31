@@ -166,7 +166,8 @@ function ShopDetailsForm({ shop, onSaved }: { shop: PetShopRead | null; onSaved:
 
       <div>
         <label className={label} htmlFor="shop-offer">Headline offer <span className="text-warm-400 font-normal">(optional — gold sale ribbon)</span></label>
-        <input id="shop-offer" className={input} placeholder="Monsoon Sale — 15% off beds & raincoats" value={offer} onChange={(e) => setOffer(e.target.value)} />
+        <input id="shop-offer" className={input} maxLength={100} placeholder="Monsoon Sale — 15% off beds & raincoats" value={offer} onChange={(e) => setOffer(e.target.value)} />
+        <p className="mt-1 text-xs text-warm-400 text-right">{offer.length}/100</p>
       </div>
 
       <div>
