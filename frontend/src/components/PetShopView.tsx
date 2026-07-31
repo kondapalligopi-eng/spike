@@ -259,7 +259,7 @@ export function PetShopView({ data }: { data: PetShopRead }) {
                   href={waLink(waTarget, `Hi ${data.name}! I found you on HiSpike.`)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold text-sm px-5 py-2.5 rounded-full transition-colors shadow-lg"
+                  className="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold text-sm px-6 py-3 rounded-full transition-colors shadow-lg"
                 >
                   <WhatsAppIcon /> WhatsApp
                 </a>
