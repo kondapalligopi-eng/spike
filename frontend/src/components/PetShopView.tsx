@@ -280,7 +280,7 @@ export function PetShopView({ data }: { data: PetShopRead }) {
               never inflate the hero: it fills whatever height the text sets and
               crops (object-cover). min-h keeps a sensible floor for short text. */}
           {data.hero_url && (
-            <div className="hidden md:block relative min-h-[240px]">
+            <div className="hidden md:block relative min-h-[380px]">
               <img
                 src={data.hero_url}
                 alt={`${data.name} banner`}
