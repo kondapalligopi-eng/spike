@@ -3,10 +3,12 @@ import { useQuery } from '@tanstack/react-query';
 import { listRecentShops } from '@/api/petShops';
 import { PageHead } from '@/components/PageHead';
 import { HeroPaws } from '@/components/HeroPaws';
+import { useAuth } from '@/hooks/useAuth';
 import { useBackendWarmup } from '@/lib/warmupBackend';
 
 export function PetShops() {
   useBackendWarmup();
+  const { user } = useAuth();
   const { data, isLoading } = useQuery({
     queryKey: ['pet-shops-directory'],
     queryFn: () => listRecentShops(24),
@@ -68,25 +70,41 @@ export function PetShops() {
           </div>
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {shops.map((s) => (
-              <Link
-                key={s.id}
-                to={`/petshop/${s.slug}`}
-                className="group flex flex-col rounded-3xl border border-warm-200 bg-white p-5 hover:border-primary-300 hover:shadow-md transition"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-14 h-14 rounded-2xl bg-warm-100 overflow-hidden flex items-center justify-center text-2xl shrink-0">
-                    {s.logo_url ? <img src={s.logo_url} alt="" className="w-full h-full object-cover" /> : '🏪'}
+            {shops.map((s) => {
+              const isOwner = !!user && String(s.owner_id) === String(user.id);
+              return (
+                <div
+                  key={s.id}
+                  className="group relative flex flex-col rounded-3xl border border-warm-200 bg-white p-5 hover:border-primary-300 hover:shadow-md transition"
+                >
+                  {/* Stretched link makes the whole card open the storefront,
+                      while the Edit link below sits above it (z-10). */}
+                  <Link to={`/petshop/${s.slug}`} className="absolute inset-0 rounded-3xl" aria-label={`View ${s.name}`} />
+                  {isOwner && (
+                    <Link
+                      to="/my-shop"
+                      className="absolute top-3 right-3 z-10 inline-flex items-center gap-1 rounded-full border border-primary-200 bg-primary-50 px-3 py-1 text-xs font-bold text-primary-700 hover:bg-primary-100 transition-colors"
+                    >
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      </svg>
+                      Edit
+                    </Link>
+                  )}
+                  <div className="flex items-center gap-3">
+                    <div className="w-14 h-14 rounded-2xl bg-warm-100 overflow-hidden flex items-center justify-center text-2xl shrink-0">
+                      {s.logo_url ? <img src={s.logo_url} alt="" className="w-full h-full object-cover" /> : '🏪'}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="font-bold text-warm-900 truncate group-hover:text-primary-700 transition-colors">{s.name}</p>
+                      {s.area && <p className="text-xs text-warm-500 truncate">📍 {s.area}</p>}
+                    </div>
                   </div>
-                  <div className="min-w-0">
-                    <p className="font-bold text-warm-900 truncate group-hover:text-primary-700 transition-colors">{s.name}</p>
-                    {s.area && <p className="text-xs text-warm-500 truncate">📍 {s.area}</p>}
-                  </div>
+                  {s.about && <p className="mt-3 text-sm text-warm-500 leading-relaxed line-clamp-2">{s.about}</p>}
+                  <span className="mt-3 text-sm font-semibold text-primary-600">View shop →</span>
                 </div>
-                {s.about && <p className="mt-3 text-sm text-warm-500 leading-relaxed line-clamp-2">{s.about}</p>}
-                <span className="mt-3 text-sm font-semibold text-primary-600">View shop →</span>
-              </Link>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
