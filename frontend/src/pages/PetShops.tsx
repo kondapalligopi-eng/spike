@@ -3,10 +3,12 @@ import { useQuery } from '@tanstack/react-query';
 import { listRecentShops } from '@/api/petShops';
 import { PageHead } from '@/components/PageHead';
 import { HeroPaws } from '@/components/HeroPaws';
+import { useAuth } from '@/hooks/useAuth';
 import { useBackendWarmup } from '@/lib/warmupBackend';
 
 export function PetShops() {
   useBackendWarmup();
+  const { user } = useAuth();
   const { data, isLoading } = useQuery({
     queryKey: ['pet-shops-directory'],
     queryFn: () => listRecentShops(24),
