@@ -295,18 +295,22 @@ export function PetPlay() {
           </div>
         </div>
 
-        {/* instruction sits with the toggles, above the board */}
-        <p className="text-center text-warm-500 text-sm mt-3 min-h-[20px]">
-          {done
-            ? ''
-            : sniffing
-              ? 'Sniff… sniff… 🐾'
-              : mode === 'dog'
-                ? 'Tap “Dog picks” to send your dog in 🐾'
-                : game === 'bowls'
-                  ? 'Tap a bowl — which one is your dog sniffing at?'
-                  : 'Tap a hand — which one is the treat in?'}
-        </p>
+        {/* instruction sits with the toggles, above the board — a bold accent
+            pill so the player's eye lands on the next action */}
+        <div className="flex justify-center mt-3 min-h-[40px]">
+          {hint && (
+            <span
+              key={hint}
+              className={`nw-cta inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-extrabold shadow-sm ${
+                sniffing
+                  ? 'bg-primary-100 text-primary-700 border border-primary-200'
+                  : 'bg-accent-100 text-accent-800 border border-accent-300'
+              }`}
+            >
+              {hint}
+            </span>
+          )}
+        </div>
 
         {/* board */}
         <div className="nw-board mt-2">
