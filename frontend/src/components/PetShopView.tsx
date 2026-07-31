@@ -234,7 +234,17 @@ export function PetShopView({ data }: { data: PetShopRead }) {
               </div>
             )}
             <div className="flex flex-wrap gap-x-4 gap-y-1 text-[13px] sm:text-sm text-white/90 font-semibold">
-              {data.area && <span>📍 {data.area}</span>}
+              {data.area && (
+                <a
+                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${data.name}, ${data.area}`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 hover:underline decoration-white/50 underline-offset-2"
+                  aria-label={`Open ${data.name} in Google Maps`}
+                >
+                  📍 {data.area}
+                </a>
+              )}
               {data.hours && <span>🕙 {data.hours}</span>}
               {products.length > 0 && <span>🛍️ {products.length} products</span>}
             </div>
