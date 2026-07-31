@@ -237,7 +237,7 @@ export function PetShopView({ data }: { data: PetShopRead }) {
               {data.hours && <span>🕙 {data.hours}</span>}
               {products.length > 0 && <span>🛍️ {products.length} products</span>}
             </div>
-            {data.about && <p className="mt-2.5 text-sm sm:text-[15px] text-white/90 leading-relaxed max-w-xl">{data.about}</p>}
+            {data.about && <p className="mt-2.5 text-sm sm:text-[15px] text-white/90 leading-relaxed max-w-xl line-clamp-2">{data.about}</p>}
             <div className="mt-4 flex flex-wrap gap-2.5">
               {waTarget && (
                 <a
