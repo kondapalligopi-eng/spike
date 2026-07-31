@@ -155,6 +155,18 @@ export function PetPlay() {
 
   const pct = Math.min(100, (points / REWARD_GOAL) * 100);
 
+  // The prompt above the board — shown as an eye-catching pill so players know
+  // what to do next.
+  const hint = done
+    ? ''
+    : sniffing
+      ? 'Sniff… sniff… 🐾'
+      : mode === 'dog'
+        ? 'Tap “Dog picks” to send your dog in 🐾'
+        : game === 'bowls'
+          ? 'Tap a bowl — which one is your dog sniffing at?'
+          : 'Tap a hand — which one is the treat in?';
+
   return (
     <div className="min-h-screen bg-warm-50">
       <PageHead
