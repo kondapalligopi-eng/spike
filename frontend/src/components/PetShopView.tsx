@@ -18,13 +18,25 @@ function waLink(number: string, text: string): string {
 // Cart + account icons for the storefront header (right of the shop logo),
 // mirroring the hispike.in navbar's icon cluster. The cart icon opens the same
 // drawer as the floating button (shared store state).
-function HeaderIcons({ shopId }: { shopId: string }) {
-  const { isAuthenticated } = useAuth();
+function HeaderIcons({ shopId, ownerId }: { shopId: string; ownerId: string }) {
+  const { isAuthenticated, user } = useAuth();
   const hasHydrated = useCartStore((s) => s.hasHydrated);
   const count = useCartStore((s) => (s.carts[shopId] ?? EMPTY_CART).reduce((n, i) => n + i.qty, 0));
   const setOpen = useCartStore((s) => s.setOpen);
+  const isOwner = !!user && user.id === ownerId;
   return (
     <div className="ml-auto flex items-center gap-1 shrink-0">
+      {isOwner && (
+        <Link
+          to="/my-shop"
+          className="mr-1 inline-flex items-center gap-1.5 rounded-full border border-primary-200 bg-primary-50 px-3 py-1.5 text-xs font-bold text-primary-700 hover:bg-primary-100 transition-colors"
+        >
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" aria-hidden="true">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+          </svg>
+          Edit shop
+        </Link>
+      )}
       <button
         type="button"
         onClick={() => setOpen(true)}
