@@ -48,6 +48,10 @@ export function PetPlay() {
   const [mode, setMode] = useState<Mode>('me');
   const [picked, setPicked] = useState<number | null>(null);
   const [sniffing, setSniffing] = useState(false);
+  // Armed when the player taps "Dog picks" — an effect then sends the dog in
+  // automatically (no separate button). Disarmed after each send so it waits
+  // for the next tap rather than looping forever.
+  const [dogArmed, setDogArmed] = useState(false);
   const [points, setPoints] = useState(0);
   const [gain, setGain] = useState(0);
   const [pawUp, setPawUp] = useState(false);
