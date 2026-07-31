@@ -290,7 +290,7 @@ export function PetPlay() {
             : sniffing
               ? 'Sniff… sniff… 🐾'
               : mode === 'dog'
-                ? 'Ready? Send your dog in to find the treat.'
+                ? 'Tap “Dog picks” to send your dog in 🐾'
                 : game === 'bowls'
                   ? 'Tap a bowl — which one is your dog sniffing at?'
                   : 'Tap a hand — which one is the treat in?'}
