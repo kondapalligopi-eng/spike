@@ -245,6 +245,21 @@
 /* biscuits crest just above the open hand on reveal */
 .nw-slot.hand .nw-bones { top: -6px; height: 26px; left: 14%; right: 14%; }
 
+/* Instruction pill above the board — pops in when the message changes, then
+   bobs gently so the player's eye is drawn to the next action. */
+@keyframes nw-cta-pop {
+  0%   { transform: translateY(5px) scale(0.94); opacity: 0; }
+  100% { transform: translateY(0) scale(1);      opacity: 1; }
+}
+@keyframes nw-cta-bob {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-3px); }
+}
+.nw-cta {
+  animation: nw-cta-pop 0.28s ease-out both, nw-cta-bob 1.7s ease-in-out 0.28s infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .nw-board * { animation: none !important; transition-duration: 0.01ms !important; }
+  .nw-cta { animation: none !important; }
 }

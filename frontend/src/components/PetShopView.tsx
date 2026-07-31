@@ -222,7 +222,7 @@ export function PetShopView({ data }: { data: PetShopRead }) {
           hero — text on the animated blue, always readable. */}
       <section className="relative overflow-hidden bg-gradient-to-br from-primary-700 to-primary-900 text-white">
         <HeroPaws />
-        <div className={`relative ${WRAP} grid gap-6 md:gap-8 items-stretch ${data.hero_url ? 'md:grid-cols-2 md:min-h-[300px]' : ''}`}>
+        <div className={`relative ${WRAP} grid gap-6 md:gap-8 items-stretch ${data.hero_url ? 'md:grid-cols-2 md:h-[300px]' : ''}`}>
           {/* Left — offer, quick facts, description, CTAs (padding lives here so
               the image column can fill the band top-to-bottom) */}
           <div className="py-7 sm:py-9 flex flex-col justify-center">
@@ -237,7 +237,7 @@ export function PetShopView({ data }: { data: PetShopRead }) {
               {data.hours && <span>🕙 {data.hours}</span>}
               {products.length > 0 && <span>🛍️ {products.length} products</span>}
             </div>
-            {data.about && <p className="mt-2.5 text-sm sm:text-[15px] text-white/90 leading-relaxed max-w-xl">{data.about}</p>}
+            {data.about && <p className="mt-2.5 text-sm sm:text-[15px] text-white/90 leading-relaxed max-w-xl line-clamp-2">{data.about}</p>}
             <div className="mt-4 flex flex-wrap gap-2.5">
               {waTarget && (
                 <a

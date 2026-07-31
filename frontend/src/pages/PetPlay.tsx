@@ -48,6 +48,10 @@ export function PetPlay() {
   const [mode, setMode] = useState<Mode>('me');
   const [picked, setPicked] = useState<number | null>(null);
   const [sniffing, setSniffing] = useState(false);
+  // Armed when the player taps "Dog picks" — an effect then sends the dog in
+  // automatically (no separate button). Disarmed after each send so it waits
+  // for the next tap rather than looping forever.
+  const [dogArmed, setDogArmed] = useState(false);
   const [points, setPoints] = useState(0);
   const [gain, setGain] = useState(0);
   const [pawUp, setPawUp] = useState(false);
@@ -119,6 +123,21 @@ export function PetPlay() {
     setSniffing(false);
   }, []);
 
+  // Picking who plays. Choosing "Dog picks" arms the dog so it goes in on its
+  // own (see the effect below) — no extra button. Cancels any in-flight sniff
+  // and clears the current round so it starts clean either way.
+  const chooseMode = useCallback((m: Mode) => {
+    if (timer.current) clearTimeout(timer.current);
+    if (pawTimer.current) clearInterval(pawTimer.current);
+    setSniffing(false);
+    setPawUp(false);
+    setPicked(null);
+    setGain(0);
+    setHitGoal(false);
+    setMode(m);
+    setDogArmed(m === 'dog');
+  }, []);
+
   // Auto-reset a couple of seconds after a win, so players don't have to tap a
   // "play again" button every round — they just keep picking.
   useEffect(() => {
@@ -127,7 +146,26 @@ export function PetPlay() {
     return () => clearTimeout(t);
   }, [picked, again]);
 
+  // When the dog is armed and the board is idle, send it in automatically.
+  useEffect(() => {
+    if (mode !== 'dog' || !dogArmed || picked !== null || sniffing) return;
+    setDogArmed(false);
+    sniff();
+  }, [mode, dogArmed, picked, sniffing, sniff]);
+
   const pct = Math.min(100, (points / REWARD_GOAL) * 100);
+
+  // The prompt above the board — shown as an eye-catching pill so players know
+  // what to do next.
+  const hint = done
+    ? ''
+    : sniffing
+      ? 'Sniff… sniff… 🐾'
+      : mode === 'dog'
+        ? 'Tap “Dog picks” to send your dog in 🐾'
+        : game === 'bowls'
+          ? 'Tap a bowl — which one is your dog sniffing at?'
+          : 'Tap a hand — which one is the treat in?';
 
   return (
     <div className="min-h-screen bg-warm-50">
@@ -245,7 +283,7 @@ export function PetPlay() {
               <button
                 key={m}
                 type="button"
-                onClick={() => setMode(m)}
+                onClick={() => chooseMode(m)}
                 aria-pressed={mode === m}
                 className={`px-4 py-2 rounded-full text-sm font-bold transition-colors ${
                   mode === m ? 'bg-primary-600 text-white shadow' : 'text-warm-500 hover:text-warm-900'
@@ -257,18 +295,22 @@ export function PetPlay() {
           </div>
         </div>
 
-        {/* instruction sits with the toggles, above the board */}
-        <p className="text-center text-warm-500 text-sm mt-3 min-h-[20px]">
-          {done
-            ? ''
-            : sniffing
-              ? 'Sniff… sniff… 🐾'
-              : mode === 'dog'
-                ? 'Ready? Send your dog in to find the treat.'
-                : game === 'bowls'
-                  ? 'Tap a bowl — which one is your dog sniffing at?'
-                  : 'Tap a hand — which one is the treat in?'}
-        </p>
+        {/* instruction sits with the toggles, above the board — a bold accent
+            pill so the player's eye lands on the next action */}
+        <div className="flex justify-center mt-3 min-h-[40px]">
+          {hint && (
+            <span
+              key={hint}
+              className={`nw-cta inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-extrabold shadow-sm ${
+                sniffing
+                  ? 'bg-primary-100 text-primary-700 border border-primary-200'
+                  : 'bg-accent-100 text-accent-800 border border-accent-300'
+              }`}
+            >
+              {hint}
+            </span>
+          )}
+        </div>
 
         {/* board */}
         <div className="nw-board mt-2">
@@ -373,15 +415,6 @@ export function PetPlay() {
               )}
               <p className="mt-2 text-xs text-warm-400">Next round coming up…</p>
             </>
-          ) : mode === 'dog' ? (
-            <button
-              type="button"
-              onClick={sniff}
-              disabled={sniffing}
-              className="rounded-full bg-accent-400 hover:bg-accent-300 disabled:opacity-50 px-7 py-3 text-sm font-bold text-warm-900 shadow transition-colors"
-            >
-              {game === 'bowls' ? 'Let your dog sniff 🐾' : 'Let your dog pick 🐾'}
-            </button>
           ) : null}
         </div>
 
