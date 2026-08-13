@@ -59,6 +59,14 @@ export function StorefrontCart({ shop }: { shop: PetShopRead }) {
   const [address, setAddress] = useState('');
   const [note, setNote] = useState('');
   const [busy, setBusy] = useState(false);
+  const [secondsLeft, setSecondsLeft] = useState(QR_SECONDS);
+
+  // Tick the (cosmetic) QR countdown while the confirmation is open.
+  useEffect(() => {
+    if (step !== 'done') return;
+    const t = setInterval(() => setSecondsLeft((s) => (s <= 0 ? 0 : s - 1)), 1000);
+    return () => clearInterval(t);
+  }, [step]);
 
   const count = items.reduce((s, i) => s + i.qty, 0);
   const total = Math.round(items.reduce((s, i) => s + i.unit_price * i.qty, 0) * 100) / 100;
