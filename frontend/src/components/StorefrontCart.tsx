@@ -93,6 +93,7 @@ export function StorefrontCart({ shop }: { shop: PetShopRead }) {
       });
       setPlaced(order);
       clear(shop.id);
+      setSecondsLeft(QR_SECONDS);
       setStep('done');
     } catch (e) {
       toast.error((e as Error).message || 'Could not place the order.');
