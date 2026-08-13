@@ -7,6 +7,11 @@ import { placeOrder, type PetShopRead, type ShopOrder } from '@/api/petShops';
 
 const rupee = (n: number) => `₹${n.toLocaleString('en-IN')}`;
 
+// Cosmetic QR "validity" window. The UPI QR is a static intent so it doesn't
+// truly expire — this is a UX nicety (countdown + Refresh) to nudge the payer.
+const QR_SECONDS = 300;
+const mmss = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+
 // Stable reference so the zustand selector doesn't return a new [] each render
 // (which would loop "Maximum update depth exceeded").
 const EMPTY: never[] = [];
