@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { useCartStore } from '@/store/cartStore';
 import { useAuth } from '@/hooks/useAuth';
@@ -6,6 +6,11 @@ import { toast } from '@/store/toastStore';
 import { placeOrder, type PetShopRead, type ShopOrder } from '@/api/petShops';
 
 const rupee = (n: number) => `₹${n.toLocaleString('en-IN')}`;
+
+// Cosmetic QR "validity" window. The UPI QR is a static intent so it doesn't
+// truly expire — this is a UX nicety (countdown + Refresh) to nudge the payer.
+const QR_SECONDS = 300;
+const mmss = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 
 // Stable reference so the zustand selector doesn't return a new [] each render
 // (which would loop "Maximum update depth exceeded").
@@ -54,6 +59,14 @@ export function StorefrontCart({ shop }: { shop: PetShopRead }) {
   const [address, setAddress] = useState('');
   const [note, setNote] = useState('');
   const [busy, setBusy] = useState(false);
+  const [secondsLeft, setSecondsLeft] = useState(QR_SECONDS);
+
+  // Tick the (cosmetic) QR countdown while the confirmation is open.
+  useEffect(() => {
+    if (step !== 'done') return;
+    const t = setInterval(() => setSecondsLeft((s) => (s <= 0 ? 0 : s - 1)), 1000);
+    return () => clearInterval(t);
+  }, [step]);
 
   const count = items.reduce((s, i) => s + i.qty, 0);
   const total = Math.round(items.reduce((s, i) => s + i.unit_price * i.qty, 0) * 100) / 100;
@@ -80,6 +93,7 @@ export function StorefrontCart({ shop }: { shop: PetShopRead }) {
       });
       setPlaced(order);
       clear(shop.id);
+      setSecondsLeft(QR_SECONDS);
       setStep('done');
     } catch (e) {
       toast.error((e as Error).message || 'Could not place the order.');
@@ -195,14 +209,34 @@ export function StorefrontCart({ shop }: { shop: PetShopRead }) {
                       phone. */}
                   {pay && pay.external === false && (
                     <div className="mt-4 flex flex-col items-center gap-2.5">
-                      <div className="bg-white p-3 rounded-2xl border border-warm-200 shadow-sm">
-                        <QRCodeSVG value={pay.href} size={176} level="M" />
+                      <div className="relative bg-white p-3 rounded-2xl border border-warm-200 shadow-sm">
+                        <QRCodeSVG value={pay.href} size={176} level="M" className={secondsLeft === 0 ? 'opacity-10' : ''} />
+                        {secondsLeft === 0 && (
+                          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
+                            <span className="text-xs font-bold text-warm-500">QR expired</span>
+                            <button
+                              type="button"
+                              onClick={() => setSecondsLeft(QR_SECONDS)}
+                              className="inline-flex items-center gap-1.5 rounded-full bg-primary-600 hover:bg-primary-700 text-white text-xs font-bold px-4 py-2 transition-colors"
+                            >
+                              ↻ Refresh QR
+                            </button>
+                          </div>
+                        )}
                       </div>
                       <p className="text-sm font-bold text-warm-800">Scan to pay {rupee(placed.total)}</p>
-                      <p className="text-xs text-warm-400 leading-relaxed">
-                        Open any UPI app (GPay / PhonePe / Paytm) and scan.<br />
-                        UPI ID: <span className="font-semibold text-warm-600">{shop.upi_id}</span>
-                      </p>
+                      {secondsLeft > 0 ? (
+                        <p className="text-xs text-warm-400 leading-relaxed">
+                          Open any UPI app (GPay / PhonePe / Paytm) and scan — valid for{' '}
+                          <span className="font-bold text-warm-600 tabular-nums">{mmss(secondsLeft)}</span>.<br />
+                          UPI ID: <span className="font-semibold text-warm-600">{shop.upi_id}</span>
+                        </p>
+                      ) : (
+                        <p className="text-xs text-warm-400 leading-relaxed">
+                          Tap <b>Refresh QR</b> to show a new code.<br />
+                          UPI ID: <span className="font-semibold text-warm-600">{shop.upi_id}</span>
+                        </p>
+                      )}
                       <a
                         href={pay.href}
                         className="mt-1 inline-flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold text-sm px-6 py-3 rounded-full transition-colors w-full"
