@@ -209,14 +209,34 @@ export function StorefrontCart({ shop }: { shop: PetShopRead }) {
                       phone. */}
                   {pay && pay.external === false && (
                     <div className="mt-4 flex flex-col items-center gap-2.5">
-                      <div className="bg-white p-3 rounded-2xl border border-warm-200 shadow-sm">
-                        <QRCodeSVG value={pay.href} size={176} level="M" />
+                      <div className="relative bg-white p-3 rounded-2xl border border-warm-200 shadow-sm">
+                        <QRCodeSVG value={pay.href} size={176} level="M" className={secondsLeft === 0 ? 'opacity-10' : ''} />
+                        {secondsLeft === 0 && (
+                          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
+                            <span className="text-xs font-bold text-warm-500">QR expired</span>
+                            <button
+                              type="button"
+                              onClick={() => setSecondsLeft(QR_SECONDS)}
+                              className="inline-flex items-center gap-1.5 rounded-full bg-primary-600 hover:bg-primary-700 text-white text-xs font-bold px-4 py-2 transition-colors"
+                            >
+                              ↻ Refresh QR
+                            </button>
+                          </div>
+                        )}
                       </div>
                       <p className="text-sm font-bold text-warm-800">Scan to pay {rupee(placed.total)}</p>
-                      <p className="text-xs text-warm-400 leading-relaxed">
-                        Open any UPI app (GPay / PhonePe / Paytm) and scan.<br />
-                        UPI ID: <span className="font-semibold text-warm-600">{shop.upi_id}</span>
-                      </p>
+                      {secondsLeft > 0 ? (
+                        <p className="text-xs text-warm-400 leading-relaxed">
+                          Open any UPI app (GPay / PhonePe / Paytm) and scan — valid for{' '}
+                          <span className="font-bold text-warm-600 tabular-nums">{mmss(secondsLeft)}</span>.<br />
+                          UPI ID: <span className="font-semibold text-warm-600">{shop.upi_id}</span>
+                        </p>
+                      ) : (
+                        <p className="text-xs text-warm-400 leading-relaxed">
+                          Tap <b>Refresh QR</b> to show a new code.<br />
+                          UPI ID: <span className="font-semibold text-warm-600">{shop.upi_id}</span>
+                        </p>
+                      )}
                       <a
                         href={pay.href}
                         className="mt-1 inline-flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold text-sm px-6 py-3 rounded-full transition-colors w-full"
