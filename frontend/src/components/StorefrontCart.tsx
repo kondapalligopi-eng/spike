@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { QRCodeSVG } from 'qrcode.react';
 import { useCartStore } from '@/store/cartStore';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/store/toastStore';
