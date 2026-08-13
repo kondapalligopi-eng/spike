@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { QRCodeSVG } from 'qrcode.react';
 import { useCartStore } from '@/store/cartStore';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/store/toastStore';
@@ -189,17 +190,36 @@ export function StorefrontCart({ shop }: { shop: PetShopRead }) {
                       ? 'Pay now to confirm — the shop will then deliver to your address.'
                       : `${shop.name} will contact you to confirm payment and delivery.`}
                   </p>
-                  {pay && (
+                  {/* UPI — show a scannable QR (works on desktop & any phone),
+                      plus a tap-to-pay link for when they're already on their
+                      phone. */}
+                  {pay && pay.external === false && (
+                    <div className="mt-4 flex flex-col items-center gap-2.5">
+                      <div className="bg-white p-3 rounded-2xl border border-warm-200 shadow-sm">
+                        <QRCodeSVG value={pay.href} size={176} level="M" />
+                      </div>
+                      <p className="text-sm font-bold text-warm-800">Scan to pay {rupee(placed.total)}</p>
+                      <p className="text-xs text-warm-400 leading-relaxed">
+                        Open any UPI app (GPay / PhonePe / Paytm) and scan.<br />
+                        UPI ID: <span className="font-semibold text-warm-600">{shop.upi_id}</span>
+                      </p>
+                      <a
+                        href={pay.href}
+                        className="mt-1 inline-flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold text-sm px-6 py-3 rounded-full transition-colors w-full"
+                      >
+                        Or tap to pay on this phone
+                      </a>
+                    </div>
+                  )}
+                  {pay && pay.external === true && (
                     <a
                       href={pay.href}
-                      {...(pay.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="mt-4 inline-flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold text-sm px-6 py-3 rounded-full transition-colors w-full"
                     >
                       {pay.label}
                     </a>
-                  )}
-                  {pay?.external === false && (
-                    <p className="mt-2 text-xs text-warm-400">Opens your UPI app. On desktop, pay {rupee(placed.total)} to {shop.upi_id}.</p>
                   )}
                 </div>
               )}
