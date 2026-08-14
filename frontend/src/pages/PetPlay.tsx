@@ -429,17 +429,7 @@ export function PetPlay() {
                   🏆 You hit {REWARD_GOAL} points! The counter starts over.
                 </p>
               )}
-              {dogStopped ? (
-                <button
-                  type="button"
-                  onClick={playAgain}
-                  className="mt-2 rounded-full bg-accent-400 hover:bg-accent-300 px-7 py-2.5 text-sm font-bold text-warm-900 shadow transition-colors"
-                >
-                  ▶ Play again
-                </button>
-              ) : (
-                <p className="mt-2 text-xs text-warm-400">Next round coming up…</p>
-              )}
+              <p className="mt-2 text-xs text-warm-400">{dogStopped ? 'Great game! Back to the start…' : 'Next round coming up…'}</p>
             </>
           ) : null}
         </div>
