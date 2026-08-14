@@ -504,6 +504,27 @@ function OrdersManager({ shop }: { shop: PetShopRead }) {
           ))}
         </ul>
       )}
+      {pageCount > 1 && (
+        <div className="mt-4 flex items-center justify-center gap-4 text-sm">
+          <button
+            type="button"
+            disabled={current === 0}
+            onClick={() => setPage(current - 1)}
+            className="rounded-full border border-warm-200 px-4 py-1.5 font-bold text-warm-700 hover:bg-warm-100 disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            ← Prev
+          </button>
+          <span className="font-semibold text-warm-500">Page {current + 1} of {pageCount}</span>
+          <button
+            type="button"
+            disabled={current >= pageCount - 1}
+            onClick={() => setPage(current + 1)}
+            className="rounded-full border border-warm-200 px-4 py-1.5 font-bold text-warm-700 hover:bg-warm-100 disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            Next →
+          </button>
+        </div>
+      )}
     </section>
   );
 }
