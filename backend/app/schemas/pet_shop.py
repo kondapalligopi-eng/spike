@@ -93,6 +93,7 @@ class OrderItem(BaseModel):
 class ShopOrderCreate(BaseModel):
     buyer_name: str = Field(..., min_length=1, max_length=120)
     buyer_phone: str = Field(..., min_length=3, max_length=40)
+    buyer_email: str | None = Field(default=None, max_length=255)
     buyer_address: str = Field(..., min_length=1, max_length=1000)
     note: str = Field("", max_length=1000)
     items: list[OrderItem] = Field(..., min_length=1)
