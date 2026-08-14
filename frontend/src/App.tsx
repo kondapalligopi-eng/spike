@@ -141,6 +141,7 @@ export const routes: RouteRecord[] = [
         errorElement: <RouteError />,
         children: [
           { path: 'petshop/:slug', Component: PetShop },
+          { path: 'petshop/:slug/cart', Component: PetShopCart },
         ],
       },
     ],
