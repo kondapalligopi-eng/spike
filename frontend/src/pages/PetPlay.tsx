@@ -154,13 +154,17 @@ export function PetPlay() {
   }, []);
 
   // Auto-reset a couple of seconds after a win, so players don't have to tap a
-  // "play again" button every round — they just keep picking. Held when the dog
-  // has stopped at the goal, so its result + "Play again" stay on screen.
+  // "play again" button every round — they just keep picking. When the dog hits
+  // the goal in auto-mode we instead reset all the way to the original default
+  // (Treat Hunt · I'll pick), so the loop can't run forever or get stuck.
   useEffect(() => {
-    if (picked === null || dogStopped) return;
-    const t = setTimeout(() => again(), 2000);
+    if (picked === null) return;
+    const t = setTimeout(() => {
+      if (dogStopped) { setGame('bowls'); chooseMode('me'); }
+      else again();
+    }, 2000);
     return () => clearTimeout(t);
-  }, [picked, dogStopped, again]);
+  }, [picked, dogStopped, again, chooseMode]);
 
   // In "Dog picks" mode the dog keeps hunting on its own: whenever the board is
   // idle it goes in again after a short beat. No re-tapping the toggle — switch
