@@ -417,8 +417,23 @@ export function PetShopView({ data }: { data: PetShopRead }) {
         </div>
       </div>
 
-      {/* Floating cart + checkout drawer */}
-      <StorefrontCart shop={data} />
+      {/* Floating "View cart" button → dedicated cart page */}
+      {cartHydrated && cartCount > 0 && (
+        <Link
+          to={`/petshop/${data.slug}/cart`}
+          className="fixed bottom-5 right-5 z-40 inline-flex items-center gap-2.5 rounded-full bg-primary-600 hover:bg-primary-700 text-white font-bold pl-4 pr-5 py-3 shadow-xl transition-colors"
+        >
+          <span className="relative">
+            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.9} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" />
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+            </svg>
+            <span className="absolute -top-2 -right-2 bg-accent-400 text-warm-900 text-[10px] font-extrabold w-5 h-5 rounded-full grid place-items-center">{cartCount}</span>
+          </span>
+          <span className="tabular-nums">₹{cartTotal.toLocaleString('en-IN')}</span>
+          <span className="hidden sm:inline">· View cart</span>
+        </Link>
+      )}
     </div>
   );
 }
