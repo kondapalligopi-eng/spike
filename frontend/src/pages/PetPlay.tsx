@@ -116,6 +116,12 @@ export function PetPlay() {
     setHitGoal(false);
   }, []);
 
+  // Resume the dog's auto-run after it paused at the goal.
+  const playAgain = useCallback(() => {
+    setDogStopped(false);
+    again();
+  }, [again]);
+
   // Switching games resets the round (points carry over — they're one shared tally).
   const switchGame = useCallback((g: Game) => {
     setGame(g);
