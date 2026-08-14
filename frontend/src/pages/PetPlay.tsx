@@ -119,9 +119,10 @@ export function PetPlay() {
     setSniffing(false);
   }, []);
 
-  // Picking who plays. Choosing "Dog picks" arms the dog so it goes in on its
-  // own (see the effect below) — no extra button. Cancels any in-flight sniff
-  // and clears the current round so it starts clean either way.
+  // Picking who plays. In "Dog picks" the dog keeps playing on its own (see the
+  // effect below) until the player switches back to "I'll pick" — so there's no
+  // confusing "tap the blue toggle again" step. Cancels any in-flight sniff and
+  // clears the current round so it starts clean either way.
   const chooseMode = useCallback((m: Mode) => {
     if (timer.current) clearTimeout(timer.current);
     if (pawTimer.current) clearInterval(pawTimer.current);
@@ -131,7 +132,6 @@ export function PetPlay() {
     setGain(0);
     setHitGoal(false);
     setMode(m);
-    setDogArmed(m === 'dog');
   }, []);
 
   // Auto-reset a couple of seconds after a win, so players don't have to tap a
