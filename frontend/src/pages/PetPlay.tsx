@@ -122,13 +122,19 @@ export function PetPlay() {
     again();
   }, [again]);
 
-  // Switching games resets the round (points carry over — they're one shared tally).
+  // Switching games resets the round (points carry over — they're one shared
+  // tally). Also cancels any in-flight sniff and clears the dog's goal-pause so
+  // switching tabs can never leave the board stuck.
   const switchGame = useCallback((g: Game) => {
+    if (timer.current) clearTimeout(timer.current);
+    if (pawTimer.current) clearInterval(pawTimer.current);
     setGame(g);
     setPicked(null);
     setGain(0);
     setHitGoal(false);
     setSniffing(false);
+    setPawUp(false);
+    setDogStopped(false);
   }, []);
 
   // Picking who plays. In "Dog picks" the dog keeps playing on its own (see the
