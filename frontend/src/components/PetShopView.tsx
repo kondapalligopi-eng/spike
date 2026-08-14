@@ -38,9 +38,8 @@ function HeaderIcons({ shopId, ownerId, slug }: { shopId: string; ownerId: strin
           Edit shop
         </Link>
       )}
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
+      <Link
+        to={`/petshop/${slug}/cart`}
         aria-label="Cart"
         className="relative w-10 h-10 grid place-items-center rounded-full hover:bg-warm-100 text-warm-700 transition-colors"
       >
@@ -52,7 +51,7 @@ function HeaderIcons({ shopId, ownerId, slug }: { shopId: string; ownerId: strin
         {hasHydrated && count > 0 && (
           <span className="absolute top-0.5 right-0.5 bg-accent-400 text-warm-900 text-[10px] font-extrabold w-4 h-4 rounded-full grid place-items-center">{count}</span>
         )}
-      </button>
+      </Link>
       <Link
         to={isAuthenticated ? '/profile' : '/login'}
         aria-label="Account"
