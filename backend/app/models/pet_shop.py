@@ -180,6 +180,7 @@ class ShopOrder(UUIDBase):
 
     buyer_name: Mapped[str] = mapped_column(String(120), nullable=False)
     buyer_phone: Mapped[str] = mapped_column(String(40), nullable=False)
+    buyer_email: Mapped[str | None] = mapped_column(String(255), nullable=True)
     buyer_address: Mapped[str] = mapped_column(Text, nullable=False)
     note: Mapped[str] = mapped_column(Text, nullable=False, default="")
 

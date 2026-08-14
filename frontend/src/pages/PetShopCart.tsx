@@ -53,8 +53,13 @@ export function PetShopCart() {
   const [step, setStep] = useState<'cart' | 'checkout' | 'done'>('cart');
   const [placed, setPlaced] = useState<ShopOrder | null>(null);
   const [name, setName] = useState(user?.full_name ?? '');
-  const [phone, setPhone] = useState(user?.phone ?? '');
-  const [address, setAddress] = useState('');
+  const [phone, setPhone] = useState((user?.phone ?? '').replace(/\D/g, '').slice(-10));
+  const [email, setEmail] = useState(user?.email ?? '');
+  const [pincode, setPincode] = useState('');
+  const [area, setArea] = useState('');
+  const [areas, setAreas] = useState<string[]>([]);
+  const [pinStatus, setPinStatus] = useState<'idle' | 'checking' | 'ok' | 'outside'>('idle');
+  const [street, setStreet] = useState('');
   const [note, setNote] = useState('');
   const [busy, setBusy] = useState(false);
   const [secondsLeft, setSecondsLeft] = useState(QR_SECONDS);
@@ -65,21 +70,55 @@ export function PetShopCart() {
     return () => clearInterval(t);
   }, [step]);
 
+  // Bengaluru-only delivery: a 560xxx pincode auto-fills the area (via India
+  // Post's free pincode API). Non-560 pincodes are rejected. If the API is
+  // unreachable we still accept the 560xxx pincode and let the area be typed.
+  useEffect(() => {
+    const pin = pincode.trim();
+    setArea('');
+    setAreas([]);
+    if (pin.length < 6) { setPinStatus('idle'); return; }
+    if (!/^560\d{3}$/.test(pin)) { setPinStatus('outside'); return; }
+    setPinStatus('checking');
+    let cancelled = false;
+    fetch(`https://api.postalpincode.in/pincode/${pin}`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (cancelled) return;
+        const po = data?.[0]?.PostOffice;
+        if (data?.[0]?.Status === 'Success' && Array.isArray(po) && po.length && po[0]?.State === 'Karnataka') {
+          const list = Array.from(new Set(po.map((x: { Name: string }) => x.Name))) as string[];
+          setAreas(list);
+          setArea(list[0] ?? '');
+          setPinStatus('ok');
+        } else {
+          setPinStatus('outside');
+        }
+      })
+      .catch(() => { if (!cancelled) setPinStatus('ok'); });
+    return () => { cancelled = true; };
+  }, [pincode]);
+
   const total = Math.round(items.reduce((s, i) => s + i.unit_price * i.qty, 0) * 100) / 100;
   const count = items.reduce((s, i) => s + i.qty, 0);
   const pay = placed && shop ? payLinkForTotal(shop, placed.total, placed.id.slice(0, 8).toUpperCase()) : null;
 
   const submit = async () => {
-    if (!name.trim() || !phone.trim() || !address.trim()) {
-      toast.error('Please add your name, phone and delivery address.');
-      return;
-    }
+    if (!name.trim()) { toast.error('Please enter your name.'); return; }
+    if (!/^\d{10}$/.test(phone.trim())) { toast.error('Enter a valid 10-digit phone number.'); return; }
+    if (email.trim() && !/^\S+@\S+\.\S+$/.test(email.trim())) { toast.error('Enter a valid email, or leave it blank.'); return; }
+    if (pinStatus === 'outside') { toast.error('Sorry, we currently deliver only within Bengaluru.'); return; }
+    if (pinStatus !== 'ok' || !/^560\d{3}$/.test(pincode.trim())) { toast.error('Enter a valid Bengaluru pincode (560xxx).'); return; }
+    if (!area.trim()) { toast.error('Please select or enter your area.'); return; }
+    if (!street.trim()) { toast.error('Please enter your flat / house / street.'); return; }
     setBusy(true);
     try {
+      const buyer_address = `${street.trim()}, ${area.trim()}, Bengaluru, Karnataka - ${pincode.trim()}`;
       const order = await placeOrder(shopId, {
         buyer_name: name.trim(),
-        buyer_phone: phone.trim(),
-        buyer_address: address.trim(),
+        buyer_phone: `+91 ${phone.trim()}`,
+        buyer_email: email.trim() || null,
+        buyer_address,
         note: note.trim(),
         items: items.map((i) => ({ product_id: i.product_id, name: i.name, unit_price: i.unit_price, qty: i.qty })),
       });
@@ -209,20 +248,59 @@ export function PetShopCart() {
                 <>
                   <button type="button" onClick={() => setStep('cart')} className="text-sm font-semibold text-warm-500 hover:text-warm-700 mb-3">← Back to cart</button>
                   <h1 className="text-lg font-extrabold text-warm-900 mb-1">Delivery details</h1>
-                  <p className="text-xs text-warm-500 mb-4">The shop delivers offline and will confirm your order. No account needed.</p>
+                  <p className="text-xs text-warm-500 mb-4">We deliver within Bengaluru. The shop will confirm your order — no account needed.</p>
                   <div className="space-y-3">
-                    <div>
-                      <label className="block text-sm font-medium text-warm-700 mb-1">Your name</label>
-                      <input className={field} value={name} onChange={(e) => setName(e.target.value)} placeholder="Full name" />
+                    <div className="grid sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-sm font-medium text-warm-700 mb-1">Full name <span className="text-red-500">*</span></label>
+                        <input className={field} value={name} onChange={(e) => setName(e.target.value)} placeholder="Full name" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-warm-700 mb-1">Phone <span className="text-red-500">*</span></label>
+                        <div className="relative">
+                          <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-warm-500 text-sm font-semibold pointer-events-none">+91</span>
+                          <input className={`${field} pl-12`} inputMode="numeric" maxLength={10} value={phone} onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))} placeholder="98765 43210" />
+                        </div>
+                      </div>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-warm-700 mb-1">Phone</label>
-                      <input className={field} value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+91 98765 43210" />
+                      <label className="block text-sm font-medium text-warm-700 mb-1">Email <span className="text-warm-400 font-normal">(optional)</span></label>
+                      <input className={field} type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-warm-700 mb-1">Delivery address</label>
-                      <textarea rows={3} className={field} value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Flat / street / area, Bengaluru" />
+                      <label className="block text-sm font-medium text-warm-700 mb-1">Pincode <span className="text-red-500">*</span> <span className="text-warm-400 font-normal">(Bengaluru only)</span></label>
+                      <div className="relative">
+                        <input className={field} inputMode="numeric" maxLength={6} value={pincode} onChange={(e) => setPincode(e.target.value.replace(/\D/g, '').slice(0, 6))} placeholder="560038" />
+                        {pinStatus === 'ok' && <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-green-600 font-bold" aria-hidden="true">✓</span>}
+                        {pinStatus === 'checking' && <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-warm-400 text-xs">checking…</span>}
+                      </div>
+                      {pinStatus === 'outside' && <p className="mt-1 text-xs text-red-600">Sorry — we currently deliver only within Bengaluru (560xxx pincodes).</p>}
                     </div>
+                    <div>
+                      <label className="block text-sm font-medium text-warm-700 mb-1">Area / Locality <span className="text-red-500">*</span></label>
+                      {areas.length > 0 ? (
+                        <select className={field} value={area} onChange={(e) => setArea(e.target.value)}>
+                          {areas.map((a) => <option key={a} value={a}>{a}</option>)}
+                        </select>
+                      ) : (
+                        <input className={field} value={area} onChange={(e) => setArea(e.target.value)} placeholder="e.g. Indiranagar" disabled={pinStatus !== 'ok'} />
+                      )}
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-warm-700 mb-1">Flat / House / Street <span className="text-red-500">*</span></label>
+                      <textarea rows={2} className={field} value={street} onChange={(e) => setStreet(e.target.value)} placeholder="Flat / building, street, landmark" />
+                    </div>
+                    <div className="grid sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-sm font-medium text-warm-700 mb-1">City</label>
+                        <input className={`${field} bg-warm-50 text-warm-500`} value="Bengaluru" readOnly />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-warm-700 mb-1">State</label>
+                        <input className={`${field} bg-warm-50 text-warm-500`} value="Karnataka" readOnly />
+                      </div>
+                    </div>
+                    <p className="text-xs text-warm-500">Country: <span className="font-semibold text-warm-700">India</span></p>
                     <div>
                       <label className="block text-sm font-medium text-warm-700 mb-1">Note <span className="text-warm-400 font-normal">(optional)</span></label>
                       <input className={field} value={note} onChange={(e) => setNote(e.target.value)} placeholder="Any delivery instructions" />

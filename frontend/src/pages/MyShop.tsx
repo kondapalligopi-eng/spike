@@ -469,6 +469,7 @@ function OrdersManager({ shop }: { shop: PetShopRead }) {
               </div>
               <div className="text-sm text-warm-700">
                 <p className="font-bold">{o.buyer_name} · <a href={`tel:${o.buyer_phone}`} className="text-primary-600 font-semibold">{o.buyer_phone}</a></p>
+                {o.buyer_email && <p className="text-warm-500 mt-0.5"><a href={`mailto:${o.buyer_email}`} className="hover:underline">{o.buyer_email}</a></p>}
                 <p className="text-warm-500 mt-0.5">{o.buyer_address}</p>
                 {o.note && <p className="text-warm-500 mt-0.5 italic">“{o.note}”</p>}
               </div>

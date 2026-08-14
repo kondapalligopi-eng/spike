@@ -475,6 +475,7 @@ async def place_order(
         shop_id=shop.id,
         buyer_name=payload.buyer_name.strip(),
         buyer_phone=payload.buyer_phone.strip(),
+        buyer_email=payload.buyer_email.strip() if payload.buyer_email else None,
         buyer_address=payload.buyer_address.strip(),
         note=payload.note.strip(),
         items=[i.model_dump() for i in payload.items],
