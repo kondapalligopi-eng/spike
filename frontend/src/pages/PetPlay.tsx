@@ -137,25 +137,27 @@ export function PetPlay() {
     setPicked(null);
     setGain(0);
     setHitGoal(false);
+    setDogStopped(false);
     setMode(m);
   }, []);
 
   // Auto-reset a couple of seconds after a win, so players don't have to tap a
-  // "play again" button every round — they just keep picking.
+  // "play again" button every round — they just keep picking. Held when the dog
+  // has stopped at the goal, so its result + "Play again" stay on screen.
   useEffect(() => {
-    if (picked === null) return;
+    if (picked === null || dogStopped) return;
     const t = setTimeout(() => again(), 2000);
     return () => clearTimeout(t);
-  }, [picked, again]);
+  }, [picked, dogStopped, again]);
 
   // In "Dog picks" mode the dog keeps hunting on its own: whenever the board is
   // idle it goes in again after a short beat. No re-tapping the toggle — switch
-  // to "I'll pick" to stop.
+  // to "I'll pick" to stop. Pauses once the goal is reached.
   useEffect(() => {
-    if (mode !== 'dog' || picked !== null || sniffing) return;
+    if (mode !== 'dog' || dogStopped || picked !== null || sniffing) return;
     const t = setTimeout(() => sniff(), 550);
     return () => clearTimeout(t);
-  }, [mode, picked, sniffing, sniff]);
+  }, [mode, dogStopped, picked, sniffing, sniff]);
 
   const pct = Math.min(100, (points / REWARD_GOAL) * 100);
 
