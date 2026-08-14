@@ -121,6 +121,7 @@ export type ShopOrder = {
   user_id: string | null;
   buyer_name: string;
   buyer_phone: string;
+  buyer_email: string | null;
   buyer_address: string;
   note: string;
   items: OrderItemInput[];
