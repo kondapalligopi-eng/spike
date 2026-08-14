@@ -48,6 +48,9 @@ export function PetPlay() {
   const [mode, setMode] = useState<Mode>('me');
   const [picked, setPicked] = useState<number | null>(null);
   const [sniffing, setSniffing] = useState(false);
+  // In "Dog picks" the dog auto-plays; when it hits the 500-point goal we pause
+  // the loop (else it runs forever) until the player taps "Play again".
+  const [dogStopped, setDogStopped] = useState(false);
   const [points, setPoints] = useState(0);
   const [gain, setGain] = useState(0);
   const [pawUp, setPawUp] = useState(false);
