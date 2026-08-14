@@ -53,8 +53,13 @@ export function PetShopCart() {
   const [step, setStep] = useState<'cart' | 'checkout' | 'done'>('cart');
   const [placed, setPlaced] = useState<ShopOrder | null>(null);
   const [name, setName] = useState(user?.full_name ?? '');
-  const [phone, setPhone] = useState(user?.phone ?? '');
-  const [address, setAddress] = useState('');
+  const [phone, setPhone] = useState((user?.phone ?? '').replace(/\D/g, '').slice(-10));
+  const [email, setEmail] = useState(user?.email ?? '');
+  const [pincode, setPincode] = useState('');
+  const [area, setArea] = useState('');
+  const [areas, setAreas] = useState<string[]>([]);
+  const [pinStatus, setPinStatus] = useState<'idle' | 'checking' | 'ok' | 'outside'>('idle');
+  const [street, setStreet] = useState('');
   const [note, setNote] = useState('');
   const [busy, setBusy] = useState(false);
   const [secondsLeft, setSecondsLeft] = useState(QR_SECONDS);
@@ -64,6 +69,35 @@ export function PetShopCart() {
     const t = setInterval(() => setSecondsLeft((s) => (s <= 0 ? 0 : s - 1)), 1000);
     return () => clearInterval(t);
   }, [step]);
+
+  // Bengaluru-only delivery: a 560xxx pincode auto-fills the area (via India
+  // Post's free pincode API). Non-560 pincodes are rejected. If the API is
+  // unreachable we still accept the 560xxx pincode and let the area be typed.
+  useEffect(() => {
+    const pin = pincode.trim();
+    setArea('');
+    setAreas([]);
+    if (pin.length < 6) { setPinStatus('idle'); return; }
+    if (!/^560\d{3}$/.test(pin)) { setPinStatus('outside'); return; }
+    setPinStatus('checking');
+    let cancelled = false;
+    fetch(`https://api.postalpincode.in/pincode/${pin}`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (cancelled) return;
+        const po = data?.[0]?.PostOffice;
+        if (data?.[0]?.Status === 'Success' && Array.isArray(po) && po.length && po[0]?.State === 'Karnataka') {
+          const list = Array.from(new Set(po.map((x: { Name: string }) => x.Name))) as string[];
+          setAreas(list);
+          setArea(list[0] ?? '');
+          setPinStatus('ok');
+        } else {
+          setPinStatus('outside');
+        }
+      })
+      .catch(() => { if (!cancelled) setPinStatus('ok'); });
+    return () => { cancelled = true; };
+  }, [pincode]);
 
   const total = Math.round(items.reduce((s, i) => s + i.unit_price * i.qty, 0) * 100) / 100;
   const count = items.reduce((s, i) => s + i.qty, 0);
