@@ -16,13 +16,12 @@ function waLink(number: string, text: string): string {
 }
 
 // Cart + account icons for the storefront header (right of the shop logo),
-// mirroring the hispike.in navbar's icon cluster. The cart icon opens the same
-// drawer as the floating button (shared store state).
-function HeaderIcons({ shopId, ownerId }: { shopId: string; ownerId: string }) {
+// mirroring the hispike.in navbar's icon cluster. The cart icon links to the
+// dedicated cart page.
+function HeaderIcons({ shopId, ownerId, slug }: { shopId: string; ownerId: string; slug: string }) {
   const { isAuthenticated, user } = useAuth();
   const hasHydrated = useCartStore((s) => s.hasHydrated);
   const count = useCartStore((s) => (s.carts[shopId] ?? EMPTY_CART).reduce((n, i) => n + i.qty, 0));
-  const setOpen = useCartStore((s) => s.setOpen);
   // User.id is typed number in the codebase but is a UUID string at runtime
   // (like owner_id) — compare as strings.
   const isOwner = !!user && String(user.id) === String(ownerId);
