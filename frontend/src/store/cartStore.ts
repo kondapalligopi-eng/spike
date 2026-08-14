@@ -15,10 +15,6 @@ export type CartItem = {
 
 interface CartState {
   carts: Record<string, CartItem[]>;
-  // Drawer open/closed — transient UI state (not persisted) so the header cart
-  // icon and the floating button can both open the same drawer.
-  open: boolean;
-  setOpen: (open: boolean) => void;
   // False until localStorage has been read (skipHydration) so the first client
   // render matches the logged-out/empty SSG shell — same guard as authStore.
   hasHydrated: boolean;
@@ -33,8 +29,6 @@ export const useCartStore = create<CartState>()(
   persist(
     (set) => ({
       carts: {},
-      open: false,
-      setOpen: (open) => set({ open }),
       hasHydrated: false,
       setHydrated: () => set({ hasHydrated: true }),
 
