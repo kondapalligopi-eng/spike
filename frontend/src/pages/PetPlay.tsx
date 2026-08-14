@@ -48,10 +48,9 @@ export function PetPlay() {
   const [mode, setMode] = useState<Mode>('me');
   const [picked, setPicked] = useState<number | null>(null);
   const [sniffing, setSniffing] = useState(false);
-  // Armed when the player taps "Dog picks" — an effect then sends the dog in
-  // automatically (no separate button). Disarmed after each send so it waits
-  // for the next tap rather than looping forever.
-  const [dogArmed, setDogArmed] = useState(false);
+  // In "Dog picks" the dog auto-plays; when it hits the 500-point goal we pause
+  // the loop (else it runs forever) until the player taps "Play again".
+  const [dogStopped, setDogStopped] = useState(false);
   const [points, setPoints] = useState(0);
   const [gain, setGain] = useState(0);
   const [pawUp, setPawUp] = useState(false);
@@ -87,10 +86,13 @@ export function PetPlay() {
     setHitGoal(reached);
     setPoints(reached ? 0 : next);
     setPicked(i);
+    // Reaching the goal ends the dog's auto-run (see effects) — the player taps
+    // "Play again" to start another lap.
+    if (reached && mode === 'dog') setDogStopped(true);
     // if they play before the timer fires, fold the hero now so the result
     // never lands below the fold
     setHeroHidden(true);
-  }, [picked, points]);
+  }, [picked, points, mode]);
 
   // Two real photos of Messi — sitting and with a paw raised — alternated so he
   // actually paws the air while he searches. Both frames are pre-aligned on his
@@ -114,18 +116,25 @@ export function PetPlay() {
     setHitGoal(false);
   }, []);
 
-  // Switching games resets the round (points carry over — they're one shared tally).
+  // Switching games resets the round (points carry over — they're one shared
+  // tally). Also cancels any in-flight sniff and clears the dog's goal-pause so
+  // switching tabs can never leave the board stuck.
   const switchGame = useCallback((g: Game) => {
+    if (timer.current) clearTimeout(timer.current);
+    if (pawTimer.current) clearInterval(pawTimer.current);
     setGame(g);
     setPicked(null);
     setGain(0);
     setHitGoal(false);
     setSniffing(false);
+    setPawUp(false);
+    setDogStopped(false);
   }, []);
 
-  // Picking who plays. Choosing "Dog picks" arms the dog so it goes in on its
-  // own (see the effect below) — no extra button. Cancels any in-flight sniff
-  // and clears the current round so it starts clean either way.
+  // Picking who plays. In "Dog picks" the dog keeps playing on its own (see the
+  // effect below) until the player switches back to "I'll pick" — so there's no
+  // confusing "tap the blue toggle again" step. Cancels any in-flight sniff and
+  // clears the current round so it starts clean either way.
   const chooseMode = useCallback((m: Mode) => {
     if (timer.current) clearTimeout(timer.current);
     if (pawTimer.current) clearInterval(pawTimer.current);
@@ -134,24 +143,31 @@ export function PetPlay() {
     setPicked(null);
     setGain(0);
     setHitGoal(false);
+    setDogStopped(false);
     setMode(m);
-    setDogArmed(m === 'dog');
   }, []);
 
   // Auto-reset a couple of seconds after a win, so players don't have to tap a
-  // "play again" button every round — they just keep picking.
+  // "play again" button every round — they just keep picking. When the dog hits
+  // the goal in auto-mode we instead reset all the way to the original default
+  // (Treat Hunt · I'll pick), so the loop can't run forever or get stuck.
   useEffect(() => {
     if (picked === null) return;
-    const t = setTimeout(() => again(), 2000);
+    const t = setTimeout(() => {
+      if (dogStopped) { setGame('bowls'); chooseMode('me'); }
+      else again();
+    }, 2000);
     return () => clearTimeout(t);
-  }, [picked, again]);
+  }, [picked, dogStopped, again, chooseMode]);
 
-  // When the dog is armed and the board is idle, send it in automatically.
+  // In "Dog picks" mode the dog keeps hunting on its own: whenever the board is
+  // idle it goes in again after a short beat. No re-tapping the toggle — switch
+  // to "I'll pick" to stop. Pauses once the goal is reached.
   useEffect(() => {
-    if (mode !== 'dog' || !dogArmed || picked !== null || sniffing) return;
-    setDogArmed(false);
-    sniff();
-  }, [mode, dogArmed, picked, sniffing, sniff]);
+    if (mode !== 'dog' || dogStopped || picked !== null || sniffing) return;
+    const t = setTimeout(() => sniff(), 550);
+    return () => clearTimeout(t);
+  }, [mode, dogStopped, picked, sniffing, sniff]);
 
   const pct = Math.min(100, (points / REWARD_GOAL) * 100);
 
@@ -162,7 +178,7 @@ export function PetPlay() {
     : sniffing
       ? 'Sniff… sniff… 🐾'
       : mode === 'dog'
-        ? 'Tap “Dog picks” to send your dog in 🐾'
+        ? 'Your dog is on the hunt 🐾'
         : game === 'bowls'
           ? 'Tap a bowl — which one is your dog sniffing at?'
           : 'Tap a hand — which one is the treat in?';
@@ -413,7 +429,7 @@ export function PetPlay() {
                   🏆 You hit {REWARD_GOAL} points! The counter starts over.
                 </p>
               )}
-              <p className="mt-2 text-xs text-warm-400">Next round coming up…</p>
+              <p className="mt-2 text-xs text-warm-400">{dogStopped ? 'Great game! Back to the start…' : 'Next round coming up…'}</p>
             </>
           ) : null}
         </div>
