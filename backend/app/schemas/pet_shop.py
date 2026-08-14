@@ -111,6 +111,7 @@ class ShopOrderRead(BaseModel):
     user_id: uuid.UUID | None = None
     buyer_name: str
     buyer_phone: str
+    buyer_email: str | None = None
     buyer_address: str
     note: str
     items: list[OrderItem]
