@@ -2,7 +2,6 @@ import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { HeroPaws } from './HeroPaws';
 import { PaymentBadges } from './PaymentBadges';
-import { StorefrontCart } from './StorefrontCart';
 import { useCartStore, type CartItem } from '@/store/cartStore';
 import { useAuth } from '@/hooks/useAuth';
 import { SHOP_CATEGORIES, displayPrice, numericPrice, type PetShopRead, type ShopProduct, type ShopUpdate } from '@/api/petShops';
@@ -16,13 +15,12 @@ function waLink(number: string, text: string): string {
 }
 
 // Cart + account icons for the storefront header (right of the shop logo),
-// mirroring the hispike.in navbar's icon cluster. The cart icon opens the same
-// drawer as the floating button (shared store state).
-function HeaderIcons({ shopId, ownerId }: { shopId: string; ownerId: string }) {
+// mirroring the hispike.in navbar's icon cluster. The cart icon links to the
+// dedicated cart page.
+function HeaderIcons({ shopId, ownerId, slug }: { shopId: string; ownerId: string; slug: string }) {
   const { isAuthenticated, user } = useAuth();
   const hasHydrated = useCartStore((s) => s.hasHydrated);
   const count = useCartStore((s) => (s.carts[shopId] ?? EMPTY_CART).reduce((n, i) => n + i.qty, 0));
-  const setOpen = useCartStore((s) => s.setOpen);
   // User.id is typed number in the codebase but is a UUID string at runtime
   // (like owner_id) — compare as strings.
   const isOwner = !!user && String(user.id) === String(ownerId);
@@ -39,9 +37,8 @@ function HeaderIcons({ shopId, ownerId }: { shopId: string; ownerId: string }) {
           Edit shop
         </Link>
       )}
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
+      <Link
+        to={`/petshop/${slug}/cart`}
         aria-label="Cart"
         className="relative w-10 h-10 grid place-items-center rounded-full hover:bg-warm-100 text-warm-700 transition-colors"
       >
@@ -53,7 +50,7 @@ function HeaderIcons({ shopId, ownerId }: { shopId: string; ownerId: string }) {
         {hasHydrated && count > 0 && (
           <span className="absolute top-0.5 right-0.5 bg-accent-400 text-warm-900 text-[10px] font-extrabold w-4 h-4 rounded-full grid place-items-center">{count}</span>
         )}
-      </button>
+      </Link>
       <Link
         to={isAuthenticated ? '/profile' : '/login'}
         aria-label="Account"
@@ -175,6 +172,12 @@ export function PetShopView({ data }: { data: PetShopRead }) {
   const photos = data.photos ?? [];
   const hasOnlinePay = !!(data.payment_url || data.upi_id);
 
+  // Cart summary for the floating "View cart" button (links to the cart page).
+  const cartItems = useCartStore((s) => s.carts[data.id] ?? EMPTY_CART);
+  const cartHydrated = useCartStore((s) => s.hasHydrated);
+  const cartCount = cartItems.reduce((n, i) => n + i.qty, 0);
+  const cartTotal = Math.round(cartItems.reduce((n, i) => n + i.unit_price * i.qty, 0) * 100) / 100;
+
   // Group products into category shelves, ordered by SHOP_CATEGORIES.
   const shelves = useMemo(() => {
     const map = new Map<string, ShopProduct[]>();
@@ -201,7 +204,7 @@ export function PetShopView({ data }: { data: PetShopRead }) {
             {data.logo_url ? <img src={data.logo_url} alt={data.name} className="w-full h-full object-cover" /> : <span aria-hidden="true">🏪</span>}
           </div>
           <h1 className="text-xl sm:text-2xl font-black tracking-tight truncate text-warm-900 min-w-0">{data.name}</h1>
-          <HeaderIcons shopId={data.id} ownerId={data.owner_id} />
+          <HeaderIcons shopId={data.id} ownerId={data.owner_id} slug={data.slug} />
         </div>
       </header>
 
@@ -413,8 +416,23 @@ export function PetShopView({ data }: { data: PetShopRead }) {
         </div>
       </div>
 
-      {/* Floating cart + checkout drawer */}
-      <StorefrontCart shop={data} />
+      {/* Floating "View cart" button → dedicated cart page */}
+      {cartHydrated && cartCount > 0 && (
+        <Link
+          to={`/petshop/${data.slug}/cart`}
+          className="fixed bottom-5 right-5 z-40 inline-flex items-center gap-2.5 rounded-full bg-primary-600 hover:bg-primary-700 text-white font-bold pl-4 pr-5 py-3 shadow-xl transition-colors"
+        >
+          <span className="relative">
+            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.9} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" />
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+            </svg>
+            <span className="absolute -top-2 -right-2 bg-accent-400 text-warm-900 text-[10px] font-extrabold w-5 h-5 rounded-full grid place-items-center">{cartCount}</span>
+          </span>
+          <span className="tabular-nums">₹{cartTotal.toLocaleString('en-IN')}</span>
+          <span className="hidden sm:inline">· View cart</span>
+        </Link>
+      )}
     </div>
   );
 }
