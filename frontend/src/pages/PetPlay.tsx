@@ -86,10 +86,13 @@ export function PetPlay() {
     setHitGoal(reached);
     setPoints(reached ? 0 : next);
     setPicked(i);
+    // Reaching the goal ends the dog's auto-run (see effects) — the player taps
+    // "Play again" to start another lap.
+    if (reached && mode === 'dog') setDogStopped(true);
     // if they play before the timer fires, fold the hero now so the result
     // never lands below the fold
     setHeroHidden(true);
-  }, [picked, points]);
+  }, [picked, points, mode]);
 
   // Two real photos of Messi — sitting and with a paw raised — alternated so he
   // actually paws the air while he searches. Both frames are pre-aligned on his
