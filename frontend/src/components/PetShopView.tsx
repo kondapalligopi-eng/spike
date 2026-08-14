@@ -199,7 +199,7 @@ export function PetShopView({ data }: { data: PetShopRead }) {
             {data.logo_url ? <img src={data.logo_url} alt={data.name} className="w-full h-full object-cover" /> : <span aria-hidden="true">🏪</span>}
           </div>
           <h1 className="text-xl sm:text-2xl font-black tracking-tight truncate text-warm-900 min-w-0">{data.name}</h1>
-          <HeaderIcons shopId={data.id} ownerId={data.owner_id} />
+          <HeaderIcons shopId={data.id} ownerId={data.owner_id} slug={data.slug} />
         </div>
       </header>
 
