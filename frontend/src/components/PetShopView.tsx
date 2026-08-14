@@ -2,7 +2,6 @@ import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { HeroPaws } from './HeroPaws';
 import { PaymentBadges } from './PaymentBadges';
-import { StorefrontCart } from './StorefrontCart';
 import { useCartStore, type CartItem } from '@/store/cartStore';
 import { useAuth } from '@/hooks/useAuth';
 import { SHOP_CATEGORIES, displayPrice, numericPrice, type PetShopRead, type ShopProduct, type ShopUpdate } from '@/api/petShops';
