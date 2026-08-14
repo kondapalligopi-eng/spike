@@ -248,20 +248,59 @@ export function PetShopCart() {
                 <>
                   <button type="button" onClick={() => setStep('cart')} className="text-sm font-semibold text-warm-500 hover:text-warm-700 mb-3">← Back to cart</button>
                   <h1 className="text-lg font-extrabold text-warm-900 mb-1">Delivery details</h1>
-                  <p className="text-xs text-warm-500 mb-4">The shop delivers offline and will confirm your order. No account needed.</p>
+                  <p className="text-xs text-warm-500 mb-4">We deliver within Bengaluru. The shop will confirm your order — no account needed.</p>
                   <div className="space-y-3">
-                    <div>
-                      <label className="block text-sm font-medium text-warm-700 mb-1">Your name</label>
-                      <input className={field} value={name} onChange={(e) => setName(e.target.value)} placeholder="Full name" />
+                    <div className="grid sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-sm font-medium text-warm-700 mb-1">Full name <span className="text-red-500">*</span></label>
+                        <input className={field} value={name} onChange={(e) => setName(e.target.value)} placeholder="Full name" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-warm-700 mb-1">Phone <span className="text-red-500">*</span></label>
+                        <div className="relative">
+                          <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-warm-500 text-sm font-semibold pointer-events-none">+91</span>
+                          <input className={`${field} pl-12`} inputMode="numeric" maxLength={10} value={phone} onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))} placeholder="98765 43210" />
+                        </div>
+                      </div>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-warm-700 mb-1">Phone</label>
-                      <input className={field} value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+91 98765 43210" />
+                      <label className="block text-sm font-medium text-warm-700 mb-1">Email <span className="text-warm-400 font-normal">(optional)</span></label>
+                      <input className={field} type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-warm-700 mb-1">Delivery address</label>
-                      <textarea rows={3} className={field} value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Flat / street / area, Bengaluru" />
+                      <label className="block text-sm font-medium text-warm-700 mb-1">Pincode <span className="text-red-500">*</span> <span className="text-warm-400 font-normal">(Bengaluru only)</span></label>
+                      <div className="relative">
+                        <input className={field} inputMode="numeric" maxLength={6} value={pincode} onChange={(e) => setPincode(e.target.value.replace(/\D/g, '').slice(0, 6))} placeholder="560038" />
+                        {pinStatus === 'ok' && <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-green-600 font-bold" aria-hidden="true">✓</span>}
+                        {pinStatus === 'checking' && <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-warm-400 text-xs">checking…</span>}
+                      </div>
+                      {pinStatus === 'outside' && <p className="mt-1 text-xs text-red-600">Sorry — we currently deliver only within Bengaluru (560xxx pincodes).</p>}
                     </div>
+                    <div>
+                      <label className="block text-sm font-medium text-warm-700 mb-1">Area / Locality <span className="text-red-500">*</span></label>
+                      {areas.length > 0 ? (
+                        <select className={field} value={area} onChange={(e) => setArea(e.target.value)}>
+                          {areas.map((a) => <option key={a} value={a}>{a}</option>)}
+                        </select>
+                      ) : (
+                        <input className={field} value={area} onChange={(e) => setArea(e.target.value)} placeholder="e.g. Indiranagar" disabled={pinStatus !== 'ok'} />
+                      )}
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-warm-700 mb-1">Flat / House / Street <span className="text-red-500">*</span></label>
+                      <textarea rows={2} className={field} value={street} onChange={(e) => setStreet(e.target.value)} placeholder="Flat / building, street, landmark" />
+                    </div>
+                    <div className="grid sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-sm font-medium text-warm-700 mb-1">City</label>
+                        <input className={`${field} bg-warm-50 text-warm-500`} value="Bengaluru" readOnly />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-warm-700 mb-1">State</label>
+                        <input className={`${field} bg-warm-50 text-warm-500`} value="Karnataka" readOnly />
+                      </div>
+                    </div>
+                    <p className="text-xs text-warm-500">Country: <span className="font-semibold text-warm-700">India</span></p>
                     <div>
                       <label className="block text-sm font-medium text-warm-700 mb-1">Note <span className="text-warm-400 font-normal">(optional)</span></label>
                       <input className={field} value={note} onChange={(e) => setNote(e.target.value)} placeholder="Any delivery instructions" />
