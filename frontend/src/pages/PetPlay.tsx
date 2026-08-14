@@ -142,12 +142,14 @@ export function PetPlay() {
     return () => clearTimeout(t);
   }, [picked, again]);
 
-  // When the dog is armed and the board is idle, send it in automatically.
+  // In "Dog picks" mode the dog keeps hunting on its own: whenever the board is
+  // idle it goes in again after a short beat. No re-tapping the toggle — switch
+  // to "I'll pick" to stop.
   useEffect(() => {
-    if (mode !== 'dog' || !dogArmed || picked !== null || sniffing) return;
-    setDogArmed(false);
-    sniff();
-  }, [mode, dogArmed, picked, sniffing, sniff]);
+    if (mode !== 'dog' || picked !== null || sniffing) return;
+    const t = setTimeout(() => sniff(), 550);
+    return () => clearTimeout(t);
+  }, [mode, picked, sniffing, sniff]);
 
   const pct = Math.min(100, (points / REWARD_GOAL) * 100);
 
