@@ -173,6 +173,12 @@ export function PetShopView({ data }: { data: PetShopRead }) {
   const photos = data.photos ?? [];
   const hasOnlinePay = !!(data.payment_url || data.upi_id);
 
+  // Cart summary for the floating "View cart" button (links to the cart page).
+  const cartItems = useCartStore((s) => s.carts[data.id] ?? EMPTY_CART);
+  const cartHydrated = useCartStore((s) => s.hasHydrated);
+  const cartCount = cartItems.reduce((n, i) => n + i.qty, 0);
+  const cartTotal = Math.round(cartItems.reduce((n, i) => n + i.unit_price * i.qty, 0) * 100) / 100;
+
   // Group products into category shelves, ordered by SHOP_CATEGORIES.
   const shelves = useMemo(() => {
     const map = new Map<string, ShopProduct[]>();
