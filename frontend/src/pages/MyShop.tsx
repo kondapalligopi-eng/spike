@@ -448,9 +448,17 @@ function OrdersManager({ shop }: { shop: PetShopRead }) {
   });
   const rupee = (n: number) => `₹${n.toLocaleString('en-IN')}`;
 
+  // Newest orders come first from the API; paginate so the section stays short.
+  const PER_PAGE = 5;
+  const [page, setPage] = useState(0);
+  const total = orders?.length ?? 0;
+  const pageCount = Math.max(1, Math.ceil(total / PER_PAGE));
+  const current = Math.min(page, pageCount - 1);
+  const pageOrders = (orders ?? []).slice(current * PER_PAGE, current * PER_PAGE + PER_PAGE);
+
   return (
     <section>
-      <h2 className="text-lg font-extrabold text-warm-900 mb-1">Orders</h2>
+      <h2 className="text-lg font-extrabold text-warm-900 mb-1">Orders <span className="text-warm-400 font-bold text-sm">({total})</span></h2>
       <p className="text-sm text-warm-500 mb-4">Customer orders from your storefront. Mark <b>Paid</b> once you receive payment, then <b>Delivered</b> after handover.</p>
       {isLoading ? (
         <div className="py-8 flex justify-center"><LoadingSpinner /></div>
@@ -458,7 +466,7 @@ function OrdersManager({ shop }: { shop: PetShopRead }) {
         <p className="text-sm text-warm-500 rounded-2xl border border-dashed border-warm-300 p-6 text-center">No orders yet.</p>
       ) : (
         <ul className="space-y-3">
-          {orders.map((o) => (
+          {pageOrders.map((o) => (
             <li key={o.id} className="rounded-2xl border border-warm-200 bg-white p-4">
               <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
                 <div className="flex items-center gap-2">
