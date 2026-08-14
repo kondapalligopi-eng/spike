@@ -104,16 +104,21 @@ export function PetShopCart() {
   const pay = placed && shop ? payLinkForTotal(shop, placed.total, placed.id.slice(0, 8).toUpperCase()) : null;
 
   const submit = async () => {
-    if (!name.trim() || !phone.trim() || !address.trim()) {
-      toast.error('Please add your name, phone and delivery address.');
-      return;
-    }
+    if (!name.trim()) { toast.error('Please enter your name.'); return; }
+    if (!/^\d{10}$/.test(phone.trim())) { toast.error('Enter a valid 10-digit phone number.'); return; }
+    if (email.trim() && !/^\S+@\S+\.\S+$/.test(email.trim())) { toast.error('Enter a valid email, or leave it blank.'); return; }
+    if (pinStatus === 'outside') { toast.error('Sorry, we currently deliver only within Bengaluru.'); return; }
+    if (pinStatus !== 'ok' || !/^560\d{3}$/.test(pincode.trim())) { toast.error('Enter a valid Bengaluru pincode (560xxx).'); return; }
+    if (!area.trim()) { toast.error('Please select or enter your area.'); return; }
+    if (!street.trim()) { toast.error('Please enter your flat / house / street.'); return; }
     setBusy(true);
     try {
+      const buyer_address = `${street.trim()}, ${area.trim()}, Bengaluru, Karnataka - ${pincode.trim()}`;
       const order = await placeOrder(shopId, {
         buyer_name: name.trim(),
-        buyer_phone: phone.trim(),
-        buyer_address: address.trim(),
+        buyer_phone: `+91 ${phone.trim()}`,
+        buyer_email: email.trim() || null,
+        buyer_address,
         note: note.trim(),
         items: items.map((i) => ({ product_id: i.product_id, name: i.name, unit_price: i.unit_price, qty: i.qty })),
       });
