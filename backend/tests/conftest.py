@@ -20,8 +20,16 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
+from app.config import settings
 from app.database import Base, get_db
 from app.main import app
+
+# Every test request goes through ASGITransport, which supplies no client
+# address, so the whole suite shares one rate-limit bucket and the auth tests
+# would throttle themselves after twenty logins. The limiter reads this flag
+# per request, so switching it off here is enough. test_ratelimit.py turns it
+# back on around its own cases.
+settings.RATE_LIMIT_ENABLED = False
 
 # ---------------------------------------------------------------------------
 # SQLite in-memory engine for tests

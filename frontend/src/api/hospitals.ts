@@ -75,8 +75,11 @@ export type HospitalRead = {
   website: string | null;
   hours: string | null;
   email: string | null;
-  created_at: string;
-  updated_at: string;
+  // Optional: the public list endpoint no longer returns these — see
+  // HospitalListRead in backend/app/schemas/hospital.py for why. Only the
+  // mock store still fills them in.
+  created_at?: string;
+  updated_at?: string;
 };
 
 export type HospitalCreate = {
@@ -152,7 +155,7 @@ export async function listHospitals(): Promise<HospitalRead[]> {
     await delay(150);
     // Newest first, matching the backend order
     return [...readMockStore()].sort((a, b) =>
-      b.created_at.localeCompare(a.created_at),
+      (b.created_at ?? '').localeCompare(a.created_at ?? ''),
     );
   }
   const response = await apiClient.get<HospitalRead[]>('/hospitals');

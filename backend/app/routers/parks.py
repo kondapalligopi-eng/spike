@@ -2,28 +2,35 @@ from __future__ import annotations
 
 import uuid
 
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from sqlalchemy import desc, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.dependencies import require_admin
+from app.core.pagination import MAX_LIST_LIMIT
 from app.database import get_db
 from app.models.park import Park
 from app.models.user import User
-from app.schemas.park import ParkCreate, ParkRead
+from app.schemas.park import ParkCreate, ParkListRead, ParkRead
 
 router = APIRouter(prefix="/parks", tags=["parks"])
 
 
 @router.get(
     "",
-    response_model=list[ParkRead],
-    summary="List all parks (newest first)",
+    response_model=list[ParkListRead],
+    summary="List parks (newest first)",
 )
-async def list_parks(db: AsyncSession = Depends(get_db)) -> list[ParkRead]:
-    result = await db.execute(select(Park).order_by(desc(Park.created_at)))
+async def list_parks(
+    limit: int = Query(MAX_LIST_LIMIT, ge=1, le=MAX_LIST_LIMIT),
+    offset: int = Query(0, ge=0),
+    db: AsyncSession = Depends(get_db),
+) -> list[ParkListRead]:
+    result = await db.execute(
+        select(Park).order_by(desc(Park.created_at)).offset(offset).limit(limit)
+    )
     rows = result.scalars().all()
-    return [ParkRead.model_validate(r) for r in rows]
+    return [ParkListRead.model_validate(r) for r in rows]
 
 
 @router.post(

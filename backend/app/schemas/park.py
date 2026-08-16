@@ -32,3 +32,11 @@ class ParkRead(ParkBase):
     id: uuid.UUID
     created_at: datetime
     updated_at: datetime
+
+
+class ParkListRead(ParkBase):
+    """Public list payload. See HospitalListRead for why the timestamps go."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    id: uuid.UUID
