@@ -349,40 +349,10 @@ export function Home() {
         </div>
       </section>
 
-      {/* Services / Categories — editorial thumbnail grid */}
+      {/* Services / Categories — scrollable rail with prev/next arrows */}
       <section className="py-10 bg-primary-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-9 gap-6 sm:gap-8">
-            {[
-              { label: 'Hospital', dog: '🐶', badge: '🩺', kicker: 'Vet Care', tint: 'from-rose-200 to-rose-400', to: '/hospital' },
-              { label: 'Park', dog: '🐕', badge: '🌳', kicker: 'Outdoors', tint: 'from-emerald-200 to-emerald-500', to: '/park' },
-              { label: 'Swimming', dog: '🐶💦', badge: '🌊', kicker: 'Aquatic', tint: 'from-sky-200 to-sky-500', to: '/swimming' },
-              { label: 'Grooming', dog: '🐩', badge: '✂️', kicker: 'Salon', tint: 'from-amber-200 to-amber-400', to: '/grooming' },
-              { label: 'Pet Shops', dog: '🐶', badge: '🏪', kicker: 'Local Shops', tint: 'from-teal-200 to-teal-400', to: '/petshops' },
-              { label: 'Pet Stories', dog: '🐶', badge: '📖', kicker: 'Stories', tint: 'from-fuchsia-200 to-fuchsia-400', to: '/pet-stories' },
-              { label: 'Pet Play', dog: '🐶', badge: '🦴', kicker: 'Play', tint: 'from-indigo-200 to-indigo-400', to: '/pet-play' },
-              { label: 'Dog Walking', dog: '🦮', badge: '🚶', kicker: 'Walkers', tint: 'from-lime-200 to-lime-400', to: '/dog-walking' },
-              // Pet Supplies sits last deliberately — it is the commerce tile,
-              // and the service tiles above it are what the directory leads with.
-              { label: 'Pet Supplies', dog: '🐶🦴', badge: '🥣', kicker: 'Shop', tint: 'from-violet-200 to-violet-400', to: '/pet-supplies' },
-            ].map(({ label, dog, badge, kicker, tint, to }) => (
-              <Link key={label} to={to} className="group block text-center">
-                <p className="text-xs text-warm-600 mb-3 tracking-wide">{kicker}</p>
-                <div className={`relative mx-auto aspect-square w-20 sm:w-24 lg:w-28 rounded-full overflow-visible bg-gradient-to-br ${tint} ring-1 ring-warm-200 group-hover:ring-primary-400 transition`}>
-                  <span aria-hidden="true" className="absolute inset-0 flex items-center justify-center text-3xl sm:text-4xl drop-shadow group-hover:scale-110 transition-transform">
-                    {dog}
-                  </span>
-                  <span
-                    aria-hidden="true"
-                    className="absolute -bottom-1 -right-1 w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-white text-xl sm:text-2xl shadow-lg ring-2 ring-primary-300 group-hover:ring-primary-500 group-hover:scale-110 transition"
-                  >
-                    {badge}
-                  </span>
-                </div>
-                <p className="mt-3 text-sm text-warm-900 group-hover:text-primary-700 transition-colors">{label}</p>
-              </Link>
-            ))}
-          </div>
+          <ServiceRail />
         </div>
       </section>
 
