@@ -223,7 +223,9 @@ function ServicesSection() {
         <div
           ref={rail.ref}
           onScroll={rail.sync}
-          className="flex gap-8 overflow-x-auto snap-x snap-mandatory pb-3 -mx-6 px-6 lg:mx-0 lg:px-0"
+          // pb-1 rather than pb-3 now that no scrollbar needs the room; the
+          // remainder just keeps the tiles' hover shadow off the section edge.
+          className="flex gap-8 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-1 -mx-6 px-6 lg:mx-0 lg:px-0"
         >
           {SERVICES.map((service) => (
             <ServiceTile
