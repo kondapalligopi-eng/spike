@@ -283,10 +283,11 @@ export function Navbar() {
               <NavLink to="/park" className={navLinkClass}>Park</NavLink>
               <NavLink to="/swimming" className={navLinkClass}>Swimming</NavLink>
               <NavLink to="/grooming" className={navLinkClass}>Grooming</NavLink>
-              <NavLink to="/pet-supplies" className={navLinkClass}>Pet Supplies</NavLink>
+              <NavLink to="/dog-walking" className={navLinkClass}>Dog Walking</NavLink>
               <NavLink to="/petshops" className={navLinkClass}>Pet Shops</NavLink>
               <NavLink to="/pet-stories" className={navLinkClass}>Pet Stories</NavLink>
               <NavLink to="/pet-play" className={navLinkClass}>Pet Play</NavLink>
+              <NavLink to="/pet-supplies" className={navLinkClass}>Pet Supplies</NavLink>
             </div>
           </div>
         </nav>
