@@ -110,7 +110,8 @@ def client_ip(request: Request) -> str:
 
 def match_rule(path: str) -> Rule | None:
     for rule in RULES:
-        if rule.path == path if rule.exact else path.startswith(rule.path):
+        matched = path == rule.path if rule.exact else path.startswith(rule.path)
+        if matched:
             return rule
     return None
 
