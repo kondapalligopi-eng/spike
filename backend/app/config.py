@@ -62,6 +62,11 @@ class Settings(BaseSettings):
         "https://www.hispike.in",
     ]
 
+    # Rate limiting. Off only for the test suite, which drives every request
+    # through ASGITransport from a single (absent) client address and would
+    # otherwise throttle itself. See app/core/ratelimit.py for the rules.
+    RATE_LIMIT_ENABLED: bool = True
+
     # Environment
     ENVIRONMENT: str = "development"
 
