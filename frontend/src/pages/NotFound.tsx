@@ -1,4 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
+import { WhatsAppLink } from '@/components/WhatsAppLink';
 
 export function NotFound() {
   const navigate = useNavigate();
@@ -43,6 +44,8 @@ export function NotFound() {
           >
             support@hispike.in
           </a>
+          {' '}or WhatsApp us at{' '}
+          <WhatsAppLink className="text-primary-700 font-semibold hover:underline align-middle" />
         </p>
       </div>
     </div>

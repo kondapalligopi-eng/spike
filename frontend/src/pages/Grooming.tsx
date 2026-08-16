@@ -8,6 +8,7 @@ import { PageHead } from '@/components/PageHead';
 import { FaqSchema, type FaqItem } from '@/components/FaqSchema';
 import { HeroPaws } from '@/components/HeroPaws';
 import { SelectMenu } from '@/components/SelectMenu';
+import { WhatsAppLink } from '@/components/WhatsAppLink';
 import { useBackendWarmup } from '@/lib/warmupBackend';
 
 const GROOMING_FAQS: FaqItem[] = [
@@ -613,6 +614,8 @@ export function Grooming() {
                 <a className="text-primary-700 font-semibold hover:underline" href="mailto:support@hispike.in">
                   support@hispike.in
                 </a>
+                {' '}or message us on WhatsApp at{' '}
+                <WhatsAppLink className="text-primary-700 font-semibold hover:underline align-middle" />
                 .
               </p>
             </div>

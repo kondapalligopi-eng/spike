@@ -124,8 +124,13 @@ services:
       - type: rewrite
         source: /pet-stories
         destination: /pet-stories/index.html
-      # (/dog-walking is a "coming soon" placeholder — intentionally not rewritten
-      #  so it isn't indexed until the real page ships.)
+      # /dog-walking is a real page again (directory open, no walkers verified
+      # yet). Without this rule the clean URL falls through to the SPA catch-all
+      # and crawlers get the homepage shell indexed under /dog-walking — worse
+      # than indexing an honest, near-empty page.
+      - type: rewrite
+        source: /dog-walking
+        destination: /dog-walking/index.html
       - type: rewrite
         source: /terms
         destination: /terms/index.html
