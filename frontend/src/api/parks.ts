@@ -19,8 +19,11 @@ export type ParkRead = {
   email: string | null;
   website: string | null;
   highlights: string[];
-  created_at: string;
-  updated_at: string;
+  // Optional: the public list endpoint no longer returns these — see
+  // HospitalListRead in backend/app/schemas/hospital.py for why. Only the
+  // mock store still fills them in.
+  created_at?: string;
+  updated_at?: string;
 };
 
 export type ParkCreate = {
