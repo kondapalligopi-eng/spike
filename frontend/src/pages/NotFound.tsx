@@ -43,6 +43,11 @@ export function NotFound() {
           >
             support@hispike.in
           </a>
+          {' '}or{' '}
+          <WhatsAppLink
+            className="text-primary-700 font-semibold hover:underline align-middle"
+            showIcon={false}
+          />
         </p>
       </div>
     </div>

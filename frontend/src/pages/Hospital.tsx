@@ -9,6 +9,7 @@ import { ShareButtons } from '@/components/ShareButtons';
 import { FaqSchema, type FaqItem } from '@/components/FaqSchema';
 import { HeroPaws } from '@/components/HeroPaws';
 import { SelectMenu } from '@/components/SelectMenu';
+import { WhatsAppLink } from '@/components/WhatsAppLink';
 import { useBackendWarmup } from '@/lib/warmupBackend';
 
 const HOSPITAL_FAQS: FaqItem[] = [
@@ -779,6 +780,11 @@ export function Hospital() {
                 <a className="text-primary-700 font-semibold hover:underline" href="mailto:support@hispike.in">
                   support@hispike.in
                 </a>
+                {' '}or message us on{' '}
+                <WhatsAppLink
+                  className="text-primary-700 font-semibold hover:underline align-middle"
+                  showIcon={false}
+                />
                 .
               </p>
             </div>
