@@ -169,11 +169,12 @@ function ServicesSection() {
     <>
       <div className="flex items-end justify-between gap-4 mb-6">
         <div>
-          {/* Deliberately avoids "explore" and "services" — the hero's gold CTA
-              directly above this reads "EXPLORE SERVICES", and the two sitting
-              together read as the same label twice. */}
+          {/* Deliberately shares no wording with the hero directly above, which
+              already says "everything", "in one place", "under one roof",
+              "every service your best friend needs" and "EXPLORE SERVICES".
+              The hero sells; this heading just opens the door to the tiles. */}
           <h2 className="text-xl sm:text-2xl font-extrabold text-warm-900 tracking-tight">
-            Everything your dog needs
+            What brings you in today?
           </h2>
           <div className="mt-2 h-0.5 w-16 bg-accent-400 rounded-full" />
         </div>
