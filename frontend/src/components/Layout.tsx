@@ -3,6 +3,7 @@ import { Navbar } from './Navbar';
 import { ScrollToTop } from './ScrollToTop';
 import { ToastContainer } from './Toast';
 import { VisitTracker } from './VisitTracker';
+import { WhatsAppLink } from './WhatsAppLink';
 import { SOCIAL } from '@/lib/social';
 
 const FOOTER_COLUMNS: { heading: string; links: { label: string; href: string; external?: boolean }[] }[] = [
@@ -13,8 +14,9 @@ const FOOTER_COLUMNS: { heading: string; links: { label: string; href: string; e
       { label: 'Grooming Services', href: '/grooming' },
       { label: 'Dog Parks Near You', href: '/park' },
       { label: 'Swim & Training', href: '/swimming' },
-      { label: 'Shop Pet Supplies', href: '/pet-supplies' },
       { label: 'Create a Pet Story', href: '/pet-stories' },
+      { label: 'Dog Walkers', href: '/dog-walking' },
+      { label: 'Shop Pet Supplies', href: '/pet-supplies' },
     ],
   },
   {
@@ -95,6 +97,7 @@ export function Layout() {
                 </svg>
                 support@hispike.in
               </a>
+              <WhatsAppLink variant="block" className="mt-2" />
               <p className="text-xs text-warm-500 mt-1">We usually reply within a day.</p>
             </div>
 

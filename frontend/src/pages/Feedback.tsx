@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { toast } from '@/store/toastStore';
 import { createSubmission } from '@/api/submissions';
 import { SelectMenu } from '@/components/SelectMenu';
+import { WhatsAppLink } from '@/components/WhatsAppLink';
 
 const TOPICS = [
   'General feedback',
@@ -176,7 +177,9 @@ export function Feedback() {
           </div>
 
           <p className="text-xs text-warm-500 mt-6 text-center">
-            Prefer email? Write to <a className="text-primary-700 hover:underline" href="mailto:support@hispike.in">support@hispike.in</a>.
+            Prefer email? Write to <a className="text-primary-700 hover:underline" href="mailto:support@hispike.in">support@hispike.in</a>
+            {' '}or message us on WhatsApp at{' '}
+            <WhatsAppLink className="text-primary-700 hover:underline align-middle" />.
           </p>
         </div>
       </section>

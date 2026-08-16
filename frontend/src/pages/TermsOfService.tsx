@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { LegalLayout, LegalSection } from '@/components/LegalLayout';
+import { WhatsAppLink } from '@/components/WhatsAppLink';
 
 const LAST_UPDATED = '29 June 2026';
 
@@ -148,7 +149,9 @@ export function TermsOfService() {
       <LegalSection heading="14. Contact us">
         <p>
           Questions about these Terms? Email{' '}
-          <a href="mailto:support@hispike.in" className="text-primary-600 hover:underline">support@hispike.in</a>.
+          <a href="mailto:support@hispike.in" className="text-primary-600 hover:underline">support@hispike.in</a>{' '}
+          or message us on WhatsApp at{' '}
+          <WhatsAppLink className="text-primary-600 hover:underline align-middle" />.
           See also our{' '}
           <Link to="/privacy" className="text-primary-600 hover:underline">Privacy Policy</Link>.
         </p>

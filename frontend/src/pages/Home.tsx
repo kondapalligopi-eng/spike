@@ -1,6 +1,242 @@
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { PageHead } from '@/components/PageHead';
 import { useBackendWarmup } from '@/lib/warmupBackend';
+
+type Service = {
+  label: string;
+  dog: string;
+  badge: string;
+  kicker: string;
+  tint: string;
+  to: string;
+};
+
+const SERVICES: Service[] = [
+  { label: 'Hospital', dog: '🐶', badge: '🩺', kicker: 'Vet Care', tint: 'from-rose-200 to-rose-400', to: '/hospital' },
+  { label: 'Park', dog: '🐕', badge: '🌳', kicker: 'Outdoors', tint: 'from-emerald-200 to-emerald-500', to: '/park' },
+  { label: 'Swimming', dog: '🐶💦', badge: '🌊', kicker: 'Aquatic', tint: 'from-sky-200 to-sky-500', to: '/swimming' },
+  { label: 'Grooming', dog: '🐩', badge: '✂️', kicker: 'Salon', tint: 'from-amber-200 to-amber-400', to: '/grooming' },
+  { label: 'Pet Shops', dog: '🐶', badge: '🏪', kicker: 'Local Shops', tint: 'from-teal-200 to-teal-400', to: '/petshops' },
+  { label: 'Pet Stories', dog: '🐶', badge: '📖', kicker: 'Stories', tint: 'from-fuchsia-200 to-fuchsia-400', to: '/pet-stories' },
+  { label: 'Pet Play', dog: '🐶', badge: '🦴', kicker: 'Play', tint: 'from-indigo-200 to-indigo-400', to: '/pet-play' },
+  { label: 'Dog Walking', dog: '🦮', badge: '🚶', kicker: 'Walkers', tint: 'from-lime-200 to-lime-400', to: '/dog-walking' },
+  // Pet Supplies sits last deliberately — it is the commerce tile, and the
+  // service tiles ahead of it are what the directory leads with.
+  { label: 'Pet Supplies', dog: '🐶🦴', badge: '🥣', kicker: 'Shop', tint: 'from-violet-200 to-violet-400', to: '/pet-supplies' },
+];
+
+type ChevronDirection = 'left' | 'right' | 'up' | 'down';
+
+const CHEVRON: Record<ChevronDirection, string> = {
+  left: 'M15 19l-7-7 7-7',
+  right: 'M9 5l7 7-7 7',
+  up: 'M5 15l7-7 7 7',
+  down: 'M19 9l-7 7-7-7',
+};
+
+const BACKWARD: ChevronDirection[] = ['left', 'up'];
+
+function RailArrow({
+  direction,
+  enabled,
+  onClick,
+}: {
+  direction: ChevronDirection;
+  enabled: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      // Disabled rather than hidden at the ends. These sit in fixed positions,
+      // so dropping one would shuffle its partner sideways every time you
+      // reach an edge.
+      disabled={!enabled}
+      aria-label={
+        BACKWARD.includes(direction) ? 'Show previous services' : 'Show more services'
+      }
+      className={[
+        'w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shrink-0',
+        // Brand gold with a dark chevron — white on #facc15 measures 1.53:1 and
+        // is effectively invisible, warm-900 on it measures 11.4:1.
+        'bg-accent-400 text-warm-900 ring-1 ring-accent-500/30',
+        'hover:bg-accent-300 active:scale-95 transition',
+        'disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-accent-400 disabled:active:scale-100',
+        'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-600 focus-visible:ring-offset-2',
+      ].join(' ')}
+    >
+      <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" d={CHEVRON[direction]} />
+      </svg>
+    </button>
+  );
+}
+
+function ServiceTile({ service, className = '' }: { service: Service; className?: string }) {
+  const { label, dog, badge, kicker, tint, to } = service;
+  return (
+    <Link to={to} className={`group block text-center ${className}`}>
+      <p className="text-xs text-warm-600 mb-3 tracking-wide">{kicker}</p>
+      <div className={`relative mx-auto aspect-square w-20 sm:w-24 lg:w-28 rounded-full overflow-visible bg-gradient-to-br ${tint} ring-1 ring-warm-200 group-hover:ring-primary-400 transition`}>
+        <span aria-hidden="true" className="absolute inset-0 flex items-center justify-center text-3xl sm:text-4xl drop-shadow group-hover:scale-110 transition-transform">
+          {dog}
+        </span>
+        <span
+          aria-hidden="true"
+          className="absolute -bottom-1 -right-1 w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-white text-xl sm:text-2xl shadow-lg ring-2 ring-primary-300 group-hover:ring-primary-500 group-hover:scale-110 transition"
+        >
+          {badge}
+        </span>
+      </div>
+      <p className="mt-3 text-sm text-warm-900 group-hover:text-primary-700 transition-colors">{label}</p>
+    </Link>
+  );
+}
+
+/**
+ * Tracks whether a scroll container still has room in either direction, and
+ * pages it along by most of a viewport.
+ *
+ * Initial state is deliberately "at the start, not at the end": nine tiles
+ * overflow every realistic viewport, so the forward arrow starts live and the
+ * effect only ever corrects it — no disabled-then-enabled flicker on load.
+ * Both values are constants, so the pre-rendered HTML and the first client
+ * render still agree exactly.
+ *
+ * A hidden layout (the one the current breakpoint isn't showing) measures zero
+ * on every axis and simply reports itself as fully scrolled. That costs nothing
+ * because it isn't visible, and the ResizeObserver re-syncs it the moment a
+ * resize brings it back.
+ */
+function useScrollEdges(axis: 'x' | 'y') {
+  const ref = useRef<HTMLDivElement>(null);
+  const [atStart, setAtStart] = useState(true);
+  const [atEnd, setAtEnd] = useState(false);
+
+  const sync = useCallback(() => {
+    const el = ref.current;
+    if (!el) return;
+    const position = axis === 'x' ? el.scrollLeft : el.scrollTop;
+    const viewport = axis === 'x' ? el.clientWidth : el.clientHeight;
+    const total = axis === 'x' ? el.scrollWidth : el.scrollHeight;
+    // 1px of slack: sub-pixel sizes mean the offset almost never lands exactly
+    // on the maximum, which would leave the forward arrow lit forever.
+    setAtStart(position <= 1);
+    setAtEnd(position + viewport >= total - 1);
+  }, [axis]);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    sync();
+    // Catches what a scroll listener misses: emoji and fonts landing late and
+    // resizing the tiles, and the viewport itself changing.
+    const observer = new ResizeObserver(sync);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [sync]);
+
+  const nudge = (direction: -1 | 1) => {
+    const el = ref.current;
+    if (!el) return;
+    const step = (axis === 'x' ? el.clientWidth : el.clientHeight) * 0.8;
+    el.scrollBy(
+      axis === 'x'
+        ? { left: direction * step, behavior: 'smooth' }
+        : { top: direction * step, behavior: 'smooth' },
+    );
+  };
+
+  return { ref, atStart, atEnd, sync, nudge };
+}
+
+/**
+ * The services strip. Two layouts, one heading.
+ *
+ * It used to be a fixed grid, which meant every new service made all the
+ * circles smaller — by nine tiles they were squeezed. Now phones get a
+ * two-column grid six tiles tall that scrolls vertically, and everything from
+ * `sm` up gets a horizontal rail. Either way the list can keep growing without
+ * the tiles shrinking; a new service is one entry in SERVICES and nothing else.
+ */
+function ServicesSection() {
+  const rail = useScrollEdges('x'); // sm and up
+  const stack = useScrollEdges('y'); // phones
+
+  return (
+    <>
+      <div className="flex items-end justify-between gap-4 mb-6">
+        <div>
+          <h2 className="text-xl sm:text-2xl font-extrabold text-warm-900 tracking-tight">
+            Explore our services
+          </h2>
+          <div className="mt-2 h-0.5 w-16 bg-accent-400 rounded-full" />
+        </div>
+        {/* Horizontal controls belong to the rail, so they follow it and stay
+            off phones — the vertical pair below serves that layout instead. */}
+        <div className="hidden sm:flex items-center gap-2 shrink-0">
+          <RailArrow direction="left" enabled={!rail.atStart} onClick={() => rail.nudge(-1)} />
+          <RailArrow direction="right" enabled={!rail.atEnd} onClick={() => rail.nudge(1)} />
+        </div>
+      </div>
+
+      {/* Phones — two columns, six tiles visible, scrolled vertically.
+          max-h is exactly three rows: each tile is ~140px (16px kicker line +
+          12px gap + 80px circle + 12px gap + 20px label) and rows sit 24px
+          apart, so 3*140 + 2*24 = 468. */}
+      <div className="sm:hidden">
+        <div
+          ref={stack.ref}
+          onScroll={stack.sync}
+          className="grid grid-cols-2 gap-6 max-h-[468px] overflow-y-auto snap-y snap-mandatory pr-1"
+        >
+          {SERVICES.map((service) => (
+            <ServiceTile
+              key={service.label}
+              service={service}
+              className="snap-start justify-self-center w-24"
+            />
+          ))}
+        </div>
+        <div className="flex items-center justify-center gap-3 mt-5">
+          <RailArrow direction="up" enabled={!stack.atStart} onClick={() => stack.nudge(-1)} />
+          <RailArrow direction="down" enabled={!stack.atEnd} onClick={() => stack.nudge(1)} />
+        </div>
+      </div>
+
+      {/* sm and up — the horizontal rail. */}
+      <div className="relative hidden sm:block">
+        <div
+          ref={rail.ref}
+          onScroll={rail.sync}
+          className="flex gap-8 overflow-x-auto snap-x snap-mandatory pb-3 -mx-6 px-6 lg:mx-0 lg:px-0"
+        >
+          {SERVICES.map((service) => (
+            <ServiceTile
+              key={service.label}
+              service={service}
+              className="shrink-0 w-28 lg:w-32 snap-start"
+            />
+          ))}
+        </div>
+
+        {/* Edge fades — the secondary cue. Each is pinned to the rail's real
+            edge (which bleeds past this wrapper below lg) and stops above the
+            scrollbar that pb-3 leaves room for. Colour tracks the section. */}
+        <div
+          aria-hidden="true"
+          className={`pointer-events-none absolute top-0 bottom-3 -left-6 lg:left-0 w-12 bg-gradient-to-r from-primary-50 to-transparent transition-opacity duration-200 ${rail.atStart ? 'opacity-0' : 'opacity-100'}`}
+        />
+        <div
+          aria-hidden="true"
+          className={`pointer-events-none absolute top-0 bottom-3 -right-6 lg:right-0 w-12 bg-gradient-to-l from-primary-50 to-transparent transition-opacity duration-200 ${rail.atEnd ? 'opacity-0' : 'opacity-100'}`}
+        />
+      </div>
+    </>
+  );
+}
 
 export function Home() {
   // Wake the Render dyno the moment any user lands here, so by the time they
@@ -210,37 +446,10 @@ export function Home() {
         </div>
       </section>
 
-      {/* Services / Categories — editorial thumbnail grid */}
+      {/* Services / Categories — scrollable rail with prev/next arrows */}
       <section className="py-10 bg-primary-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-8 gap-6 sm:gap-8">
-            {[
-              { label: 'Hospital', dog: '🐶', badge: '🩺', kicker: 'Vet Care', tint: 'from-rose-200 to-rose-400', to: '/hospital' },
-              { label: 'Park', dog: '🐕', badge: '🌳', kicker: 'Outdoors', tint: 'from-emerald-200 to-emerald-500', to: '/park' },
-              { label: 'Swimming', dog: '🐶💦', badge: '🌊', kicker: 'Aquatic', tint: 'from-sky-200 to-sky-500', to: '/swimming' },
-              { label: 'Grooming', dog: '🐩', badge: '✂️', kicker: 'Salon', tint: 'from-amber-200 to-amber-400', to: '/grooming' },
-              { label: 'Pet Supplies', dog: '🐶🦴', badge: '🥣', kicker: 'Shop', tint: 'from-violet-200 to-violet-400', to: '/pet-supplies' },
-              { label: 'Pet Shops', dog: '🐶', badge: '🏪', kicker: 'Local Shops', tint: 'from-teal-200 to-teal-400', to: '/petshops' },
-              { label: 'Pet Stories', dog: '🐶', badge: '📖', kicker: 'Stories', tint: 'from-fuchsia-200 to-fuchsia-400', to: '/pet-stories' },
-              { label: 'Pet Play', dog: '🐶', badge: '🦴', kicker: 'Play', tint: 'from-indigo-200 to-indigo-400', to: '/pet-play' },
-            ].map(({ label, dog, badge, kicker, tint, to }) => (
-              <Link key={label} to={to} className="group block text-center">
-                <p className="text-xs text-warm-600 mb-3 tracking-wide">{kicker}</p>
-                <div className={`relative mx-auto aspect-square w-20 sm:w-24 lg:w-28 rounded-full overflow-visible bg-gradient-to-br ${tint} ring-1 ring-warm-200 group-hover:ring-primary-400 transition`}>
-                  <span aria-hidden="true" className="absolute inset-0 flex items-center justify-center text-3xl sm:text-4xl drop-shadow group-hover:scale-110 transition-transform">
-                    {dog}
-                  </span>
-                  <span
-                    aria-hidden="true"
-                    className="absolute -bottom-1 -right-1 w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-white text-xl sm:text-2xl shadow-lg ring-2 ring-primary-300 group-hover:ring-primary-500 group-hover:scale-110 transition"
-                  >
-                    {badge}
-                  </span>
-                </div>
-                <p className="mt-3 text-sm text-warm-900 group-hover:text-primary-700 transition-colors">{label}</p>
-              </Link>
-            ))}
-          </div>
+          <ServicesSection />
         </div>
       </section>
 
