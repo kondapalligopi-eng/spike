@@ -108,7 +108,23 @@ function ServiceRail() {
   };
 
   return (
-    <div className="relative">
+    <>
+      <div className="flex items-end justify-between gap-4 mb-6">
+        <div>
+          <h2 className="text-xl sm:text-2xl font-extrabold text-warm-900 tracking-tight">
+            Explore our services
+          </h2>
+          <div className="mt-2 h-0.5 w-16 bg-accent-400 rounded-full" />
+        </div>
+        {/* Hidden on phones: swiping is the natural gesture there, and the
+            half-cut tile plus the edge fade already say the rail moves. */}
+        <div className="hidden sm:flex items-center gap-2 shrink-0">
+          <RailArrow side="left" enabled={canLeft} onClick={() => nudge(-1)} />
+          <RailArrow side="right" enabled={canRight} onClick={() => nudge(1)} />
+        </div>
+      </div>
+
+      <div className="relative">
       <div
         ref={railRef}
         onScroll={sync}
