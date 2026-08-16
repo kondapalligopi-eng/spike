@@ -219,10 +219,10 @@ export function Home() {
               { label: 'Park', dog: '🐕', badge: '🌳', kicker: 'Outdoors', tint: 'from-emerald-200 to-emerald-500', to: '/park' },
               { label: 'Swimming', dog: '🐶💦', badge: '🌊', kicker: 'Aquatic', tint: 'from-sky-200 to-sky-500', to: '/swimming' },
               { label: 'Grooming', dog: '🐩', badge: '✂️', kicker: 'Salon', tint: 'from-amber-200 to-amber-400', to: '/grooming' },
-              { label: 'Dog Walking', dog: '🦮', badge: '🚶', kicker: 'Walkers', tint: 'from-lime-200 to-lime-400', to: '/dog-walking' },
               { label: 'Pet Shops', dog: '🐶', badge: '🏪', kicker: 'Local Shops', tint: 'from-teal-200 to-teal-400', to: '/petshops' },
               { label: 'Pet Stories', dog: '🐶', badge: '📖', kicker: 'Stories', tint: 'from-fuchsia-200 to-fuchsia-400', to: '/pet-stories' },
               { label: 'Pet Play', dog: '🐶', badge: '🦴', kicker: 'Play', tint: 'from-indigo-200 to-indigo-400', to: '/pet-play' },
+              { label: 'Dog Walking', dog: '🦮', badge: '🚶', kicker: 'Walkers', tint: 'from-lime-200 to-lime-400', to: '/dog-walking' },
               // Pet Supplies sits last deliberately — it is the commerce tile,
               // and the service tiles above it are what the directory leads with.
               { label: 'Pet Supplies', dog: '🐶🦴', badge: '🥣', kicker: 'Shop', tint: 'from-violet-200 to-violet-400', to: '/pet-supplies' },
