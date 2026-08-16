@@ -50,8 +50,13 @@ function RailArrow({
         // the tile is taller than the circle because of the kicker and label.
         'absolute top-[68px] sm:top-[76px] lg:top-[84px] -translate-y-1/2 z-10',
         side === 'left' ? 'left-0 lg:-left-4' : 'right-0 lg:-right-4',
-        'w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-primary-600 hover:bg-primary-700',
-        'text-white shadow-lg ring-2 ring-white flex items-center justify-center',
+        // Brand gold, matching the logo and the accent-400 CTA pills used
+        // across the site. The chevron has to go dark with it: white on #facc15
+        // lands around 1.7:1 and all but disappears, while warm-900 on the same
+        // gold is comfortably past AA. The white ring stays — it separates the
+        // button from the coloured tiles it floats over.
+        'w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-accent-400 hover:bg-accent-300',
+        'text-warm-900 shadow-lg ring-2 ring-white flex items-center justify-center',
         'transition-opacity duration-200',
         show ? 'opacity-100' : 'opacity-0 pointer-events-none',
       ].join(' ')}
