@@ -187,6 +187,13 @@ function ServicesSection() {
           12px gap + 80px circle + 12px gap + 20px label) and rows sit 24px
           apart, so 3*140 + 2*24 = 468. */}
       <div className="sm:hidden">
+        {/* Up above the grid, down below it, each pointing at the tiles it
+            reveals. The up arrow sits disabled on first paint — that is the
+            honest state, and it matches how the desktop left arrow behaves. */}
+        <div className="flex justify-center mb-4">
+          <RailArrow direction="up" enabled={!stack.atStart} onClick={() => stack.nudge(-1)} />
+        </div>
+
         <div
           ref={stack.ref}
           onScroll={stack.sync}
@@ -200,8 +207,8 @@ function ServicesSection() {
             />
           ))}
         </div>
-        <div className="flex items-center justify-center gap-3 mt-5">
-          <RailArrow direction="up" enabled={!stack.atStart} onClick={() => stack.nudge(-1)} />
+
+        <div className="flex justify-center mt-4">
           <RailArrow direction="down" enabled={!stack.atEnd} onClick={() => stack.nudge(1)} />
         </div>
       </div>
