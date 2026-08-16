@@ -161,11 +161,8 @@ export function OurStory() {
               >
                 support@hispike.in
               </a>{' '}
-              or message{' '}
-              <WhatsAppLink
-                className="text-primary-700 font-semibold hover:underline align-middle"
-                showIcon={false}
-              />{' '}
+              or message us on WhatsApp at{' '}
+              <WhatsAppLink className="text-primary-700 font-semibold hover:underline align-middle" />{' '}
               — we usually reply within a day.
             </p>
             <div className="mt-4 pt-4 border-t border-warm-100 text-sm text-warm-600 leading-relaxed">

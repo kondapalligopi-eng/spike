@@ -150,8 +150,8 @@ export function TermsOfService() {
         <p>
           Questions about these Terms? Email{' '}
           <a href="mailto:support@hispike.in" className="text-primary-600 hover:underline">support@hispike.in</a>{' '}
-          or message us on{' '}
-          <WhatsAppLink className="text-primary-600 hover:underline align-middle" showIcon={false} />.
+          or message us on WhatsApp at{' '}
+          <WhatsAppLink className="text-primary-600 hover:underline align-middle" />.
           See also our{' '}
           <Link to="/privacy" className="text-primary-600 hover:underline">Privacy Policy</Link>.
         </p>

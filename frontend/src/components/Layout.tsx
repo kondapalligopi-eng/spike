@@ -97,7 +97,7 @@ export function Layout() {
                 </svg>
                 support@hispike.in
               </a>
-              <WhatsAppLink className="mt-2 text-sm text-primary-700 font-semibold hover:text-primary-800 hover:underline" />
+              <WhatsAppLink variant="block" className="mt-2" />
               <p className="text-xs text-warm-500 mt-1">We usually reply within a day.</p>
             </div>
 

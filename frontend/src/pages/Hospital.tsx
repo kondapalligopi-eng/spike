@@ -780,11 +780,8 @@ export function Hospital() {
                 <a className="text-primary-700 font-semibold hover:underline" href="mailto:support@hispike.in">
                   support@hispike.in
                 </a>
-                {' '}or message us on{' '}
-                <WhatsAppLink
-                  className="text-primary-700 font-semibold hover:underline align-middle"
-                  showIcon={false}
-                />
+                {' '}or message us on WhatsApp at{' '}
+                <WhatsAppLink className="text-primary-700 font-semibold hover:underline align-middle" />
                 .
               </p>
             </div>
