@@ -1,6 +1,145 @@
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { PageHead } from '@/components/PageHead';
 import { useBackendWarmup } from '@/lib/warmupBackend';
+
+type Service = {
+  label: string;
+  dog: string;
+  badge: string;
+  kicker: string;
+  tint: string;
+  to: string;
+};
+
+const SERVICES: Service[] = [
+  { label: 'Hospital', dog: '🐶', badge: '🩺', kicker: 'Vet Care', tint: 'from-rose-200 to-rose-400', to: '/hospital' },
+  { label: 'Park', dog: '🐕', badge: '🌳', kicker: 'Outdoors', tint: 'from-emerald-200 to-emerald-500', to: '/park' },
+  { label: 'Swimming', dog: '🐶💦', badge: '🌊', kicker: 'Aquatic', tint: 'from-sky-200 to-sky-500', to: '/swimming' },
+  { label: 'Grooming', dog: '🐩', badge: '✂️', kicker: 'Salon', tint: 'from-amber-200 to-amber-400', to: '/grooming' },
+  { label: 'Pet Shops', dog: '🐶', badge: '🏪', kicker: 'Local Shops', tint: 'from-teal-200 to-teal-400', to: '/petshops' },
+  { label: 'Pet Stories', dog: '🐶', badge: '📖', kicker: 'Stories', tint: 'from-fuchsia-200 to-fuchsia-400', to: '/pet-stories' },
+  { label: 'Pet Play', dog: '🐶', badge: '🦴', kicker: 'Play', tint: 'from-indigo-200 to-indigo-400', to: '/pet-play' },
+  { label: 'Dog Walking', dog: '🦮', badge: '🚶', kicker: 'Walkers', tint: 'from-lime-200 to-lime-400', to: '/dog-walking' },
+  // Pet Supplies sits last deliberately — it is the commerce tile, and the
+  // service tiles ahead of it are what the directory leads with.
+  { label: 'Pet Supplies', dog: '🐶🦴', badge: '🥣', kicker: 'Shop', tint: 'from-violet-200 to-violet-400', to: '/pet-supplies' },
+];
+
+function RailArrow({
+  side,
+  show,
+  onClick,
+}: {
+  side: 'left' | 'right';
+  show: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={side === 'left' ? 'Show previous services' : 'Show more services'}
+      // Faded out rather than unmounted, and pulled out of the tab order while
+      // hidden: mounting/unmounting would reflow the rail every time you reach
+      // an end, which makes the tiles twitch mid-scroll.
+      tabIndex={show ? 0 : -1}
+      aria-hidden={!show}
+      className={[
+        // Pinned to the vertical centre of the circles, not of the whole tile —
+        // the tile is taller than the circle because of the kicker and label.
+        'absolute top-[68px] sm:top-[76px] lg:top-[84px] -translate-y-1/2 z-10',
+        side === 'left' ? 'left-0 lg:-left-4' : 'right-0 lg:-right-4',
+        'w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-primary-600 hover:bg-primary-700',
+        'text-white shadow-lg ring-2 ring-white flex items-center justify-center',
+        'transition-opacity duration-200',
+        show ? 'opacity-100' : 'opacity-0 pointer-events-none',
+      ].join(' ')}
+    >
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d={side === 'left' ? 'M15 19l-7-7 7-7' : 'M9 5l7 7-7 7'}
+        />
+      </svg>
+    </button>
+  );
+}
+
+/**
+ * The services strip, as a horizontal rail with prev/next arrows.
+ *
+ * It used to be a fixed grid, which meant every new service made all the
+ * circles smaller — by nine tiles they were squeezed. A rail keeps each tile at
+ * a readable size and scrolls instead, so the list can keep growing.
+ */
+function ServiceRail() {
+  const railRef = useRef<HTMLDivElement>(null);
+  // Both start false so the pre-rendered HTML matches the first client render
+  // exactly (no arrows). The effect below enables whichever ones apply.
+  const [canLeft, setCanLeft] = useState(false);
+  const [canRight, setCanRight] = useState(false);
+
+  const sync = useCallback(() => {
+    const el = railRef.current;
+    if (!el) return;
+    // 1px of slack: sub-pixel widths mean scrollLeft almost never lands exactly
+    // on the maximum, which would otherwise leave the right arrow lit forever.
+    setCanLeft(el.scrollLeft > 1);
+    setCanRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 1);
+  }, []);
+
+  useEffect(() => {
+    const el = railRef.current;
+    if (!el) return;
+    sync();
+    // Catches the cases a scroll listener misses: fonts and emoji landing late
+    // and changing tile widths, and the viewport being resized.
+    const observer = new ResizeObserver(sync);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [sync]);
+
+  const nudge = (direction: -1 | 1) => {
+    const el = railRef.current;
+    if (!el) return;
+    el.scrollBy({ left: direction * el.clientWidth * 0.8, behavior: 'smooth' });
+  };
+
+  return (
+    <div className="relative">
+      <div
+        ref={railRef}
+        onScroll={sync}
+        // Bleeds to the screen edge on small screens so a half-visible tile
+        // signals "there is more here"; contained from lg up.
+        className="flex gap-6 sm:gap-8 overflow-x-auto snap-x snap-mandatory pb-3 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:mx-0 lg:px-0"
+      >
+        {SERVICES.map(({ label, dog, badge, kicker, tint, to }) => (
+          <Link key={label} to={to} className="group block text-center shrink-0 w-24 sm:w-28 lg:w-32 snap-start">
+            <p className="text-xs text-warm-600 mb-3 tracking-wide">{kicker}</p>
+            <div className={`relative mx-auto aspect-square w-20 sm:w-24 lg:w-28 rounded-full overflow-visible bg-gradient-to-br ${tint} ring-1 ring-warm-200 group-hover:ring-primary-400 transition`}>
+              <span aria-hidden="true" className="absolute inset-0 flex items-center justify-center text-3xl sm:text-4xl drop-shadow group-hover:scale-110 transition-transform">
+                {dog}
+              </span>
+              <span
+                aria-hidden="true"
+                className="absolute -bottom-1 -right-1 w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-white text-xl sm:text-2xl shadow-lg ring-2 ring-primary-300 group-hover:ring-primary-500 group-hover:scale-110 transition"
+              >
+                {badge}
+              </span>
+            </div>
+            <p className="mt-3 text-sm text-warm-900 group-hover:text-primary-700 transition-colors">{label}</p>
+          </Link>
+        ))}
+      </div>
+
+      <RailArrow side="left" show={canLeft} onClick={() => nudge(-1)} />
+      <RailArrow side="right" show={canRight} onClick={() => nudge(1)} />
+    </div>
+  );
+}
 
 export function Home() {
   // Wake the Render dyno the moment any user lands here, so by the time they
