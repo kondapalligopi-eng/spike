@@ -169,8 +169,12 @@ function ServicesSection() {
     <>
       <div className="flex items-end justify-between gap-4 mb-6">
         <div>
+          {/* Deliberately shares no wording with the hero directly above, which
+              already says "everything", "in one place", "under one roof",
+              "every service your best friend needs" and "EXPLORE SERVICES".
+              The hero sells; this heading just opens the door to the tiles. */}
           <h2 className="text-xl sm:text-2xl font-extrabold text-warm-900 tracking-tight">
-            Explore our services
+            What brings you in today?
           </h2>
           <div className="mt-2 h-0.5 w-16 bg-accent-400 rounded-full" />
         </div>
@@ -187,10 +191,18 @@ function ServicesSection() {
           12px gap + 80px circle + 12px gap + 20px label) and rows sit 24px
           apart, so 3*140 + 2*24 = 468. */}
       <div className="sm:hidden">
+        {/* Up above the grid, down below it, each pointing at the tiles it
+            reveals. The up arrow sits disabled on first paint — that is the
+            honest state, and it matches how the desktop left arrow behaves. */}
+        <div className="flex justify-center mb-4">
+          <RailArrow direction="up" enabled={!stack.atStart} onClick={() => stack.nudge(-1)} />
+        </div>
+
         <div
           ref={stack.ref}
           onScroll={stack.sync}
-          className="grid grid-cols-2 gap-6 max-h-[468px] overflow-y-auto snap-y snap-mandatory pr-1"
+          // pr-1 is gone with the scrollbar it used to make room for.
+          className="grid grid-cols-2 gap-6 max-h-[468px] overflow-y-auto snap-y snap-mandatory no-scrollbar"
         >
           {SERVICES.map((service) => (
             <ServiceTile
@@ -200,8 +212,8 @@ function ServicesSection() {
             />
           ))}
         </div>
-        <div className="flex items-center justify-center gap-3 mt-5">
-          <RailArrow direction="up" enabled={!stack.atStart} onClick={() => stack.nudge(-1)} />
+
+        <div className="flex justify-center mt-4">
           <RailArrow direction="down" enabled={!stack.atEnd} onClick={() => stack.nudge(1)} />
         </div>
       </div>
@@ -211,7 +223,9 @@ function ServicesSection() {
         <div
           ref={rail.ref}
           onScroll={rail.sync}
-          className="flex gap-8 overflow-x-auto snap-x snap-mandatory pb-3 -mx-6 px-6 lg:mx-0 lg:px-0"
+          // pb-1 rather than pb-3 now that no scrollbar needs the room; the
+          // remainder just keeps the tiles' hover shadow off the section edge.
+          className="flex gap-8 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-1 -mx-6 px-6 lg:mx-0 lg:px-0"
         >
           {SERVICES.map((service) => (
             <ServiceTile
@@ -223,15 +237,16 @@ function ServicesSection() {
         </div>
 
         {/* Edge fades — the secondary cue. Each is pinned to the rail's real
-            edge (which bleeds past this wrapper below lg) and stops above the
-            scrollbar that pb-3 leaves room for. Colour tracks the section. */}
+            edge, which bleeds past this wrapper below lg. They run the full
+            height now that the scrollbar they used to stop short of is hidden.
+            Colour has to track the section background. */}
         <div
           aria-hidden="true"
-          className={`pointer-events-none absolute top-0 bottom-3 -left-6 lg:left-0 w-12 bg-gradient-to-r from-primary-50 to-transparent transition-opacity duration-200 ${rail.atStart ? 'opacity-0' : 'opacity-100'}`}
+          className={`pointer-events-none absolute inset-y-0 -left-6 lg:left-0 w-12 bg-gradient-to-r from-primary-50 to-transparent transition-opacity duration-200 ${rail.atStart ? 'opacity-0' : 'opacity-100'}`}
         />
         <div
           aria-hidden="true"
-          className={`pointer-events-none absolute top-0 bottom-3 -right-6 lg:right-0 w-12 bg-gradient-to-l from-primary-50 to-transparent transition-opacity duration-200 ${rail.atEnd ? 'opacity-0' : 'opacity-100'}`}
+          className={`pointer-events-none absolute inset-y-0 -right-6 lg:right-0 w-12 bg-gradient-to-l from-primary-50 to-transparent transition-opacity duration-200 ${rail.atEnd ? 'opacity-0' : 'opacity-100'}`}
         />
       </div>
     </>
