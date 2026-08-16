@@ -9,6 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app.config import settings
+from app.core.ratelimit import RateLimitMiddleware
 from app.routers import auth, users, dogs, adoptions, breeds, hospitals, parks, swim_schools, grooming_salons, pet_foods, pet_pages, pet_shops, site_settings, submissions, counters
 
 
