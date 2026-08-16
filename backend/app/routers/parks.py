@@ -17,13 +17,19 @@ router = APIRouter(prefix="/parks", tags=["parks"])
 
 @router.get(
     "",
-    response_model=list[ParkRead],
-    summary="List all parks (newest first)",
+    response_model=list[ParkListRead],
+    summary="List parks (newest first)",
 )
-async def list_parks(db: AsyncSession = Depends(get_db)) -> list[ParkRead]:
-    result = await db.execute(select(Park).order_by(desc(Park.created_at)))
+async def list_parks(
+    limit: int = Query(MAX_LIST_LIMIT, ge=1, le=MAX_LIST_LIMIT),
+    offset: int = Query(0, ge=0),
+    db: AsyncSession = Depends(get_db),
+) -> list[ParkListRead]:
+    result = await db.execute(
+        select(Park).order_by(desc(Park.created_at)).offset(offset).limit(limit)
+    )
     rows = result.scalars().all()
-    return [ParkRead.model_validate(r) for r in rows]
+    return [ParkListRead.model_validate(r) for r in rows]
 
 
 @router.post(
