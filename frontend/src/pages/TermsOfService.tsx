@@ -148,7 +148,9 @@ export function TermsOfService() {
       <LegalSection heading="14. Contact us">
         <p>
           Questions about these Terms? Email{' '}
-          <a href="mailto:support@hispike.in" className="text-primary-600 hover:underline">support@hispike.in</a>.
+          <a href="mailto:support@hispike.in" className="text-primary-600 hover:underline">support@hispike.in</a>{' '}
+          or message us on{' '}
+          <WhatsAppLink className="text-primary-600 hover:underline align-middle" showIcon={false} />.
           See also our{' '}
           <Link to="/privacy" className="text-primary-600 hover:underline">Privacy Policy</Link>.
         </p>
