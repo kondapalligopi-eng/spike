@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { LegalLayout, LegalSection } from '@/components/LegalLayout';
+import { WhatsAppLink } from '@/components/WhatsAppLink';
 
 const LAST_UPDATED = '29 June 2026';
 
