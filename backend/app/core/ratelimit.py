@@ -116,34 +116,50 @@ def match_rule(path: str) -> Rule | None:
     return None
 
 
-class RateLimitMiddleware(BaseHTTPMiddleware):
-    """Sliding-window limiter keyed on (client IP, rule)."""
+class RateLimitMiddleware:
+    """Sliding-window limiter keyed on (client IP, rule).
 
-    def __init__(self, app: object) -> None:
-        super().__init__(app)  # type: ignore[arg-type]
+    Deliberately a raw ASGI middleware rather than a BaseHTTPMiddleware
+    subclass. BaseHTTPMiddleware adapts the response through an intermediate
+    streaming wrapper, which has a long history of interfering with
+    BackgroundTasks — and this API sends its password-reset and OTP mail from
+    exactly those. Passing the untouched ASGI call straight through keeps that
+    machinery out of the picture entirely.
+    """
+
+    def __init__(self, app: ASGIApp) -> None:
+        self.app = app
         self._hits: dict[tuple[str, str], Deque[float]] = defaultdict(deque)
         self._last_sweep = 0.0
 
-    async def dispatch(
-        self, request: Request, call_next: RequestResponseEndpoint
-    ) -> Response:
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
+
         # Read the flag per request rather than capturing it at construction so
         # the test suite can switch it off after the app has been imported.
         if not settings.RATE_LIMIT_ENABLED:
-            return await call_next(request)
+            await self.app(scope, receive, send)
+            return
 
         # Preflights are issued by the browser, not the caller, and carry no
         # credentials — charging them would spend a real user's budget on CORS.
-        if request.method == "OPTIONS":
-            return await call_next(request)
+        if scope.get("method") == "OPTIONS":
+            await self.app(scope, receive, send)
+            return
 
-        rule = match_rule(request.url.path)
+        rule = match_rule(scope.get("path", ""))
         if rule is None:
             # /health and the docs routes fall through here: uptime monitors
             # poll the former far harder than any rule would allow.
-            return await call_next(request)
+            await self.app(scope, receive, send)
+            return
 
         now = time.monotonic()
+        self._sweep(now)
+
+        request = Request(scope)
         bucket = self._hits[(client_ip(request), rule.path)]
 
         cutoff = now - rule.window
@@ -154,15 +170,16 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
             # bucket[0] is the oldest hit still counted; once it ages out of the
             # window there is room for one more request.
             retry_after = max(1, int(bucket[0] + rule.window - now) + 1)
-            return JSONResponse(
+            response = JSONResponse(
                 status_code=429,
                 content={"detail": rule.message},
                 headers={"Retry-After": str(retry_after)},
             )
+            await response(scope, receive, send)
+            return
 
         bucket.append(now)
-        self._sweep(now)
-        return await call_next(request)
+        await self.app(scope, receive, send)
 
     def _sweep(self, now: float) -> None:
         if now - self._last_sweep < _SWEEP_INTERVAL_S:
