@@ -19,10 +19,10 @@ const DRAWER_TOP: DrawerItem[] = [
   { label: 'Park', to: '/park' },
   { label: 'Swimming', to: '/swimming' },
   { label: 'Grooming', to: '/grooming' },
-  { label: 'Dog Walking', to: '/dog-walking' },
   { label: 'Pet Shops', to: '/petshops' },
   { label: 'Pet Stories', to: '/pet-stories' },
   { label: 'Pet Play', to: '/pet-play' },
+  { label: 'Dog Walking', to: '/dog-walking' },
   // Pet Supplies stays last everywhere it is listed — keep this order in step
   // with the homepage tile grid and the desktop nav below.
   { label: 'Pet Supplies', to: '/pet-supplies' },
