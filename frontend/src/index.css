@@ -49,6 +49,20 @@
     @apply bg-warm-400;
   }
 
+  /* Opt out of the scrollbar styled above, for containers that scroll but
+     shouldn't advertise it — the homepage services grid on phones, where its
+     bar sat right beside the page's own and read as clutter. Only the bar is
+     hidden: wheel, trackpad, touch, keyboard and scrollBy() all still work, and
+     the up/down arrows carry the affordance the bar used to. */
+  .no-scrollbar {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* legacy Edge */
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+  }
+
   /* Line clamp utility */
   .line-clamp-2 {
     display: -webkit-box;
