@@ -125,6 +125,18 @@ function Showcase({ orderClass }: { orderClass: string }) {
             />
           ))}
         </div>
+      ) : isError ? (
+        <div className="max-w-md rounded-2xl border border-dashed border-warm-300 p-6 text-sm text-warm-500 text-center">
+          Couldn&rsquo;t load pet stories just now.{' '}
+          <button
+            type="button"
+            onClick={() => void refetch()}
+            disabled={isFetching}
+            className="font-semibold text-primary-600 hover:underline disabled:opacity-50"
+          >
+            {isFetching ? 'Retrying…' : 'Try again'}
+          </button>
+        </div>
       ) : pages.length === 0 ? (
         <div className="max-w-md rounded-2xl border border-dashed border-warm-300 p-6 text-sm text-warm-500 text-center">
           Be the first to create a page for your dog! 🐾
