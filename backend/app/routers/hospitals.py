@@ -18,15 +18,22 @@ router = APIRouter(prefix="/hospitals", tags=["hospitals"])
 
 @router.get(
     "",
-    response_model=list[HospitalRead],
-    summary="List all admin-added hospitals (newest first)",
+    response_model=list[HospitalListRead],
+    summary="List admin-added hospitals (newest first)",
 )
 async def list_hospitals(
+    limit: int = Query(MAX_LIST_LIMIT, ge=1, le=MAX_LIST_LIMIT),
+    offset: int = Query(0, ge=0),
     db: AsyncSession = Depends(get_db),
-) -> list[HospitalRead]:
-    result = await db.execute(select(Hospital).order_by(desc(Hospital.created_at)))
+) -> list[HospitalListRead]:
+    result = await db.execute(
+        select(Hospital)
+        .order_by(desc(Hospital.created_at))
+        .offset(offset)
+        .limit(limit)
+    )
     rows = result.scalars().all()
-    return [HospitalRead.model_validate(r) for r in rows]
+    return [HospitalListRead.model_validate(r) for r in rows]
 
 
 @router.post(
