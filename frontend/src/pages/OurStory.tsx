@@ -1,5 +1,6 @@
 import { PageHead } from '@/components/PageHead';
 import { HeroPaws } from '@/components/HeroPaws';
+import { WhatsAppLink } from '@/components/WhatsAppLink';
 
 export function OurStory() {
   return (

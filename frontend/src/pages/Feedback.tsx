@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { toast } from '@/store/toastStore';
 import { createSubmission } from '@/api/submissions';
 import { SelectMenu } from '@/components/SelectMenu';
+import { WhatsAppLink } from '@/components/WhatsAppLink';
 
 const TOPICS = [
   'General feedback',

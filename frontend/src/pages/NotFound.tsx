@@ -1,4 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
+import { WhatsAppLink } from '@/components/WhatsAppLink';
 
 export function NotFound() {
   const navigate = useNavigate();

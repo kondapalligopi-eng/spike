@@ -136,7 +136,10 @@ export function PrivacyPolicy() {
       <LegalSection heading="11. Contact us">
         <p>
           Questions about your privacy? Email{' '}
-          <a href="mailto:support@hispike.in" className="text-primary-600 hover:underline">support@hispike.in</a>.
+          <a href="mailto:support@hispike.in" className="text-primary-600 hover:underline">support@hispike.in</a>{' '}
+          or message us on{' '}
+          <WhatsAppLink className="text-primary-600 hover:underline align-middle" showIcon={false} />.
+          {' '}Formal requests under section 8 above should be sent by email so we have a written record.
           See also our{' '}
           <Link to="/terms" className="text-primary-600 hover:underline">Terms of Service</Link>.
         </p>
