@@ -44,10 +44,10 @@ const STATIC_SERVICES: SearchEntry[] = [
   { section: 'Services', title: 'Park', subtitle: 'Dog-friendly parks & lakes', to: '/park' },
   { section: 'Services', title: 'Swimming', subtitle: 'Aquatic training', to: '/swimming' },
   { section: 'Services', title: 'Grooming', subtitle: 'Salon & spa', to: '/grooming' },
-  { section: 'Services', title: 'Dog Walking', subtitle: 'Walkers across Bangalore', to: '/dog-walking' },
   { section: 'Services', title: 'Pet Shops', subtitle: 'Local shops & their products', to: '/petshops' },
   { section: 'Services', title: 'Pet Stories', subtitle: 'A shareable page for your pet', to: '/pet-stories' },
   { section: 'Services', title: 'Pet Play', subtitle: 'Treat Hunt — play with your dog', to: '/pet-play' },
+  { section: 'Services', title: 'Dog Walking', subtitle: 'Walkers across Bangalore', to: '/dog-walking' },
   { section: 'Services', title: 'Pet Supplies', subtitle: 'Food, treats, accessories', to: '/pet-supplies' },
 ];
 
