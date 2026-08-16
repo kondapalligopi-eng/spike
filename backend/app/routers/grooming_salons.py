@@ -22,17 +22,22 @@ router = APIRouter(prefix="/grooming-salons", tags=["grooming_salons"])
 
 @router.get(
     "",
-    response_model=list[GroomingSalonRead],
-    summary="List all grooming salons (newest first)",
+    response_model=list[GroomingSalonListRead],
+    summary="List grooming salons (newest first)",
 )
 async def list_grooming_salons(
+    limit: int = Query(MAX_LIST_LIMIT, ge=1, le=MAX_LIST_LIMIT),
+    offset: int = Query(0, ge=0),
     db: AsyncSession = Depends(get_db),
-) -> list[GroomingSalonRead]:
+) -> list[GroomingSalonListRead]:
     result = await db.execute(
-        select(GroomingSalon).order_by(desc(GroomingSalon.created_at))
+        select(GroomingSalon)
+        .order_by(desc(GroomingSalon.created_at))
+        .offset(offset)
+        .limit(limit)
     )
     rows = result.scalars().all()
-    return [GroomingSalonRead.model_validate(r) for r in rows]
+    return [GroomingSalonListRead.model_validate(r) for r in rows]
 
 
 @router.post(
