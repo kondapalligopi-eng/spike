@@ -74,10 +74,12 @@ function RailArrow({
  */
 function ServiceRail() {
   const railRef = useRef<HTMLDivElement>(null);
-  // Both start false so the pre-rendered HTML matches the first client render
-  // exactly (no arrows). The effect below enables whichever ones apply.
+  // Nine tiles overflow every realistic viewport, so the right arrow starts
+  // live and the effect only ever corrects it — that avoids a visible
+  // disabled-then-enabled flicker on load. Both values are deterministic, so
+  // the pre-rendered HTML and the first client render still agree exactly.
   const [canLeft, setCanLeft] = useState(false);
-  const [canRight, setCanRight] = useState(false);
+  const [canRight, setCanRight] = useState(true);
 
   const sync = useCallback(() => {
     const el = railRef.current;
