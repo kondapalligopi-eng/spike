@@ -18,15 +18,22 @@ router = APIRouter(prefix="/swim-schools", tags=["swim_schools"])
 
 @router.get(
     "",
-    response_model=list[SwimSchoolRead],
-    summary="List all swim schools (newest first)",
+    response_model=list[SwimSchoolListRead],
+    summary="List swim schools (newest first)",
 )
 async def list_swim_schools(
+    limit: int = Query(MAX_LIST_LIMIT, ge=1, le=MAX_LIST_LIMIT),
+    offset: int = Query(0, ge=0),
     db: AsyncSession = Depends(get_db),
-) -> list[SwimSchoolRead]:
-    result = await db.execute(select(SwimSchool).order_by(desc(SwimSchool.created_at)))
+) -> list[SwimSchoolListRead]:
+    result = await db.execute(
+        select(SwimSchool)
+        .order_by(desc(SwimSchool.created_at))
+        .offset(offset)
+        .limit(limit)
+    )
     rows = result.scalars().all()
-    return [SwimSchoolRead.model_validate(r) for r in rows]
+    return [SwimSchoolListRead.model_validate(r) for r in rows]
 
 
 @router.post(
