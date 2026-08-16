@@ -19,6 +19,13 @@ export type PetPageRead = {
   updated_at: string;
 };
 
+declare global {
+  interface Window {
+    /** Set by the inline <script> in index.html — see listRecentPetPages. */
+    __hispikeShowcase?: Promise<PetPageRead[] | null>;
+  }
+}
+
 export type PetPageCreate = {
   slug: string;
   name: string;
