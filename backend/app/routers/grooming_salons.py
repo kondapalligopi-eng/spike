@@ -2,32 +2,42 @@ from __future__ import annotations
 
 import uuid
 
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from sqlalchemy import desc, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.dependencies import require_admin
+from app.core.pagination import MAX_LIST_LIMIT
 from app.database import get_db
 from app.models.grooming_salon import GroomingSalon
 from app.models.user import User
-from app.schemas.grooming_salon import GroomingSalonCreate, GroomingSalonRead
+from app.schemas.grooming_salon import (
+    GroomingSalonCreate,
+    GroomingSalonListRead,
+    GroomingSalonRead,
+)
 
 router = APIRouter(prefix="/grooming-salons", tags=["grooming_salons"])
 
 
 @router.get(
     "",
-    response_model=list[GroomingSalonRead],
-    summary="List all grooming salons (newest first)",
+    response_model=list[GroomingSalonListRead],
+    summary="List grooming salons (newest first)",
 )
 async def list_grooming_salons(
+    limit: int = Query(MAX_LIST_LIMIT, ge=1, le=MAX_LIST_LIMIT),
+    offset: int = Query(0, ge=0),
     db: AsyncSession = Depends(get_db),
-) -> list[GroomingSalonRead]:
+) -> list[GroomingSalonListRead]:
     result = await db.execute(
-        select(GroomingSalon).order_by(desc(GroomingSalon.created_at))
+        select(GroomingSalon)
+        .order_by(desc(GroomingSalon.created_at))
+        .offset(offset)
+        .limit(limit)
     )
     rows = result.scalars().all()
-    return [GroomingSalonRead.model_validate(r) for r in rows]
+    return [GroomingSalonListRead.model_validate(r) for r in rows]
 
 
 @router.post(

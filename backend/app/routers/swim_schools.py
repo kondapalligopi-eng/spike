@@ -2,30 +2,38 @@ from __future__ import annotations
 
 import uuid
 
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from sqlalchemy import desc, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.dependencies import require_admin
+from app.core.pagination import MAX_LIST_LIMIT
 from app.database import get_db
 from app.models.swim_school import SwimSchool
 from app.models.user import User
-from app.schemas.swim_school import SwimSchoolCreate, SwimSchoolRead
+from app.schemas.swim_school import SwimSchoolCreate, SwimSchoolListRead, SwimSchoolRead
 
 router = APIRouter(prefix="/swim-schools", tags=["swim_schools"])
 
 
 @router.get(
     "",
-    response_model=list[SwimSchoolRead],
-    summary="List all swim schools (newest first)",
+    response_model=list[SwimSchoolListRead],
+    summary="List swim schools (newest first)",
 )
 async def list_swim_schools(
+    limit: int = Query(MAX_LIST_LIMIT, ge=1, le=MAX_LIST_LIMIT),
+    offset: int = Query(0, ge=0),
     db: AsyncSession = Depends(get_db),
-) -> list[SwimSchoolRead]:
-    result = await db.execute(select(SwimSchool).order_by(desc(SwimSchool.created_at)))
+) -> list[SwimSchoolListRead]:
+    result = await db.execute(
+        select(SwimSchool)
+        .order_by(desc(SwimSchool.created_at))
+        .offset(offset)
+        .limit(limit)
+    )
     rows = result.scalars().all()
-    return [SwimSchoolRead.model_validate(r) for r in rows]
+    return [SwimSchoolListRead.model_validate(r) for r in rows]
 
 
 @router.post(

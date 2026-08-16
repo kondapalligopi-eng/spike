@@ -31,3 +31,11 @@ class SwimSchoolRead(SwimSchoolBase):
     id: uuid.UUID
     created_at: datetime
     updated_at: datetime
+
+
+class SwimSchoolListRead(SwimSchoolBase):
+    """Public list payload. See HospitalListRead for why the timestamps go."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    id: uuid.UUID

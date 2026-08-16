@@ -28,3 +28,18 @@ class HospitalRead(HospitalBase):
     id: uuid.UUID
     created_at: datetime
     updated_at: datetime
+
+
+class HospitalListRead(HospitalBase):
+    """The public list payload — deliberately narrower than HospitalRead.
+
+    created_at/updated_at are rendered nowhere on the site, and publishing them
+    hands anyone reading the network tab a precise picture of how fast the
+    directory grows and how often it is refreshed. `id` stays: the admin table
+    edits and deletes by it, and a random UUID leaks nothing about row counts
+    the way a sequential key would.
+    """
+
+    model_config = ConfigDict(from_attributes=True)
+
+    id: uuid.UUID

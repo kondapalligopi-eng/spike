@@ -20,8 +20,11 @@ export type GroomingSalonRead = {
   hours: string | null;
   email: string | null;
   website: string | null;
-  created_at: string;
-  updated_at: string;
+  // Optional: the public list endpoint no longer returns these — see
+  // HospitalListRead in backend/app/schemas/hospital.py for why. Only the
+  // mock store still fills them in.
+  created_at?: string;
+  updated_at?: string;
 };
 
 export type GroomingSalonCreate = {
@@ -145,7 +148,7 @@ const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
 export async function listGroomingSalons(): Promise<GroomingSalonRead[]> {
   if (USE_MOCK) {
     await delay(150);
-    return [...readMockStore()].sort((a, b) => b.created_at.localeCompare(a.created_at));
+    return [...readMockStore()].sort((a, b) => (b.created_at ?? '').localeCompare(a.created_at ?? ''));
   }
   const response = await apiClient.get<GroomingSalonRead[]>('/grooming-salons');
   return response.data;
