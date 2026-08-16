@@ -34,6 +34,37 @@
 
     <meta name="theme-color" content="#0ea5e9" />
 
+    <!--
+      Open the connection to the API host during head parsing. Every page that
+      talks to the backend otherwise pays DNS + TCP + TLS on its first call,
+      which is the slowest part of that round trip on Indian mobile networks
+      (the API lives in Render's Oregon region). Vite substitutes the build-time
+      value; if VITE_API_URL is unset the literal is harmless — the browser just
+      ignores an unresolvable preconnect.
+    -->
+    <link rel="preconnect" href="%VITE_API_URL%" crossorigin />
+    <link rel="dns-prefetch" href="%VITE_API_URL%" />
+
+    <!--
+      Start the login page's Pet Stories request immediately, rather than after
+      ~1.2 MB of app JS has downloaded, parsed and hydrated — that wait is why
+      the panel used to sit on skeletons for seconds. api/petPages.ts adopts
+      this in-flight promise instead of issuing its own request. Any failure
+      resolves to null and the normal React Query path takes over, so this is
+      pure speculation with no correctness stake.
+      The limit must stay in sync with SHOWCASE_LIMIT in src/pages/Login.tsx.
+    -->
+    <script>
+      (function () {
+        if (window.location.pathname.replace(/\/+$/, '') !== '/login') return;
+        var api = '%VITE_API_URL%';
+        if (!api || api.charAt(0) === '%') return;
+        window.__hispikeShowcase = fetch(api + '/api/v1/pet-pages/recent?limit=8')
+          .then(function (r) { return r.ok ? r.json() : null; })
+          .catch(function () { return null; });
+      })();
+    </script>
+
     <link rel="icon" type="image/x-icon" href="/favicon.ico?v=2" />
     <link rel="icon" type="image/png" href="/logo.png?v=2" />
     <link rel="apple-touch-icon" href="/logo.png?v=2" />
