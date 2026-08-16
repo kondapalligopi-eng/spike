@@ -33,3 +33,11 @@ class GroomingSalonRead(GroomingSalonBase):
     id: uuid.UUID
     created_at: datetime
     updated_at: datetime
+
+
+class GroomingSalonListRead(GroomingSalonBase):
+    """Public list payload. See HospitalListRead for why the timestamps go."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    id: uuid.UUID
