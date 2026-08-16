@@ -237,15 +237,16 @@ function ServicesSection() {
         </div>
 
         {/* Edge fades — the secondary cue. Each is pinned to the rail's real
-            edge (which bleeds past this wrapper below lg) and stops above the
-            scrollbar that pb-3 leaves room for. Colour tracks the section. */}
+            edge, which bleeds past this wrapper below lg. They run the full
+            height now that the scrollbar they used to stop short of is hidden.
+            Colour has to track the section background. */}
         <div
           aria-hidden="true"
-          className={`pointer-events-none absolute top-0 bottom-3 -left-6 lg:left-0 w-12 bg-gradient-to-r from-primary-50 to-transparent transition-opacity duration-200 ${rail.atStart ? 'opacity-0' : 'opacity-100'}`}
+          className={`pointer-events-none absolute inset-y-0 -left-6 lg:left-0 w-12 bg-gradient-to-r from-primary-50 to-transparent transition-opacity duration-200 ${rail.atStart ? 'opacity-0' : 'opacity-100'}`}
         />
         <div
           aria-hidden="true"
-          className={`pointer-events-none absolute top-0 bottom-3 -right-6 lg:right-0 w-12 bg-gradient-to-l from-primary-50 to-transparent transition-opacity duration-200 ${rail.atEnd ? 'opacity-0' : 'opacity-100'}`}
+          className={`pointer-events-none absolute inset-y-0 -right-6 lg:right-0 w-12 bg-gradient-to-l from-primary-50 to-transparent transition-opacity duration-200 ${rail.atEnd ? 'opacity-0' : 'opacity-100'}`}
         />
       </div>
     </>
