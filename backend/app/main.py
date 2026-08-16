@@ -29,14 +29,29 @@ app = FastAPI(
         "Supports dog listings, user authentication, and adoption requests."
     ),
     version="1.0.0",
-    docs_url="/docs",
-    redoc_url="/redoc",
+    # The interactive docs enumerate every endpoint, payload shape and
+    # validation rule in the API. That is exactly what you want while
+    # developing and an invitation once the service is public, so they are
+    # served only outside production. openapi_url has to go too — leaving the
+    # schema reachable lets anyone rebuild the docs page themselves.
+    docs_url=None if settings.is_production else "/docs",
+    redoc_url=None if settings.is_production else "/redoc",
+    openapi_url=None if settings.is_production else "/openapi.json",
     lifespan=lifespan,
 )
 
 # ---------------------------------------------------------------------------
-# CORS
+# Middleware
 # ---------------------------------------------------------------------------
+# Order matters, and it is the reverse of what it looks like: Starlette makes
+# the LAST-added middleware the OUTERMOST one. CORS must therefore be added
+# after the rate limiter, so that it wraps it. The other way round, a 429 would
+# be produced outside CORSMiddleware and reach the browser with no
+# Access-Control-Allow-Origin header — the frontend would then report an opaque
+# "Network Error" instead of the real "please slow down" message, which is the
+# same trap the exception handlers below work around with _cors_headers_for().
+app.add_middleware(RateLimitMiddleware)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.CORS_ORIGINS,
