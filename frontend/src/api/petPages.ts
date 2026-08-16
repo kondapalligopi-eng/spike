@@ -169,6 +169,18 @@ export async function listRecentPetPages(limit = 6): Promise<PetPageRead[]> {
       .sort((a, b) => b.created_at.localeCompare(a.created_at))
       .slice(0, limit);
   }
+  // index.html fires this same request while the head is still parsing, so on
+  // /login it is usually already in flight (often already done) by the time we
+  // get here. Adopt it rather than paying for a second round trip. A null means
+  // the speculative fetch failed — fall through and let axios do it properly,
+  // with the interceptors and retry behaviour that path has. Cleared either
+  // way so a later refetch always goes to the network.
+  if (typeof window !== 'undefined' && window.__hispikeShowcase) {
+    const early = window.__hispikeShowcase;
+    delete window.__hispikeShowcase;
+    const rows = await early;
+    if (rows) return rows;
+  }
   const res = await apiClient.get<PetPageRead[]>('/pet-pages/recent', { params: { limit } });
   return res.data;
 }
