@@ -125,31 +125,31 @@ function ServiceRail() {
       </div>
 
       <div className="relative">
-      <div
-        ref={railRef}
-        onScroll={sync}
-        // Bleeds to the screen edge on small screens so a half-visible tile
-        // signals "there is more here"; contained from lg up.
-        className="flex gap-6 sm:gap-8 overflow-x-auto snap-x snap-mandatory pb-3 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:mx-0 lg:px-0"
-      >
-        {SERVICES.map(({ label, dog, badge, kicker, tint, to }) => (
-          <Link key={label} to={to} className="group block text-center shrink-0 w-24 sm:w-28 lg:w-32 snap-start">
-            <p className="text-xs text-warm-600 mb-3 tracking-wide">{kicker}</p>
-            <div className={`relative mx-auto aspect-square w-20 sm:w-24 lg:w-28 rounded-full overflow-visible bg-gradient-to-br ${tint} ring-1 ring-warm-200 group-hover:ring-primary-400 transition`}>
-              <span aria-hidden="true" className="absolute inset-0 flex items-center justify-center text-3xl sm:text-4xl drop-shadow group-hover:scale-110 transition-transform">
-                {dog}
-              </span>
-              <span
-                aria-hidden="true"
-                className="absolute -bottom-1 -right-1 w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-white text-xl sm:text-2xl shadow-lg ring-2 ring-primary-300 group-hover:ring-primary-500 group-hover:scale-110 transition"
-              >
-                {badge}
-              </span>
-            </div>
-            <p className="mt-3 text-sm text-warm-900 group-hover:text-primary-700 transition-colors">{label}</p>
-          </Link>
-        ))}
-      </div>
+        <div
+          ref={railRef}
+          onScroll={sync}
+          // Bleeds to the screen edge on small screens so a half-visible tile
+          // signals "there is more here"; contained from lg up.
+          className="flex gap-6 sm:gap-8 overflow-x-auto snap-x snap-mandatory pb-3 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:mx-0 lg:px-0"
+        >
+          {SERVICES.map(({ label, dog, badge, kicker, tint, to }) => (
+            <Link key={label} to={to} className="group block text-center shrink-0 w-24 sm:w-28 lg:w-32 snap-start">
+              <p className="text-xs text-warm-600 mb-3 tracking-wide">{kicker}</p>
+              <div className={`relative mx-auto aspect-square w-20 sm:w-24 lg:w-28 rounded-full overflow-visible bg-gradient-to-br ${tint} ring-1 ring-warm-200 group-hover:ring-primary-400 transition`}>
+                <span aria-hidden="true" className="absolute inset-0 flex items-center justify-center text-3xl sm:text-4xl drop-shadow group-hover:scale-110 transition-transform">
+                  {dog}
+                </span>
+                <span
+                  aria-hidden="true"
+                  className="absolute -bottom-1 -right-1 w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-white text-xl sm:text-2xl shadow-lg ring-2 ring-primary-300 group-hover:ring-primary-500 group-hover:scale-110 transition"
+                >
+                  {badge}
+                </span>
+              </div>
+              <p className="mt-3 text-sm text-warm-900 group-hover:text-primary-700 transition-colors">{label}</p>
+            </Link>
+          ))}
+        </div>
 
         {/* Edge fades — the secondary cue, and the only one on phones. Each is
             pinned to the rail's real edge (which bleeds past this wrapper on
