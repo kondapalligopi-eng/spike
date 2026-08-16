@@ -176,7 +176,9 @@ export function Feedback() {
           </div>
 
           <p className="text-xs text-warm-500 mt-6 text-center">
-            Prefer email? Write to <a className="text-primary-700 hover:underline" href="mailto:support@hispike.in">support@hispike.in</a>.
+            Prefer email? Write to <a className="text-primary-700 hover:underline" href="mailto:support@hispike.in">support@hispike.in</a>
+            {' '}or message us on{' '}
+            <WhatsAppLink className="text-primary-700 hover:underline align-middle" showIcon={false} />.
           </p>
         </div>
       </section>
