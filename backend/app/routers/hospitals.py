@@ -2,15 +2,16 @@ from __future__ import annotations
 
 import uuid
 
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from sqlalchemy import desc, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.dependencies import require_admin
+from app.core.pagination import MAX_LIST_LIMIT
 from app.database import get_db
 from app.models.hospital import Hospital
 from app.models.user import User
-from app.schemas.hospital import HospitalCreate, HospitalRead
+from app.schemas.hospital import HospitalCreate, HospitalListRead, HospitalRead
 
 router = APIRouter(prefix="/hospitals", tags=["hospitals"])
 
