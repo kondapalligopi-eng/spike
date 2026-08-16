@@ -151,9 +151,20 @@ function ServiceRail() {
         ))}
       </div>
 
-      <RailArrow side="left" show={canLeft} onClick={() => nudge(-1)} />
-      <RailArrow side="right" show={canRight} onClick={() => nudge(1)} />
-    </div>
+        {/* Edge fades — the secondary cue, and the only one on phones. Each is
+            pinned to the rail's real edge (which bleeds past this wrapper on
+            small screens) and stops above the scrollbar that pb-3 leaves room
+            for. Colour must track the section background. */}
+        <div
+          aria-hidden="true"
+          className={`pointer-events-none absolute top-0 bottom-3 -left-4 sm:-left-6 lg:left-0 w-8 sm:w-12 bg-gradient-to-r from-primary-50 to-transparent transition-opacity duration-200 ${canLeft ? 'opacity-100' : 'opacity-0'}`}
+        />
+        <div
+          aria-hidden="true"
+          className={`pointer-events-none absolute top-0 bottom-3 -right-4 sm:-right-6 lg:right-0 w-8 sm:w-12 bg-gradient-to-l from-primary-50 to-transparent transition-opacity duration-200 ${canRight ? 'opacity-100' : 'opacity-0'}`}
+        />
+      </div>
+    </>
   );
 }
 
