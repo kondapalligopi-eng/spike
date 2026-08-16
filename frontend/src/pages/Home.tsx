@@ -201,7 +201,8 @@ function ServicesSection() {
         <div
           ref={stack.ref}
           onScroll={stack.sync}
-          className="grid grid-cols-2 gap-6 max-h-[468px] overflow-y-auto snap-y snap-mandatory pr-1"
+          // pr-1 is gone with the scrollbar it used to make room for.
+          className="grid grid-cols-2 gap-6 max-h-[468px] overflow-y-auto snap-y snap-mandatory no-scrollbar"
         >
           {SERVICES.map((service) => (
             <ServiceTile
