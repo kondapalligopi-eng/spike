@@ -28,40 +28,33 @@ const SERVICES: Service[] = [
 
 function RailArrow({
   side,
-  show,
+  enabled,
   onClick,
 }: {
   side: 'left' | 'right';
-  show: boolean;
+  enabled: boolean;
   onClick: () => void;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      aria-label={side === 'left' ? 'Show previous services' : 'Show more services'}
-      // Faded out rather than unmounted, and pulled out of the tab order while
-      // hidden: mounting/unmounting would reflow the rail every time you reach
-      // an end, which makes the tiles twitch mid-scroll.
-      tabIndex={show ? 0 : -1}
-      aria-hidden={!show}
+      // Disabled rather than hidden at the ends. These sit in a fixed header
+      // row, so removing one would shuffle the other sideways every time you
+      // reach an edge.
+      disabled={!enabled}
+      aria-label={side === 'left' ? 'Scroll services left' : 'Scroll services right'}
       className={[
-        // Pinned to the vertical centre of the circles, not of the whole tile —
-        // the tile is taller than the circle because of the kicker and label.
-        'absolute top-[68px] sm:top-[76px] lg:top-[84px] -translate-y-1/2 z-10',
-        side === 'left' ? 'left-0 lg:-left-4' : 'right-0 lg:-right-4',
-        // Brand gold, matching the logo and the accent-400 CTA pills used
-        // across the site. The chevron has to go dark with it: white on #facc15
-        // lands around 1.7:1 and all but disappears, while warm-900 on the same
-        // gold is comfortably past AA. The white ring stays — it separates the
-        // button from the coloured tiles it floats over.
-        'w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-accent-400 hover:bg-accent-300',
-        'text-warm-900 shadow-lg ring-2 ring-white flex items-center justify-center',
-        'transition-opacity duration-200',
-        show ? 'opacity-100' : 'opacity-0 pointer-events-none',
+        'w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shrink-0',
+        // Brand gold with a dark chevron — white on #facc15 measures 1.53:1 and
+        // is effectively invisible, warm-900 on it measures 11.4:1.
+        'bg-accent-400 text-warm-900 ring-1 ring-accent-500/30',
+        'hover:bg-accent-300 active:scale-95 transition',
+        'disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-accent-400 disabled:active:scale-100',
+        'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-600 focus-visible:ring-offset-2',
       ].join(' ')}
     >
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+      <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
