@@ -185,7 +185,7 @@ const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
 export async function listSwimSchools(): Promise<SwimSchoolRead[]> {
   if (USE_MOCK) {
     await delay(150);
-    return [...readMockStore()].sort((a, b) => b.created_at.localeCompare(a.created_at));
+    return [...readMockStore()].sort((a, b) => (b.created_at ?? '').localeCompare(a.created_at ?? ''));
   }
   const response = await apiClient.get<SwimSchoolRead[]>('/swim-schools');
   return response.data;

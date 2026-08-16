@@ -145,7 +145,7 @@ const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
 export async function listGroomingSalons(): Promise<GroomingSalonRead[]> {
   if (USE_MOCK) {
     await delay(150);
-    return [...readMockStore()].sort((a, b) => b.created_at.localeCompare(a.created_at));
+    return [...readMockStore()].sort((a, b) => (b.created_at ?? '').localeCompare(a.created_at ?? ''));
   }
   const response = await apiClient.get<GroomingSalonRead[]>('/grooming-salons');
   return response.data;

@@ -104,7 +104,7 @@ const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
 export async function listParks(): Promise<ParkRead[]> {
   if (USE_MOCK) {
     await delay(150);
-    return [...readMockStore()].sort((a, b) => b.created_at.localeCompare(a.created_at));
+    return [...readMockStore()].sort((a, b) => (b.created_at ?? '').localeCompare(a.created_at ?? ''));
   }
   const response = await apiClient.get<ParkRead[]>('/parks');
   return response.data;

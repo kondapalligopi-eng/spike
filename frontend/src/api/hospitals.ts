@@ -152,7 +152,7 @@ export async function listHospitals(): Promise<HospitalRead[]> {
     await delay(150);
     // Newest first, matching the backend order
     return [...readMockStore()].sort((a, b) =>
-      b.created_at.localeCompare(a.created_at),
+      (b.created_at ?? '').localeCompare(a.created_at ?? ''),
     );
   }
   const response = await apiClient.get<HospitalRead[]>('/hospitals');
