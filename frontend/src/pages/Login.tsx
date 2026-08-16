@@ -86,10 +86,16 @@ function Showcase({ orderClass }: { orderClass: string }) {
   // Decorative preview — it must never hold up the login card. If it's slow or
   // errors, we fall through to a skeleton then the empty state; the form is a
   // separate element that always renders regardless.
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError, isFetching, refetch } = useQuery({
     queryKey: ['recent-pet-pages', SHOWCASE_LIMIT],
     queryFn: () => listRecentPetPages(SHOWCASE_LIMIT),
-    retry: 1,
+    // A dropped request used to be indistinguishable from an empty list: data
+    // stayed undefined, so we rendered the "be the first to create a page"
+    // empty state at people whose pages exist, and never tried again. Retry a
+    // few times with backoff so one lost request (or a backend still waking
+    // up) heals on its own, and give the error its own branch below.
+    retry: 3,
+    retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 8000),
     staleTime: 5 * 60 * 1000,
   });
   const pages = data ?? [];
