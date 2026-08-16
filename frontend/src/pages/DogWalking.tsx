@@ -21,9 +21,7 @@ type Walker = {
 // checked references for services that did not exist. They are not coming back.
 //
 // Walkers apply through /feedback; add a confirmed one here and the filter bar
-// and card grid below light up on their own. Once there are enough to be worth
-// indexing, add the /dog-walking rewrite to render.yaml so the page is
-// pre-rendered for crawlers.
+// and card grid below light up on their own.
 const WALKERS: Walker[] = [];
 
 const AREAS = ['All areas', ...Array.from(new Set(WALKERS.map((w) => w.area))).sort()];
