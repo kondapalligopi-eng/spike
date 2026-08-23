@@ -18,7 +18,6 @@ import {
 } from '@/api/petPages';
 import { ImageUpload } from '@/components/ImageUpload';
 import { ShareButtons } from '@/components/ShareButtons';
-import { HeroPaws } from '@/components/HeroPaws';
 import { PageHead } from '@/components/PageHead';
 import { PetPageView } from '@/components/PetPageView';
 import { toast } from '@/store/toastStore';
@@ -340,31 +339,20 @@ export function PetPages() {
         path="/pet-stories/create"
       />
 
-      {/* Branded hero band — same primary gradient + gold accent + animated
-          scattered paws as the homepage hero, via the shared HeroPaws. */}
-      <section className="relative overflow-hidden bg-gradient-to-r from-primary-900 via-primary-800 to-primary-600 text-white">
-        <HeroPaws />
-        <div className="relative max-w-3xl mx-auto px-4 sm:px-6 py-10 sm:py-12">
-          <p className="text-[11px] sm:text-xs font-semibold tracking-[0.3em] text-accent-400 uppercase mb-1">
-            Pet Stories · Bangalore
-          </p>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight leading-tight">
-            Your Pet Stories
-          </h1>
-          <div className="mt-2 h-0.5 w-16 bg-accent-400 rounded-full" />
-          <p className="mt-3 text-sm text-primary-100/90 max-w-2xl">
-            Give your pet their own page — a photo and your favourite memories — and share the
-            link with anyone. It lives at <span className="font-mono text-white">{SITE_HOST}/pet/your-pet</span>.
-          </p>
-          <Link
-            to="/pet-stories"
-            className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-accent-400 hover:text-accent-300 hover:underline"
-          >
-            Back to all pet stories
-            <span aria-hidden="true">→</span>
-          </Link>
-        </div>
-      </section>
+      {/* No hero band here. This page is a form; the gallery at /pet-stories
+          carries the branding, and a second blue band just pushed the actual
+          work below the fold. All this page needs is a way back. */}
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 pt-6 pb-1">
+        <Link
+          to="/pet-stories"
+          // primary-700, not the accent gold this used to be: gold read fine
+          // on the blue band but is far too pale on warm-50.
+          className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary-700 hover:text-primary-800 hover:underline"
+        >
+          <span aria-hidden="true">←</span>
+          Back to pet stories
+        </Link>
+      </div>
 
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
 
@@ -384,9 +372,9 @@ export function PetPages() {
 
         {/* Create / edit form */}
         <div ref={formRef} className="rounded-2xl border border-warm-200 bg-white p-5 sm:p-6 shadow-sm">
-          <h2 className="text-lg font-bold text-warm-900 mb-4">
+          <h1 className="text-xl sm:text-2xl font-bold text-warm-900 mb-4">
             {editingId ? 'Edit page' : 'Create a new page'}
-          </h2>
+          </h1>
 
           <div className="space-y-5">
             {/* Name */}
