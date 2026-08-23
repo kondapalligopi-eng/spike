@@ -200,10 +200,20 @@ export function PetShopView({ data }: { data: PetShopRead }) {
       {/* Brand header — logo + shop name, top-left on white, like the shop's own site */}
       <header className="bg-white border-b border-warm-200">
         <div className={`${WRAP} py-3 sm:py-4 flex items-center gap-3`}>
-          <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-white border border-warm-200 shrink-0 grid place-items-center text-2xl overflow-hidden">
-            {data.logo_url ? <img src={data.logo_url} alt={data.name} className="w-full h-full object-cover" /> : <span aria-hidden="true">🏪</span>}
-          </div>
-          <h1 className="text-xl sm:text-2xl font-black tracking-tight truncate text-warm-900 min-w-0">{data.name}</h1>
+          {/* Logo + name link to the shop's own home, the way a storefront
+              header normally does — so from the cart (or any sub-page) it
+              returns here rather than leaving for HiSpike. On the shop home
+              it is simply a no-op. min-w-0 keeps the name truncating. */}
+          <Link
+            to={`/petshop/${data.slug}`}
+            aria-label={`${data.name} — shop home`}
+            className="group flex items-center gap-3 min-w-0"
+          >
+            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-white border border-warm-200 shrink-0 grid place-items-center text-2xl overflow-hidden">
+              {data.logo_url ? <img src={data.logo_url} alt={data.name} className="w-full h-full object-cover" /> : <span aria-hidden="true">🏪</span>}
+            </div>
+            <h1 className="text-xl sm:text-2xl font-black tracking-tight truncate text-warm-900 min-w-0 group-hover:text-primary-700 transition-colors">{data.name}</h1>
+          </Link>
           <HeaderIcons shopId={data.id} ownerId={data.owner_id} slug={data.slug} />
         </div>
       </header>
