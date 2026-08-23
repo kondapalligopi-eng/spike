@@ -2,6 +2,8 @@ import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { HeroPaws } from './HeroPaws';
 import { PaymentBadges } from './PaymentBadges';
+import { RailArrow } from './RailArrow';
+import { useScrollEdges } from '@/hooks/useScrollEdges';
 import { useCartStore, type CartItem } from '@/store/cartStore';
 import { useAuth } from '@/hooks/useAuth';
 import { SHOP_CATEGORIES, displayPrice, numericPrice, type PetShopRead, type ShopProduct, type ShopUpdate } from '@/api/petShops';
@@ -165,6 +167,62 @@ function PromoCard({ update, waTarget, shopName }: { update: ShopUpdate; waTarge
 const WRAP = 'max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10';
 const INNER = 'max-w-5xl mx-auto px-4 sm:px-6';
 
+/**
+ * One category row — heading, arrows, and the horizontally scrolling products.
+ *
+ * Its own component because each shelf needs its own useScrollEdges instance,
+ * and hooks cannot be called inside the shelves.map() in the parent.
+ *
+ * Unlike the homepage rail, the arrows show on phones too: this is a shop, and
+ * horizontally paged product shelves are what people already expect from one on
+ * mobile, so the control should not disappear at the size most customers use.
+ */
+function CategoryShelf({
+  category,
+  items,
+  shop,
+}: {
+  category: string;
+  items: ShopProduct[];
+  shop: PetShopRead;
+}) {
+  const rail = useScrollEdges('x');
+  return (
+    <section id={`shelf-${category}`} className="mt-5 scroll-mt-4">
+      <div className="flex items-center justify-between gap-3 mb-2.5">
+        <h3 className="text-lg font-extrabold text-warm-900 min-w-0 truncate">
+          {category} <span className="text-xs font-bold text-warm-400">{items.length}</span>
+        </h3>
+        <div className="flex items-center gap-2 shrink-0">
+          <RailArrow
+            direction="left"
+            enabled={!rail.atStart}
+            onClick={() => rail.nudge(-1)}
+            ariaLabel={`Scroll ${category} left`}
+          />
+          <RailArrow
+            direction="right"
+            enabled={!rail.atEnd}
+            onClick={() => rail.nudge(1)}
+            ariaLabel={`Scroll ${category} right`}
+          />
+        </div>
+      </div>
+      <div
+        ref={rail.ref}
+        onScroll={rail.sync}
+        // Scrollbar hidden now that the arrows carry the affordance, matching
+        // the homepage rail. Swipe and trackpad still work as before.
+        className="flex gap-3.5 overflow-x-auto pb-1 snap-x no-scrollbar"
+      >
+        {items.map((p) => (
+          <ProductCard key={p.id} product={p} shop={shop} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
 export function PetShopView({ data }: { data: PetShopRead }) {
   const waTarget = data.whatsapp || data.phone || null;
   const products = data.products ?? [];
@@ -200,10 +258,20 @@ export function PetShopView({ data }: { data: PetShopRead }) {
       {/* Brand header — logo + shop name, top-left on white, like the shop's own site */}
       <header className="bg-white border-b border-warm-200">
         <div className={`${WRAP} py-3 sm:py-4 flex items-center gap-3`}>
-          <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-white border border-warm-200 shrink-0 grid place-items-center text-2xl overflow-hidden">
-            {data.logo_url ? <img src={data.logo_url} alt={data.name} className="w-full h-full object-cover" /> : <span aria-hidden="true">🏪</span>}
-          </div>
-          <h1 className="text-xl sm:text-2xl font-black tracking-tight truncate text-warm-900 min-w-0">{data.name}</h1>
+          {/* Logo + name link to the shop's own home, the way a storefront
+              header normally does — so from the cart (or any sub-page) it
+              returns here rather than leaving for HiSpike. On the shop home
+              it is simply a no-op. min-w-0 keeps the name truncating. */}
+          <Link
+            to={`/petshop/${data.slug}`}
+            aria-label={`${data.name} — shop home`}
+            className="group flex items-center gap-3 min-w-0"
+          >
+            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-white border border-warm-200 shrink-0 grid place-items-center text-2xl overflow-hidden">
+              {data.logo_url ? <img src={data.logo_url} alt={data.name} className="w-full h-full object-cover" /> : <span aria-hidden="true">🏪</span>}
+            </div>
+            <h1 className="text-xl sm:text-2xl font-black tracking-tight truncate text-warm-900 min-w-0 group-hover:text-primary-700 transition-colors">{data.name}</h1>
+          </Link>
           <HeaderIcons shopId={data.id} ownerId={data.owner_id} slug={data.slug} />
         </div>
       </header>
@@ -336,18 +404,7 @@ export function PetShopView({ data }: { data: PetShopRead }) {
           </div>
         ) : (
           shelves.map(({ category, items }) => (
-            <section key={category} id={`shelf-${category}`} className="mt-5 scroll-mt-4">
-              <div className="flex items-baseline justify-between mb-2.5">
-                <h3 className="text-lg font-extrabold text-warm-900">
-                  {category} <span className="text-xs font-bold text-warm-400">{items.length}</span>
-                </h3>
-              </div>
-              <div className="flex gap-3.5 overflow-x-auto pb-3 snap-x [scrollbar-width:thin]">
-                {items.map((p) => (
-                  <ProductCard key={p.id} product={p} shop={data} />
-                ))}
-              </div>
-            </section>
+            <CategoryShelf key={category} category={category} items={items} shop={data} />
           ))
         )}
       </div>
@@ -393,10 +450,20 @@ export function PetShopView({ data }: { data: PetShopRead }) {
       {/* HiSpike strip — for visitors who arrive via a shared link */}
       <div className="mt-10 bg-white border-t border-primary-100">
         <div className={`${INNER} py-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-center`}>
-          <img src="/logo.png" alt="HiSpike" className="w-12 h-12 rounded-full" />
-          <span className="text-sm font-semibold text-warm-700">
-            This shop is on <b className="text-warm-900">Hi</b><b className="text-primary-600">Spike</b> — Bengaluru&apos;s pet-care network
-          </span>
+          {/* Logo and the line beside it are one link to hispike.in. This strip
+              exists for visitors who arrived on a shared shop link and have
+              never seen HiSpike, so the brand mark has to actually go there —
+              the sentence is part of the target so it is not a 48px tap area. */}
+          <Link
+            to="/"
+            aria-label="Go to HiSpike"
+            className="group inline-flex items-center gap-3"
+          >
+            <img src="/logo.png" alt="HiSpike" className="w-12 h-12 rounded-full" />
+            <span className="text-sm font-semibold text-warm-700 group-hover:text-warm-900 transition-colors">
+              This shop is on <b className="text-warm-900 group-hover:underline">Hi</b><b className="text-primary-600 group-hover:underline">Spike</b> — Bengaluru&apos;s pet-care network
+            </span>
+          </Link>
           <Link to="/petshops" className="text-sm font-extrabold text-primary-600 hover:underline whitespace-nowrap">
             Browse more pet shops →
           </Link>
