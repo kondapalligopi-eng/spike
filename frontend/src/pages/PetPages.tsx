@@ -574,7 +574,7 @@ export function PetPages() {
                   </span>
                   <span className="mt-1 block text-xs text-warm-600 leading-relaxed">
                     {showInGallery
-                      ? 'Anyone browsing HiSpike will see this page, and search engines can index it.'
+                      ? 'Your page is listed in the public gallery, so anyone browsing HiSpike can find it.'
                       : 'Your page stays unlisted — it works for anyone you send the link to, but it will not appear anywhere on HiSpike.'}
                   </span>
                   <span className="mt-1 block text-xs text-warm-500">
