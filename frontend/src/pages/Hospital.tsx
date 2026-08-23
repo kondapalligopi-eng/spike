@@ -11,6 +11,7 @@ import { HeroPaws } from '@/components/HeroPaws';
 import { SelectMenu } from '@/components/SelectMenu';
 import { WhatsAppLink } from '@/components/WhatsAppLink';
 import { useBackendWarmup } from '@/lib/warmupBackend';
+import { trackClick } from '@/lib/trackClick';
 
 const HOSPITAL_FAQS: FaqItem[] = [
   {
@@ -509,6 +510,7 @@ export function Hospital() {
                   {/* Locality + address open Google Maps in a new tab */}
                   <a
                     href={mapsUrl(h.address)}
+                    onClick={() => trackClick('hospital', 'maps', h.id)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="block mb-3 group/maps"
@@ -560,6 +562,7 @@ export function Hospital() {
                         href={h.website}
                         target="_blank"
                         rel="noopener noreferrer"
+                        onClick={() => trackClick('hospital', 'book', h.id)}
                         className="flex-1 px-3 py-2 bg-primary-600 hover:bg-primary-700 text-white text-xs font-semibold rounded-md transition-colors text-center"
                       >
                         Book
@@ -576,6 +579,7 @@ export function Hospital() {
                     {h.phone ? (
                       <a
                         href={`tel:${h.phone}`}
+                        onClick={() => trackClick('hospital', 'call', h.id)}
                         className="flex-1 px-3 py-2 border border-warm-300 hover:border-primary-400 text-warm-700 text-xs font-semibold rounded-md transition-colors text-center"
                       >
                         Call
