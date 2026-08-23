@@ -96,6 +96,10 @@ export function GroomingSalon() {
     return apiByArea ? apiToSalonData(apiByArea) : undefined;
   }, [slug, apiQuery.data]);
 
+  // salon only resolves when slug is set, so the fallback is unreachable in
+  // practice — it exists to satisfy the optional route param type.
+  const shareSlug = slug ?? salon?.slug ?? '';
+
   if (apiQuery.isLoading && !salon) {
     return (
       <div className="max-w-3xl mx-auto px-4 py-20 text-center text-warm-500">
@@ -231,11 +235,17 @@ export function GroomingSalon() {
             </div>
 
             <div className="px-5 py-4 bg-primary-50 border-t border-primary-100 flex justify-center">
+              {/* The URL param, not salon.slug. apiToSalonData sets slug from
+                  the AREA, so every salon in Whitefield shares "whitefield" —
+                  which merged their click counts into one row and made the
+                  share link point at whichever salon the legacy area lookup
+                  happened to resolve. The route param is nameToSlug(name, id),
+                  unique per salon and the slug this page was opened with. */}
               <ShareButtons
                 name={salon.name}
-                url={`/grooming/${salon.slug}`}
+                url={`/grooming/${shareSlug}`}
                 context={`${salon.area}, ${salon.city}`}
-                track={{ category: 'grooming', id: salon.slug }}
+                track={{ category: 'grooming', id: shareSlug }}
               />
             </div>
           </div>
