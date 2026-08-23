@@ -47,6 +47,8 @@ function nameToSlug(name: string, id?: string): string {
 }
 
 type SalonTile = {
+  /** Real row id — the key click tracking counts against. */
+  id: string;
   slug: string;
   name: string;
   area: string;
@@ -61,6 +63,7 @@ type SalonTile = {
 
 function apiToTile(s: GroomingSalonRead): SalonTile {
   return {
+    id: s.id,
     slug: nameToSlug(s.name, s.id),
     name: s.name,
     area: s.area,

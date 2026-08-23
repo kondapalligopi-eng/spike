@@ -46,6 +46,8 @@ const BANGALORE_NEIGHBOURHOODS = [
 ];
 
 type SwimSpot = {
+  /** Real row id — the key click tracking counts against. */
+  id: string;
   name: string;
   locality: string;
   rating: number;
@@ -65,6 +67,7 @@ type SwimSpot = {
 
 function apiToSpot(s: SwimSchoolRead): SwimSpot {
   return {
+    id: s.id,
     name: s.name,
     locality: s.locality,
     rating: s.rating,

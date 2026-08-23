@@ -32,6 +32,8 @@ const HOSPITAL_FAQS: FaqItem[] = [
 ];
 
 type Hospital = {
+  /** Real row id — the key click tracking counts against. */
+  id: string;
   name: string;
   locality: string;
   address: string;
@@ -103,6 +105,7 @@ function PaginationControls({ currentPage, totalPages, onChange }: PaginationPro
 // Normalise an API HospitalRead into the local Hospital shape (null → '').
 function normaliseApiHospital(h: HospitalRead): Hospital {
   return {
+    id: h.id,
     name: h.name,
     locality: h.locality,
     address: h.address,
