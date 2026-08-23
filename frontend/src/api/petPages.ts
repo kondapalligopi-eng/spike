@@ -14,6 +14,8 @@ export type PetPageRead = {
   photos: string[]; // gallery; photos[0] is the primary/cover image
   highlights: string[]; // selected keys from PET_HIGHLIGHTS
   memories: string;
+  /** Owner opted in to being listed in the public gallery + login showcase. */
+  show_in_gallery: boolean;
   owner_id: string;
   created_at: string;
   updated_at: string;
@@ -32,6 +34,8 @@ export type PetPageCreate = {
   photos: string[];
   highlights: string[];
   memories: string;
+  /** Defaults false — a page is unlisted unless its owner ticks the box. */
+  show_in_gallery: boolean;
 };
 
 export const MAX_MEMORY_WORDS = 500;
@@ -110,6 +114,9 @@ function normalizeRow(r: Record<string, unknown>): PetPageRead {
     photos,
     highlights: Array.isArray(r.highlights) ? (r.highlights as string[]) : [],
     memories: String(r.memories ?? ''),
+    // Mock rows written before the flag existed default to unlisted, matching
+    // the opt-in rule rather than silently listing them.
+    show_in_gallery: r.show_in_gallery === true,
     owner_id: String(r.owner_id ?? ''),
     created_at: String(r.created_at ?? ''),
     updated_at: String(r.updated_at ?? ''),
@@ -153,6 +160,7 @@ function cleanPayload(data: PetPageCreate) {
     photos: (data.photos ?? []).slice(0, MAX_PHOTOS),
     highlights: data.highlights ?? [],
     memories: data.memories.trim(),
+    show_in_gallery: data.show_in_gallery ?? false,
   };
 }
 
@@ -173,6 +181,7 @@ export async function listRecentPetPages(limit = 6): Promise<PetPageRead[]> {
   if (USE_MOCK) {
     await delay(150);
     return readStore()
+      .filter((p) => p.show_in_gallery)
       .sort((a, b) => b.created_at.localeCompare(a.created_at))
       .slice(0, limit);
   }
@@ -189,6 +198,22 @@ export async function listRecentPetPages(limit = 6): Promise<PetPageRead[]> {
     if (rows) return rows;
   }
   const res = await apiClient.get<PetPageRead[]>('/pet-pages/recent', { params: { limit } });
+  return res.data;
+}
+
+/** Every page whose owner opted into public listing — the /pet-stories gallery.
+ *  Pages left unlisted stay reachable by their own link and never appear here. */
+export async function listGalleryPetPages(limit = 60, offset = 0): Promise<PetPageRead[]> {
+  if (USE_MOCK) {
+    await delay(150);
+    return readStore()
+      .filter((p) => p.show_in_gallery)
+      .sort((a, b) => b.created_at.localeCompare(a.created_at))
+      .slice(offset, offset + limit);
+  }
+  const res = await apiClient.get<PetPageRead[]>('/pet-pages/gallery', {
+    params: { limit, offset },
+  });
   return res.data;
 }
 

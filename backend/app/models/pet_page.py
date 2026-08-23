@@ -3,7 +3,7 @@ from __future__ import annotations
 import uuid
 from typing import TYPE_CHECKING, List
 
-from sqlalchemy import ForeignKey, JSON, String, Text
+from sqlalchemy import Boolean, ForeignKey, JSON, String, Text, false
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -27,6 +27,15 @@ class PetPage(UUIDBase):
     photos: Mapped[List[str]] = mapped_column(JSON, nullable=False, default=list)
     highlights: Mapped[List[str]] = mapped_column(JSON, nullable=False, default=list)
     memories: Mapped[str] = mapped_column(Text, nullable=False, default="")
+
+    #: Opt-in to being listed publicly — the /pet-stories gallery and the login
+    #: showcase both filter on this. A page is always reachable by its own link;
+    #: this flag only governs whether HiSpike *advertises* it, which is a real
+    #: privacy step up (a listed page is browsable by strangers and indexable by
+    #: Google). Defaults off so listing is always something an owner chose.
+    show_in_gallery: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, default=False, server_default=false()
+    )
 
     owner_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),

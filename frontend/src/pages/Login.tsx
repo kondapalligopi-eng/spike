@@ -185,7 +185,7 @@ export function Login() {
   // Arriving from the Pet Stories tab? On mobile, lead with the real pages
   // people have created — a first-time visitor lands on the login card and
   // won't scroll to discover the feature. Desktop keeps the two-column layout.
-  const fromPetStories = redirectTo === '/pet-stories';
+  const fromPetStories = redirectTo === '/pet-stories/create';
 
   // Read fresh rather than off `redirectTo` state, which is still '/' on the
   // render right after mount.
