@@ -235,6 +235,7 @@ export function GroomingSalon() {
                 name={salon.name}
                 url={`/grooming/${salon.slug}`}
                 context={`${salon.area}, ${salon.city}`}
+                track={{ category: 'grooming', id: salon.slug }}
               />
             </div>
           </div>

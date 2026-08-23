@@ -445,6 +445,7 @@ export function Park() {
                   name={selectedSpot.name}
                   url="/park"
                   context={selectedSpot.locality}
+                  track={{ category: 'park', id: selectedSpot.id }}
                 />
               </div>
 

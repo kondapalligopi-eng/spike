@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { toast } from '@/store/toastStore';
+import { trackClick, type TrackCategory } from '@/lib/trackClick';
 
 const SITE_URL = 'https://hispike.in';
 
@@ -12,13 +13,15 @@ type ShareButtonsProps = {
   context?: string;
   /** Layout tweak — 'compact' is a small icon row, 'full' shows labels. */
   variant?: 'compact' | 'full';
+  /** Count shares against this listing. Omit it and nothing is recorded. */
+  track?: { category: TrackCategory; id?: string };
 };
 
 // WhatsApp + Copy-link share buttons. India-first ordering: WhatsApp is the
 // dominant share channel; copy-link is the universal fallback for everywhere
 // else (Slack, email, SMS, X, LinkedIn). Pulled into a reusable component
 // because it appears on every category's detail surface.
-export function ShareButtons({ name, url, context, variant = 'full' }: ShareButtonsProps) {
+export function ShareButtons({ name, url, context, variant = 'full', track }: ShareButtonsProps) {
   const fullUrl = url.startsWith('http') ? url : `${SITE_URL}${url.startsWith('/') ? url : `/${url}`}`;
   const message = context
     ? `Check out ${name} on HiSpike — ${context}\n${fullUrl}`
@@ -31,6 +34,7 @@ export function ShareButtons({ name, url, context, variant = 'full' }: ShareButt
     e.preventDefault();
     e.stopPropagation();
     try {
+      if (track) trackClick(track.category, 'copy', track.id);
       await navigator.clipboard.writeText(fullUrl);
       setCopied(true);
       toast.success('Link copied to clipboard.');
@@ -51,6 +55,7 @@ export function ShareButtons({ name, url, context, variant = 'full' }: ShareButt
         href={whatsappHref}
         target="_blank"
         rel="noopener noreferrer"
+        onClick={() => track && trackClick(track.category, 'whatsapp', track.id)}
         aria-label={`Share ${name} on WhatsApp`}
         className={`${baseBtn} bg-[#25D366] hover:bg-[#1ebe5d] text-white shadow-sm`}
         title="Share on WhatsApp"

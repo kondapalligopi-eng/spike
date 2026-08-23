@@ -63,7 +63,7 @@ import {
   type VisitStats,
 } from '@/lib/visitTracker';
 import { readSheetRows, downloadTemplate, downloadRows, type SheetRow } from '@/lib/spreadsheet';
-import { getCounter } from '@/api/counters';
+import { getCounter, listCounters } from '@/api/counters';
 import { listUsers, deleteUser } from '@/api/users';
 import { listAllShops, deleteShop } from '@/api/petShops';
 
@@ -2196,6 +2196,189 @@ function VisitsSection() {
   );
 }
 
+// ---------------------------------------------------------------------------
+// Listing clicks — which listings people actually acted on.
+//
+// Cloudflare Web Analytics covers pageviews but has no custom events, so this
+// is the only place that answers "did anyone call this clinic?". Counts come
+// from app_counters, keyed "<category>:<action>:<id>" by lib/trackClick.ts.
+//
+// These are all-time totals: the counter table stores a single integer per key,
+// with no history, so the date range above does not apply to this panel. Said
+// plainly in the UI rather than letting it look like ranged data.
+// ---------------------------------------------------------------------------
+
+const CLICK_CATEGORIES = [
+  { key: 'hospital', label: 'Hospitals', emoji: '🏥' },
+  { key: 'park', label: 'Parks', emoji: '🌳' },
+  { key: 'swimming', label: 'Swim schools', emoji: '🐕💦' },
+  { key: 'grooming', label: 'Grooming', emoji: '✂️' },
+] as const;
+
+const CLICK_ACTIONS = ['book', 'call', 'maps', 'whatsapp', 'copy'] as const;
+type ClickAction = (typeof CLICK_ACTIONS)[number];
+
+const ACTION_LABEL: Record<ClickAction, string> = {
+  book: 'Book',
+  call: 'Call',
+  maps: 'Maps',
+  whatsapp: 'WhatsApp',
+  copy: 'Copy link',
+};
+
+function ListingClicksSection() {
+  const { data, isLoading, isError, refetch, isFetching } = useQuery({
+    queryKey: ['counters', 'listing-clicks'],
+    queryFn: () => listCounters(undefined, 2000),
+    staleTime: 60_000,
+  });
+
+  const report = useMemo(() => {
+    const rows = (data ?? []).filter((r) => r.key.includes(':'));
+    const totals: Record<string, Record<string, number>> = {};
+    const perListing: Record<string, Record<string, Record<string, number>>> = {};
+
+    for (const r of rows) {
+      const [category, action, ...rest] = r.key.split(':');
+      const id = rest.join(':');
+      if (!category || !action || !id) continue;
+      if (!CLICK_ACTIONS.includes(action as ClickAction)) continue;
+      (totals[category] ??= {})[action] = (totals[category]?.[action] ?? 0) + r.value;
+      ((perListing[category] ??= {})[id] ??= {})[action] = r.value;
+    }
+
+    const grand = Object.values(totals).reduce(
+      (n, byAction) => n + Object.values(byAction).reduce((m, v) => m + v, 0),
+      0,
+    );
+    return { totals, perListing, grand };
+  }, [data]);
+
+  return (
+    <section className="rounded-3xl border-2 border-primary-100 bg-primary-50/40 p-5 sm:p-7 space-y-5">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <h2 className="text-xl font-extrabold text-warm-900">Listing clicks</h2>
+          <p className="text-sm text-warm-600 mt-0.5">
+            Which listings people actually acted on — Book, Call, Maps and shares. All-time
+            totals; the date range above does not apply here.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() => void refetch()}
+          disabled={isFetching}
+          className="shrink-0 px-3 py-1.5 rounded-full border border-warm-300 bg-white text-xs font-semibold text-warm-700 hover:border-primary-500 hover:text-primary-700 transition-colors disabled:opacity-50"
+        >
+          {isFetching ? 'Refreshing…' : 'Refresh'}
+        </button>
+      </div>
+
+      {isLoading ? (
+        <p className="text-sm text-warm-500">Loading…</p>
+      ) : isError ? (
+        // Never show zeros on failure — that reads as "nobody clicked anything",
+        // which is the opposite of "we could not load it".
+        <p className="text-sm text-warm-500 rounded-2xl border border-dashed border-warm-300 p-6 text-center">
+          Couldn&rsquo;t load click data.{' '}
+          <button type="button" onClick={() => void refetch()} className="font-semibold text-primary-600 hover:underline">
+            Try again
+          </button>
+        </p>
+      ) : report.grand === 0 ? (
+        <p className="text-sm text-warm-500 rounded-2xl border border-dashed border-warm-300 p-6 text-center">
+          No clicks recorded yet. Tracking starts from the deploy that added it — earlier
+          activity was never counted.
+        </p>
+      ) : (
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {CLICK_CATEGORIES.map(({ key, label, emoji }) => {
+              const byAction = report.totals[key] ?? {};
+              const sum = Object.values(byAction).reduce((n, v) => n + v, 0);
+              return (
+                <div key={key} className="rounded-2xl border-2 border-primary-100 bg-white p-4">
+                  <div className="flex items-baseline justify-between gap-2 mb-2">
+                    <p className="text-sm font-extrabold text-warm-900">
+                      <span aria-hidden="true">{emoji}</span> {label}
+                    </p>
+                    <p className="text-lg font-extrabold text-primary-700 tabular-nums">{sum}</p>
+                  </div>
+                  {sum === 0 ? (
+                    <p className="text-xs text-warm-400">No clicks yet</p>
+                  ) : (
+                    <div className="flex flex-wrap gap-1.5">
+                      {CLICK_ACTIONS.filter((a) => byAction[a]).map((a) => (
+                        <span
+                          key={a}
+                          className="inline-flex items-center gap-1 rounded-full bg-primary-50 px-2.5 py-1 text-[11px] font-bold text-primary-700"
+                        >
+                          {ACTION_LABEL[a]}
+                          <span className="tabular-nums text-warm-500">{byAction[a]}</span>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          {CLICK_CATEGORIES.map(({ key, label }) => {
+            const listings = Object.entries(report.perListing[key] ?? {})
+              .map(([id, byAction]) => ({
+                id,
+                byAction,
+                total: Object.values(byAction).reduce((n, v) => n + v, 0),
+              }))
+              .sort((a, b) => b.total - a.total)
+              .slice(0, 10);
+            if (listings.length === 0) return null;
+            return (
+              <div key={key} className="rounded-2xl border-2 border-primary-100 bg-white p-4">
+                <h3 className="text-sm font-extrabold text-warm-900 mb-2">Top {label.toLowerCase()}</h3>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="text-left text-[10px] font-bold uppercase tracking-[0.15em] text-warm-400">
+                        <th className="py-1.5 pr-3">Listing</th>
+                        {CLICK_ACTIONS.map((a) => (
+                          <th key={a} className="py-1.5 px-2 text-right whitespace-nowrap">{ACTION_LABEL[a]}</th>
+                        ))}
+                        <th className="py-1.5 pl-2 text-right">Total</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {listings.map((l) => (
+                        <tr key={l.id} className="border-t border-warm-100">
+                          {/* The key holds a row id, not a name — the counter
+                              table stores no listing text. Truncated so a UUID
+                              does not blow out the column. */}
+                          <td className="py-1.5 pr-3 font-mono text-xs text-warm-600 truncate max-w-[16rem]" title={l.id}>
+                            {l.id}
+                          </td>
+                          {CLICK_ACTIONS.map((a) => (
+                            <td key={a} className="py-1.5 px-2 text-right tabular-nums text-warm-700">
+                              {l.byAction[a] ?? '—'}
+                            </td>
+                          ))}
+                          <td className="py-1.5 pl-2 text-right font-extrabold tabular-nums text-warm-900">
+                            {l.total}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            );
+          })}
+        </>
+      )}
+    </section>
+  );
+}
+
 type VisibilityToggle = {
   key: SiteSettingKey;
   label: string;
@@ -2981,6 +3164,7 @@ export function Admin() {
       <BackupSection />
       <SiteVisibilitySection />
       <VisitsSection />
+      <ListingClicksSection />
     </div>
   );
 }
