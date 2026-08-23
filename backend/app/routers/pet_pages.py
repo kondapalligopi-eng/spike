@@ -131,7 +131,8 @@ async def recent_pet_pages(
     result = await db.execute(
         select(PetPage)
         .where(PetPage.show_in_gallery.is_(True))
-        .order_by(desc(PetPage.created_at))
+        # Spike leads here too, matching the gallery — see PINNED_SLUG.
+        .order_by((PetPage.slug == PINNED_SLUG).desc(), desc(PetPage.created_at))
         .limit(limit)
     )
     return [PetPageRead.model_validate(r) for r in result.scalars().all()]
