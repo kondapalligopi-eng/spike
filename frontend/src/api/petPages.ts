@@ -38,6 +38,11 @@ export type PetPageCreate = {
   show_in_gallery: boolean;
 };
 
+//: Spike is the dog HiSpike is named after and leads the gallery. The real
+//: ordering is done in SQL (see PINNED_SLUG in routers/pet_pages.py); this
+//: mirrors it so mock mode matches what production shows.
+const PINNED_SLUG = 'spike';
+
 export const MAX_MEMORY_WORDS = 500;
 // The public gallery renders 1 cover + 4 thumbnails, so cap uploads at 5 to
 // match what's actually shown.
@@ -208,7 +213,11 @@ export async function listGalleryPetPages(limit = 60, offset = 0): Promise<PetPa
     await delay(150);
     return readStore()
       .filter((p) => p.show_in_gallery)
-      .sort((a, b) => b.created_at.localeCompare(a.created_at))
+      .sort((a, b) => {
+        if (a.slug === PINNED_SLUG) return -1;
+        if (b.slug === PINNED_SLUG) return 1;
+        return b.created_at.localeCompare(a.created_at);
+      })
       .slice(offset, offset + limit);
   }
   const res = await apiClient.get<PetPageRead[]>('/pet-pages/gallery', {
