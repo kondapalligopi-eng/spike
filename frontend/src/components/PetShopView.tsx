@@ -2,6 +2,8 @@ import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { HeroPaws } from './HeroPaws';
 import { PaymentBadges } from './PaymentBadges';
+import { RailArrow } from './RailArrow';
+import { useScrollEdges } from '@/hooks/useScrollEdges';
 import { useCartStore, type CartItem } from '@/store/cartStore';
 import { useAuth } from '@/hooks/useAuth';
 import { SHOP_CATEGORIES, displayPrice, numericPrice, type PetShopRead, type ShopProduct, type ShopUpdate } from '@/api/petShops';
@@ -164,6 +166,62 @@ function PromoCard({ update, waTarget, shopName }: { update: ShopUpdate; waTarge
 // screen; the narrower INNER is used for everything below the hero.
 const WRAP = 'max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10';
 const INNER = 'max-w-5xl mx-auto px-4 sm:px-6';
+
+/**
+ * One category row — heading, arrows, and the horizontally scrolling products.
+ *
+ * Its own component because each shelf needs its own useScrollEdges instance,
+ * and hooks cannot be called inside the shelves.map() in the parent.
+ *
+ * Unlike the homepage rail, the arrows show on phones too: this is a shop, and
+ * horizontally paged product shelves are what people already expect from one on
+ * mobile, so the control should not disappear at the size most customers use.
+ */
+function CategoryShelf({
+  category,
+  items,
+  shop,
+}: {
+  category: string;
+  items: ShopProduct[];
+  shop: PetShopRead;
+}) {
+  const rail = useScrollEdges('x');
+  return (
+    <section id={`shelf-${category}`} className="mt-5 scroll-mt-4">
+      <div className="flex items-center justify-between gap-3 mb-2.5">
+        <h3 className="text-lg font-extrabold text-warm-900 min-w-0 truncate">
+          {category} <span className="text-xs font-bold text-warm-400">{items.length}</span>
+        </h3>
+        <div className="flex items-center gap-2 shrink-0">
+          <RailArrow
+            direction="left"
+            enabled={!rail.atStart}
+            onClick={() => rail.nudge(-1)}
+            ariaLabel={`Scroll ${category} left`}
+          />
+          <RailArrow
+            direction="right"
+            enabled={!rail.atEnd}
+            onClick={() => rail.nudge(1)}
+            ariaLabel={`Scroll ${category} right`}
+          />
+        </div>
+      </div>
+      <div
+        ref={rail.ref}
+        onScroll={rail.sync}
+        // Scrollbar hidden now that the arrows carry the affordance, matching
+        // the homepage rail. Swipe and trackpad still work as before.
+        className="flex gap-3.5 overflow-x-auto pb-1 snap-x no-scrollbar"
+      >
+        {items.map((p) => (
+          <ProductCard key={p.id} product={p} shop={shop} />
+        ))}
+      </div>
+    </section>
+  );
+}
 
 export function PetShopView({ data }: { data: PetShopRead }) {
   const waTarget = data.whatsapp || data.phone || null;
@@ -346,18 +404,7 @@ export function PetShopView({ data }: { data: PetShopRead }) {
           </div>
         ) : (
           shelves.map(({ category, items }) => (
-            <section key={category} id={`shelf-${category}`} className="mt-5 scroll-mt-4">
-              <div className="flex items-baseline justify-between mb-2.5">
-                <h3 className="text-lg font-extrabold text-warm-900">
-                  {category} <span className="text-xs font-bold text-warm-400">{items.length}</span>
-                </h3>
-              </div>
-              <div className="flex gap-3.5 overflow-x-auto pb-3 snap-x [scrollbar-width:thin]">
-                {items.map((p) => (
-                  <ProductCard key={p.id} product={p} shop={data} />
-                ))}
-              </div>
-            </section>
+            <CategoryShelf key={category} category={category} items={items} shop={data} />
           ))
         )}
       </div>
