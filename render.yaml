@@ -124,6 +124,11 @@ services:
       - type: rewrite
         source: /pet-stories
         destination: /pet-stories/index.html
+      # The build-first create/edit flow. /pet-stories itself is the public
+      # gallery. Must precede the /* catch-all, like every rule here.
+      - type: rewrite
+        source: /pet-stories/create
+        destination: /pet-stories/create/index.html
       # /dog-walking is a real page again (directory open, no walkers verified
       # yet). Without this rule the clean URL falls through to the SPA catch-all
       # and crawlers get the homepage shell indexed under /dog-walking — worse

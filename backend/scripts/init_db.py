@@ -65,6 +65,14 @@ SCHEMA_PATCHES: list[str] = [
     "ALTER TABLE pet_shops ADD COLUMN IF NOT EXISTS payment_url VARCHAR(1024)",
     "ALTER TABLE pet_shops ADD COLUMN IF NOT EXISTS upi_id VARCHAR(100)",
     "ALTER TABLE shop_orders ADD COLUMN IF NOT EXISTS buyer_email VARCHAR(255)",
+    # Pet Stories gallery consent. Two statements on purpose: the ADD backfills
+    # every EXISTING row to TRUE, because those pages were already being listed
+    # publicly on the login showcase before the flag existed and switching them
+    # off would silently pull down what their owners can already see. The
+    # follow-up ALTER then flips the column default to FALSE so every page
+    # created from now on starts unlisted and has to opt in.
+    "ALTER TABLE pet_pages ADD COLUMN IF NOT EXISTS show_in_gallery BOOLEAN NOT NULL DEFAULT TRUE",
+    "ALTER TABLE pet_pages ALTER COLUMN show_in_gallery SET DEFAULT FALSE",
 ]
 
 

@@ -108,7 +108,7 @@ export function PetPageView({ data, preview = false }: { data: PetPageViewData; 
         <div className="mt-10 rounded-2xl border border-primary-100 bg-primary-50 p-5 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-sm font-medium text-warm-700">Have a pet of your own?</p>
           <Link
-            to="/pet-stories"
+            to="/pet-stories/create"
             className="inline-flex items-center gap-2 rounded-full bg-primary-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-primary-700 transition-colors shadow whitespace-nowrap"
           >
             Create your pet's page — free

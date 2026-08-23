@@ -15,6 +15,7 @@ import { Profile } from '@/pages/Profile';
 import { MyDogs } from '@/pages/MyDogs';
 import { PetPages } from '@/pages/PetPages';
 import { PetPage } from '@/pages/PetPage';
+import { PetStoriesGallery } from '@/pages/PetStoriesGallery';
 import { PetPlay } from '@/pages/PetPlay';
 import { PetShop } from '@/pages/PetShop';
 import { PetShopCart } from '@/pages/PetShopCart';
@@ -72,9 +73,13 @@ export const routes: RouteRecord[] = [
           // Pet Shops directory (browse) — inside HiSpike chrome.
           { path: 'petshops', Component: PetShops },
           // Public so visitors can build a pet page before signing up — the
-          // sign-up happens at Publish (see PetPages). Pre-rendered, so it
-          // needs a /pet-stories -> /pet-stories/index.html rewrite in Render.
-          { path: 'pet-stories', Component: PetPages },
+          // /pet-stories is the PUBLIC GALLERY — the nav tab lands here, so a
+          // first-time visitor sees real stories instead of an empty form.
+          // Creating moves one click in, behind the hero CTA.
+          { path: 'pet-stories', Component: PetStoriesGallery },
+          // The build-first create/edit flow. Sign-up happens at Publish (see
+          // PetPages). Pre-rendered, so it needs its own Render rewrite rule.
+          { path: 'pet-stories/create', Component: PetPages },
           {
             path: 'my-shop',
             element: (

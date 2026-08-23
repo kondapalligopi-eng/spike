@@ -42,6 +42,7 @@ type Draft = {
   photos: string[];
   highlights: string[];
   memories: string;
+  showInGallery: boolean;
   pendingPublish?: boolean; // set when an anonymous user tapped Publish
 };
 
@@ -96,6 +97,9 @@ export function PetPages() {
   const [photos, setPhotos] = useState<string[]>([]);
   const [highlights, setHighlights] = useState<string[]>([]);
   const [memories, setMemories] = useState('');
+  // Opt-in, default off. Listing a page is a real privacy step up from
+  // link-only sharing, so it has to be something the owner actively chose.
+  const [showInGallery, setShowInGallery] = useState(false);
   const [slugStatus, setSlugStatus] = useState<SlugStatus>('idle');
   // The page link is auto-made from the name; the editable field only appears
   // when someone chooses to customise it, so it never looks like a second field
@@ -134,6 +138,7 @@ export function PetPages() {
     setPhotos(d.photos ?? []);
     setHighlights(d.highlights ?? []);
     setMemories(d.memories);
+    setShowInGallery(d.showInGallery === true);
     if (d.pendingPublish && isAuthenticated) {
       setResumed(true);
       // Clear the flag so a later reload doesn't nag, but keep the content.
@@ -151,13 +156,13 @@ export function PetPages() {
     const hasContent = name.trim() || memories.trim() || photos.length > 0;
     const handle = window.setTimeout(() => {
       if (hasContent) {
-        writeDraft({ name, slug, slugTouched, photos, highlights, memories });
+        writeDraft({ name, slug, slugTouched, photos, highlights, memories, showInGallery });
       } else {
         clearDraft();
       }
     }, 400);
     return () => window.clearTimeout(handle);
-  }, [name, slug, slugTouched, photos, highlights, memories, editingId]);
+  }, [name, slug, slugTouched, photos, highlights, memories, showInGallery, editingId]);
 
   // Auto-derive the slug from the name until the owner edits it by hand.
   useEffect(() => {
@@ -204,6 +209,7 @@ export function PetPages() {
     setPhotos([]);
     setHighlights([]);
     setMemories('');
+    setShowInGallery(false);
     setSlugStatus('idle');
     setCustomizingSlug(false);
     setResumed(false);
@@ -218,6 +224,7 @@ export function PetPages() {
     setPhotos(page.photos);
     setHighlights(page.highlights);
     setMemories(page.memories);
+    setShowInGallery(page.show_in_gallery === true);
     formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
@@ -263,7 +270,7 @@ export function PetPages() {
     mutationFn: async () => {
       // Upload any browser-held photos to storage now, then save the page.
       const hostedPhotos = await resolvePhotosForPublish(photos);
-      const payload = { slug, name, photos: hostedPhotos, highlights, memories };
+      const payload = { slug, name, photos: hostedPhotos, highlights, memories, show_in_gallery: showInGallery };
       return editingId ? updatePetPage(editingId, payload) : createPetPage(payload);
     },
     onSuccess: (page) => {
@@ -283,8 +290,8 @@ export function PetPages() {
   // sign up — you come back here with everything intact and one tap to finish.
   const onPublish = () => {
     if (editingId === null && !isAuthenticated) {
-      writeDraft({ name, slug, slugTouched, photos, highlights, memories, pendingPublish: true });
-      navigate(`/register?redirect=${encodeURIComponent('/pet-stories')}`);
+      writeDraft({ name, slug, slugTouched, photos, highlights, memories, showInGallery, pendingPublish: true });
+      navigate(`/register?redirect=${encodeURIComponent('/pet-stories/create')}`);
       return;
     }
     saveMut.mutate();
@@ -330,7 +337,7 @@ export function PetPages() {
       <PageHead
         title="Your Pet Stories"
         description="Create a free shareable page for your pet — name, photo and story — at hispike.in/pet/your-pet."
-        path="/pet-stories"
+        path="/pet-stories/create"
       />
 
       {/* Branded hero band — same primary gradient + gold accent + animated
@@ -349,6 +356,13 @@ export function PetPages() {
             Give your pet their own page — a photo and your favourite memories — and share the
             link with anyone. It lives at <span className="font-mono text-white">{SITE_HOST}/pet/your-pet</span>.
           </p>
+          <Link
+            to="/pet-stories"
+            className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-accent-400 hover:text-accent-300 hover:underline"
+          >
+            Back to all pet stories
+            <span aria-hidden="true">→</span>
+          </Link>
         </div>
       </section>
 
@@ -551,6 +565,35 @@ export function PetPages() {
                   That's {words - MAX_MEMORY_WORDS} word(s) over the {MAX_MEMORY_WORDS}-word limit.
                 </p>
               )}
+            </div>
+
+            {/* Public-listing consent. Deliberately its own bordered block
+                rather than a line in the form: opting in changes who can find
+                the page, so it should not read like another styling choice.
+                Unchecked by default, and the copy says plainly what each
+                state means. */}
+            <div className="rounded-xl border border-warm-200 bg-warm-50 p-4">
+              <label className="flex items-start gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={showInGallery}
+                  onChange={(e) => setShowInGallery(e.target.checked)}
+                  className="mt-0.5 h-4 w-4 shrink-0 rounded border-warm-400 text-primary-600 focus:ring-primary-500 cursor-pointer"
+                />
+                <span className="min-w-0">
+                  <span className="block text-sm font-semibold text-warm-900">
+                    Show {name.trim() || 'your pet'} in the public Pet Stories gallery
+                  </span>
+                  <span className="mt-1 block text-xs text-warm-600 leading-relaxed">
+                    {showInGallery
+                      ? 'Anyone browsing HiSpike will see this page, and search engines can index it.'
+                      : 'Your page stays unlisted — it works for anyone you send the link to, but it will not appear anywhere on HiSpike.'}
+                  </span>
+                  <span className="mt-1 block text-xs text-warm-500">
+                    You can change this any time.
+                  </span>
+                </span>
+              </label>
             </div>
 
             {/* Actions */}

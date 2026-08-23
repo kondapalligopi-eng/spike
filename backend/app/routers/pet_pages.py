@@ -3,7 +3,7 @@ from __future__ import annotations
 import html
 import uuid
 
-from fastapi import APIRouter, Depends, File, HTTPException, Response, UploadFile, status
+from fastapi import APIRouter, Depends, File, HTTPException, Query, Response, UploadFile, status
 from fastapi.responses import HTMLResponse
 from sqlalchemy import desc, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -16,6 +16,10 @@ from app.schemas.pet_page import PetPageCreate, PetPageRead
 from app.services.storage_service import storage
 
 router = APIRouter(prefix="/pet-pages", tags=["pet-pages"])
+
+#: Ceiling on one gallery request. Guards against an unbounded pull as the
+#: number of stories grows; the page requests more via offset.
+GALLERY_MAX_LIMIT = 60
 
 # Public site origin + a fallback social image for the crawler OG page.
 SITE_URL = "https://hispike.in"
@@ -84,6 +88,7 @@ def _apply_payload(page: PetPage, payload: PetPageCreate) -> None:
     page.photos = payload.photos
     page.highlights = payload.highlights
     page.memories = payload.memories.strip()
+    page.show_in_gallery = payload.show_in_gallery
 
 
 # --- specific routes declared before "/{page_id}" so they aren't captured ---
@@ -112,8 +117,36 @@ async def recent_pet_pages(
     db: AsyncSession = Depends(get_db),
 ) -> list[PetPageRead]:
     limit = max(1, min(limit, 12))
+    # Consent gate. This showcase pre-dates the show_in_gallery flag and used to
+    # list every page ever created, so an owner who only ever shared a private
+    # link found their pet on the login screen. It now shows opted-in pages only.
     result = await db.execute(
-        select(PetPage).order_by(desc(PetPage.created_at)).limit(limit)
+        select(PetPage)
+        .where(PetPage.show_in_gallery.is_(True))
+        .order_by(desc(PetPage.created_at))
+        .limit(limit)
+    )
+    return [PetPageRead.model_validate(r) for r in result.scalars().all()]
+
+
+@router.get(
+    "/gallery",
+    response_model=list[PetPageRead],
+    summary="Public gallery — every pet page whose owner opted in",
+)
+async def gallery_pet_pages(
+    limit: int = Query(GALLERY_MAX_LIMIT, ge=1, le=GALLERY_MAX_LIMIT),
+    offset: int = Query(0, ge=0),
+    db: AsyncSession = Depends(get_db),
+) -> list[PetPageRead]:
+    """Only opted-in pages. A page left unlisted stays reachable by its own
+    link and simply never appears here."""
+    result = await db.execute(
+        select(PetPage)
+        .where(PetPage.show_in_gallery.is_(True))
+        .order_by(desc(PetPage.created_at))
+        .offset(offset)
+        .limit(limit)
     )
     return [PetPageRead.model_validate(r) for r in result.scalars().all()]
 
