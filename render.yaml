@@ -126,8 +126,16 @@ services:
         destination: /pet-stories/index.html
       # The build-first create/edit flow. /pet-stories itself is the public
       # gallery. Must precede the /* catch-all, like every rule here.
+      #
+      # The trailing * is REQUIRED, not cosmetic. Render does not resolve an
+      # exact multi-segment source: as plain /pet-stories/create this matched
+      # but resolved to nothing and returned 200 with an EMPTY body — worse
+      # than a 404, because nothing reports it as an error. Verified in prod
+      # 2026-08-23. Single-segment sources (/hospital, /park …) are fine, and
+      # /blog/* has always worked because it is a pattern too. Any future
+      # nested route needs the star.
       - type: rewrite
-        source: /pet-stories/create
+        source: /pet-stories/create*
         destination: /pet-stories/create/index.html
       # /dog-walking is a real page again (directory open, no walkers verified
       # yet). Without this rule the clean URL falls through to the SPA catch-all

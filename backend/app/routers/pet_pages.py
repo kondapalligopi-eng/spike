@@ -21,6 +21,14 @@ router = APIRouter(prefix="/pet-pages", tags=["pet-pages"])
 #: number of stories grows; the page requests more via offset.
 GALLERY_MAX_LIMIT = 60
 
+#: Spike is the dog HiSpike is named after, so his page leads the gallery
+#: regardless of age. Pinning in SQL rather than sorting client-side matters
+#: once there are enough stories to paginate: a client sort would only reorder
+#: the page you happen to be on, so Spike would vanish from the top the moment
+#: he aged onto page two. If the page is ever unlisted or deleted this simply
+#: has no effect.
+PINNED_SLUG = "spike"
+
 # Public site origin + a fallback social image for the crawler OG page.
 SITE_URL = "https://hispike.in"
 DEFAULT_OG_IMAGE = f"{SITE_URL}/logo.png"
@@ -123,7 +131,8 @@ async def recent_pet_pages(
     result = await db.execute(
         select(PetPage)
         .where(PetPage.show_in_gallery.is_(True))
-        .order_by(desc(PetPage.created_at))
+        # Spike leads here too, matching the gallery — see PINNED_SLUG.
+        .order_by((PetPage.slug == PINNED_SLUG).desc(), desc(PetPage.created_at))
         .limit(limit)
     )
     return [PetPageRead.model_validate(r) for r in result.scalars().all()]
@@ -144,7 +153,9 @@ async def gallery_pet_pages(
     result = await db.execute(
         select(PetPage)
         .where(PetPage.show_in_gallery.is_(True))
-        .order_by(desc(PetPage.created_at))
+        # (slug == PINNED_SLUG) sorts as a boolean — true first — so Spike
+        # leads and everything else stays newest-first behind him.
+        .order_by((PetPage.slug == PINNED_SLUG).desc(), desc(PetPage.created_at))
         .offset(offset)
         .limit(limit)
     )
