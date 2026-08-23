@@ -48,7 +48,12 @@ export function WhatsAppLink({
 }) {
   if (variant === 'block') {
     return (
-      <span className={`inline-flex flex-col items-start ${className}`}>
+      // flex, not inline-flex: as an inline box this sat on the same line as
+      // the email address whenever the column was wide enough, which is what
+      // happens in the single-column mobile footer. Block-level makes the
+      // WhatsApp line always start below the email, as it already did in the
+      // narrow desktop column.
+      <span className={`flex flex-col items-start ${className}`}>
         <a
           href={WHATSAPP_URL}
           // Opens the WhatsApp app or web client, so it leaves the site.

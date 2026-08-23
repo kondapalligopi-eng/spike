@@ -39,6 +39,11 @@ class PetPageBase(BaseModel):
     highlights: list[str] = Field(default_factory=list)
     memories: str = Field("", max_length=8000)
 
+    # Whether the owner has agreed to HiSpike listing this page publicly (the
+    # gallery and the login showcase). False means link-only, which is what a
+    # page created without touching the toggle stays as.
+    show_in_gallery: bool = False
+
     @field_validator("slug")
     @classmethod
     def _validate_slug(cls, v: str) -> str:

@@ -34,7 +34,7 @@ export function PetPage() {
           It may have been removed, or the link is mistyped.
         </p>
         <Link
-          to="/pet-stories"
+          to="/pet-stories/create"
           className="mt-6 inline-flex items-center gap-2 rounded-full bg-primary-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-primary-700 transition-colors"
         >
           Create your pet's page
