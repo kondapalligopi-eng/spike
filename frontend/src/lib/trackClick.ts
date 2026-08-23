@@ -22,8 +22,22 @@ export type TrackAction = 'book' | 'call' | 'maps' | 'whatsapp' | 'copy';
  */
 const MAX_KEY = 64;
 
+/** djb2 — small, stable, and identical across browsers. Only used to keep an
+ *  over-long key unique; nothing security-sensitive rides on it. */
+function shortHash(input: string): string {
+  let h = 5381;
+  for (let i = 0; i < input.length; i++) h = ((h << 5) + h + input.charCodeAt(i)) | 0;
+  return (h >>> 0).toString(36);
+}
+
 export function counterKey(category: TrackCategory, action: TrackAction, id: string): string {
-  return `${category}:${action}:${id}`.slice(0, MAX_KEY);
+  const key = `${category}:${action}:${id}`;
+  if (key.length <= MAX_KEY) return key;
+  // Plain truncation would merge two listings whose ids share a long prefix —
+  // possible now that grooming keys on a name-derived slug. Trim and append a
+  // hash of the full id so the key stays unique and stable.
+  const suffix = `~${shortHash(id)}`;
+  return key.slice(0, MAX_KEY - suffix.length) + suffix;
 }
 
 /**
