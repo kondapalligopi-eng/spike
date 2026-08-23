@@ -35,3 +35,22 @@ export async function incrementCounter(key: string): Promise<number> {
   const res = await apiClient.post<CounterRead>(`/counters/${key}/increment`);
   return res.data.value;
 }
+
+/** Admin: every counter, highest first. Optionally filtered by key prefix
+ *  (e.g. "hospital:") so a report can pull just one category. */
+export async function listCounters(prefix?: string, limit = 500): Promise<CounterRead[]> {
+  if (USE_MOCK) {
+    if (typeof localStorage === 'undefined') return [];
+    const rows: CounterRead[] = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (!k || !k.startsWith('hispike_mock_counter_')) continue;
+      const key = k.slice('hispike_mock_counter_'.length);
+      if (prefix && !key.startsWith(prefix)) continue;
+      rows.push({ key, value: Number(localStorage.getItem(k) ?? '0') });
+    }
+    return rows.sort((a, b) => b.value - a.value).slice(0, limit);
+  }
+  const res = await apiClient.get<CounterRead[]>('/counters', { params: { prefix, limit } });
+  return res.data;
+}

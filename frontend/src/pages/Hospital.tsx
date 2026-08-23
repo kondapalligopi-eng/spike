@@ -600,6 +600,7 @@ export function Hospital() {
                       name={h.name}
                       url="/hospital"
                       context={`${h.locality}, Bengaluru`}
+                      track={{ category: 'hospital', id: h.id }}
                       variant="compact"
                     />
                   </div>

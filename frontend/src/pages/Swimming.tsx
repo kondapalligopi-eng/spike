@@ -405,6 +405,7 @@ export function Swimming() {
                   name={selectedSpot.name}
                   url="/swimming"
                   context={selectedSpot.locality}
+                  track={{ category: 'swimming', id: selectedSpot.id }}
                 />
               </div>
 
