@@ -403,10 +403,20 @@ export function PetShopView({ data }: { data: PetShopRead }) {
       {/* HiSpike strip — for visitors who arrive via a shared link */}
       <div className="mt-10 bg-white border-t border-primary-100">
         <div className={`${INNER} py-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-center`}>
-          <img src="/logo.png" alt="HiSpike" className="w-12 h-12 rounded-full" />
-          <span className="text-sm font-semibold text-warm-700">
-            This shop is on <b className="text-warm-900">Hi</b><b className="text-primary-600">Spike</b> — Bengaluru&apos;s pet-care network
-          </span>
+          {/* Logo and the line beside it are one link to hispike.in. This strip
+              exists for visitors who arrived on a shared shop link and have
+              never seen HiSpike, so the brand mark has to actually go there —
+              the sentence is part of the target so it is not a 48px tap area. */}
+          <Link
+            to="/"
+            aria-label="Go to HiSpike"
+            className="group inline-flex items-center gap-3"
+          >
+            <img src="/logo.png" alt="HiSpike" className="w-12 h-12 rounded-full" />
+            <span className="text-sm font-semibold text-warm-700 group-hover:text-warm-900 transition-colors">
+              This shop is on <b className="text-warm-900 group-hover:underline">Hi</b><b className="text-primary-600 group-hover:underline">Spike</b> — Bengaluru&apos;s pet-care network
+            </span>
+          </Link>
           <Link to="/petshops" className="text-sm font-extrabold text-primary-600 hover:underline whitespace-nowrap">
             Browse more pet shops →
           </Link>
