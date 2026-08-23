@@ -12,7 +12,9 @@ Disallow: /admin
 Disallow: /profile
 Disallow: /my-dogs
 Disallow: /adoptions
-Disallow: /pet-stories
+# /pet-stories itself is the PUBLIC gallery and must stay crawlable — it is the
+# reason that page exists. Only the create form below it is a utility page.
+Disallow: /pet-stories/create
 
 # Client-rendered detail pages. These are served via the SPA fallback (the
 # homepage HTML) until they're server-rendered, so Google would otherwise index
