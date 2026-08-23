@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { PageHead } from '@/components/PageHead';
+import { RailArrow } from '@/components/RailArrow';
+import { useScrollEdges } from '@/hooks/useScrollEdges';
 import { useBackendWarmup } from '@/lib/warmupBackend';
 
 type Service = {
@@ -26,54 +27,6 @@ const SERVICES: Service[] = [
   { label: 'Pet Supplies', dog: '🐶🦴', badge: '🥣', kicker: 'Shop', tint: 'from-violet-200 to-violet-400', to: '/pet-supplies' },
 ];
 
-type ChevronDirection = 'left' | 'right' | 'up' | 'down';
-
-const CHEVRON: Record<ChevronDirection, string> = {
-  left: 'M15 19l-7-7 7-7',
-  right: 'M9 5l7 7-7 7',
-  up: 'M5 15l7-7 7 7',
-  down: 'M19 9l-7 7-7-7',
-};
-
-const BACKWARD: ChevronDirection[] = ['left', 'up'];
-
-function RailArrow({
-  direction,
-  enabled,
-  onClick,
-}: {
-  direction: ChevronDirection;
-  enabled: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      // Disabled rather than hidden at the ends. These sit in fixed positions,
-      // so dropping one would shuffle its partner sideways every time you
-      // reach an edge.
-      disabled={!enabled}
-      aria-label={
-        BACKWARD.includes(direction) ? 'Show previous services' : 'Show more services'
-      }
-      className={[
-        'w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shrink-0',
-        // Brand gold with a dark chevron — white on #facc15 measures 1.53:1 and
-        // is effectively invisible, warm-900 on it measures 11.4:1.
-        'bg-accent-400 text-warm-900 ring-1 ring-accent-500/30',
-        'hover:bg-accent-300 active:scale-95 transition',
-        'disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-accent-400 disabled:active:scale-100',
-        'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-600 focus-visible:ring-offset-2',
-      ].join(' ')}
-    >
-      <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d={CHEVRON[direction]} />
-      </svg>
-    </button>
-  );
-}
-
 function ServiceTile({ service, className = '' }: { service: Service; className?: string }) {
   const { label, dog, badge, kicker, tint, to } = service;
   return (
@@ -93,63 +46,6 @@ function ServiceTile({ service, className = '' }: { service: Service; className?
       <p className="mt-3 text-sm text-warm-900 group-hover:text-primary-700 transition-colors">{label}</p>
     </Link>
   );
-}
-
-/**
- * Tracks whether a scroll container still has room in either direction, and
- * pages it along by most of a viewport.
- *
- * Initial state is deliberately "at the start, not at the end": nine tiles
- * overflow every realistic viewport, so the forward arrow starts live and the
- * effect only ever corrects it — no disabled-then-enabled flicker on load.
- * Both values are constants, so the pre-rendered HTML and the first client
- * render still agree exactly.
- *
- * A hidden layout (the one the current breakpoint isn't showing) measures zero
- * on every axis and simply reports itself as fully scrolled. That costs nothing
- * because it isn't visible, and the ResizeObserver re-syncs it the moment a
- * resize brings it back.
- */
-function useScrollEdges(axis: 'x' | 'y') {
-  const ref = useRef<HTMLDivElement>(null);
-  const [atStart, setAtStart] = useState(true);
-  const [atEnd, setAtEnd] = useState(false);
-
-  const sync = useCallback(() => {
-    const el = ref.current;
-    if (!el) return;
-    const position = axis === 'x' ? el.scrollLeft : el.scrollTop;
-    const viewport = axis === 'x' ? el.clientWidth : el.clientHeight;
-    const total = axis === 'x' ? el.scrollWidth : el.scrollHeight;
-    // 1px of slack: sub-pixel sizes mean the offset almost never lands exactly
-    // on the maximum, which would leave the forward arrow lit forever.
-    setAtStart(position <= 1);
-    setAtEnd(position + viewport >= total - 1);
-  }, [axis]);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    sync();
-    // Catches what a scroll listener misses: emoji and fonts landing late and
-    // resizing the tiles, and the viewport itself changing.
-    const observer = new ResizeObserver(sync);
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [sync]);
-
-  const nudge = (direction: -1 | 1) => {
-    const el = ref.current;
-    if (!el) return;
-    const step = (axis === 'x' ? el.clientWidth : el.clientHeight) * 0.8;
-    el.scrollBy(
-      axis === 'x'
-        ? { left: direction * step, behavior: 'smooth' }
-        : { top: direction * step, behavior: 'smooth' },
-    );
-  };
-
-  return { ref, atStart, atEnd, sync, nudge };
 }
 
 /**
@@ -181,8 +77,8 @@ function ServicesSection() {
         {/* Horizontal controls belong to the rail, so they follow it and stay
             off phones — the vertical pair below serves that layout instead. */}
         <div className="hidden sm:flex items-center gap-2 shrink-0">
-          <RailArrow direction="left" enabled={!rail.atStart} onClick={() => rail.nudge(-1)} />
-          <RailArrow direction="right" enabled={!rail.atEnd} onClick={() => rail.nudge(1)} />
+          <RailArrow direction="left" enabled={!rail.atStart} onClick={() => rail.nudge(-1)} ariaLabel="Show previous services" />
+          <RailArrow direction="right" enabled={!rail.atEnd} onClick={() => rail.nudge(1)} ariaLabel="Show more services" />
         </div>
       </div>
 
@@ -195,7 +91,7 @@ function ServicesSection() {
             reveals. The up arrow sits disabled on first paint — that is the
             honest state, and it matches how the desktop left arrow behaves. */}
         <div className="flex justify-center mb-4">
-          <RailArrow direction="up" enabled={!stack.atStart} onClick={() => stack.nudge(-1)} />
+          <RailArrow direction="up" enabled={!stack.atStart} onClick={() => stack.nudge(-1)} ariaLabel="Show previous services" />
         </div>
 
         <div
@@ -214,7 +110,7 @@ function ServicesSection() {
         </div>
 
         <div className="flex justify-center mt-4">
-          <RailArrow direction="down" enabled={!stack.atEnd} onClick={() => stack.nudge(1)} />
+          <RailArrow direction="down" enabled={!stack.atEnd} onClick={() => stack.nudge(1)} ariaLabel="Show more services" />
         </div>
       </div>
 

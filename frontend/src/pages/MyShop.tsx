@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   addGalleryPhoto,
@@ -434,6 +434,224 @@ const ORDER_STATUS_STYLE: Record<OrderStatus, string> = {
   cancelled: 'bg-warm-100 text-warm-500',
 };
 
+// ---------------------------------------------------------------------------
+// Sales insights — every figure here is derived from the shop's real orders.
+// Deliberately NOT a billing panel: there is no plan, invoice or metering model
+// in the backend, so any charge shown would be invented, and an owner reading
+// "you owe X" for money they do not owe is worse than showing nothing at all.
+// ---------------------------------------------------------------------------
+
+const MONEY = (n: number) => `₹${Math.round(n).toLocaleString('en-IN')}`;
+
+const STATUS_LABEL: Record<OrderStatus, string> = {
+  placed: 'Placed',
+  paid: 'Paid',
+  delivered: 'Delivered',
+  cancelled: 'Cancelled',
+};
+
+const STATUS_BAR: Record<OrderStatus, string> = {
+  placed: 'bg-accent-400',
+  paid: 'bg-primary-500',
+  delivered: 'bg-green-500',
+  cancelled: 'bg-warm-300',
+};
+
+function StatTile({ label, value, hint }: { label: string; value: string; hint?: string }) {
+  return (
+    <div className="rounded-2xl border border-warm-200 bg-white p-4">
+      <p className="text-[10px] font-extrabold tracking-[0.18em] uppercase text-warm-400">{label}</p>
+      <p className="mt-1.5 text-2xl font-extrabold text-warm-900 tabular-nums">{value}</p>
+      {hint && <p className="mt-0.5 text-xs text-warm-500">{hint}</p>}
+    </div>
+  );
+}
+
+/** A labelled row with a proportional bar — used for status and top products. */
+function BreakdownRow({
+  label,
+  sub,
+  value,
+  pct,
+  bar,
+}: {
+  label: string;
+  sub: string;
+  value: string;
+  pct: number;
+  bar: string;
+}) {
+  return (
+    <div className="flex items-center gap-3 py-2">
+      <div className="min-w-0 flex-1">
+        <div className="flex items-baseline gap-2">
+          <span className="text-sm font-bold text-warm-900 truncate">{label}</span>
+          <span className="text-xs text-warm-400 shrink-0">{sub}</span>
+        </div>
+        {/* Bars are proportional to the biggest row, not to a total, so a
+            single-order month still reads as a full bar rather than a sliver. */}
+        <div className="mt-1.5 h-1.5 rounded-full bg-warm-100 overflow-hidden">
+          <div className={`h-full rounded-full ${bar}`} style={{ width: `${Math.max(pct, 2)}%` }} />
+        </div>
+      </div>
+      <span className="text-sm font-extrabold text-warm-900 tabular-nums shrink-0">{value}</span>
+    </div>
+  );
+}
+
+function SalesInsights({ shop }: { shop: PetShopRead }) {
+  const { user } = useAuth();
+  // Same query key as OrdersManager, so this reads react-query's cache instead
+  // of firing a second request for data the page already has.
+  const { data: orders, isLoading } = useQuery({
+    queryKey: ['shop-orders', shop.id, user?.id],
+    queryFn: () => listShopOrders(shop.id),
+  });
+
+  const stats = useMemo(() => {
+    const all = orders ?? [];
+    const now = new Date();
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+
+    const thisMonth = all.filter((o) => new Date(o.created_at) >= monthStart);
+    // Cancelled orders never became money, so they are excluded from revenue
+    // and from the average — but they still appear in the status breakdown.
+    const earning = thisMonth.filter((o) => o.status !== 'cancelled');
+    const revenue = earning.reduce((n, o) => n + Number(o.total || 0), 0);
+
+    const byStatus = (['placed', 'paid', 'delivered', 'cancelled'] as OrderStatus[])
+      .map((s) => {
+        const rows = thisMonth.filter((o) => o.status === s);
+        return {
+          status: s,
+          count: rows.length,
+          sum: rows.reduce((n, o) => n + Number(o.total || 0), 0),
+        };
+      })
+      .filter((r) => r.count > 0);
+
+    const byProduct = new Map<string, { qty: number; sum: number }>();
+    for (const o of earning) {
+      for (const it of o.items ?? []) {
+        const prev = byProduct.get(it.name) ?? { qty: 0, sum: 0 };
+        byProduct.set(it.name, {
+          qty: prev.qty + (it.qty ?? 0),
+          sum: prev.sum + (it.qty ?? 0) * Number(it.unit_price ?? 0),
+        });
+      }
+    }
+    const topProducts = [...byProduct.entries()]
+      .map(([name, v]) => ({ name, ...v }))
+      .sort((a, b) => b.qty - a.qty)
+      .slice(0, 5);
+
+    return {
+      monthLabel: now.toLocaleDateString('en-IN', { month: 'long' }),
+      progress: Math.round((now.getDate() / daysInMonth) * 100),
+      daysLeft: daysInMonth - now.getDate(),
+      count: thisMonth.length,
+      revenue,
+      avg: earning.length ? revenue / earning.length : 0,
+      byStatus,
+      maxStatus: Math.max(1, ...byStatus.map((r) => r.count)),
+      topProducts,
+      maxUnits: Math.max(1, ...topProducts.map((p) => p.qty)),
+      lifetime: all.length,
+    };
+  }, [orders]);
+
+  return (
+    <>
+      <h2 className="text-lg font-extrabold text-warm-900 mb-1">Sales insights</h2>
+      <p className="text-sm text-warm-500 mb-4">
+        How your storefront is doing this month. Cancelled orders are left out of revenue.
+      </p>
+
+      {/* Plan strip. States the real commercial position and nothing more — no
+          amount, no invoice, because neither exists yet. */}
+      <div className="rounded-2xl bg-gradient-to-r from-primary-700 to-primary-500 text-white p-4 sm:p-5 mb-5">
+        <p className="text-[10px] font-extrabold tracking-[0.2em] uppercase text-accent-300">Your plan</p>
+        <p className="mt-1 text-base sm:text-lg font-extrabold">Free while HiSpike is in beta</p>
+        <p className="mt-1 text-sm text-primary-100/90">
+          Listing your shop, products and orders costs nothing right now. We&rsquo;ll tell you well in
+          advance before any billing starts — you will never be charged by surprise.
+        </p>
+      </div>
+
+      {isLoading ? (
+        <p className="text-sm text-warm-500">Loading…</p>
+      ) : stats.lifetime === 0 ? (
+        <p className="text-sm text-warm-500 rounded-2xl border border-dashed border-warm-300 p-6 text-center">
+          Once orders start coming in, your sales figures appear here.
+        </p>
+      ) : (
+        <>
+          <div className="mb-4">
+            <div className="flex items-baseline justify-between gap-3">
+              <p className="text-[10px] font-extrabold tracking-[0.18em] uppercase text-warm-400">
+                {stats.monthLabel} so far
+              </p>
+              <p className="text-xs font-bold text-warm-400 tabular-nums">{stats.progress}%</p>
+            </div>
+            <div className="mt-1.5 h-2 rounded-full bg-warm-100 overflow-hidden">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-primary-500 to-primary-400"
+                style={{ width: `${stats.progress}%` }}
+              />
+            </div>
+            <p className="mt-1 text-xs text-warm-500">
+              {stats.daysLeft === 0 ? 'Last day of the month' : `${stats.daysLeft} days remaining`}
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
+            <StatTile label="Revenue" value={MONEY(stats.revenue)} hint={`${stats.monthLabel} to date`} />
+            <StatTile label="Orders" value={String(stats.count)} hint={`${stats.lifetime} all time`} />
+            <StatTile
+              label="Average order"
+              value={stats.avg ? MONEY(stats.avg) : '—'}
+              hint="Excluding cancelled"
+            />
+          </div>
+
+          {stats.byStatus.length > 0 && (
+            <div className="mb-6">
+              <h3 className="text-sm font-extrabold text-warm-900 mb-1">By status</h3>
+              {stats.byStatus.map((r) => (
+                <BreakdownRow
+                  key={r.status}
+                  label={STATUS_LABEL[r.status]}
+                  sub={`${r.count} order${r.count === 1 ? '' : 's'}`}
+                  value={MONEY(r.sum)}
+                  pct={(r.count / stats.maxStatus) * 100}
+                  bar={STATUS_BAR[r.status]}
+                />
+              ))}
+            </div>
+          )}
+
+          {stats.topProducts.length > 0 && (
+            <div>
+              <h3 className="text-sm font-extrabold text-warm-900 mb-1">Top products</h3>
+              {stats.topProducts.map((p) => (
+                <BreakdownRow
+                  key={p.name}
+                  label={p.name}
+                  sub={`${p.qty} sold`}
+                  value={MONEY(p.sum)}
+                  pct={(p.qty / stats.maxUnits) * 100}
+                  bar="bg-primary-500"
+                />
+              ))}
+            </div>
+          )}
+        </>
+      )}
+    </>
+  );
+}
+
 function OrdersManager({ shop }: { shop: PetShopRead }) {
   const qc = useQueryClient();
   const { user } = useAuth();
@@ -624,6 +842,7 @@ export function MyShop() {
                 <div className="bg-white rounded-3xl shadow-sm border border-warm-200 p-6 sm:p-8"><UpdatesManager key={`u-${fullShop.id}`} shop={fullShop} onChanged={invalidate} /></div>
                 <div className="bg-white rounded-3xl shadow-sm border border-warm-200 p-6 sm:p-8"><PhotosManager key={`g-${fullShop.id}`} shop={fullShop} onChanged={invalidate} /></div>
                 <div className="bg-white rounded-3xl shadow-sm border border-warm-200 p-6 sm:p-8"><OrdersManager key={`o-${fullShop.id}`} shop={fullShop} /></div>
+                <div className="bg-white rounded-3xl shadow-sm border border-warm-200 p-6 sm:p-8"><SalesInsights key={`i-${fullShop.id}`} shop={fullShop} /></div>
               </>
             )}
 
