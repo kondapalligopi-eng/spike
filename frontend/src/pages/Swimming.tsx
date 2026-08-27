@@ -403,7 +403,7 @@ export function Swimming() {
               <div className="mb-6">
                 <ShareButtons
                   name={selectedSpot.name}
-                  url="/swimming"
+                  url={`/swimming?q=${encodeURIComponent(selectedSpot.name)}`}
                   context={selectedSpot.locality}
                   track={{ category: 'swimming', id: selectedSpot.id }}
                 />

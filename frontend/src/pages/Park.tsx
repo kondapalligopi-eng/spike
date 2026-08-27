@@ -443,7 +443,7 @@ export function Park() {
               <div className="mb-6">
                 <ShareButtons
                   name={selectedSpot.name}
-                  url="/park"
+                  url={`/park?q=${encodeURIComponent(selectedSpot.name)}`}
                   context={selectedSpot.locality}
                   track={{ category: 'park', id: selectedSpot.id }}
                 />
