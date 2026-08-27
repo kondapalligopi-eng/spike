@@ -381,7 +381,8 @@ export function Park() {
                     </svg>
                   </span>
                   <input
-                    type="text"
+                    type="search"
+                    enterKeyHint="search"
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     placeholder="Search park"
