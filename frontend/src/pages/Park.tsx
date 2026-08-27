@@ -11,6 +11,7 @@ import { HeroPaws } from '@/components/HeroPaws';
 import { SelectMenu } from '@/components/SelectMenu';
 import { WhatsAppLink } from '@/components/WhatsAppLink';
 import { useBackendWarmup } from '@/lib/warmupBackend';
+import { useStaleShareFallback } from '@/hooks/useStaleShareFallback';
 
 const PARK_FAQS: FaqItem[] = [
   {
@@ -290,6 +291,16 @@ export function Park() {
   useEffect(() => {
     setCurrentPage(1);
   }, [appliedQuery, locationFilter, activeCity]);
+  // A shared ?q= link whose park no longer matches falls back to the full
+  // list rather than a dead end. See useStaleShareFallback.
+  const missedShare = useStaleShareFallback({
+    urlQuery: searchParams.get('q') ?? '',
+    appliedSearch: appliedQuery,
+    resultCount: visibleSpots.length,
+    isLoading: parksQuery.isLoading,
+    onClear: resetFilters,
+  });
+
   const totalPages = Math.max(1, Math.ceil(visibleSpots.length / PAGE_SIZE));
   const safeCurrentPage = Math.min(currentPage, totalPages);
   const pagedSpots = visibleSpots.slice(
@@ -502,6 +513,16 @@ export function Park() {
             </>
           ) : (
             <>
+          {missedShare && (
+            <div className="mb-6 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+              <p className="font-bold">
+                We couldn&rsquo;t find &ldquo;{missedShare}&rdquo;
+              </p>
+              <p className="mt-0.5 text-amber-800">
+                That listing may have been renamed or removed since the link was shared. Showing every park we list instead.
+              </p>
+            </div>
+          )}
           {/* Spot cards */}
           {parksQuery.isLoading && allSpots.length === 0 ? (
             <div className="max-w-md mx-auto text-center py-12">

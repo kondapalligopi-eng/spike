@@ -11,6 +11,7 @@ import { HeroPaws } from '@/components/HeroPaws';
 import { SelectMenu } from '@/components/SelectMenu';
 import { WhatsAppLink } from '@/components/WhatsAppLink';
 import { useBackendWarmup } from '@/lib/warmupBackend';
+import { useStaleShareFallback } from '@/hooks/useStaleShareFallback';
 
 const SWIM_FAQS: FaqItem[] = [
   {
@@ -271,6 +272,16 @@ export function Swimming() {
   useEffect(() => {
     setCurrentPage(1);
   }, [appliedQuery, locationFilter, activeCity]);
+  // A shared ?q= link whose swim school no longer matches falls back to the full
+  // list rather than a dead end. See useStaleShareFallback.
+  const missedShare = useStaleShareFallback({
+    urlQuery: searchParams.get('q') ?? '',
+    appliedSearch: appliedQuery,
+    resultCount: visibleSpots.length,
+    isLoading: swimSchoolsQuery.isLoading,
+    onClear: resetFilters,
+  });
+
   const totalPages = Math.max(1, Math.ceil(visibleSpots.length / PAGE_SIZE));
   const safeCurrentPage = Math.min(currentPage, totalPages);
   const pagedSpots = visibleSpots.slice(
@@ -464,6 +475,16 @@ export function Swimming() {
             </>
           ) : (
             <>
+          {missedShare && (
+            <div className="mb-6 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+              <p className="font-bold">
+                We couldn&rsquo;t find &ldquo;{missedShare}&rdquo;
+              </p>
+              <p className="mt-0.5 text-amber-800">
+                That listing may have been renamed or removed since the link was shared. Showing every swim school we list instead.
+              </p>
+            </div>
+          )}
           {swimSchoolsQuery.isLoading && allSpots.length === 0 ? (
             <div className="max-w-md mx-auto text-center py-12">
               <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary-100 flex items-center justify-center text-3xl animate-pulse">
