@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react';
 import type { RouteRecord } from 'vite-react-ssg';
 import { RootShell } from '@/components/RootShell';
 import { RouteError } from '@/components/RouteError';
@@ -20,9 +21,7 @@ import { PetPlay } from '@/pages/PetPlay';
 import { PetShop } from '@/pages/PetShop';
 import { PetShopCart } from '@/pages/PetShopCart';
 import { PetShops } from '@/pages/PetShops';
-import { MyShop } from '@/pages/MyShop';
 import { Adoptions } from '@/pages/Adoptions';
-import { Admin } from '@/pages/Admin';
 import { Swimming } from '@/pages/Swimming';
 import { Hospital } from '@/pages/Hospital';
 import { Park } from '@/pages/Park';
@@ -40,6 +39,29 @@ import { Feedback } from '@/pages/Feedback';
 import { TermsOfService } from '@/pages/TermsOfService';
 import { PrivacyPolicy } from '@/pages/PrivacyPolicy';
 import { NotFound } from '@/pages/NotFound';
+import { LoadingSpinner } from '@/components/LoadingSpinner';
+
+// Admin (3k lines) and MyShop are the two heaviest screens in the app and
+// only a signed-in admin or shop owner ever opens them — yet eagerly
+// importing them put both in the chunk every visitor downloads before seeing
+// a vet listing. Loaded on demand instead.
+//
+// Safe to lazy here specifically because both sit behind ProtectedRoute, so
+// their pre-rendered HTML is already just the logged-out shell — there is no
+// real content for a Suspense fallback to displace. Do NOT do this to a route
+// whose pre-rendered output matters (a directory or the gallery); the crawler
+// would get the spinner instead of the page.
+const Admin = lazy(() => import('@/pages/Admin').then((m) => ({ default: m.Admin })));
+const MyShop = lazy(() => import('@/pages/MyShop').then((m) => ({ default: m.MyShop })));
+
+/** Full-height placeholder while a lazily-loaded screen arrives. */
+function RouteFallback() {
+  return (
+    <div className="min-h-[60vh] grid place-items-center">
+      <LoadingSpinner />
+    </div>
+  );
+}
 
 export const routes: RouteRecord[] = [
   {
@@ -84,7 +106,9 @@ export const routes: RouteRecord[] = [
             path: 'my-shop',
             element: (
               <ProtectedRoute>
-                <MyShop />
+                <Suspense fallback={<RouteFallback />}>
+                  <MyShop />
+                </Suspense>
               </ProtectedRoute>
             ),
           },
@@ -130,7 +154,9 @@ export const routes: RouteRecord[] = [
             path: 'admin',
             element: (
               <ProtectedRoute adminOnly>
-                <Admin />
+                <Suspense fallback={<RouteFallback />}>
+                  <Admin />
+                </Suspense>
               </ProtectedRoute>
             ),
           },
