@@ -101,28 +101,30 @@ export function PetStoriesGallery() {
               free one for your own pet — photos, highlights and their story.
             </p>
           </div>
-          <Link
-            to="/pet-stories/create"
-            className="self-start md:self-auto inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-accent-400 hover:bg-accent-300 text-warm-900 text-sm font-bold tracking-[0.15em] uppercase ring-2 ring-accent-300/50 hover:ring-accent-200 transition-all shadow-md whitespace-nowrap"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
-            </svg>
-            Create Your Pet&rsquo;s Page
-          </Link>
-        </div>
-
-        {isAuthenticated && (
-          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-3 pb-5">
+          {/* Button and the owner link stack together, so the link reads as
+              part of the same call to action rather than stray text on the
+              far side of the band. */}
+          <div className="self-start md:self-auto flex flex-col items-start md:items-end gap-2 shrink-0">
             <Link
               to="/pet-stories/create"
-              className="inline-flex items-center gap-1.5 text-sm font-semibold text-accent-400 hover:text-accent-300 hover:underline"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-accent-400 hover:bg-accent-300 text-warm-900 text-sm font-bold tracking-[0.15em] uppercase ring-2 ring-accent-300/50 hover:ring-accent-200 transition-all shadow-md whitespace-nowrap"
             >
-              Already made one? Edit your pet&rsquo;s page
-              <span aria-hidden="true">&rarr;</span>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
+              </svg>
+              Create Your Pet&rsquo;s Page
             </Link>
+            {isAuthenticated && (
+              <Link
+                to="/pet-stories/create"
+                className="inline-flex items-center gap-1.5 text-sm font-semibold text-accent-400 hover:text-accent-300 hover:underline whitespace-nowrap"
+              >
+                Already made one? Edit it
+                <span aria-hidden="true">&rarr;</span>
+              </Link>
+            )}
           </div>
-        )}
+        </div>
       </section>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
