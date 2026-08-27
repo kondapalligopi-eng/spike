@@ -376,11 +376,17 @@ export function PetPages() {
             create form stays below for making another. */}
         {isAuthenticated && (pages?.length ?? 0) > 0 && !editingId && (
         <div className="mt-10">
-          <h2 className="text-lg font-bold text-warm-900 mb-4">Your pet pages</h2>
+          <h2 className="text-lg font-bold text-warm-900 mb-1">Your pet pages</h2>
+          <p className="text-sm text-warm-500 mb-4">
+            Tap <span className="font-semibold text-warm-700">Edit</span> on a page to update
+            its photos, highlights, story or gallery setting.
+          </p>
           {isLoading ? (
             <p className="text-sm text-warm-500">Loading…</p>
           ) : !pages || pages.length === 0 ? (
-            <p className="text-sm text-warm-500">No pages yet — create your first one above.</p>
+            // Unreachable: the block above only renders when there is at
+            // least one page. Kept as a guard against a future refactor.
+            <p className="text-sm text-warm-500">No pages yet — create your first one below.</p>
           ) : (
             <ul className="space-y-3">
               {pages.map((page) => (
@@ -399,7 +405,11 @@ export function PetPages() {
         {/* Create / edit form */}
         <div ref={formRef} className="rounded-2xl border border-warm-200 bg-white p-5 sm:p-6 shadow-sm">
           <h1 className="text-xl sm:text-2xl font-bold text-warm-900 mb-4">
-            {editingId ? 'Edit page' : 'Create a new page'}
+            {editingId
+              ? 'Edit page'
+              : (pages?.length ?? 0) > 0
+                ? 'Create another page'
+                : 'Create a new page'}
           </h1>
 
           <div className="space-y-5">
