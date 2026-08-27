@@ -12,6 +12,7 @@ import { SelectMenu } from '@/components/SelectMenu';
 import { WhatsAppLink } from '@/components/WhatsAppLink';
 import { useBackendWarmup } from '@/lib/warmupBackend';
 import { trackClick } from '@/lib/trackClick';
+import { useStaleShareFallback } from '@/hooks/useStaleShareFallback';
 
 const HOSPITAL_FAQS: FaqItem[] = [
   {
@@ -324,6 +325,16 @@ export function Hospital() {
     })
     .sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
 
+  // A shared ?q= link whose clinic no longer matches falls back to the full
+  // list rather than a dead end. See useStaleShareFallback.
+  const missedShare = useStaleShareFallback({
+    urlQuery: searchParams.get('q') ?? '',
+    appliedSearch: applied.search,
+    resultCount: filteredHospitals.length,
+    isLoading: adminHospitalsQuery.isLoading,
+    onClear: resetFilters,
+  });
+
   const totalPages = Math.max(1, Math.ceil(filteredHospitals.length / PAGE_SIZE));
   const safeCurrentPage = Math.min(currentPage, totalPages);
   const pagedHospitals = filteredHospitals.slice(
@@ -382,7 +393,8 @@ export function Hospital() {
                 </svg>
               </span>
               <input
-                type="text"
+                type="search"
+                enterKeyHint="search"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search Vet"
@@ -444,6 +456,16 @@ export function Hospital() {
       {/* Results */}
       <section className="py-12 bg-primary-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {missedShare && (
+            <div className="mb-6 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+              <p className="font-bold">
+                We couldn&rsquo;t find &ldquo;{missedShare}&rdquo;
+              </p>
+              <p className="mt-0.5 text-amber-800">
+                That listing may have been renamed or removed since the link was shared. Showing every clinic we list instead.
+              </p>
+            </div>
+          )}
           {adminHospitalsQuery.isLoading && allHospitals.length === 0 ? (
             <div className="max-w-md mx-auto text-center py-12">
               <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary-100 flex items-center justify-center text-3xl animate-pulse">
@@ -598,7 +620,7 @@ export function Hospital() {
                   <div className="mt-3 pt-3 border-t border-warm-100 flex justify-end">
                     <ShareButtons
                       name={h.name}
-                      url="/hospital"
+                      url={`/hospital?q=${encodeURIComponent(h.name)}`}
                       context={`${h.locality}, Bengaluru`}
                       track={{ category: 'hospital', id: h.id }}
                       variant="compact"

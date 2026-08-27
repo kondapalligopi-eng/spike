@@ -4,6 +4,7 @@ import { listGalleryPetPages, type PetPageRead } from '@/api/petPages';
 import { HeroPaws } from '@/components/HeroPaws';
 import { PageHead } from '@/components/PageHead';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { useAuth } from '@/hooks/useAuth';
 
 // Every page here is one whose owner ticked "show in the public gallery".
 // Pages left unlisted never reach this endpoint — see show_in_gallery in
@@ -45,6 +46,7 @@ function StoryCard({ page }: { page: PetPageRead }) {
 }
 
 export function PetStoriesGallery() {
+  const { isAuthenticated } = useAuth();
   const { data, isLoading, isError, refetch, isFetching } = useQuery({
     queryKey: ['pet-pages-gallery', GALLERY_LIMIT],
     queryFn: () => listGalleryPetPages(GALLERY_LIMIT),
@@ -109,6 +111,18 @@ export function PetStoriesGallery() {
             Create Your Pet&rsquo;s Page
           </Link>
         </div>
+
+        {isAuthenticated && (
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-3 pb-5">
+            <Link
+              to="/pet-stories/create"
+              className="inline-flex items-center gap-1.5 text-sm font-semibold text-accent-400 hover:text-accent-300 hover:underline"
+            >
+              Already made one? Edit your pet&rsquo;s page
+              <span aria-hidden="true">&rarr;</span>
+            </Link>
+          </div>
+        )}
       </section>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
