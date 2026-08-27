@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from sqlalchemy import JSON, Boolean, String
+from datetime import datetime
+
+from sqlalchemy import JSON, Boolean, DateTime, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.models.base import UUIDBase
@@ -23,6 +25,14 @@ class Submission(UUIDBase):
     kind: Mapped[str] = mapped_column(String(32), nullable=False, index=True)
     data: Mapped[dict] = mapped_column(JSON, nullable=False, default=dict)
     handled: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+
+    #: When the submitter was told their listing is live. Null means never.
+    #: Kept separate from `handled` on purpose: handled also covers rejected
+    #: and duplicate submissions, and "your listing is live!" must never go
+    #: out for one of those.
+    notified_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
 
     def __repr__(self) -> str:
         return f"<Submission id={self.id} kind={self.kind} handled={self.handled}>"
