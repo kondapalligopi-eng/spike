@@ -2493,9 +2493,15 @@ function SubmissionsSection() {
   const [confirmId, setConfirmId] = useState<string | null>(null);
 
   const handledMutation = useMutation({
-    mutationFn: ({ id, handled }: { id: string; handled: boolean }) =>
-      setSubmissionHandled(id, handled),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['submissions'] }),
+    mutationFn: ({ id, handled, notify }: { id: string; handled: boolean; notify?: boolean }) =>
+      setSubmissionHandled(id, handled, notify),
+    onSuccess: (_row, vars) => {
+      queryClient.invalidateQueries({ queryKey: ['submissions'] });
+      if (vars.notify) toast.success("Submitter emailed — their listing is live.");
+    },
+    // The server refuses with a reason (no email on the submission, already
+    // notified, mail not configured); surface it rather than a generic line,
+    // so the admin knows whether the person was actually told.
     onError: (err: Error) => toast.error(err.message || 'Could not update submission.'),
   });
 
@@ -2575,6 +2581,42 @@ function SubmissionsSection() {
                     </span>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
+                    {(() => {
+                      // Feedback has no listing to announce.
+                      if (s.kind === 'feedback') return null;
+                      const email = String(s.data?.Email ?? '').trim();
+                      const hasEmail = !!email && email !== '(not provided)' && email.includes('@');
+                      if (s.notified_at) {
+                        return (
+                          <span className="px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-green-700">
+                            ✓ Submitter notified
+                          </span>
+                        );
+                      }
+                      if (!hasEmail) {
+                        return (
+                          <span
+                            className="px-3 py-1.5 text-xs font-semibold text-warm-400"
+                            title="No email address was given on this submission"
+                          >
+                            No email given
+                          </span>
+                        );
+                      }
+                      return (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handledMutation.mutate({ id: s.id, handled: true, notify: true })
+                          }
+                          disabled={handledMutation.isPending}
+                          title={`Email ${email} that their listing is live`}
+                          className="px-3 py-1.5 rounded-full bg-green-600 hover:bg-green-700 text-white text-xs font-bold uppercase tracking-wider transition-colors disabled:opacity-60"
+                        >
+                          Mark live &amp; notify
+                        </button>
+                      );
+                    })()}
                     <button
                       type="button"
                       onClick={() => handledMutation.mutate({ id: s.id, handled: !s.handled })}
