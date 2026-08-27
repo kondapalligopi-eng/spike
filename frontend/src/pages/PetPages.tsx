@@ -370,6 +370,32 @@ export function PetPages() {
           </div>
         )}
 
+        {/* An owner returning to update a published page had to click
+            "Create your pet's page" and then scroll past the whole form to
+            find Edit. When they already have pages, list them FIRST — the
+            create form stays below for making another. */}
+        {isAuthenticated && (pages?.length ?? 0) > 0 && !editingId && (
+        <div className="mt-10">
+          <h2 className="text-lg font-bold text-warm-900 mb-4">Your pet pages</h2>
+          {isLoading ? (
+            <p className="text-sm text-warm-500">Loading…</p>
+          ) : !pages || pages.length === 0 ? (
+            <p className="text-sm text-warm-500">No pages yet — create your first one above.</p>
+          ) : (
+            <ul className="space-y-3">
+              {pages.map((page) => (
+                <li
+                  key={page.id}
+                  className="flex flex-col sm:flex-row sm:items-center gap-3 rounded-xl border border-warm-200 bg-white p-3"
+                >
+                  <div className="flex items-center gap-4 min-w-0 flex-1">
+                    <div className="w-14 h-14 rounded-full overflow-hidden bg-warm-100 flex items-center justify-center shrink-0">
+                      {page.photos[0] ? (
+                        <img src={page.photos[0]} alt={page.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="text-2xl" aria-hidden="true">🐶</span>
+        )}
+
         {/* Create / edit form */}
         <div ref={formRef} className="rounded-2xl border border-warm-200 bg-white p-5 sm:p-6 shadow-sm">
           <h1 className="text-xl sm:text-2xl font-bold text-warm-900 mb-4">
@@ -628,28 +654,6 @@ export function PetPages() {
           </div>
         </div>
 
-        {/* Existing pages — only meaningful once signed in. */}
-        {isAuthenticated && (
-        <div className="mt-10">
-          <h2 className="text-lg font-bold text-warm-900 mb-4">Your stories</h2>
-          {isLoading ? (
-            <p className="text-sm text-warm-500">Loading…</p>
-          ) : !pages || pages.length === 0 ? (
-            <p className="text-sm text-warm-500">No pages yet — create your first one above.</p>
-          ) : (
-            <ul className="space-y-3">
-              {pages.map((page) => (
-                <li
-                  key={page.id}
-                  className="flex flex-col sm:flex-row sm:items-center gap-3 rounded-xl border border-warm-200 bg-white p-3"
-                >
-                  <div className="flex items-center gap-4 min-w-0 flex-1">
-                    <div className="w-14 h-14 rounded-full overflow-hidden bg-warm-100 flex items-center justify-center shrink-0">
-                      {page.photos[0] ? (
-                        <img src={page.photos[0]} alt={page.name} className="w-full h-full object-cover" />
-                      ) : (
-                        <span className="text-2xl" aria-hidden="true">🐶</span>
-                      )}
                     </div>
                     <div className="min-w-0 flex-1">
                       <p className="font-bold text-warm-900 truncate">{page.name}</p>
