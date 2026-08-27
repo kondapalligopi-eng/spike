@@ -1606,7 +1606,7 @@ function ImportExcelModal({ config, onClose }: { config: ImportConfig; onClose: 
           <div className="flex flex-wrap items-center gap-3 mb-5">
             <button
               type="button"
-              onClick={() => downloadTemplate(config.templateFile, config.columns.map((c) => c.header), config.sample)}
+              onClick={() => void downloadTemplate(config.templateFile, config.columns.map((c) => c.header), config.sample)}
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border-2 border-primary-300 text-primary-700 text-sm font-bold tracking-wider uppercase hover:border-primary-500 hover:bg-primary-50 transition-colors"
             >
               ⬇ Download template
@@ -3093,7 +3093,7 @@ function BackupSection() {
     setBusy(cfg.kind);
     try {
       const rows = await cfg.run();
-      downloadRows(cfg.file, cfg.headers, rows);
+      await downloadRows(cfg.file, cfg.headers, rows);
       toast.success(`Downloaded ${rows.length} ${cfg.label.toLowerCase()}.`);
     } catch {
       toast.error(`Could not export ${cfg.label.toLowerCase()}. Please try again.`);
