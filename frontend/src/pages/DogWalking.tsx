@@ -117,7 +117,8 @@ export function DogWalking() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z" />
               </svg>
               <input
-                type="text"
+                type="search"
+                enterKeyHint="search"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search walkers"
