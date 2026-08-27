@@ -10,6 +10,8 @@ export type SubmissionRead = {
   kind: SubmissionKind;
   data: Record<string, string>;
   handled: boolean;
+  /** When the submitter was emailed that their listing is live; null = never. */
+  notified_at: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -51,7 +53,7 @@ export async function createSubmission(
   if (USE_MOCK) {
     await delay(250);
     const now = new Date().toISOString();
-    const row: SubmissionRead = { id: makeId(), kind, data, handled: false, created_at: now, updated_at: now };
+    const row: SubmissionRead = { id: makeId(), kind, data, handled: false, notified_at: null, created_at: now, updated_at: now };
     const store = readMock();
     store.push(row);
     writeMock(store);
@@ -71,17 +73,35 @@ export async function listSubmissions(): Promise<SubmissionRead[]> {
   return response.data;
 }
 
-export async function setSubmissionHandled(id: string, handled: boolean): Promise<SubmissionRead> {
+/**
+ * Mark handled, and optionally email the submitter that their listing is live.
+ *
+ * The notify flag is separate from `handled` on purpose: handled also covers
+ * rejected and duplicate submissions, and that email must never go to one.
+ */
+export async function setSubmissionHandled(
+  id: string,
+  handled: boolean,
+  notifySubmitter = false,
+): Promise<SubmissionRead> {
   if (USE_MOCK) {
     await delay(120);
     const store = readMock();
     const idx = store.findIndex((s) => s.id === id);
     if (idx === -1) throw new Error('Submission not found');
-    store[idx] = { ...store[idx], handled, updated_at: new Date().toISOString() };
+    store[idx] = {
+      ...store[idx],
+      handled,
+      notified_at: notifySubmitter ? new Date().toISOString() : (store[idx].notified_at ?? null),
+      updated_at: new Date().toISOString(),
+    };
     writeMock(store);
     return store[idx];
   }
-  const response = await apiClient.patch<SubmissionRead>(`/submissions/${id}`, { handled });
+  const response = await apiClient.patch<SubmissionRead>(`/submissions/${id}`, {
+    handled,
+    notify_submitter: notifySubmitter,
+  });
   return response.data;
 }
 

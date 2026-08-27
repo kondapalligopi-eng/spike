@@ -73,6 +73,8 @@ SCHEMA_PATCHES: list[str] = [
     # created from now on starts unlisted and has to opt in.
     "ALTER TABLE pet_pages ADD COLUMN IF NOT EXISTS show_in_gallery BOOLEAN NOT NULL DEFAULT TRUE",
     "ALTER TABLE pet_pages ALTER COLUMN show_in_gallery SET DEFAULT FALSE",
+    # Submitter notification — null until the admin sends the "you are live" mail.
+    "ALTER TABLE submissions ADD COLUMN IF NOT EXISTS notified_at TIMESTAMPTZ",
 ]
 
 
