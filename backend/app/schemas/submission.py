@@ -18,6 +18,9 @@ class SubmissionCreate(BaseModel):
 
 class SubmissionUpdate(BaseModel):
     handled: bool
+    #: Set true to email the submitter that their listing is now live.
+    #: Deliberately a separate opt-in rather than firing on handled=True.
+    notify_submitter: bool = False
 
 
 class SubmissionRead(BaseModel):
@@ -27,5 +30,6 @@ class SubmissionRead(BaseModel):
     kind: str
     data: dict[str, Any]
     handled: bool
+    notified_at: datetime | None = None
     created_at: datetime
     updated_at: datetime
