@@ -13,7 +13,7 @@ from app.core.dependencies import require_admin
 from app.database import get_db
 from app.models.submission import Submission
 from app.models.user import User
-from app.services import email_service
+from app.services import email_service, email_templates
 from app.schemas.submission import (
     ALLOWED_KINDS,
     SubmissionCreate,
@@ -183,15 +183,10 @@ def _notify_submitter(row: Submission, background_tasks: BackgroundTasks) -> Non
         f"sort it.\n\n"
         f"— The HiSpike team\n"
     )
-    html = (
-        f"<p>Hi,</p>"
-        f"<p>Thanks for listing <strong>{escape(name)}</strong> with HiSpike — "
-        f"it is now live and people searching in Bengaluru can find it.</p>"
-        f'<p><a href="{escape(link)}">See your listing</a></p>'
-        f"<p>If anything needs correcting, just reply to this email and we "
-        f"will sort it.</p>"
-        f"<p>— The HiSpike team</p>"
-    )
+    # Shares the branded shell (logo header, white card, footer) with the
+    # login-code and password-reset mails, so this does not arrive looking
+    # like it came from somewhere else.
+    html = email_templates.listing_live_html(escape(name), escape(link))
 
     background_tasks.add_task(_send_live_email_safe, to, subject, html, text)
     row.notified_at = datetime.now(timezone.utc)
