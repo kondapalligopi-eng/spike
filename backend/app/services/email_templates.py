@@ -125,3 +125,26 @@ def signup_code_html(name: str, code: str, minutes: int) -> str:
         + _fine_print()
     )
     return _shell(body, preheader=f"Your HiSpike sign-up code: {code}")
+
+
+def listing_live_html(listing_name: str, link: str) -> str:
+    """Sent to whoever submitted a listing, once it is published.
+
+    No _fine_print() here — "if you didn't request this, ignore it" is wrong
+    for a message someone asked for weeks ago and has been waiting on.
+    """
+    body = (
+        f'<p style="margin:0 0 16px;font-size:16px;color:{_INK};">Hi,</p>'
+        f'<p style="margin:0 0 8px;font-size:15px;line-height:1.6;color:{_MUTED};">'
+        f"Thanks for listing <strong style=\"color:{_INK};\">{listing_name}</strong> with "
+        "HiSpike — it is now live, and people searching in Bengaluru can find it.</p>"
+        f'<div style="margin:24px 0;">'
+        f'<a href="{link}" style="background:{_PRIMARY};color:#ffffff;text-decoration:none;'
+        'font-weight:700;font-size:15px;padding:13px 28px;border-radius:999px;display:inline-block;">'
+        "See your listing</a></div>"
+        f'<p style="margin:0;font-size:13px;line-height:1.6;color:{_FAINT};">'
+        f'Or paste this link into your browser:<br><span style="color:{_PRIMARY};word-break:break-all;">{link}</span></p>'
+        f'<p style="margin:22px 0 0;font-size:13px;line-height:1.6;color:{_FAINT};">'
+        "If anything needs correcting, just reply to this email and we will sort it.</p>"
+    )
+    return _shell(body, preheader=f"{listing_name} is now live on HiSpike")

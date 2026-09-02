@@ -6,14 +6,18 @@ from html import escape
 from urllib.parse import quote
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Response, status
-from sqlalchemy import desc, select
+from sqlalchemy import desc, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.dependencies import require_admin
 from app.database import get_db
+from app.models.grooming_salon import GroomingSalon
+from app.models.hospital import Hospital
+from app.models.park import Park
 from app.models.submission import Submission
+from app.models.swim_school import SwimSchool
 from app.models.user import User
-from app.services import email_service
+from app.services import email_service, email_templates
 from app.schemas.submission import (
     ALLOWED_KINDS,
     SubmissionCreate,
@@ -33,6 +37,45 @@ _KIND_PATH = {
     "swimming": "/swimming",
     "grooming": "/grooming",
 }
+
+#: The columns each directory page searches, mirrored from the frontend so
+#: this check approves exactly when the ?q= link would actually find the
+#: listing. Keep in step with the filters in Hospital/Park/Swimming/Grooming.
+_LISTING_MATCH = {
+    "hospital": (Hospital, ("name", "locality", "specialties")),
+    "park": (Park, ("name", "locality")),
+    "swimming": (SwimSchool, ("name", "locality")),
+    "grooming": (GroomingSalon, ("name", "area")),
+}
+
+
+async def _listing_exists(db: AsyncSession, kind: str, query: str) -> bool:
+    """True when the ?q= link would land on at least one listing.
+
+    Reproduces the page filter rather than comparing names: the admin often
+    tidies a name while creating the listing ("Testing" -> "Testing Park"),
+    and a substring match is what the page itself does, so an exact-name
+    check would refuse sends that would in fact have worked.
+    """
+    model, columns = _LISTING_MATCH[kind]
+    # Concatenate with + (renders as || on both Postgres and SQLite) rather
+    # than concat_ws, which SQLite lacks. coalesce because optional columns
+    # are nullable and NULL would poison the whole expression.
+    haystack = func.coalesce(getattr(model, columns[0]), "")
+    for col in columns[1:]:
+        haystack = haystack + " " + func.coalesce(getattr(model, col), "")
+
+    # Escape LIKE wildcards so a name containing % or _ cannot broaden the
+    # match into a false positive.
+    needle = query.lower().replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+    stmt = (
+        select(model.id)
+        .where(func.lower(haystack).like(f"%{needle}%", escape="\\"))
+        .limit(1)
+    )
+    result = await db.execute(stmt)
+    return result.scalar_one_or_none() is not None
+
 
 #: Each form labels the name field differently.
 _NAME_KEYS = ("Hospital name", "Park name", "Swim school name", "Salon name", "Name")
@@ -128,14 +171,16 @@ async def update_submission(
     row.handled = payload.handled
 
     if payload.notify_submitter:
-        _notify_submitter(row, background_tasks)
+        await _notify_submitter(row, background_tasks, db)
 
     await db.flush()
     await db.refresh(row)
     return SubmissionRead.model_validate(row)
 
 
-def _notify_submitter(row: Submission, background_tasks: BackgroundTasks) -> None:
+async def _notify_submitter(
+    row: Submission, background_tasks: BackgroundTasks, db: AsyncSession
+) -> None:
     """Queue the "your listing is live" email, or explain why it cannot go.
 
     Raises rather than failing quietly: an admin who clicked the button needs
@@ -168,7 +213,25 @@ def _notify_submitter(row: Submission, background_tasks: BackgroundTasks) -> Non
             detail="Email is not configured on this server.",
         )
 
-    name = _submitted_value(data, *_NAME_KEYS) or "Your listing"
+    name = _submitted_value(data, *_NAME_KEYS)
+    if not name:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="This submission has no listing name to link to.",
+        )
+
+    # Do not promise someone their listing is live before it exists. Without
+    # this the email goes out with a link to an empty page, which is a worse
+    # first impression than no email at all.
+    if not await _listing_exists(db, row.kind, name):
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=(
+                f"No live {row.kind} listing matches '{name}' yet — "
+                "create the listing first, then notify."
+            ),
+        )
+
     # Deep-links straight to their entry rather than the category page, using
     # the same ?q= the share links use.
     link = f"{SITE_URL}{path}?q={quote(name)}"
@@ -183,15 +246,10 @@ def _notify_submitter(row: Submission, background_tasks: BackgroundTasks) -> Non
         f"sort it.\n\n"
         f"— The HiSpike team\n"
     )
-    html = (
-        f"<p>Hi,</p>"
-        f"<p>Thanks for listing <strong>{escape(name)}</strong> with HiSpike — "
-        f"it is now live and people searching in Bengaluru can find it.</p>"
-        f'<p><a href="{escape(link)}">See your listing</a></p>'
-        f"<p>If anything needs correcting, just reply to this email and we "
-        f"will sort it.</p>"
-        f"<p>— The HiSpike team</p>"
-    )
+    # Shares the branded shell (logo header, white card, footer) with the
+    # login-code and password-reset mails, so this does not arrive looking
+    # like it came from somewhere else.
+    html = email_templates.listing_live_html(escape(name), escape(link))
 
     background_tasks.add_task(_send_live_email_safe, to, subject, html, text)
     row.notified_at = datetime.now(timezone.utc)
