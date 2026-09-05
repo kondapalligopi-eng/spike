@@ -1,39 +1,31 @@
 # HiSpike — Listing owner outreach (WhatsApp)
 
-The WhatsApp counterpart to the "your listing is on HiSpike" email. Same
-promise, a fifth of the words: on WhatsApp anything past the "read more" fold
-doesn't get read, and anything that reads like a template gets reported.
+The WhatsApp counterpart to the "your listing is on HiSpike" email. Fill
+`{{Business}}` and `{{Link}}` per owner. Never send it unpersonalised — the
+business name is the whole reason it doesn't read as a blast.
 
-Fill `{{Business}}` and `{{Link}}` per owner. Never send it unpersonalised —
-the business name is the whole reason it doesn't look like a blast.
+The admin dashboard (Outreach → Listing links) builds each link and opens
+WhatsApp with this message already typed. If you edit the wording here, edit
+`outreachMessage()` in `frontend/src/pages/Admin.tsx` to match.
 
 ---
 
 ## Main message
 
-Three lines. Fits above the fold on every phone.
-
 ```
-Hi — Gopi here, I run HiSpike (hispike.in), a Bengaluru pet-care directory. *{{Business}}* is listed, free, nothing to sign up for:
+Hi — I'm Gopi from HiSpike (https://www.hispike.in), Bengaluru's all-in-one pet care platform: vets, dog parks, swim schools and grooming.
+
+I've added {{Business}} using publicly available info. Have a look:
 {{Link}}
 
-Anything wrong, or you'd rather not be listed? Just reply and I'll sort it today.
+Free listing, no registration. Corrections and removal requests are both handled the same day — just reply.
+
+— Gopi, Founder, HiSpike
 ```
 
-`*asterisks*` render as bold in WhatsApp. No emoji — the message works because
-it's plain.
-
-## If they reply
-
-Then you have a real conversation and can use the full version.
-
-```
-Thanks for getting back. I built the listing from publicly available info — vets, dog parks, swim schools and grooming across Bengaluru, all in one place.
-
-Send me whatever needs correcting (hours, phone, services, photos) and I'll update it today. There's no charge and no account needed.
-
-— Gopi, Founder, HiSpike · support@hispike.in
-```
+Why it's this long rather than a three-liner: the link preview WhatsApp
+renders under the message does half the explaining, and the paragraph breaks
+make it scannable even at this length. No emoji — it works because it's plain.
 
 ## Follow-up (once, ~5 days later)
 
@@ -56,14 +48,15 @@ detail page and uses its slug.
 
 | Category     | Link                                    |
 |--------------|-----------------------------------------|
-| Vets         | `https://hispike.in/hospital?q=<Name>`  |
-| Dog parks    | `https://hispike.in/park?q=<Name>`      |
-| Swim schools | `https://hispike.in/swimming?q=<Name>`  |
-| Grooming     | `https://hispike.in/grooming/<slug>`    |
+| Vets         | `https://www.hispike.in/hospital?q=<Name>`  |
+| Dog parks    | `https://www.hispike.in/park?q=<Name>`      |
+| Swim schools | `https://www.hispike.in/swimming?q=<Name>`  |
+| Grooming     | `https://www.hispike.in/grooming/<slug>`    |
 
 `<Name>` must be URL-encoded — spaces become `%20`, as in
-`https://hispike.in/swimming?q=Therpup%20Dog%20Swimming%20Pool`. Fastest way to
-get a correct link: open the listing on the site and use its share button.
+`https://www.hispike.in/swimming?q=Therpup%20Dog%20Swimming%20Pool`. Don't build
+these by hand: the admin's Listing links section has the correct one for every
+listing, with a copy button.
 
 ---
 
@@ -74,13 +67,16 @@ get a correct link: open the listing on the site and use its share button.
   recipients don't, so a broadcast reaches almost none of them and you'd never
   know. These have to go as individual chats.
 - **The real ban trigger is identical text at speed to strangers.** Spread them
-  over days — roughly 20–30 a day from a personal number — and vary the
-  business name (the template already forces that). Getting the number banned
-  costs you the WhatsApp contact on the site too.
+  over days — roughly 20–30 a day from a personal number. Losing the number
+  also costs you the WhatsApp contact on the site.
 - **Warm up the number first** if it's new: a cold SIM sending fifty first-time
   messages on day one is the classic flagged pattern.
 - **Business hours only.** A cold message at 9pm reads as spam whatever it says.
-- **The takedown offer stays in.** It's the line that makes the message welcome
-  rather than presumptuous — and it has to be honoured the same day.
+- **Skip the landlines.** The admin shows a WhatsApp button on any ten-digit
+  number, because an Indian mobile and a Bengaluru 080 landline are the same
+  shape — the judgement call is yours.
+- **The removal offer stays in.** It's the line that makes an unsolicited "I
+  listed your business" welcome rather than presumptuous — and it has to be
+  honoured the same day.
 - **Log who you messaged.** Nothing looks worse than the same owner getting the
   same opener twice from you.
