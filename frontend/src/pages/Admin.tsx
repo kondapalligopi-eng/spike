@@ -66,6 +66,8 @@ import { readSheetRows, downloadTemplate, downloadRows, type SheetRow } from '@/
 import { getCounter, listCounters } from '@/api/counters';
 import { listUsers, deleteUser } from '@/api/users';
 import { listAllShops, deleteShop } from '@/api/petShops';
+import { counterKey, type TrackCategory } from '@/lib/trackClick';
+import { GROOMING_SALONS } from '@/data/groomingSalons';
 
 const BANGALORE_NEIGHBOURHOODS = [
   'Banashankari', 'Banaswadi', 'Basavanagudi', 'Bellandur', 'Bommanahalli',
@@ -2226,11 +2228,64 @@ const ACTION_LABEL: Record<ClickAction, string> = {
   copy: 'Copy link',
 };
 
+/** Mirrors Grooming.tsx::nameToSlug — grooming clicks count against the page
+ *  slug, not the row id, so the lookup has to derive the same string. */
+function nameToSlug(name: string, id?: string): string {
+  const base = name
+    .toLowerCase()
+    .trim()
+    .replace(/[^ws-]/g, '')
+    .replace(/s+/g, '-')
+    .replace(/-+/g, '-');
+  if (!base) return id ? id.slice(0, 8) : 'salon';
+  return base;
+}
+
+type ListingLabel = { name: string; where: string };
+
+/** id-as-it-appears-in-the-counter-key -> label, per category. */
+type ListingNames = Record<string, Record<string, ListingLabel>>;
+
 function ListingClicksSection() {
   const { data, isLoading, isError, refetch, isFetching } = useQuery({
     queryKey: ['counters', 'listing-clicks'],
     queryFn: () => listCounters(undefined, 2000),
     staleTime: 60_000,
+  });
+
+  // app_counters stores an id and nothing else, so a name has to be joined on
+  // from the listing tables themselves. Cached longer than the counts: these
+  // lists change when an admin edits them, not when someone clicks.
+  const { data: names } = useQuery<ListingNames>({
+    queryKey: ['counters', 'listing-names'],
+    queryFn: async () => {
+      const [hospitals, parks, swimSchools, salons] = await Promise.all([
+        listHospitals(),
+        listParks(),
+        listSwimSchools(),
+        listGroomingSalons(),
+      ]);
+      const map: ListingNames = {};
+      const add = (category: TrackCategory, id: string, label: ListingLabel) => {
+        const byId = (map[category] ??= {});
+        byId[id] = label;
+        // An over-long id is truncated into the 64-char counter key, and the
+        // cut lands differently for each action — register every form the key
+        // could have taken so the lookup below never misses.
+        for (const action of CLICK_ACTIONS) {
+          byId[counterKey(category, action, id).split(':').slice(2).join(':')] = label;
+        }
+      };
+      for (const h of hospitals) add('hospital', h.id, { name: h.name, where: h.locality });
+      for (const pk of parks) add('park', pk.id, { name: pk.name, where: pk.locality });
+      for (const sc of swimSchools) add('swimming', sc.id, { name: sc.name, where: sc.locality });
+      // Grooming keys on the detail-page slug, and the four seeded salons use
+      // a hand-written slug rather than a name-derived one — cover both.
+      for (const sl of salons) add('grooming', nameToSlug(sl.name, sl.id), { name: sl.name, where: sl.area });
+      for (const sl of GROOMING_SALONS) add('grooming', sl.slug, { name: sl.name, where: sl.area });
+      return map;
+    },
+    staleTime: 5 * 60_000,
   });
 
   const report = useMemo(() => {
@@ -2329,6 +2384,7 @@ function ListingClicksSection() {
               .map(([id, byAction]) => ({
                 id,
                 byAction,
+                label: names?.[key]?.[id],
                 total: Object.values(byAction).reduce((n, v) => n + v, 0),
               }))
               .sort((a, b) => b.total - a.total)
@@ -2342,6 +2398,7 @@ function ListingClicksSection() {
                     <thead>
                       <tr className="text-left text-[10px] font-bold uppercase tracking-[0.15em] text-warm-400">
                         <th className="py-1.5 pr-3">Listing</th>
+                        <th className="py-1.5 pr-3">Name</th>
                         {CLICK_ACTIONS.map((a) => (
                           <th key={a} className="py-1.5 px-2 text-right whitespace-nowrap">{ACTION_LABEL[a]}</th>
                         ))}
@@ -2351,11 +2408,26 @@ function ListingClicksSection() {
                     <tbody>
                       {listings.map((l) => (
                         <tr key={l.id} className="border-t border-warm-100">
-                          {/* The key holds a row id, not a name — the counter
-                              table stores no listing text. Truncated so a UUID
-                              does not blow out the column. */}
+                          {/* The counter key holds a row id and no listing
+                              text, so the name beside it is joined on from the
+                              listing tables. Truncated so a UUID does not blow
+                              out the column. */}
                           <td className="py-1.5 pr-3 font-mono text-xs text-warm-600 truncate max-w-[16rem]" title={l.id}>
                             {l.id}
+                          </td>
+                          <td className="py-1.5 pr-3 text-warm-800 truncate max-w-[18rem]">
+                            {l.label ? (
+                              <>
+                                <span className="font-semibold">{l.label.name}</span>
+                                {l.label.where && (
+                                  <span className="text-warm-500"> · {l.label.where}</span>
+                                )}
+                              </>
+                            ) : (
+                              // Deleted since the click, or a seed row that never
+                              // reached the table. The count is still real.
+                              <span className="text-warm-400">—</span>
+                            )}
                           </td>
                           {CLICK_ACTIONS.map((a) => (
                             <td key={a} className="py-1.5 px-2 text-right tabular-nums text-warm-700">
@@ -3128,6 +3200,321 @@ const EXPORT_CONFIGS: ExportConfig[] = [
   },
 ];
 
+// ---------------------------------------------------------------------------
+// Outreach links — one ready-to-send link per listing.
+//
+// Owner outreach happens one listing at a time over WhatsApp, and the link has
+// to be exact: the three directory pages have no per-listing page, so they
+// filter by name via ?q=, and a hand-typed name that doesn't match drops the
+// owner on an unfiltered list. Built here from the live rows so it always
+// matches what the share button on the public page produces.
+//
+// The pre-filled message mirrors hispike-owner-outreach.md — edit both together.
+// ---------------------------------------------------------------------------
+
+const SITE_URL = 'https://hispike.in';
+
+type OutreachRow = {
+  id: string;
+  name: string;
+  /** Locality or area — tells apart two branches sharing a name. */
+  where: string;
+  phone: string | null;
+  url: string;
+};
+
+type OutreachCard = {
+  kind: TrackCategory;
+  label: string;
+  emoji: string;
+  tint: string;
+  run: () => Promise<OutreachRow[]>;
+};
+
+// Same four categories, tints and emoji as the Import row above, so the strip
+// reads as the same family of controls.
+const OUTREACH_CARDS: OutreachCard[] = [
+  {
+    kind: 'hospital',
+    label: 'Hospital Links',
+    emoji: '🏥',
+    tint: 'from-rose-100 to-rose-300',
+    run: async () =>
+      (await listHospitals()).map((r) => ({
+        id: r.id,
+        name: r.name,
+        where: r.locality,
+        phone: r.phone,
+        url: `${SITE_URL}/hospital?q=${encodeURIComponent(r.name)}`,
+      })),
+  },
+  {
+    kind: 'park',
+    label: 'Park Links',
+    emoji: '🌳',
+    tint: 'from-emerald-100 to-emerald-300',
+    run: async () =>
+      (await listParks()).map((r) => ({
+        id: r.id,
+        name: r.name,
+        where: r.locality,
+        phone: r.phone,
+        url: `${SITE_URL}/park?q=${encodeURIComponent(r.name)}`,
+      })),
+  },
+  {
+    kind: 'swimming',
+    label: 'Swim School Links',
+    emoji: '🐕💦',
+    tint: 'from-sky-100 to-sky-300',
+    run: async () =>
+      (await listSwimSchools()).map((r) => ({
+        id: r.id,
+        name: r.name,
+        where: r.locality,
+        phone: r.phone,
+        url: `${SITE_URL}/swimming?q=${encodeURIComponent(r.name)}`,
+      })),
+  },
+  {
+    kind: 'grooming',
+    label: 'Grooming Links',
+    emoji: '✂️',
+    tint: 'from-amber-100 to-amber-300',
+    run: async () =>
+      (await listGroomingSalons()).map((r) => ({
+        id: r.id,
+        name: r.name,
+        where: r.area,
+        phone: r.phone,
+        // Grooming is the one category with a real per-listing page.
+        url: `${SITE_URL}/grooming/${nameToSlug(r.name, r.id)}`,
+      })),
+  },
+];
+
+/**
+ * wa.me wants digits only, country code included. An Indian mobile and a
+ * Bengaluru landline are both ten digits (080 numbers start with 8, exactly
+ * like a mobile), so there is no honest way to tell them apart here — link
+ * anything ten digits long and let WhatsApp say "not on WhatsApp" for the rest.
+ */
+function waNumber(phone: string | null): string | null {
+  const digits = (phone ?? '').replace(/\D/g, '');
+  const local = digits.length > 10 ? digits.slice(-10) : digits;
+  return local.length === 10 ? `91${local}` : null;
+}
+
+/** The short opener from hispike-owner-outreach.md, filled in per listing. */
+function outreachMessage(row: OutreachRow): string {
+  return (
+    'Hi — Gopi here, I run HiSpike (hispike.in), a Bengaluru pet-care directory. ' +
+    `*${row.name}* is listed, free, nothing to sign up for:\n${row.url}\n\n` +
+    "Anything wrong, or you'd rather not be listed? Just reply and I'll sort it today."
+  );
+}
+
+function OutreachLinksSection() {
+  const [kind, setKind] = useState<TrackCategory>('hospital');
+  const [search, setSearch] = useState('');
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  const card = OUTREACH_CARDS.find((c) => c.kind === kind) ?? OUTREACH_CARDS[0];
+
+  const { data, isLoading, isError, refetch } = useQuery({
+    queryKey: ['outreach-links', kind],
+    queryFn: card.run,
+    staleTime: 5 * 60_000,
+  });
+
+  const rows = useMemo(() => {
+    const needle = search.trim().toLowerCase();
+    const all = data ?? [];
+    if (!needle) return all;
+    return all.filter(
+      (r) => r.name.toLowerCase().includes(needle) || r.where.toLowerCase().includes(needle),
+    );
+  }, [data, search]);
+
+  const copyLink = async (row: OutreachRow) => {
+    try {
+      await navigator.clipboard.writeText(row.url);
+      setCopiedId(row.id);
+      window.setTimeout(() => setCopiedId((id) => (id === row.id ? null : id)), 1800);
+    } catch {
+      toast.error('Could not copy the link.');
+    }
+  };
+
+  return (
+    <section className="mb-10">
+      <div className="mb-4">
+        <p className="text-[11px] font-semibold tracking-[0.3em] text-accent-600 uppercase mb-1">
+          Outreach
+        </p>
+        <h2 className="text-xl font-bold text-warm-900">Listing links</h2>
+        <p className="text-sm text-warm-500 mt-1">
+          A direct link to each listing, ready to paste into a WhatsApp message to its owner.
+          Built the same way the share buttons on the site build them, so they always land on
+          the right listing.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        {OUTREACH_CARDS.map((c) => (
+          <button
+            key={c.kind}
+            type="button"
+            onClick={() => {
+              setKind(c.kind);
+              setSearch('');
+            }}
+            aria-pressed={c.kind === kind}
+            className={`group rounded-xl border-2 bg-white hover:shadow-sm transition-all flex items-center gap-3 px-3 py-2 text-left ${
+              c.kind === kind
+                ? 'border-primary-400 shadow-sm'
+                : 'border-primary-100 hover:border-primary-300'
+            }`}
+          >
+            <span
+              aria-hidden="true"
+              className={`shrink-0 w-9 h-9 rounded-lg bg-gradient-to-br ${c.tint} flex items-center justify-center text-base`}
+            >
+              {c.emoji}
+            </span>
+            <span
+              className={`flex-1 min-w-0 text-sm font-semibold truncate transition-colors ${
+                c.kind === kind ? 'text-primary-700' : 'text-warm-900 group-hover:text-primary-700'
+              }`}
+            >
+              {c.label}
+            </span>
+            <span
+              className={`shrink-0 transition-colors ${
+                c.kind === kind ? 'text-primary-600' : 'text-warm-400 group-hover:text-primary-600'
+              }`}
+            >
+              {/* Chain link — the row below is a list of links. */}
+              <svg aria-hidden="true" className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z" />
+              </svg>
+            </span>
+          </button>
+        ))}
+      </div>
+
+      <div className="flex items-center justify-between gap-3 mt-4 mb-3">
+        <p className="text-sm font-semibold text-warm-700">
+          {card.label}
+          {!isLoading && !isError && (
+            <span className="ml-2 text-xs font-normal text-warm-500">
+              — {rows.length} {rows.length === 1 ? 'listing' : 'listings'}
+              {search && data ? ` of ${data.length}` : ''}
+            </span>
+          )}
+        </p>
+        <input
+          type="search"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Filter by name or area…"
+          aria-label="Filter listings"
+          className="w-48 sm:w-64 px-3.5 py-1.5 rounded-full border-2 border-warm-200 text-sm focus:border-primary-400 focus:outline-none"
+        />
+      </div>
+
+      <div className="rounded-xl border-2 border-primary-100 bg-white overflow-hidden">
+        {isLoading ? (
+          <p className="p-6 text-sm text-warm-500 text-center">Loading…</p>
+        ) : isError ? (
+          <p className="p-6 text-sm text-warm-500 text-center">
+            Couldn&rsquo;t load those listings.{' '}
+            <button
+              type="button"
+              onClick={() => void refetch()}
+              className="font-semibold text-primary-600 hover:underline"
+            >
+              Try again
+            </button>
+          </p>
+        ) : rows.length === 0 ? (
+          <p className="p-6 text-sm text-warm-500 text-center">
+            {search ? 'No listing matches that filter.' : 'Nothing listed in this category yet.'}
+          </p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="text-left text-[10px] font-bold uppercase tracking-[0.15em] text-warm-400 bg-warm-50">
+                  <th className="py-2.5 px-4">Link</th>
+                  <th className="py-2.5 px-4">Name of listing</th>
+                  <th className="py-2.5 px-4">Phone number</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((row) => {
+                  const wa = waNumber(row.phone);
+                  return (
+                    <tr key={row.id} className="border-t border-warm-100 align-middle">
+                      <td className="py-2.5 px-4">
+                        <div className="flex items-center gap-2">
+                          <a
+                            href={row.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-primary-600 hover:underline break-all text-xs"
+                            title={row.url}
+                          >
+                            {row.url}
+                          </a>
+                          <button
+                            type="button"
+                            onClick={() => void copyLink(row)}
+                            className="shrink-0 px-2.5 py-1 rounded-full border border-warm-300 text-[11px] font-bold text-warm-700 hover:border-primary-500 hover:text-primary-700 transition-colors"
+                            aria-label={`Copy the link to ${row.name}`}
+                          >
+                            {copiedId === row.id ? 'Copied' : 'Copy'}
+                          </button>
+                        </div>
+                      </td>
+                      <td className="py-2.5 px-4">
+                        <span className="font-semibold text-warm-900">{row.name}</span>
+                        {row.where && <span className="text-warm-500"> · {row.where}</span>}
+                      </td>
+                      <td className="py-2.5 px-4 whitespace-nowrap">
+                        {row.phone ? (
+                          <div className="flex items-center gap-2">
+                            <span className="tabular-nums text-warm-700">{row.phone}</span>
+                            {wa && (
+                              // Opens the chat with the opener already typed.
+                              // Nothing is sent until you press send.
+                              <a
+                                href={`https://wa.me/${wa}?text=${encodeURIComponent(outreachMessage(row))}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="shrink-0 px-2.5 py-1 rounded-full bg-[#25D366] text-white text-[11px] font-bold hover:bg-[#1ebe5d] transition-colors"
+                                title={`Message ${row.name} on WhatsApp`}
+                              >
+                                WhatsApp
+                              </a>
+                            )}
+                          </div>
+                        ) : (
+                          <span className="text-warm-400">—</span>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
 function BackupSection() {
   const [busy, setBusy] = useState<string | null>(null);
 
@@ -3203,6 +3590,7 @@ export function Admin() {
       <PetStoriesSection />
       <PetShopsSection />
       <AddListingsSection />
+      <OutreachLinksSection />
       <BackupSection />
       <SiteVisibilitySection />
       <VisitsSection />
