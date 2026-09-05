@@ -3309,18 +3309,11 @@ function waNumber(phone: string | null): string | null {
 function outreachMessage(row: OutreachRow): string {
   return (
     "Hi — I'm Gopi from HiSpike (hispike.in), a Bengaluru pet-care directory: " +
-    'vets, dog parks, swim schools and grooming in one place.
-
-' +
+    'vets, dog parks, swim schools and grooming in one place.\n\n' +
     `I've added ${row.name} using publicly available info, so I'd rather tell you ` +
-    `than have you come across it:
-${row.url}
-
-` +
+    `than have you come across it:\n${row.url}\n\n` +
     'Free listing, no registration. Corrections and removal requests are both ' +
-    'handled the same day — just reply.
-
-' +
+    'handled the same day — just reply.\n\n' +
     '— Gopi, Founder, HiSpike'
   );
 }
