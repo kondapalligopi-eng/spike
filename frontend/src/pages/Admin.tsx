@@ -3308,9 +3308,8 @@ function waNumber(phone: string | null): string | null {
 /** The short opener from hispike-owner-outreach.md, filled in per listing. */
 function outreachMessage(row: OutreachRow): string {
   return (
-    "Hi — I'm Gopi from HiSpike (https://www.hispike.in), a Bengaluru " +
-    "pet-care directory: " +
-    'vets, dog parks, swim schools and grooming in one place.\n\n' +
+    "Hi — I'm Gopi from HiSpike (https://www.hispike.in), Bengaluru's " +
+    'all-in-one pet care platform: vets, dog parks, swim schools and grooming.\n\n' +
     `I've added ${row.name} using publicly available info. Have a look:\n${row.url}\n\n` +
     'Free listing, no registration. Corrections and removal requests are both ' +
     'handled the same day — just reply.\n\n' +

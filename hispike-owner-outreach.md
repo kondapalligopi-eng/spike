@@ -13,7 +13,7 @@ WhatsApp with this message already typed. If you edit the wording here, edit
 ## Main message
 
 ```
-Hi — I'm Gopi from HiSpike (https://www.hispike.in), a Bengaluru pet-care directory: vets, dog parks, swim schools and grooming in one place.
+Hi — I'm Gopi from HiSpike (https://www.hispike.in), Bengaluru's all-in-one pet care platform: vets, dog parks, swim schools and grooming.
 
 I've added {{Business}} using publicly available info. Have a look:
 {{Link}}
