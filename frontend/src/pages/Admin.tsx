@@ -3212,7 +3212,7 @@ const EXPORT_CONFIGS: ExportConfig[] = [
 // The pre-filled message mirrors hispike-owner-outreach.md — edit both together.
 // ---------------------------------------------------------------------------
 
-const SITE_URL = 'https://hispike.in';
+const SITE_URL = 'https://www.hispike.in';
 
 type OutreachRow = {
   id: string;
@@ -3308,22 +3308,29 @@ function waNumber(phone: string | null): string | null {
 /** The short opener from hispike-owner-outreach.md, filled in per listing. */
 function outreachMessage(row: OutreachRow): string {
   return (
-    'Hi — Gopi here, I run HiSpike (hispike.in), a Bengaluru pet-care directory. ' +
-    `*${row.name}* is listed, free, nothing to sign up for:\n${row.url}\n\n` +
-    "Anything wrong, or you'd rather not be listed? Just reply and I'll sort it today."
+    "Hi — I'm Gopi from HiSpike (https://www.hispike.in), Bengaluru's " +
+    'all-in-one pet care platform: vets, dog parks, swim schools and grooming.\n\n' +
+    `I've added ${row.name} using publicly available info. Have a look:\n${row.url}\n\n` +
+    'Free listing, no registration. Corrections and removal requests are both ' +
+    'handled the same day — just reply.\n\n' +
+    '— Gopi, Founder, HiSpike'
   );
 }
 
 function OutreachLinksSection() {
-  const [kind, setKind] = useState<TrackCategory>('hospital');
+  // Nothing is open until a card is clicked. Four tables' worth of long URLs
+  // would push the rest of the dashboard off the screen, and outreach is done
+  // one category at a time anyway.
+  const [kind, setKind] = useState<TrackCategory | null>(null);
   const [search, setSearch] = useState('');
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  const card = OUTREACH_CARDS.find((c) => c.kind === kind) ?? OUTREACH_CARDS[0];
+  const card = OUTREACH_CARDS.find((c) => c.kind === kind) ?? null;
 
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ['outreach-links', kind],
-    queryFn: card.run,
+    queryFn: () => card!.run(),
+    enabled: card !== null,
     staleTime: 5 * 60_000,
   });
 
@@ -3361,156 +3368,174 @@ function OutreachLinksSection() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-        {OUTREACH_CARDS.map((c) => (
-          <button
-            key={c.kind}
-            type="button"
-            onClick={() => {
-              setKind(c.kind);
-              setSearch('');
-            }}
-            aria-pressed={c.kind === kind}
-            className={`group rounded-xl border-2 bg-white hover:shadow-sm transition-all flex items-center gap-3 px-3 py-2 text-left ${
-              c.kind === kind
-                ? 'border-primary-400 shadow-sm'
-                : 'border-primary-100 hover:border-primary-300'
-            }`}
-          >
-            <span
-              aria-hidden="true"
-              className={`shrink-0 w-9 h-9 rounded-lg bg-gradient-to-br ${c.tint} flex items-center justify-center text-base`}
-            >
-              {c.emoji}
-            </span>
-            <span
-              className={`flex-1 min-w-0 text-sm font-semibold truncate transition-colors ${
-                c.kind === kind ? 'text-primary-700' : 'text-warm-900 group-hover:text-primary-700'
-              }`}
-            >
-              {c.label}
-            </span>
-            <span
-              className={`shrink-0 transition-colors ${
-                c.kind === kind ? 'text-primary-600' : 'text-warm-400 group-hover:text-primary-600'
-              }`}
-            >
-              {/* Chain link — the row below is a list of links. */}
-              <svg aria-hidden="true" className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z" />
-              </svg>
-            </span>
-          </button>
-        ))}
-      </div>
-
-      <div className="flex items-center justify-between gap-3 mt-4 mb-3">
-        <p className="text-sm font-semibold text-warm-700">
-          {card.label}
-          {!isLoading && !isError && (
-            <span className="ml-2 text-xs font-normal text-warm-500">
-              — {rows.length} {rows.length === 1 ? 'listing' : 'listings'}
-              {search && data ? ` of ${data.length}` : ''}
-            </span>
-          )}
-        </p>
-        <input
-          type="search"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Filter by name or area…"
-          aria-label="Filter listings"
-          className="w-48 sm:w-64 px-3.5 py-1.5 rounded-full border-2 border-warm-200 text-sm focus:border-primary-400 focus:outline-none"
-        />
-      </div>
-
-      <div className="rounded-xl border-2 border-primary-100 bg-white overflow-hidden">
-        {isLoading ? (
-          <p className="p-6 text-sm text-warm-500 text-center">Loading…</p>
-        ) : isError ? (
-          <p className="p-6 text-sm text-warm-500 text-center">
-            Couldn&rsquo;t load those listings.{' '}
+        {OUTREACH_CARDS.map((c) => {
+          const open = c.kind === kind;
+          return (
             <button
+              key={c.kind}
               type="button"
-              onClick={() => void refetch()}
-              className="font-semibold text-primary-600 hover:underline"
+              onClick={() => {
+                // Clicking the open one closes it — the only way to get the
+                // page back to a scannable height.
+                setKind(open ? null : c.kind);
+                setSearch('');
+              }}
+              aria-expanded={open}
+              className={`group rounded-xl border-2 bg-white hover:shadow-sm transition-all flex items-center gap-3 px-3 py-2 text-left ${
+                open ? 'border-primary-400 shadow-sm' : 'border-primary-100 hover:border-primary-300'
+              }`}
             >
-              Try again
+              <span
+                aria-hidden="true"
+                className={`shrink-0 w-9 h-9 rounded-lg bg-gradient-to-br ${c.tint} flex items-center justify-center text-base`}
+              >
+                {c.emoji}
+              </span>
+              <span
+                className={`flex-1 min-w-0 text-sm font-semibold truncate transition-colors ${
+                  open ? 'text-primary-700' : 'text-warm-900 group-hover:text-primary-700'
+                }`}
+              >
+                {c.label}
+              </span>
+              <span
+                className={`shrink-0 transition-colors ${
+                  open ? 'text-primary-600' : 'text-warm-400 group-hover:text-primary-600'
+                }`}
+              >
+                {/* Chevron rather than a link icon — it has to say "this opens
+                    and closes", which is the one thing that isn't obvious. */}
+                <svg
+                  aria-hidden="true"
+                  className={`w-4 h-4 transition-transform ${open ? 'rotate-180' : ''}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+                </svg>
+              </span>
             </button>
-          </p>
-        ) : rows.length === 0 ? (
-          <p className="p-6 text-sm text-warm-500 text-center">
-            {search ? 'No listing matches that filter.' : 'Nothing listed in this category yet.'}
-          </p>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="text-left text-[10px] font-bold uppercase tracking-[0.15em] text-warm-400 bg-warm-50">
-                  <th className="py-2.5 px-4">Link</th>
-                  <th className="py-2.5 px-4">Name of listing</th>
-                  <th className="py-2.5 px-4">Phone number</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((row) => {
-                  const wa = waNumber(row.phone);
-                  return (
-                    <tr key={row.id} className="border-t border-warm-100 align-middle">
-                      <td className="py-2.5 px-4">
-                        <div className="flex items-center gap-2">
-                          <a
-                            href={row.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-primary-600 hover:underline break-all text-xs"
-                            title={row.url}
-                          >
-                            {row.url}
-                          </a>
-                          <button
-                            type="button"
-                            onClick={() => void copyLink(row)}
-                            className="shrink-0 px-2.5 py-1 rounded-full border border-warm-300 text-[11px] font-bold text-warm-700 hover:border-primary-500 hover:text-primary-700 transition-colors"
-                            aria-label={`Copy the link to ${row.name}`}
-                          >
-                            {copiedId === row.id ? 'Copied' : 'Copy'}
-                          </button>
-                        </div>
-                      </td>
-                      <td className="py-2.5 px-4">
-                        <span className="font-semibold text-warm-900">{row.name}</span>
-                        {row.where && <span className="text-warm-500"> · {row.where}</span>}
-                      </td>
-                      <td className="py-2.5 px-4 whitespace-nowrap">
-                        {row.phone ? (
-                          <div className="flex items-center gap-2">
-                            <span className="tabular-nums text-warm-700">{row.phone}</span>
-                            {wa && (
-                              // Opens the chat with the opener already typed.
-                              // Nothing is sent until you press send.
+          );
+        })}
+      </div>
+
+      {!card ? (
+        <p className="text-sm text-warm-400 mt-3">
+          Pick a category to see its links.
+        </p>
+      ) : (
+        <>
+          <div className="flex items-center justify-between gap-3 mt-4 mb-3">
+            <p className="text-sm font-semibold text-warm-700">
+              {card.label}
+              {!isLoading && !isError && (
+                <span className="ml-2 text-xs font-normal text-warm-500">
+                  — {rows.length} {rows.length === 1 ? 'listing' : 'listings'}
+                  {search && data ? ` of ${data.length}` : ''}
+                </span>
+              )}
+            </p>
+            <input
+              type="search"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Filter by name or area…"
+              aria-label="Filter listings"
+              className="w-48 sm:w-64 px-3.5 py-1.5 rounded-full border-2 border-warm-200 text-sm focus:border-primary-400 focus:outline-none"
+            />
+          </div>
+
+          <div className="rounded-xl border-2 border-primary-100 bg-white overflow-hidden">
+            {isLoading ? (
+              <p className="p-6 text-sm text-warm-500 text-center">Loading…</p>
+            ) : isError ? (
+              <p className="p-6 text-sm text-warm-500 text-center">
+                Couldn&rsquo;t load those listings.{' '}
+                <button
+                  type="button"
+                  onClick={() => void refetch()}
+                  className="font-semibold text-primary-600 hover:underline"
+                >
+                  Try again
+                </button>
+              </p>
+            ) : rows.length === 0 ? (
+              <p className="p-6 text-sm text-warm-500 text-center">
+                {search ? 'No listing matches that filter.' : 'Nothing listed in this category yet.'}
+              </p>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="text-left text-[10px] font-bold uppercase tracking-[0.15em] text-warm-400 bg-warm-50">
+                      <th className="py-2.5 px-4">Link</th>
+                      <th className="py-2.5 px-4">Name of listing</th>
+                      <th className="py-2.5 px-4">Phone number</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {rows.map((row) => {
+                      const wa = waNumber(row.phone);
+                      return (
+                        <tr key={row.id} className="border-t border-warm-100 align-middle">
+                          <td className="py-2.5 px-4">
+                            <div className="flex items-center gap-2">
                               <a
-                                href={`https://wa.me/${wa}?text=${encodeURIComponent(outreachMessage(row))}`}
+                                href={row.url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="shrink-0 px-2.5 py-1 rounded-full bg-[#25D366] text-white text-[11px] font-bold hover:bg-[#1ebe5d] transition-colors"
-                                title={`Message ${row.name} on WhatsApp`}
+                                className="text-primary-600 hover:underline break-all text-xs"
+                                title={row.url}
                               >
-                                WhatsApp
+                                {row.url}
                               </a>
+                              <button
+                                type="button"
+                                onClick={() => void copyLink(row)}
+                                className="shrink-0 px-2.5 py-1 rounded-full border border-warm-300 text-[11px] font-bold text-warm-700 hover:border-primary-500 hover:text-primary-700 transition-colors"
+                                aria-label={`Copy the link to ${row.name}`}
+                              >
+                                {copiedId === row.id ? 'Copied' : 'Copy'}
+                              </button>
+                            </div>
+                          </td>
+                          <td className="py-2.5 px-4">
+                            <span className="font-semibold text-warm-900">{row.name}</span>
+                            {row.where && <span className="text-warm-500"> · {row.where}</span>}
+                          </td>
+                          <td className="py-2.5 px-4 whitespace-nowrap">
+                            {row.phone ? (
+                              <div className="flex items-center gap-2">
+                                <span className="tabular-nums text-warm-700">{row.phone}</span>
+                                {wa && (
+                                  // Opens the chat with the opener already typed.
+                                  // Nothing is sent until you press send.
+                                  <a
+                                    href={`https://wa.me/${wa}?text=${encodeURIComponent(outreachMessage(row))}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="shrink-0 px-2.5 py-1 rounded-full bg-[#25D366] text-white text-[11px] font-bold hover:bg-[#1ebe5d] transition-colors"
+                                    title={`Message ${row.name} on WhatsApp`}
+                                  >
+                                    WhatsApp
+                                  </a>
+                                )}
+                              </div>
+                            ) : (
+                              <span className="text-warm-400">—</span>
                             )}
-                          </div>
-                        ) : (
-                          <span className="text-warm-400">—</span>
-                        )}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
-        )}
-      </div>
+        </>
+      )}
     </section>
   );
 }
