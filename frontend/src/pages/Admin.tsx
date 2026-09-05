@@ -66,6 +66,8 @@ import { readSheetRows, downloadTemplate, downloadRows, type SheetRow } from '@/
 import { getCounter, listCounters } from '@/api/counters';
 import { listUsers, deleteUser } from '@/api/users';
 import { listAllShops, deleteShop } from '@/api/petShops';
+import { counterKey, type TrackCategory } from '@/lib/trackClick';
+import { GROOMING_SALONS } from '@/data/groomingSalons';
 
 const BANGALORE_NEIGHBOURHOODS = [
   'Banashankari', 'Banaswadi', 'Basavanagudi', 'Bellandur', 'Bommanahalli',
@@ -2226,11 +2228,64 @@ const ACTION_LABEL: Record<ClickAction, string> = {
   copy: 'Copy link',
 };
 
+/** Mirrors Grooming.tsx::nameToSlug — grooming clicks count against the page
+ *  slug, not the row id, so the lookup has to derive the same string. */
+function nameToSlug(name: string, id?: string): string {
+  const base = name
+    .toLowerCase()
+    .trim()
+    .replace(/[^ws-]/g, '')
+    .replace(/s+/g, '-')
+    .replace(/-+/g, '-');
+  if (!base) return id ? id.slice(0, 8) : 'salon';
+  return base;
+}
+
+type ListingLabel = { name: string; where: string };
+
+/** id-as-it-appears-in-the-counter-key -> label, per category. */
+type ListingNames = Record<string, Record<string, ListingLabel>>;
+
 function ListingClicksSection() {
   const { data, isLoading, isError, refetch, isFetching } = useQuery({
     queryKey: ['counters', 'listing-clicks'],
     queryFn: () => listCounters(undefined, 2000),
     staleTime: 60_000,
+  });
+
+  // app_counters stores an id and nothing else, so a name has to be joined on
+  // from the listing tables themselves. Cached longer than the counts: these
+  // lists change when an admin edits them, not when someone clicks.
+  const { data: names } = useQuery<ListingNames>({
+    queryKey: ['counters', 'listing-names'],
+    queryFn: async () => {
+      const [hospitals, parks, swimSchools, salons] = await Promise.all([
+        listHospitals(),
+        listParks(),
+        listSwimSchools(),
+        listGroomingSalons(),
+      ]);
+      const map: ListingNames = {};
+      const add = (category: TrackCategory, id: string, label: ListingLabel) => {
+        const byId = (map[category] ??= {});
+        byId[id] = label;
+        // An over-long id is truncated into the 64-char counter key, and the
+        // cut lands differently for each action — register every form the key
+        // could have taken so the lookup below never misses.
+        for (const action of CLICK_ACTIONS) {
+          byId[counterKey(category, action, id).split(':').slice(2).join(':')] = label;
+        }
+      };
+      for (const h of hospitals) add('hospital', h.id, { name: h.name, where: h.locality });
+      for (const pk of parks) add('park', pk.id, { name: pk.name, where: pk.locality });
+      for (const sc of swimSchools) add('swimming', sc.id, { name: sc.name, where: sc.locality });
+      // Grooming keys on the detail-page slug, and the four seeded salons use
+      // a hand-written slug rather than a name-derived one — cover both.
+      for (const sl of salons) add('grooming', nameToSlug(sl.name, sl.id), { name: sl.name, where: sl.area });
+      for (const sl of GROOMING_SALONS) add('grooming', sl.slug, { name: sl.name, where: sl.area });
+      return map;
+    },
+    staleTime: 5 * 60_000,
   });
 
   const report = useMemo(() => {
@@ -2329,6 +2384,7 @@ function ListingClicksSection() {
               .map(([id, byAction]) => ({
                 id,
                 byAction,
+                label: names?.[key]?.[id],
                 total: Object.values(byAction).reduce((n, v) => n + v, 0),
               }))
               .sort((a, b) => b.total - a.total)
@@ -2342,6 +2398,7 @@ function ListingClicksSection() {
                     <thead>
                       <tr className="text-left text-[10px] font-bold uppercase tracking-[0.15em] text-warm-400">
                         <th className="py-1.5 pr-3">Listing</th>
+                        <th className="py-1.5 pr-3">Name</th>
                         {CLICK_ACTIONS.map((a) => (
                           <th key={a} className="py-1.5 px-2 text-right whitespace-nowrap">{ACTION_LABEL[a]}</th>
                         ))}
@@ -2351,11 +2408,26 @@ function ListingClicksSection() {
                     <tbody>
                       {listings.map((l) => (
                         <tr key={l.id} className="border-t border-warm-100">
-                          {/* The key holds a row id, not a name — the counter
-                              table stores no listing text. Truncated so a UUID
-                              does not blow out the column. */}
+                          {/* The counter key holds a row id and no listing
+                              text, so the name beside it is joined on from the
+                              listing tables. Truncated so a UUID does not blow
+                              out the column. */}
                           <td className="py-1.5 pr-3 font-mono text-xs text-warm-600 truncate max-w-[16rem]" title={l.id}>
                             {l.id}
+                          </td>
+                          <td className="py-1.5 pr-3 text-warm-800 truncate max-w-[18rem]">
+                            {l.label ? (
+                              <>
+                                <span className="font-semibold">{l.label.name}</span>
+                                {l.label.where && (
+                                  <span className="text-warm-500"> · {l.label.where}</span>
+                                )}
+                              </>
+                            ) : (
+                              // Deleted since the click, or a seed row that never
+                              // reached the table. The count is still real.
+                              <span className="text-warm-400">—</span>
+                            )}
                           </td>
                           {CLICK_ACTIONS.map((a) => (
                             <td key={a} className="py-1.5 px-2 text-right tabular-nums text-warm-700">
