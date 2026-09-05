@@ -13,9 +13,9 @@ WhatsApp with this message already typed. If you edit the wording here, edit
 ## Main message
 
 ```
-Hi — I'm Gopi from HiSpike (hispike.in), a Bengaluru pet-care directory: vets, dog parks, swim schools and grooming in one place.
+Hi — I'm Gopi from HiSpike (https://www.hispike.in), a Bengaluru pet-care directory: vets, dog parks, swim schools and grooming in one place.
 
-I've added {{Business}} using publicly available info, so I'd rather tell you than have you come across it:
+I've added {{Business}} using publicly available info. Have a look:
 {{Link}}
 
 Free listing, no registration. Corrections and removal requests are both handled the same day — just reply.
@@ -48,13 +48,13 @@ detail page and uses its slug.
 
 | Category     | Link                                    |
 |--------------|-----------------------------------------|
-| Vets         | `https://hispike.in/hospital?q=<Name>`  |
-| Dog parks    | `https://hispike.in/park?q=<Name>`      |
-| Swim schools | `https://hispike.in/swimming?q=<Name>`  |
-| Grooming     | `https://hispike.in/grooming/<slug>`    |
+| Vets         | `https://www.hispike.in/hospital?q=<Name>`  |
+| Dog parks    | `https://www.hispike.in/park?q=<Name>`      |
+| Swim schools | `https://www.hispike.in/swimming?q=<Name>`  |
+| Grooming     | `https://www.hispike.in/grooming/<slug>`    |
 
 `<Name>` must be URL-encoded — spaces become `%20`, as in
-`https://hispike.in/swimming?q=Therpup%20Dog%20Swimming%20Pool`. Don't build
+`https://www.hispike.in/swimming?q=Therpup%20Dog%20Swimming%20Pool`. Don't build
 these by hand: the admin's Listing links section has the correct one for every
 listing, with a copy button.
 

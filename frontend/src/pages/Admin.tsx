@@ -3212,7 +3212,7 @@ const EXPORT_CONFIGS: ExportConfig[] = [
 // The pre-filled message mirrors hispike-owner-outreach.md — edit both together.
 // ---------------------------------------------------------------------------
 
-const SITE_URL = 'https://hispike.in';
+const SITE_URL = 'https://www.hispike.in';
 
 type OutreachRow = {
   id: string;
@@ -3308,10 +3308,10 @@ function waNumber(phone: string | null): string | null {
 /** The short opener from hispike-owner-outreach.md, filled in per listing. */
 function outreachMessage(row: OutreachRow): string {
   return (
-    "Hi — I'm Gopi from HiSpike (hispike.in), a Bengaluru pet-care directory: " +
+    "Hi — I'm Gopi from HiSpike (https://www.hispike.in), a Bengaluru " +
+    "pet-care directory: " +
     'vets, dog parks, swim schools and grooming in one place.\n\n' +
-    `I've added ${row.name} using publicly available info, so I'd rather tell you ` +
-    `than have you come across it:\n${row.url}\n\n` +
+    `I've added ${row.name} using publicly available info. Have a look:\n${row.url}\n\n` +
     'Free listing, no registration. Corrections and removal requests are both ' +
     'handled the same day — just reply.\n\n' +
     '— Gopi, Founder, HiSpike'
