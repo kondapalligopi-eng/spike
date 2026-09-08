@@ -10,7 +10,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.config import settings
-from app.core.dependencies import get_current_active_user, require_admin
+from app.core.dependencies import (
+    get_current_active_user,
+    get_optional_user,
+    is_admin,
+    require_admin,
+)
 from app.database import get_db
 from app.models.pet_shop import PetShop, ShopOrder, ShopPhoto, ShopProduct, ShopUpdate
 from app.models.user import User, UserRole
@@ -230,6 +235,7 @@ async def list_my_shops(
 async def get_shop_by_slug(
     slug: str,
     db: AsyncSession = Depends(get_db),
+    viewer: User | None = Depends(get_optional_user),
 ) -> PetShopRead:
     result = await db.execute(
         select(PetShop)
@@ -243,10 +249,13 @@ async def get_shop_by_slug(
     shop = result.scalar_one_or_none()
     if shop is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Shop not found")
+    hidden = shop.slug.lower() in settings.hidden_shop_slugs
+    if hidden and not is_admin(viewer):
+        # 404 rather than 403: a hidden storefront should look like it was
+        # never there, not like something worth guessing a password for.
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Shop not found")
     full = PetShopRead.model_validate(shop)
-    # The page stays reachable by URL even when hidden — a demo is meant to be
-    # shared deliberately. The flag just tells the page it is not in the directory.
-    full.hidden = shop.slug.lower() in settings.hidden_shop_slugs
+    full.hidden = hidden
     return full
 
 
@@ -259,6 +268,10 @@ async def get_shop_by_slug(
 async def shop_og(slug: str, db: AsyncSession = Depends(get_db)) -> HTMLResponse:
     result = await db.execute(select(PetShop).where(func.lower(PetShop.slug) == slug.lower()))
     shop = result.scalar_one_or_none()
+    # Crawlers never carry a token, so a hidden shop falls through to the
+    # generic card below — the same as a slug that does not exist.
+    if shop is not None and shop.slug.lower() in settings.hidden_shop_slugs:
+        shop = None
     shop_url = f"{SITE_URL}/petshop/{slug}"
     cache = {"Cache-Control": "public, max-age=300"}
 
