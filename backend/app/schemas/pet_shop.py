@@ -164,6 +164,9 @@ class PetShopSummary(PetShopBase):
     owner_id: uuid.UUID
     created_at: datetime
     updated_at: datetime
+    # Kept out of the public directory (settings.HIDDEN_SHOP_SLUGS). Computed
+    # per request rather than stored, so hiding a demo shop needs no migration.
+    hidden: bool = False
 
 
 class PetShopRead(PetShopSummary):

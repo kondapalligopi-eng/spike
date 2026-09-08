@@ -67,15 +67,26 @@ class Settings(BaseSettings):
     # otherwise throttle itself. See app/core/ratelimit.py for the rules.
     RATE_LIMIT_ENABLED: bool = True
 
+    # Storefronts kept out of the public directory: demo and staging shops
+    # that exist for us to click through, not for visitors to find. They are
+    # still returned to admins, and the storefront URL still works, so a demo
+    # can be shared deliberately. Comma-separated slugs; case-insensitive.
+    HIDDEN_SHOP_SLUGS: List[str] = ["petshopdemo"]
+
     # Environment
     ENVIRONMENT: str = "development"
 
-    @field_validator("CORS_ORIGINS", mode="before")
+    @field_validator("CORS_ORIGINS", "HIDDEN_SHOP_SLUGS", mode="before")
     @classmethod
-    def parse_cors_origins(cls, v: object) -> List[str]:
+    def parse_csv_list(cls, v: object) -> List[str]:
         if isinstance(v, str):
-            return [origin.strip() for origin in v.split(",") if origin.strip()]
+            return [item.strip() for item in v.split(",") if item.strip()]
         return v  # type: ignore[return-value]
+
+    @property
+    def hidden_shop_slugs(self) -> set[str]:
+        """Lower-cased for comparison — slugs are matched case-insensitively."""
+        return {slug.strip().lower() for slug in self.HIDDEN_SHOP_SLUGS if slug.strip()}
 
     @property
     def is_production(self) -> bool:
