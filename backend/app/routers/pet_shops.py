@@ -9,6 +9,7 @@ from sqlalchemy import desc, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
+from app.config import settings
 from app.core.dependencies import get_current_active_user, require_admin
 from app.database import get_db
 from app.models.pet_shop import PetShop, ShopOrder, ShopPhoto, ShopProduct, ShopUpdate
@@ -161,6 +162,13 @@ async def _order_or_404(db: AsyncSession, order_id: uuid.UUID) -> ShopOrder:
 # --- specific routes before "/{shop_id}" so they aren't captured --------------
 
 
+def _summarise(shop: PetShop) -> PetShopSummary:
+    """Summary with the hidden flag filled in from settings."""
+    summary = PetShopSummary.model_validate(shop)
+    summary.hidden = shop.slug.lower() in settings.hidden_shop_slugs
+    return summary
+
+
 @router.get(
     "",
     response_model=list[PetShopSummary],
@@ -171,7 +179,7 @@ async def list_all_shops(
     _admin: User = Depends(require_admin),
 ) -> list[PetShopSummary]:
     result = await db.execute(select(PetShop).order_by(desc(PetShop.created_at)))
-    return [PetShopSummary.model_validate(r) for r in result.scalars().all()]
+    return [_summarise(r) for r in result.scalars().all()]
 
 
 @router.get(
@@ -184,10 +192,15 @@ async def recent_shops(
     db: AsyncSession = Depends(get_db),
 ) -> list[PetShopSummary]:
     limit = max(1, min(limit, 24))
-    result = await db.execute(
-        select(PetShop).order_by(desc(PetShop.created_at)).limit(limit)
-    )
-    return [PetShopSummary.model_validate(r) for r in result.scalars().all()]
+    query = select(PetShop).order_by(desc(PetShop.created_at))
+    # Demo and staging storefronts never reach the public directory. Filtered in
+    # the query rather than after fetching, so a hidden shop doesn't eat one of
+    # the `limit` slots and isn't in the response for anyone to read.
+    hidden = settings.hidden_shop_slugs
+    if hidden:
+        query = query.where(func.lower(PetShop.slug).notin_(sorted(hidden)))
+    result = await db.execute(query.limit(limit))
+    return [_summarise(r) for r in result.scalars().all()]
 
 
 @router.get(
@@ -204,7 +217,9 @@ async def list_my_shops(
         .where(PetShop.owner_id == current_user.id)
         .order_by(desc(PetShop.created_at))
     )
-    return [PetShopSummary.model_validate(r) for r in result.scalars().all()]
+    # An owner always sees their own shop, hidden or not — they'd otherwise
+    # think it had been deleted.
+    return [_summarise(r) for r in result.scalars().all()]
 
 
 @router.get(
@@ -228,7 +243,11 @@ async def get_shop_by_slug(
     shop = result.scalar_one_or_none()
     if shop is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Shop not found")
-    return PetShopRead.model_validate(shop)
+    full = PetShopRead.model_validate(shop)
+    # The page stays reachable by URL even when hidden — a demo is meant to be
+    # shared deliberately. The flag just tells the page it is not in the directory.
+    full.hidden = shop.slug.lower() in settings.hidden_shop_slugs
+    return full
 
 
 @router.get(

@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { listRecentShops } from '@/api/petShops';
+import { listAllShops, listRecentShops } from '@/api/petShops';
 import { PageHead } from '@/components/PageHead';
 import { HeroPaws } from '@/components/HeroPaws';
 import { useAuth } from '@/hooks/useAuth';
@@ -8,10 +8,13 @@ import { useBackendWarmup } from '@/lib/warmupBackend';
 
 export function PetShops() {
   useBackendWarmup();
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
+  // Demo storefronts are filtered out of the public list server-side. Admins
+  // read the moderation list instead, which still includes them, so the demo
+  // stays one click away for us without being part of the directory.
   const { data, isLoading } = useQuery({
-    queryKey: ['pet-shops-directory'],
-    queryFn: () => listRecentShops(24),
+    queryKey: ['pet-shops-directory', isAdmin],
+    queryFn: () => (isAdmin ? listAllShops() : listRecentShops(24)),
   });
   const shops = data ?? [];
 
@@ -86,6 +89,11 @@ export function PetShops() {
                     className="absolute inset-0 rounded-3xl"
                     aria-label={`View ${s.name}`}
                   />
+                  {s.hidden && (
+                    <span className="absolute top-3 left-3 z-10 inline-flex items-center gap-1 rounded-full border border-amber-300 bg-amber-50 px-3 py-1 text-xs font-bold text-amber-700">
+                      Admin only
+                    </span>
+                  )}
                   {isOwner && (
                     <Link
                       to="/my-shop"

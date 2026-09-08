@@ -76,6 +76,9 @@ export type PetShopSummary = {
   owner_id: string;
   created_at: string;
   updated_at: string;
+  /** Kept out of the public directory — a demo or staging storefront.
+   *  Server-computed; only admin and owner lists ever return it true. */
+  hidden?: boolean;
 };
 
 export type PetShopRead = PetShopSummary & {
