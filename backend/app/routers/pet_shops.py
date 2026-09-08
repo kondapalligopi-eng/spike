@@ -9,7 +9,13 @@ from sqlalchemy import desc, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.core.dependencies import get_current_active_user, require_admin
+from app.config import settings
+from app.core.dependencies import (
+    get_current_active_user,
+    get_optional_user,
+    is_admin,
+    require_admin,
+)
 from app.database import get_db
 from app.models.pet_shop import PetShop, ShopOrder, ShopPhoto, ShopProduct, ShopUpdate
 from app.models.user import User, UserRole
@@ -161,6 +167,13 @@ async def _order_or_404(db: AsyncSession, order_id: uuid.UUID) -> ShopOrder:
 # --- specific routes before "/{shop_id}" so they aren't captured --------------
 
 
+def _summarise(shop: PetShop) -> PetShopSummary:
+    """Summary with the hidden flag filled in from settings."""
+    summary = PetShopSummary.model_validate(shop)
+    summary.hidden = shop.slug.lower() in settings.hidden_shop_slugs
+    return summary
+
+
 @router.get(
     "",
     response_model=list[PetShopSummary],
@@ -171,7 +184,7 @@ async def list_all_shops(
     _admin: User = Depends(require_admin),
 ) -> list[PetShopSummary]:
     result = await db.execute(select(PetShop).order_by(desc(PetShop.created_at)))
-    return [PetShopSummary.model_validate(r) for r in result.scalars().all()]
+    return [_summarise(r) for r in result.scalars().all()]
 
 
 @router.get(
@@ -184,10 +197,15 @@ async def recent_shops(
     db: AsyncSession = Depends(get_db),
 ) -> list[PetShopSummary]:
     limit = max(1, min(limit, 24))
-    result = await db.execute(
-        select(PetShop).order_by(desc(PetShop.created_at)).limit(limit)
-    )
-    return [PetShopSummary.model_validate(r) for r in result.scalars().all()]
+    query = select(PetShop).order_by(desc(PetShop.created_at))
+    # Demo and staging storefronts never reach the public directory. Filtered in
+    # the query rather than after fetching, so a hidden shop doesn't eat one of
+    # the `limit` slots and isn't in the response for anyone to read.
+    hidden = settings.hidden_shop_slugs
+    if hidden:
+        query = query.where(func.lower(PetShop.slug).notin_(sorted(hidden)))
+    result = await db.execute(query.limit(limit))
+    return [_summarise(r) for r in result.scalars().all()]
 
 
 @router.get(
@@ -204,7 +222,9 @@ async def list_my_shops(
         .where(PetShop.owner_id == current_user.id)
         .order_by(desc(PetShop.created_at))
     )
-    return [PetShopSummary.model_validate(r) for r in result.scalars().all()]
+    # An owner always sees their own shop, hidden or not — they'd otherwise
+    # think it had been deleted.
+    return [_summarise(r) for r in result.scalars().all()]
 
 
 @router.get(
@@ -215,6 +235,7 @@ async def list_my_shops(
 async def get_shop_by_slug(
     slug: str,
     db: AsyncSession = Depends(get_db),
+    viewer: User | None = Depends(get_optional_user),
 ) -> PetShopRead:
     result = await db.execute(
         select(PetShop)
@@ -228,7 +249,14 @@ async def get_shop_by_slug(
     shop = result.scalar_one_or_none()
     if shop is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Shop not found")
-    return PetShopRead.model_validate(shop)
+    hidden = shop.slug.lower() in settings.hidden_shop_slugs
+    if hidden and not is_admin(viewer):
+        # 404 rather than 403: a hidden storefront should look like it was
+        # never there, not like something worth guessing a password for.
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Shop not found")
+    full = PetShopRead.model_validate(shop)
+    full.hidden = hidden
+    return full
 
 
 @router.get(
@@ -240,6 +268,10 @@ async def get_shop_by_slug(
 async def shop_og(slug: str, db: AsyncSession = Depends(get_db)) -> HTMLResponse:
     result = await db.execute(select(PetShop).where(func.lower(PetShop.slug) == slug.lower()))
     shop = result.scalar_one_or_none()
+    # Crawlers never carry a token, so a hidden shop falls through to the
+    # generic card below — the same as a slug that does not exist.
+    if shop is not None and shop.slug.lower() in settings.hidden_shop_slugs:
+        shop = None
     shop_url = f"{SITE_URL}/petshop/{slug}"
     cache = {"Cache-Control": "public, max-age=300"}
 
