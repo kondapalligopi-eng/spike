@@ -67,6 +67,7 @@ function ServiceTile({ service, className = '', city }: { service: Service; clas
  * the tiles shrinking; a new service is one entry in SERVICES and nothing else.
  */
 function ServicesSection() {
+  const activeCity = useActiveCity();
   const rail = useScrollEdges('x'); // sm and up
   const stack = useScrollEdges('y'); // phones
 
@@ -161,6 +162,7 @@ function ServicesSection() {
 }
 
 export function Home() {
+  const activeCity = useActiveCity();
   // Wake the Render dyno the moment any user lands here, so by the time they
   // click into Hospital / Park / Swimming / Grooming the API is warm. Cheap
   // win for Google-search visitors who often land on Home first.
