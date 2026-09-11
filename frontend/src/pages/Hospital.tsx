@@ -13,31 +13,46 @@ import { WhatsAppLink } from '@/components/WhatsAppLink';
 import { useBackendWarmup } from '@/lib/warmupBackend';
 import { trackClick } from '@/lib/trackClick';
 import { useStaleShareFallback } from '@/hooks/useStaleShareFallback';
+import { useCity } from '@/hooks/useCity';
+import { isInCity, type City } from '@/lib/cities';
+import { NotFound } from '@/pages/NotFound';
 
-const HOSPITAL_FAQS: FaqItem[] = [
-  {
-    q: 'What are the best 24×7 vet hospitals in Bengaluru?',
-    a: 'Vetic Pet Clinic in HSR Layout and Cessna Lifeline Veterinary Hospital in Domlur both offer round-the-clock emergency care. Browse the HiSpike vet directory for full opening hours and reviews of every listed hospital.',
-  },
-  {
-    q: 'How do I find a vet near my Bengaluru neighbourhood?',
-    a: 'Use the Locations filter on the HiSpike vet listing page to narrow down by neighbourhood — Indiranagar, Koramangala, HSR Layout, Whitefield, Jayanagar, Domlur and more — and each card shows the locality, address, and phone.',
-  },
-  {
-    q: 'How do I book an appointment with a vet on HiSpike?',
-    a: 'Each listing has a "Book" button that links directly to the clinic\'s website, plus a "Call" button to ring them. For walk-in clinics you can just visit during their listed open hours.',
-  },
-  {
-    q: 'Are HiSpike vet listings verified?',
-    a: 'Yes. Every vet hospital, salon, trainer, and swim coach in our directory is checked by HiSpike before being listed — credentials, facilities, and recent reviews. We don\'t run paid placements.',
-  },
-];
+// Neighbourhood names only make sense where we have the listings to back them
+// up. Bengaluru gets the specific copy it has earned; a city we have just
+// opened gets the same answers without invented local detail.
+const BENGALURU_AREAS = 'Indiranagar, Koramangala, Whitefield, HSR Layout, Jayanagar, Domlur';
 
+function hospitalFaqs(city: City): FaqItem[] {
+  const isBengaluru = city.slug === 'bengaluru';
+  return [
+    {
+      q: `What are the best 24×7 vet hospitals in ${city.name}?`,
+      a: isBengaluru
+        ? 'Vetic Pet Clinic in HSR Layout and Cessna Lifeline Veterinary Hospital in Domlur both offer round-the-clock emergency care. Browse the HiSpike vet directory for full opening hours and reviews of every listed hospital.'
+        : `Every card lists opening hours, and the clinics running round-the-clock emergency care say so. Browse the HiSpike vet directory for ${city.name} to compare hours and reviews.`,
+    },
+    {
+      q: `How do I find a vet near my ${city.name} neighbourhood?`,
+      a: isBengaluru
+        ? `Use the Locations filter on the HiSpike vet listing page to narrow down by neighbourhood — ${BENGALURU_AREAS} and more — and each card shows the locality, address, and phone.`
+        : 'Use the Locations filter on this page to narrow down by neighbourhood. Every card shows the locality, address and phone number.',
+    },
+    {
+      q: 'How do I book an appointment with a vet on HiSpike?',
+      a: 'Each listing has a "Book" button that links directly to the clinic\'s website, plus a "Call" button to ring them. For walk-in clinics you can just visit during their listed open hours.',
+    },
+    {
+      q: 'Are HiSpike vet listings verified?',
+      a: 'Yes. Every vet hospital, salon, trainer, and swim coach in our directory is checked by HiSpike before being listed — credentials, facilities, and recent reviews. We don\'t run paid placements.',
+    },
+  ];
+}
 type Hospital = {
   /** Real row id — the key click tracking counts against. */
   id: string;
   name: string;
   locality: string;
+  city: string;
   address: string;
   specialties: string;
   rating: string;
@@ -110,6 +125,7 @@ function normaliseApiHospital(h: HospitalRead): Hospital {
     id: h.id,
     name: h.name,
     locality: h.locality,
+    city: h.city,
     address: h.address,
     specialties: h.specialties ?? '',
     rating: h.rating ?? '',
@@ -187,7 +203,9 @@ export function Hospital() {
   const [search, setSearch] = useState('');
   const [specialty, setSpecialty] = useState(ALL_SPECIALTIES);
   const [location, setLocation] = useState(ALL_LOCATIONS);
-  const [activeCity, setActiveCity] = useState<string | null>(null);
+  const city = useCity();
+  // Not the city directory — a locality substring filter that predates it.
+  const [activeArea] = useState<string | null>(null);
   const [applied, setApplied] = useState({ search: '', specialty: ALL_SPECIALTIES, location: ALL_LOCATIONS });
 
   // Apply a search passed via the URL (?q=…) from the global navbar search.
@@ -207,9 +225,14 @@ export function Hospital() {
     staleTime: 30_000,
   });
 
+  // Every city reads the same endpoint and keeps only its own rows. The
+  // directory is small enough that filtering here beats a per-city request.
   const allHospitals = useMemo(
-    () => (adminHospitalsQuery.data ?? []).map(normaliseApiHospital),
-    [adminHospitalsQuery.data],
+    () =>
+      (adminHospitalsQuery.data ?? [])
+        .filter((h) => (city ? isInCity(h.city, city) : false))
+        .map(normaliseApiHospital),
+    [adminHospitalsQuery.data, city],
   );
 
   // Filter dropdowns + chip row are derived from the combined list so admin-
@@ -312,7 +335,7 @@ export function Hospital() {
   const [currentPage, setCurrentPage] = useState(1);
   useEffect(() => {
     setCurrentPage(1);
-  }, [applied, activeCity]);
+  }, [applied, activeArea, city]);
 
   const filteredHospitals = allHospitals
     .filter((h) => {
@@ -320,7 +343,7 @@ export function Hospital() {
       if (q && !`${h.name} ${h.locality} ${h.specialties}`.toLowerCase().includes(q)) return false;
       if (applied.specialty !== ALL_SPECIALTIES && !h.specialties.toLowerCase().includes(applied.specialty.toLowerCase())) return false;
       if (applied.location !== ALL_LOCATIONS && !h.locality.toLowerCase().includes(applied.location.toLowerCase())) return false;
-      if (activeCity && !h.locality.toLowerCase().includes(activeCity.toLowerCase())) return false;
+      if (activeArea && !h.locality.toLowerCase().includes(activeArea.toLowerCase())) return false;
       return true;
     })
     .sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
