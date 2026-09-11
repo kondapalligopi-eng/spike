@@ -4,6 +4,8 @@ import { useQuery } from '@tanstack/react-query';
 import { getSalon, type GroomingSalonData } from '@/data/groomingSalons';
 import { listGroomingSalons, type GroomingSalonRead } from '@/api/groomingSalons';
 import { ShareButtons } from '@/components/ShareButtons';
+import { useCity } from '@/hooks/useCity';
+import { DEFAULT_CITY } from '@/lib/cities';
 
 function Stars({ value }: { value: number }) {
   return (
@@ -71,6 +73,9 @@ function apiToSalonData(api: GroomingSalonRead): GroomingSalonData {
 
 export function GroomingSalon() {
   const { slug } = useParams<{ slug: string }>();
+  // A salon is identified by its own slug, so an unrecognised city segment is
+  // cosmetic here — fall back rather than 404 a page that genuinely exists.
+  const citySlug = (useCity() ?? DEFAULT_CITY).slug;
 
   // Fetch admin-added salons; we'll fall through to this list if the slug
   // doesn't match the static data file.
@@ -116,7 +121,7 @@ export function GroomingSalon() {
           We couldn't find a grooming salon at that location.
         </p>
         <Link
-          to="/grooming"
+          to={`/${citySlug}/grooming`}
           className="inline-block px-5 py-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-semibold rounded-md transition-colors"
         >
           See all salons
@@ -137,7 +142,7 @@ export function GroomingSalon() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         {/* Back to results */}
         <Link
-          to="/grooming"
+          to={`/${citySlug}/grooming`}
           className="inline-flex items-center gap-2 mb-6 px-4 py-2 rounded-full bg-white border-2 border-warm-300 text-warm-700 text-sm font-semibold hover:border-primary-500 hover:text-primary-700 hover:shadow-sm transition-all"
         >
           <svg aria-hidden="true" className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -243,7 +248,7 @@ export function GroomingSalon() {
                   unique per salon and the slug this page was opened with. */}
               <ShareButtons
                 name={salon.name}
-                url={`/grooming/${shareSlug}`}
+                url={`/${citySlug}/grooming/${shareSlug}`}
                 context={`${salon.area}, ${salon.city}`}
                 track={{ category: 'grooming', id: shareSlug }}
               />

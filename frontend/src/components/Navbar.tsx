@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/useAuth';
 import { SOCIAL } from '@/lib/social';
@@ -10,6 +10,17 @@ import { listGroomingSalons } from '@/api/groomingSalons';
 import { listPetFoods } from '@/api/petFoods';
 import { AuthTransitionOverlay } from './AuthTransitionOverlay';
 import { HelpfulButton } from './HelpfulButton';
+import { useActiveCity } from '@/hooks/useActiveCity';
+import { LIVE_CITIES, type City } from '@/lib/cities';
+
+// The four directories live under a city; every other link is the same
+// whichever city you are browsing. Rewriting at render keeps one list of
+// nav items instead of one per city.
+const CITY_SEGMENTS = ['hospital', 'park', 'swimming', 'grooming'];
+function withCity(to: string, city: City): string {
+  const segment = to.replace(/^\//, '');
+  return CITY_SEGMENTS.includes(segment) ? `/${city.slug}/${segment}` : to;
+}
 
 type DrawerItem = { label: string; to: string };
 
@@ -40,7 +51,7 @@ type SearchEntry = { title: string; subtitle?: string; section: string; to: stri
 // built dynamically from live data (see searchIndex below) so search finds
 // every current listing, not a hardcoded sample.
 const STATIC_SERVICES: SearchEntry[] = [
-  { section: 'Services', title: 'Hospital', subtitle: 'Vet care across Bangalore', to: '/hospital' },
+  { section: 'Services', title: 'Hospital', subtitle: 'Vet care near you', to: '/hospital' },
   { section: 'Services', title: 'Park', subtitle: 'Dog-friendly parks & lakes', to: '/park' },
   { section: 'Services', title: 'Swimming', subtitle: 'Aquatic training', to: '/swimming' },
   { section: 'Services', title: 'Grooming', subtitle: 'Salon & spa', to: '/grooming' },
@@ -68,6 +79,8 @@ function SocialIcon({ label, children, href }: { label: string; children: React.
 export function Navbar() {
   const { isAuthenticated, isAdmin, displayName, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const activeCity = useActiveCity();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -131,7 +144,8 @@ export function Navbar() {
   const goToResult = (entry: SearchEntry) => {
     setSearchOpen(false);
     setSearchQuery('');
-    navigate(entry.q ? `${entry.to}?q=${encodeURIComponent(entry.q)}` : entry.to);
+    const to = withCity(entry.to, activeCity);
+    navigate(entry.q ? `${to}?q=${encodeURIComponent(entry.q)}` : to);
   };
 
   const [signingOut, setSigningOut] = useState(false);
@@ -277,12 +291,42 @@ export function Navbar() {
             mobile users can jump between services without opening the
             drawer. Horizontally scrollable on narrow screens. */}
         <nav className="bg-primary-50 border-t border-warm-200">
+          {/* Only shown once a second city is live — a switcher with one
+              option is just clutter. See lib/cities.ts. */}
+          {LIVE_CITIES.length > 1 && (
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-2 flex items-center gap-2">
+              <span className="text-[11px] font-semibold uppercase tracking-[0.15em] text-warm-500">
+                City
+              </span>
+              <select
+                value={activeCity.slug}
+                onChange={(e) => {
+                  const next = LIVE_CITIES.find((c) => c.slug === e.target.value);
+                  if (!next) return;
+                  // Stay on the same category in the new city where we can,
+                  // so switching city does not also lose your place.
+                  const segment = location.pathname.split("/").filter(Boolean)[1];
+                  navigate(
+                    segment && CITY_SEGMENTS.includes(segment)
+                      ? `/${next.slug}/${segment}`
+                      : `/${next.slug}/hospital`,
+                  );
+                }}
+                aria-label="Choose city"
+                className="rounded-full border-2 border-warm-200 bg-white px-3 py-1 text-xs font-bold text-warm-800 outline-none focus:border-primary-400"
+              >
+                {LIVE_CITIES.map((c) => (
+                  <option key={c.slug} value={c.slug}>{c.name}</option>
+                ))}
+              </select>
+            </div>
+          )}
           <div className="max-w-7xl mx-auto overflow-x-auto">
             <div className="flex items-center justify-start md:justify-center gap-6 md:gap-10 px-4 sm:px-6 lg:px-8 py-3 min-w-max">
-              <NavLink to="/hospital" className={navLinkClass}>Hospital</NavLink>
-              <NavLink to="/park" className={navLinkClass}>Park</NavLink>
-              <NavLink to="/swimming" className={navLinkClass}>Swimming</NavLink>
-              <NavLink to="/grooming" className={navLinkClass}>Grooming</NavLink>
+              <NavLink to={`/${activeCity.slug}/hospital`} className={navLinkClass}>Hospital</NavLink>
+              <NavLink to={`/${activeCity.slug}/park`} className={navLinkClass}>Park</NavLink>
+              <NavLink to={`/${activeCity.slug}/swimming`} className={navLinkClass}>Swimming</NavLink>
+              <NavLink to={`/${activeCity.slug}/grooming`} className={navLinkClass}>Grooming</NavLink>
               <NavLink to="/petshops" className={navLinkClass}>Pet Shops</NavLink>
               <NavLink to="/pet-stories" className={navLinkClass}>Pet Stories</NavLink>
               <NavLink to="/pet-play" className={navLinkClass}>Pet Play</NavLink>
@@ -414,7 +458,7 @@ export function Navbar() {
                 {DRAWER_TOP.map((item) => (
                   <li key={item.to} className="border-b border-warm-200">
                     <NavLink
-                      to={item.to}
+                      to={withCity(item.to, activeCity)}
                       end={item.to === '/'}
                       onClick={closeDrawer}
                       className={({ isActive }) =>
@@ -489,7 +533,7 @@ export function Navbar() {
                 {DRAWER_BOTTOM.map((item) => (
                   <li key={item.label} className="border-b border-warm-200">
                     <Link
-                      to={item.to}
+                      to={withCity(item.to, activeCity)}
                       onClick={closeDrawer}
                       className="block px-6 py-4 text-sm font-bold uppercase tracking-[0.15em] text-warm-900 hover:text-primary-700 transition-colors"
                     >

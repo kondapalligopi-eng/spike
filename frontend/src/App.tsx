@@ -34,6 +34,9 @@ import { Newsroom } from '@/pages/Newsroom';
 import { Blog } from '@/pages/Blog';
 import { BlogPost } from '@/pages/BlogPost';
 import { BLOG_POST_SLUGS } from '@/content/blogPosts';
+import { CITIES } from '@/lib/cities';
+import { LegacyCategoryRedirect } from '@/components/LegacyCategoryRedirect';
+import { LegacySalonRedirect } from '@/components/LegacyCategoryRedirect';
 import { Careers } from '@/pages/Careers';
 import { Feedback } from '@/pages/Feedback';
 import { TermsOfService } from '@/pages/TermsOfService';
@@ -63,6 +66,16 @@ function RouteFallback() {
   );
 }
 
+// Only live cities get pre-rendered HTML. Flipping a city live in
+// lib/cities.ts is what publishes its pages.
+const CITY_PATHS = CITIES.filter((c) => c.live).map((c) => c.slug);
+
+const LEGACY_CATEGORIES = ['hospital', 'park', 'swimming', 'grooming'] as const;
+const LEGACY_CATEGORY_REDIRECTS: RouteRecord[] = LEGACY_CATEGORIES.map((segment) => ({
+  path: segment,
+  element: <LegacyCategoryRedirect segment={segment} />,
+}));
+
 export const routes: RouteRecord[] = [
   {
     element: <RootShell />,
@@ -80,11 +93,42 @@ export const routes: RouteRecord[] = [
           { path: 'reset-password', Component: ResetPassword },
           { path: 'dogs', Component: Dogs },
           { path: 'dogs/:id', Component: DogDetail },
-          { path: 'swimming', Component: Swimming },
-          { path: 'hospital', Component: Hospital },
-          { path: 'park', Component: Park },
-          { path: 'grooming', Component: Grooming },
-          { path: 'grooming/:slug', Component: GroomingSalon },
+          // The four directories are city-scoped: /bengaluru/hospital and so
+          // on. Only live cities are pre-rendered — an unlaunched city still
+          // resolves client-side so it can be previewed, but it must not ship
+          // a near-empty page for crawlers to index. See lib/cities.ts.
+          {
+            path: ':city/hospital',
+            Component: Hospital,
+            getStaticPaths: () => CITY_PATHS.map((c) => `${c}/hospital`),
+          },
+          {
+            path: ':city/park',
+            Component: Park,
+            getStaticPaths: () => CITY_PATHS.map((c) => `${c}/park`),
+          },
+          {
+            path: ':city/swimming',
+            Component: Swimming,
+            getStaticPaths: () => CITY_PATHS.map((c) => `${c}/swimming`),
+          },
+          {
+            path: ':city/grooming',
+            Component: Grooming,
+            getStaticPaths: () => CITY_PATHS.map((c) => `${c}/grooming`),
+          },
+          // A salon page is reached from inside a city but identified by its
+          // own slug, so the city segment is presentational here.
+          { path: ':city/grooming/:slug', Component: GroomingSalon },
+
+          // Pre-multi-city URLs. Render answers these with a 301 in front of
+          // the app (dashboard rule); these routes are the fallback for any
+          // request that reaches the SPA anyway, so an old bookmark or an
+          // internal link never dead-ends.
+          ...LEGACY_CATEGORY_REDIRECTS,
+          // Salon pages were shared as /grooming/<slug> before cities. Those
+          // links are out in the world, so keep them resolving.
+          { path: 'grooming/:slug', Component: LegacySalonRedirect },
           { path: 'pet-supplies', Component: PetSupplies },
           { path: 'dog-walking', Component: DogWalking },
           // Public, shareable dog page — slug is user-created, so it renders

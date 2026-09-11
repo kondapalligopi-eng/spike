@@ -68,13 +68,17 @@ import { listUsers, deleteUser } from '@/api/users';
 import { listAllShops, deleteShop } from '@/api/petShops';
 import { counterKey, type TrackCategory } from '@/lib/trackClick';
 import { GROOMING_SALONS } from '@/data/groomingSalons';
+import {
+  CITY_NAMES,
+  DEFAULT_CITY as SITE_DEFAULT_CITY,
+  cityByName,
+} from '@/lib/cities';
 
-// Cities HiSpike runs a directory for. A fixed list rather than free text on
-// purpose: one admin typing "Bangalore" and another "Bengaluru" would split a
-// city's listings in two, and the city is what every page will filter on.
-// Add a city here when its directory is ready to be filled.
-const CITIES = ['Bengaluru', 'Pune', 'Hyderabad', 'Mumbai'] as const;
-const DEFAULT_CITY = CITIES[0];
+// The picker offers every city we run a directory for, live or not — a city
+// has to be filled before it can go live. lib/cities.ts is the one list; a
+// second copy here is how "Bangalore" and "Bengaluru" end up as two cities.
+const CITIES = CITY_NAMES;
+const DEFAULT_CITY = SITE_DEFAULT_CITY.name;
 
 // Localities offered for Bengaluru. Other cities take free text until one of
 // them has enough listings to be worth curating a list for.
@@ -3314,6 +3318,12 @@ const EXPORT_CONFIGS: ExportConfig[] = [
 
 const SITE_URL = 'https://www.hispike.in';
 
+/** A listing stores its city by name; the URL needs the slug. An unknown
+ *  name falls back to the default rather than building a dead link. */
+function citySlugOf(name: string | null | undefined): string {
+  return (cityByName(name) ?? SITE_DEFAULT_CITY).slug;
+}
+
 type OutreachRow = {
   id: string;
   name: string;
@@ -3345,7 +3355,7 @@ const OUTREACH_CARDS: OutreachCard[] = [
         name: r.name,
         where: r.locality,
         phone: r.phone,
-        url: `${SITE_URL}/hospital?q=${encodeURIComponent(r.name)}`,
+        url: `${SITE_URL}/${citySlugOf(r.city)}/hospital?q=${encodeURIComponent(r.name)}`,
       })),
   },
   {
@@ -3359,7 +3369,7 @@ const OUTREACH_CARDS: OutreachCard[] = [
         name: r.name,
         where: r.locality,
         phone: r.phone,
-        url: `${SITE_URL}/park?q=${encodeURIComponent(r.name)}`,
+        url: `${SITE_URL}/${citySlugOf(r.city)}/park?q=${encodeURIComponent(r.name)}`,
       })),
   },
   {
@@ -3373,7 +3383,7 @@ const OUTREACH_CARDS: OutreachCard[] = [
         name: r.name,
         where: r.locality,
         phone: r.phone,
-        url: `${SITE_URL}/swimming?q=${encodeURIComponent(r.name)}`,
+        url: `${SITE_URL}/${citySlugOf(r.city)}/swimming?q=${encodeURIComponent(r.name)}`,
       })),
   },
   {
@@ -3388,7 +3398,7 @@ const OUTREACH_CARDS: OutreachCard[] = [
         where: r.area,
         phone: r.phone,
         // Grooming is the one category with a real per-listing page.
-        url: `${SITE_URL}/grooming/${nameToSlug(r.name, r.id)}`,
+        url: `${SITE_URL}/${citySlugOf(r.city)}/grooming/${nameToSlug(r.name, r.id)}`,
       })),
   },
 ];

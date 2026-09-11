@@ -12,26 +12,53 @@ import { SelectMenu } from '@/components/SelectMenu';
 import { WhatsAppLink } from '@/components/WhatsAppLink';
 import { useBackendWarmup } from '@/lib/warmupBackend';
 import { useStaleShareFallback } from '@/hooks/useStaleShareFallback';
+import { useCity } from '@/hooks/useCity';
+import { isInCity, type City } from '@/lib/cities';
+import { NotFound } from '@/pages/NotFound';
 
-const PARK_FAQS: FaqItem[] = [
-  {
-    q: 'What are the most dog-friendly parks in Bengaluru?',
-    a: 'Cubbon Park, Lalbagh Botanical Garden, and Agara Lake Park are popular dog-friendly choices. Bellandur Lake Park, Indiranagar Defence Colony Park, and Whitefield Memorial Park also have dedicated areas for dogs.',
-  },
-  {
-    q: 'Which Bengaluru parks allow off-leash dogs?',
-    a: 'Several parks have designated off-leash zones — Cubbon Park (in designated areas only), Indiranagar Defence Colony Park, and Whitefield Memorial Park. Others like Agara Lake and Lalbagh are on-leash only. Each park\'s listing shows the policy.',
-  },
-  {
-    q: 'Are dogs allowed in Cubbon Park?',
-    a: 'Yes. Cubbon Park welcomes dogs and has designated off-leash areas. Most Bengaluru dog parents visit early morning (5–8 am) or evenings to avoid peak crowds and afternoon heat.',
-  },
-  {
-    q: 'Is there an entry fee for Bengaluru dog parks?',
-    a: 'Most neighbourhood parks like Cubbon, Agara Lake, and Indiranagar Defence Colony are free. Lalbagh Botanical Garden charges a small ₹20 entry. Each park\'s HiSpike listing shows current cost details.',
-  },
-];
-
+// The Bengaluru answers name real parks, which is what makes them worth
+// reading. A city we have just opened gets the same questions answered
+// honestly from its own listings rather than borrowed local colour.
+function parkFaqs(city: City): FaqItem[] {
+  if (city.slug === 'bengaluru') {
+    return [
+      {
+        q: 'What are the most dog-friendly parks in Bengaluru?',
+        a: 'Cubbon Park, Lalbagh Botanical Garden, and Agara Lake Park are popular dog-friendly choices. Bellandur Lake Park, Indiranagar Defence Colony Park, and Whitefield Memorial Park also have dedicated areas for dogs.',
+      },
+      {
+        q: 'Which Bengaluru parks allow off-leash dogs?',
+        a: 'Several parks have designated off-leash zones — Cubbon Park (in designated areas only), Indiranagar Defence Colony Park, and Whitefield Memorial Park. Others like Agara Lake and Lalbagh are on-leash only. Each park\'s listing shows the policy.',
+      },
+      {
+        q: 'Are dogs allowed in Cubbon Park?',
+        a: 'Yes. Cubbon Park welcomes dogs and has designated off-leash areas. Most Bengaluru dog parents visit early morning (5–8 am) or evenings to avoid peak crowds and afternoon heat.',
+      },
+      {
+        q: 'Is there an entry fee for Bengaluru dog parks?',
+        a: 'Most neighbourhood parks like Cubbon, Agara Lake, and Indiranagar Defence Colony are free. Lalbagh Botanical Garden charges a small ₹20 entry. Each park\'s HiSpike listing shows current cost details.',
+      },
+    ];
+  }
+  return [
+    {
+      q: `What are the most dog-friendly parks in ${city.name}?`,
+      a: `Every park listed here is one dogs are welcome in. Each card shows the locality, opening hours and whether there is a dedicated area for dogs, so you can pick the one closest to you.`,
+    },
+    {
+      q: `Which ${city.name} parks allow off-leash dogs?`,
+      a: 'Off-leash policy varies park to park, and plenty are on-leash only. Every listing states the policy — check the card before you unclip.',
+    },
+    {
+      q: 'When is the best time to take a dog to a park in India?',
+      a: 'Early morning (5–8 am) and evening. Afternoon ground can be hot enough to hurt paws for most of the year, and parks are quieter at either end of the day.',
+    },
+    {
+      q: `Is there an entry fee for ${city.name} dog parks?`,
+      a: 'Most neighbourhood parks are free; botanical gardens and larger managed parks sometimes charge a small entry. Each listing shows current cost details where we have them.',
+    },
+  ];
+}
 // Comprehensive list of Bangalore neighbourhoods used by the
 // "List your park" registration form. Same list as the Hospital page.
 const BANGALORE_NEIGHBOURHOODS = [
@@ -52,6 +79,7 @@ type ParkSpot = {
   id: string;
   name: string;
   locality: string;
+  city: string;
   rating: number;
   image: string;
   address: string;
@@ -76,6 +104,7 @@ function apiToSpot(p: ParkRead): ParkSpot {
     id: p.id,
     name: p.name,
     locality: p.locality,
+    city: p.city,
     rating: p.rating,
     image: p.image_url ?? '',
     address: p.address ?? '',
@@ -185,6 +214,7 @@ export function Park() {
   }, [searchParams]);
   const [locationFilter, setLocationFilter] = useState('');
   const [activeCity, setActiveCity] = useState<string | null>(null);
+  const city = useCity();
   const [selectedSpot, setSelectedSpot] = useState<ParkSpot | null>(null);
 
   // Fetch parks from the API (mock store in dev). Falls open if the
@@ -194,9 +224,13 @@ export function Park() {
     queryFn: listParks,
     staleTime: 30_000,
   });
+  // Same endpoint for every city; each page keeps only its own rows.
   const allSpots = useMemo<ParkSpot[]>(
-    () => (parksQuery.data ?? []).map(apiToSpot),
-    [parksQuery.data],
+    () =>
+      (parksQuery.data ?? [])
+        .filter((p) => (city ? isInCity(p.city, city) : false))
+        .map(apiToSpot),
+    [parksQuery.data, city],
   );
   const PARK_LOCALITIES = useMemo(
     () =>
@@ -325,14 +359,18 @@ export function Park() {
       spot.website && { icon: '🌐', label: 'Website', value: spot.website, link: false as const },
     ].filter(Boolean) as { icon: string; label: string; value: string; link: boolean }[];
 
+  // Unknown slug is a 404, never a silent fallback to another city.
+  if (!city) return <NotFound />;
+
   return (
     <div className="bg-white">
       <PageHead
-        title="Dog-Friendly Parks in Bengaluru"
-        description="Discover the best dog parks across Bengaluru — Cubbon, Lalbagh, Agara Lake, and neighbourhood parks across Indiranagar, Whitefield, HSR Layout, Koramangala and beyond. Off-leash zones, walking trails, opening hours."
-        path="/park"
+        title={`Dog-Friendly Parks in ${city.name}`}
+        description={`Discover the best dog parks across ${city.name} — off-leash zones, walking trails, opening hours and entry costs, neighbourhood by neighbourhood.`}
+        path={`/${city.slug}/park`}
+        noindex={!city.live}
       />
-      <FaqSchema faqs={PARK_FAQS} />
+      <FaqSchema faqs={parkFaqs(city)} />
       {/* Title hero — same gradient + paw-print + eyebrow language as the
           Hospital page so the brand carries across pages. Only shown on
           the listing view; the detail view has its own back-button header. */}
@@ -343,14 +381,14 @@ export function Park() {
             <span aria-hidden="true" className="text-4xl sm:text-5xl drop-shadow">🌳</span>
             <div className="flex-1">
               <p className="text-[11px] sm:text-xs font-semibold tracking-[0.3em] text-accent-400 uppercase mb-1">
-                Outdoors · Bangalore
+                Outdoors · {city.name}
               </p>
               <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight leading-tight">
-                Best Dog Parks in Bangalore
+                Best Dog Parks in {city.name}
               </h1>
               <div className="mt-2 h-0.5 w-16 bg-accent-400 rounded-full" />
               <p className="mt-2 text-sm text-primary-100/90 max-w-2xl">
-                Off-leash play areas, lakeside walks, and family-friendly green spaces — Cubbon Park, Lalbagh, Agara Lake, and neighbourhood parks across the city.
+                Off-leash play areas, lakeside walks, and family-friendly green spaces across {city.name}.
               </p>
             </div>
             <button
@@ -455,7 +493,7 @@ export function Park() {
               <div className="mb-6">
                 <ShareButtons
                   name={selectedSpot.name}
-                  url={`/park?q=${encodeURIComponent(selectedSpot.name)}`}
+                  url={`/${city.slug}/park?q=${encodeURIComponent(selectedSpot.name)}`}
                   context={selectedSpot.locality}
                   track={{ category: 'park', id: selectedSpot.id }}
                 />
@@ -711,7 +749,7 @@ export function Park() {
               <div className="flex items-start justify-between gap-4 mb-1">
                 <div>
                   <p className="text-[11px] font-semibold tracking-[0.3em] text-accent-600 uppercase mb-1">
-                    Outdoors · Bangalore
+                    Outdoors · {city.name}
                   </p>
                   <h2 id="register-park-title" className="text-2xl font-extrabold text-warm-900">
                     List your park
@@ -748,13 +786,27 @@ export function Park() {
 
                 <div className="block">
                   <span className="block text-sm font-semibold text-warm-900 mb-1">Locality <span className="text-red-500">*</span></span>
-                  <SelectMenu
-                    value={form.locality}
-                    onChange={(v) => setForm({ ...form, locality: v })}
-                    options={BANGALORE_NEIGHBOURHOODS}
-                    placeholder="Please select a locality"
-                    ariaLabel="Locality"
-                  />
+                  {city.slug === 'bengaluru' ? (
+                    <SelectMenu
+                      value={form.locality}
+                      onChange={(v) => setForm({ ...form, locality: v })}
+                      options={BANGALORE_NEIGHBOURHOODS}
+                      placeholder="Please select a locality"
+                      ariaLabel="Locality"
+                    />
+                  ) : (
+                    // The neighbourhood list is Bengaluru's. Other cities type
+                    // their own area until one has the listings to justify a
+                    // curated list.
+                    <input
+                      type="text"
+                      required
+                      value={form.locality}
+                      onChange={(e) => setForm({ ...form, locality: e.target.value })}
+                      placeholder={`Area within ${city.name}`}
+                      className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors"
+                    />
+                  )}
                 </div>
 
                 <label className="block">
