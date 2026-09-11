@@ -11,22 +11,22 @@
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://hispike.in/hospital</loc>
+    <loc>https://hispike.in/bengaluru/hospital</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://hispike.in/park</loc>
+    <loc>https://hispike.in/bengaluru/park</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://hispike.in/swimming</loc>
+    <loc>https://hispike.in/bengaluru/swimming</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://hispike.in/grooming</loc>
+    <loc>https://hispike.in/bengaluru/grooming</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
