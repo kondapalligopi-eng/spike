@@ -4,6 +4,7 @@ import path from 'path'
 
 const PROTECTED_PATHS = ['/profile', '/my-dogs', '/my-dogs/new', '/admin'];
 
+
 export default defineConfig({
   plugins: [react()],
   resolve: {

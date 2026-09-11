@@ -10,26 +10,37 @@ import { HeroPaws } from '@/components/HeroPaws';
 import { SelectMenu } from '@/components/SelectMenu';
 import { WhatsAppLink } from '@/components/WhatsAppLink';
 import { useBackendWarmup } from '@/lib/warmupBackend';
+import { useCity } from '@/hooks/useCity';
+import { isInCity, type City } from '@/lib/cities';
+import { NotFound } from '@/pages/NotFound';
 
-const GROOMING_FAQS: FaqItem[] = [
-  {
-    q: 'Where can I get my dog groomed in Bengaluru?',
-    a: 'HiSpike lists verified grooming salons across Bengaluru — Pawsh Paws Studio (Indiranagar), Wagging Tails Pet Spa (Koramangala), Snip & Snout (HSR Layout), The Furry Tale (Whitefield), and more.',
-  },
-  {
-    q: 'How often should I groom my dog?',
-    a: 'It depends on coat type. Short-haired breeds typically need a full groom every 8–12 weeks; long-haired breeds (Shih Tzu, Spitz, Golden, Poodle) every 4–6 weeks. Walk-in nail trims and bath touch-ups can happen monthly.',
-  },
-  {
-    q: 'Do Bengaluru groomers do breed-specific styling?',
-    a: 'Yes. Salons like Pawsh Paws and Wagging Tails have academy-trained stylists who specialise in breed-specific cuts for Poodles, Shih Tzus, Spitzes, Goldens, and Indies.',
-  },
-  {
-    q: 'How much does dog grooming cost in Bengaluru?',
-    a: 'A full bath & groom typically runs ₹800–₹2,500 depending on breed, size, and salon. Walk-in services like nail trims or de-shedding are cheaper. Each salon\'s listing shows pricing details.',
-  },
-];
-
+// Bengaluru's answers name the salons we actually list. Other cities answer the
+// same questions from their own directory rather than borrowing local detail.
+function groomingFaqs(city: City): FaqItem[] {
+  const isBengaluru = city.slug === 'bengaluru';
+  return [
+    {
+      q: `Where can I get my dog groomed in ${city.name}?`,
+      a: isBengaluru
+        ? 'HiSpike lists verified grooming salons across Bengaluru — Pawsh Paws Studio (Indiranagar), Wagging Tails Pet Spa (Koramangala), Snip & Snout (HSR Layout), The Furry Tale (Whitefield), and more.'
+        : `HiSpike lists verified grooming salons across ${city.name}, tagged by neighbourhood so you can find the closest one. Each listing shows services, hours and a number to call.`,
+    },
+    {
+      q: 'How often should I groom my dog?',
+      a: 'It depends on coat type. Short-haired breeds typically need a full groom every 8–12 weeks; long-haired breeds (Shih Tzu, Spitz, Golden, Poodle) every 4–6 weeks. Walk-in nail trims and bath touch-ups can happen monthly.',
+    },
+    {
+      q: `Do ${city.name} groomers do breed-specific styling?`,
+      a: isBengaluru
+        ? 'Yes. Salons like Pawsh Paws and Wagging Tails have academy-trained stylists who specialise in breed-specific cuts for Poodles, Shih Tzus, Spitzes, Goldens, and Indies.'
+        : 'Many do. Breed-specific cuts for Poodles, Shih Tzus, Spitzes, Goldens and Indies need an academy-trained stylist — worth calling ahead to confirm the salon handles your breed.',
+    },
+    {
+      q: `How much does dog grooming cost in ${city.name}?`,
+      a: 'A full bath & groom typically runs ₹800–₹2,500 depending on breed, size, and salon. Walk-in services like nail trims or de-shedding are cheaper. Each salon\'s listing shows pricing details.',
+    },
+  ];
+}
 // Static (seeded) salons use bespoke area-based slugs hardcoded in
 // data/groomingSalons.ts. API-fed salons (admin-added) need a slug derived
 // from the *name* — area alone collides when multiple salons share a
@@ -147,6 +158,7 @@ function PaginationControls({ currentPage, totalPages, onChange }: PaginationPro
 
 export function Grooming() {
   useBackendWarmup();
+  const city = useCity();
   const [searchParams] = useSearchParams();
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
@@ -167,9 +179,13 @@ export function Grooming() {
     queryFn: listGroomingSalons,
     staleTime: 30_000,
   });
+  // Same endpoint for every city; each page keeps only its own rows.
   const allSalons = useMemo<SalonTile[]>(
-    () => (salonsQuery.data ?? []).map(apiToTile),
-    [salonsQuery.data],
+    () =>
+      (salonsQuery.data ?? [])
+        .filter((g) => (city ? isInCity(g.city, city) : false))
+        .map(apiToTile),
+    [salonsQuery.data, city],
   );
   const SALON_LOCALITIES = useMemo(
     () =>
@@ -266,28 +282,32 @@ export function Grooming() {
     safeCurrentPage * PAGE_SIZE,
   );
 
+  // Unknown slug is a 404, never a silent fallback to another city.
+  if (!city) return <NotFound />;
+
   return (
     <div className="bg-white">
       <PageHead
-        title="Pet Grooming Salons in Bengaluru"
-        description="Verified dog grooming salons across Bengaluru — Indiranagar, Koramangala, HSR Layout, Whitefield and more. Breed-specific styling, bath & full groom, walk-in touch-ups. Honest reviews and direct booking."
-        path="/grooming"
+        title={`Pet Grooming Salons in ${city.name}`}
+        description={`Verified dog grooming salons across ${city.name}. Breed-specific styling, bath & full groom, walk-in touch-ups. Honest reviews and direct booking.`}
+        path={`/${city.slug}/grooming`}
+        noindex={!city.live}
       />
-      <FaqSchema faqs={GROOMING_FAQS} />
+      <FaqSchema faqs={groomingFaqs(city)} />
       <section className="relative overflow-hidden bg-gradient-to-r from-primary-900 via-primary-800 to-primary-600 text-white">
         <HeroPaws />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-6">
           <span aria-hidden="true" className="text-4xl sm:text-5xl drop-shadow">✂️</span>
           <div className="flex-1">
             <p className="text-[11px] sm:text-xs font-semibold tracking-[0.3em] text-accent-400 uppercase mb-1">
-              Salons · Bangalore
+              Salons · {city.name}
             </p>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight leading-tight">
-              Best Dog Grooming Salons in Bangalore
+              Best Dog Grooming Salons in {city.name}
             </h1>
             <div className="mt-2 h-0.5 w-16 bg-accent-400 rounded-full" />
             <p className="mt-2 text-sm text-primary-100/90 max-w-2xl">
-              Bath, blow-dry, breed-specific styling, and walk-in touch-ups — Indiranagar, Koramangala, HSR Layout, Whitefield, and more.
+              Bath, blow-dry, breed-specific styling, and walk-in touch-ups across {city.name}.
             </p>
           </div>
           <button
@@ -405,7 +425,7 @@ export function Grooming() {
                 {pagedSalons.map((salon) => (
                   <Link
                     key={salon.slug + salon.name}
-                    to={`/grooming/${salon.slug}`}
+                    to={`/${city.slug}/grooming/${salon.slug}`}
                     className="rounded-md overflow-hidden bg-white shadow-sm hover:shadow-md transition-shadow group cursor-pointer flex flex-col"
                   >
                     <div className={`relative aspect-square bg-gradient-to-br ${salon.tint} flex items-center justify-center`}>
@@ -475,7 +495,7 @@ export function Grooming() {
               <div className="flex items-start justify-between gap-4 mb-1">
                 <div>
                   <p className="text-[11px] font-semibold tracking-[0.3em] text-accent-600 uppercase mb-1">
-                    Salons · Bangalore
+                    Salons · {city.name}
                   </p>
                   <h2 id="register-salon-title" className="text-2xl font-extrabold text-warm-900">
                     List your salon
@@ -505,20 +525,34 @@ export function Grooming() {
                     required
                     value={form.name}
                     onChange={(e) => setForm({ ...form, name: e.target.value })}
-                    placeholder="e.g. Bengaluru Pet Grooming Studio"
+                    placeholder={`e.g. ${city.name} Pet Grooming Studio`}
                     className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors"
                   />
                 </label>
 
                 <div className="block">
                   <span className="block text-sm font-semibold text-warm-900 mb-1">Locality <span className="text-red-500">*</span></span>
-                  <SelectMenu
-                    value={form.locality}
-                    onChange={(v) => setForm({ ...form, locality: v })}
-                    options={BANGALORE_NEIGHBOURHOODS}
-                    placeholder="Please select a locality"
-                    ariaLabel="Locality"
-                  />
+                  {city.slug === 'bengaluru' ? (
+                    <SelectMenu
+                      value={form.locality}
+                      onChange={(v) => setForm({ ...form, locality: v })}
+                      options={BANGALORE_NEIGHBOURHOODS}
+                      placeholder="Please select a locality"
+                      ariaLabel="Locality"
+                    />
+                  ) : (
+                    // The neighbourhood list is Bengaluru's. Other cities type
+                    // their own area until one has the listings to justify a
+                    // curated list.
+                    <input
+                      type="text"
+                      required
+                      value={form.locality}
+                      onChange={(e) => setForm({ ...form, locality: e.target.value })}
+                      placeholder={`Area within ${city.name}`}
+                      className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors"
+                    />
+                  )}
                 </div>
 
                 <label className="block">

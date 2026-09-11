@@ -12,13 +12,17 @@ type PageHeadProps = {
   /** Optional social-card image (absolute or root-relative). Drives the large
    *  preview thumbnail on WhatsApp/Facebook/X for shareable pages. */
   image?: string;
+  /** Keep the page out of search results. Used for city directories that
+   *  are not live yet — the URL works so it can be previewed, but a page
+   *  with no listings on it should never be indexed. */
+  noindex?: boolean;
 };
 
 // Per-page SEO + social-card meta. Set on every route via React Helmet so
 // vite-react-ssg's SSR captures it into each pre-rendered HTML — that's what
 // Google indexes. Without per-page meta, every page would share the site-wide
 // homepage <title>, which crushes long-tail ranking.
-export function PageHead({ title, description, path, image }: PageHeadProps) {
+export function PageHead({ title, description, path, image, noindex }: PageHeadProps) {
   const fullTitle = title.includes('HiSpike') ? title : `${title} | HiSpike`;
   const url = `${SITE_URL}${path.startsWith('/') ? path : `/${path}`}`;
   // Resolve a root-relative image to an absolute URL — crawlers require it.
@@ -31,6 +35,7 @@ export function PageHead({ title, description, path, image }: PageHeadProps) {
     <Head>
       <title>{fullTitle}</title>
       <meta name="description" content={description} />
+      {noindex && <meta name="robots" content="noindex, follow" />}
       <link rel="canonical" href={url} />
       <meta property="og:title" content={fullTitle} />
       <meta property="og:description" content={description} />

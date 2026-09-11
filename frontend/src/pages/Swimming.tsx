@@ -12,26 +12,37 @@ import { SelectMenu } from '@/components/SelectMenu';
 import { WhatsAppLink } from '@/components/WhatsAppLink';
 import { useBackendWarmup } from '@/lib/warmupBackend';
 import { useStaleShareFallback } from '@/hooks/useStaleShareFallback';
+import { useCity } from '@/hooks/useCity';
+import { isInCity, type City } from '@/lib/cities';
+import { NotFound } from '@/pages/NotFound';
 
-const SWIM_FAQS: FaqItem[] = [
-  {
-    q: 'Where can my dog learn to swim in Bengaluru?',
-    a: 'Specialised dog swim schools operate across Bengaluru — Indiranagar Aquatic Pet Centre, Whitefield Splash Academy, HSR Canine Swim Club, Sarjapur Splash & Paddle, Koramangala Pet Pool Club, and Domlur Aquatic Hub. Browse the HiSpike swim directory for verified options near you.',
-  },
-  {
-    q: 'Are there heated dog pools in Bengaluru?',
-    a: 'Yes. Most listed swim schools offer climate-controlled, heated pools (typically 28–30°C) so dogs can swim year-round regardless of monsoon or winter weather.',
-  },
-  {
-    q: 'Is swimming safe for puppies and senior dogs?',
-    a: 'Yes, with the right pool. Many Bengaluru swim schools offer dedicated puppy programs and hydrotherapy for senior or post-surgery dogs. Look for certified canine swim coaches, small-batch sessions, and life-jacket rental.',
-  },
-  {
-    q: 'How much does a dog swim session cost in Bengaluru?',
-    a: 'Typical cost is ₹500–₹650 for a 30-minute session. Monthly subscription packages often come with discounts. Each school\'s listing on HiSpike shows current pricing.',
-  },
-];
-
+// Bengaluru's answers name the pools we actually list. Other cities get the
+// same questions answered from their own directory instead of borrowed detail.
+function swimFaqs(city: City): FaqItem[] {
+  const isBengaluru = city.slug === 'bengaluru';
+  return [
+    {
+      q: `Where can my dog learn to swim in ${city.name}?`,
+      a: isBengaluru
+        ? 'Specialised dog swim schools operate across Bengaluru — Indiranagar Aquatic Pet Centre, Whitefield Splash Academy, HSR Canine Swim Club, Sarjapur Splash & Paddle, Koramangala Pet Pool Club, and Domlur Aquatic Hub. Browse the HiSpike swim directory for verified options near you.'
+        : `Specialised dog swim schools are listed here by neighbourhood, each with its pool type, session cost and opening hours. Browse the HiSpike swim directory for ${city.name} to find one near you.`,
+    },
+    {
+      q: `Are there heated dog pools in ${city.name}?`,
+      a: 'Many listed swim schools run climate-controlled, heated pools (typically 28–30°C) so dogs can swim year-round. Each listing states its pool type.',
+    },
+    {
+      q: 'Is swimming safe for puppies and senior dogs?',
+      a: 'Yes, with the right pool. Plenty of swim schools run dedicated puppy programs and hydrotherapy for senior or post-surgery dogs. Look for certified canine swim coaches, small-batch sessions, and life-jacket rental.',
+    },
+    {
+      q: `How much does a dog swim session cost in ${city.name}?`,
+      a: isBengaluru
+        ? 'Typical cost is ₹500–₹650 for a 30-minute session. Monthly subscription packages often come with discounts. Each school\'s listing on HiSpike shows current pricing.'
+        : 'Sessions are usually priced for 30 minutes, and monthly packages often come with discounts. Each school\'s listing on HiSpike shows current pricing where we have it.',
+    },
+  ];
+}
 const BANGALORE_NEIGHBOURHOODS = [
   'Banashankari', 'Banaswadi', 'Basavanagudi', 'Bellandur', 'Bommanahalli',
   'Brookefield', 'BTM Layout', 'CV Raman Nagar', 'Domlur', 'Electronic City',
@@ -51,6 +62,7 @@ type SwimSpot = {
   id: string;
   name: string;
   locality: string;
+  city: string;
   rating: number;
   image: string;
   address: string;
@@ -71,6 +83,7 @@ function apiToSpot(s: SwimSchoolRead): SwimSpot {
     id: s.id,
     name: s.name,
     locality: s.locality,
+    city: s.city,
     rating: s.rating,
     image: s.image_url ?? '',
     address: s.address,
@@ -170,6 +183,7 @@ export function Swimming() {
   }, [searchParams]);
   const [locationFilter, setLocationFilter] = useState('');
   const [activeCity, setActiveCity] = useState<string | null>(null);
+  const city = useCity();
   const [selectedSpot, setSelectedSpot] = useState<SwimSpot | null>(null);
 
   const swimSchoolsQuery = useQuery({
@@ -177,9 +191,13 @@ export function Swimming() {
     queryFn: listSwimSchools,
     staleTime: 30_000,
   });
+  // Same endpoint for every city; each page keeps only its own rows.
   const allSpots = useMemo<SwimSpot[]>(
-    () => (swimSchoolsQuery.data ?? []).map(apiToSpot),
-    [swimSchoolsQuery.data],
+    () =>
+      (swimSchoolsQuery.data ?? [])
+        .filter((s) => (city ? isInCity(s.city, city) : false))
+        .map(apiToSpot),
+    [swimSchoolsQuery.data, city],
   );
   const POOL_LOCALITIES = useMemo(
     () =>
@@ -293,14 +311,18 @@ export function Swimming() {
     window.scrollTo({ top: 0, behavior: 'auto' });
   }, [selectedSpot]);
 
+  // Unknown slug is a 404, never a silent fallback to another city.
+  if (!city) return <NotFound />;
+
   return (
     <div className="bg-white">
       <PageHead
-        title="Dog Swimming Lessons & Pools in Bengaluru"
-        description="Heated dog swim pools and certified canine swim coaches across Bengaluru — Indiranagar, Whitefield, HSR Layout, Sarjapur, Koramangala. Hydrotherapy, swim safety, and small-batch sessions for all breeds."
-        path="/swimming"
+        title={`Dog Swimming Lessons & Pools in ${city.name}`}
+        description={`Heated dog swim pools and certified canine swim coaches across ${city.name}. Hydrotherapy, swim safety, and small-batch sessions for all breeds.`}
+        path={`/${city.slug}/swimming`}
+        noindex={!city.live}
       />
-      <FaqSchema faqs={SWIM_FAQS} />
+      <FaqSchema faqs={swimFaqs(city)} />
       {!selectedSpot && (
         <section className="relative overflow-hidden bg-gradient-to-r from-primary-900 via-primary-800 to-primary-600 text-white">
           <HeroPaws />
@@ -308,14 +330,14 @@ export function Swimming() {
             <span aria-hidden="true" className="text-4xl sm:text-5xl drop-shadow">🐕💦</span>
             <div className="flex-1">
               <p className="text-[11px] sm:text-xs font-semibold tracking-[0.3em] text-accent-400 uppercase mb-1">
-                Aquatic · Bangalore
+                Aquatic · {city.name}
               </p>
               <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight leading-tight">
-                Best Dog Swim Schools in Bangalore
+                Best Dog Swim Schools in {city.name}
               </h1>
               <div className="mt-2 h-0.5 w-16 bg-accent-400 rounded-full" />
               <p className="mt-2 text-sm text-primary-100/90 max-w-2xl">
-                Heated pools, certified canine swim coaches, and water-safety classes — Indiranagar, Whitefield, HSR Layout, Sarjapur Road, Koramangala, and Domlur.
+                Heated pools, certified canine swim coaches, and water-safety classes across {city.name}.
               </p>
             </div>
             <button
@@ -415,7 +437,7 @@ export function Swimming() {
               <div className="mb-6">
                 <ShareButtons
                   name={selectedSpot.name}
-                  url={`/swimming?q=${encodeURIComponent(selectedSpot.name)}`}
+                  url={`/${city.slug}/swimming?q=${encodeURIComponent(selectedSpot.name)}`}
                   context={selectedSpot.locality}
                   track={{ category: 'swimming', id: selectedSpot.id }}
                 />
@@ -664,7 +686,7 @@ export function Swimming() {
               <div className="flex items-start justify-between gap-4 mb-1">
                 <div>
                   <p className="text-[11px] font-semibold tracking-[0.3em] text-accent-600 uppercase mb-1">
-                    Aquatic · Bangalore
+                    Aquatic · {city.name}
                   </p>
                   <h2 id="register-swim-title" className="text-2xl font-extrabold text-warm-900">
                     List your swim school
@@ -694,20 +716,34 @@ export function Swimming() {
                     required
                     value={form.name}
                     onChange={(e) => setForm({ ...form, name: e.target.value })}
-                    placeholder="e.g. Bangalore Canine Aquatics"
+                    placeholder={`e.g. ${city.name} Canine Aquatics`}
                     className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors"
                   />
                 </label>
 
                 <div className="block">
                   <span className="block text-sm font-semibold text-warm-900 mb-1">Locality <span className="text-red-500">*</span></span>
-                  <SelectMenu
-                    value={form.locality}
-                    onChange={(v) => setForm({ ...form, locality: v })}
-                    options={BANGALORE_NEIGHBOURHOODS}
-                    placeholder="Please select a locality"
-                    ariaLabel="Locality"
-                  />
+                  {city.slug === 'bengaluru' ? (
+                    <SelectMenu
+                      value={form.locality}
+                      onChange={(v) => setForm({ ...form, locality: v })}
+                      options={BANGALORE_NEIGHBOURHOODS}
+                      placeholder="Please select a locality"
+                      ariaLabel="Locality"
+                    />
+                  ) : (
+                    // The neighbourhood list is Bengaluru's. Other cities type
+                    // their own area until one has the listings to justify a
+                    // curated list.
+                    <input
+                      type="text"
+                      required
+                      value={form.locality}
+                      onChange={(e) => setForm({ ...form, locality: e.target.value })}
+                      placeholder={`Area within ${city.name}`}
+                      className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors"
+                    />
+                  )}
                 </div>
 
                 <label className="block">
