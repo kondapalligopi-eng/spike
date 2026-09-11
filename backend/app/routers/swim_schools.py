@@ -50,6 +50,7 @@ async def create_swim_school(
     school = SwimSchool(
         name=payload.name.strip(),
         locality=payload.locality.strip(),
+        city=payload.city.strip() or "Bengaluru",
         rating=payload.rating,
         image_url=(payload.image_url or "").strip() or None,
         address=payload.address.strip(),
@@ -86,6 +87,7 @@ async def update_swim_school(
         )
     school.name = payload.name.strip()
     school.locality = payload.locality.strip()
+    school.city = payload.city.strip() or "Bengaluru"
     school.rating = payload.rating
     school.image_url = (payload.image_url or "").strip() or None
     school.address = payload.address.strip()

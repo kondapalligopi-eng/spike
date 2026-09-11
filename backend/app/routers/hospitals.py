@@ -50,6 +50,7 @@ async def create_hospital(
     hospital = Hospital(
         name=payload.name.strip(),
         locality=payload.locality.strip(),
+        city=payload.city.strip() or "Bengaluru",
         address=payload.address.strip(),
         phone=payload.phone.strip(),
         specialties=(payload.specialties or "").strip() or None,
@@ -83,6 +84,7 @@ async def update_hospital(
         )
     hospital.name = payload.name.strip()
     hospital.locality = payload.locality.strip()
+    hospital.city = payload.city.strip() or "Bengaluru"
     hospital.address = payload.address.strip()
     hospital.phone = payload.phone.strip()
     hospital.specialties = (payload.specialties or "").strip() or None
