@@ -269,7 +269,6 @@ export function Hospital() {
     setSearch('');
     setSpecialty(ALL_SPECIALTIES);
     setLocation(ALL_LOCATIONS);
-    setActiveCity(null);
     setApplied({ search: '', specialty: ALL_SPECIALTIES, location: ALL_LOCATIONS });
   };
 
@@ -365,14 +364,22 @@ export function Hospital() {
     safeCurrentPage * PAGE_SIZE,
   );
 
+  // An unknown city slug is a 404, not a redirect to Bengaluru: serving real
+  // listings under any slug someone invents would let crawlers index an
+  // unbounded set of duplicate pages.
+  if (!city) return <NotFound />;
+
+  const areaLine = city.slug === 'bengaluru' ? ` — ${BENGALURU_AREAS}` : '';
+
   return (
     <div className="bg-white">
       <PageHead
-        title="Trusted Vets & Pet Hospitals in Bengaluru"
-        description="Find verified vet hospitals and 24×7 emergency pet clinics across Bengaluru — Indiranagar, Koramangala, Whitefield, HSR Layout, Jayanagar, Domlur. Real reviews, neighbourhood-tagged, vetted by HiSpike."
-        path="/hospital"
+        title={`Trusted Vets & Pet Hospitals in ${city.name}`}
+        description={`Find verified vet hospitals and 24×7 emergency pet clinics across ${city.name}${areaLine}. Real reviews, neighbourhood-tagged, vetted by HiSpike.`}
+        path={`/${city.slug}/hospital`}
+        noindex={!city.live}
       />
-      <FaqSchema faqs={HOSPITAL_FAQS} />
+      <FaqSchema faqs={hospitalFaqs(city)} />
       {/* Title hero — matches the Home gradient + paw-print language */}
       <section className="relative overflow-hidden bg-gradient-to-r from-primary-900 via-primary-800 to-primary-600 text-white">
         <HeroPaws />
@@ -380,14 +387,14 @@ export function Hospital() {
           <span aria-hidden="true" className="text-4xl sm:text-5xl drop-shadow">🏥</span>
           <div className="flex-1">
             <p className="text-[11px] sm:text-xs font-semibold tracking-[0.3em] text-accent-400 uppercase mb-1">
-              Vet Care · Bangalore
+              Vet Care · {city.name}
             </p>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight leading-tight">
-              Best Pet Hospitals in Bangalore
+              Best Pet Hospitals in {city.name}
             </h1>
             <div className="mt-2 h-0.5 w-16 bg-accent-400 rounded-full" />
             <p className="mt-2 text-sm text-primary-100/90 max-w-2xl">
-              Trusted veterinary clinics and 24×7 emergency care across Indiranagar, Koramangala, Whitefield, HSR Layout, Jayanagar, and Domlur.
+              Trusted veterinary clinics and 24×7 emergency care across {city.name}.
             </p>
           </div>
           <button
@@ -644,7 +651,7 @@ export function Hospital() {
                     <ShareButtons
                       name={h.name}
                       url={`/hospital?q=${encodeURIComponent(h.name)}`}
-                      context={`${h.locality}, Bengaluru`}
+                      context={`${h.locality}, ${city.name}`}
                       track={{ category: 'hospital', id: h.id }}
                       variant="compact"
                     />
@@ -690,7 +697,7 @@ export function Hospital() {
               <div className="flex items-start justify-between gap-4 mb-1">
                 <div>
                   <p className="text-[11px] font-semibold tracking-[0.3em] text-accent-600 uppercase mb-1">
-                    Vet Care · Bangalore
+                    Vet Care · {city.name}
                   </p>
                   <h2 id="register-hospital-title" className="text-2xl font-extrabold text-warm-900">
                     List your hospital
@@ -720,7 +727,7 @@ export function Hospital() {
                     required
                     value={form.name}
                     onChange={(e) => setForm({ ...form, name: e.target.value })}
-                    placeholder="e.g. Bangalore Pet Wellness Clinic"
+                    placeholder={`e.g. ${city.name} Pet Wellness Clinic`}
                     className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors"
                   />
                 </label>
