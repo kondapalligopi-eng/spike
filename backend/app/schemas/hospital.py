@@ -9,6 +9,9 @@ from pydantic import BaseModel, ConfigDict, Field
 class HospitalBase(BaseModel):
     name: str = Field(..., min_length=2, max_length=255)
     locality: str = Field(..., min_length=2, max_length=120)
+    # Optional on the way in: a payload without it is a Bengaluru listing,
+    # which keeps every existing client and import sheet working.
+    city: str = Field("Bengaluru", min_length=2, max_length=120)
     address: str = Field(..., min_length=2)
     phone: str = Field(..., min_length=4, max_length=40)
     specialties: str | None = Field(None, max_length=500)

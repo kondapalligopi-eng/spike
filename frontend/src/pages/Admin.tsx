@@ -69,6 +69,15 @@ import { listAllShops, deleteShop } from '@/api/petShops';
 import { counterKey, type TrackCategory } from '@/lib/trackClick';
 import { GROOMING_SALONS } from '@/data/groomingSalons';
 
+// Cities HiSpike runs a directory for. A fixed list rather than free text on
+// purpose: one admin typing "Bangalore" and another "Bengaluru" would split a
+// city's listings in two, and the city is what every page will filter on.
+// Add a city here when its directory is ready to be filled.
+const CITIES = ['Bengaluru', 'Pune', 'Hyderabad', 'Mumbai'] as const;
+const DEFAULT_CITY = CITIES[0];
+
+// Localities offered for Bengaluru. Other cities take free text until one of
+// them has enough listings to be worth curating a list for.
 const BANGALORE_NEIGHBOURHOODS = [
   'Banashankari', 'Banaswadi', 'Basavanagudi', 'Bellandur', 'Bommanahalli',
   'Brookefield', 'BTM Layout', 'CV Raman Nagar', 'Domlur', 'Electronic City',
@@ -141,6 +150,7 @@ function AddHospitalModal({ onClose, existing }: { onClose: () => void; existing
       ? {
           name: existing.name,
           locality: existing.locality,
+          city: existing.city,
           address: existing.address,
           phone: existing.phone,
           specialties: existing.specialties ?? '',
@@ -152,6 +162,7 @@ function AddHospitalModal({ onClose, existing }: { onClose: () => void; existing
       : {
           name: '',
           locality: '',
+          city: DEFAULT_CITY,
           address: '',
           phone: '',
           specialties: '',
@@ -193,6 +204,7 @@ function AddHospitalModal({ onClose, existing }: { onClose: () => void; existing
     mutation.mutate({
       name: form.name.trim(),
       locality: form.locality,
+      city: form.city || DEFAULT_CITY,
       address: form.address.trim(),
       phone: form.phone.trim(),
       specialties: form.specialties?.trim() || undefined,
@@ -254,22 +266,53 @@ function AddHospitalModal({ onClose, existing }: { onClose: () => void; existing
             </label>
 
             <label className="block">
-              <span className="block text-sm font-semibold text-warm-900 mb-1">Locality {requiredAsterisk}</span>
+              <span className="block text-sm font-semibold text-warm-900 mb-1">City {requiredAsterisk}</span>
               <select
                 required
-                value={form.locality}
-                onChange={(e) => setForm({ ...form, locality: e.target.value })}
-                className={`w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors bg-white ${
-                  form.locality ? 'text-warm-900' : 'text-warm-400'
-                }`}
+                value={form.city ?? DEFAULT_CITY}
+                onChange={(e) => {
+                  // The locality list is Bengaluru's, so a city change makes the
+                  // current locality meaningless — clear it rather than save a
+                  // Bengaluru neighbourhood against a Pune clinic.
+                  const city = e.target.value;
+                  setForm({ ...form, city, locality: city === form.city ? form.locality : '' });
+                }}
+                className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors bg-white text-warm-900"
               >
-                <option value="" disabled>Please select a locality</option>
-                {BANGALORE_NEIGHBOURHOODS.map((n) => (
-                  <option key={n} value={n} className="text-warm-900">{n}</option>
+                {CITIES.map((c) => (
+                  <option key={c} value={c}>{c}</option>
                 ))}
               </select>
             </label>
 
+            <label className="block">
+              <span className="block text-sm font-semibold text-warm-900 mb-1">Locality {requiredAsterisk}</span>
+              {(form.city ?? DEFAULT_CITY) === 'Bengaluru' ? (
+                <select
+                  required
+                  value={form.locality}
+                  onChange={(e) => setForm({ ...form, locality: e.target.value })}
+                  className={`w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors bg-white ${
+                    form.locality ? 'text-warm-900' : 'text-warm-400'
+                  }`}
+                >
+                  <option value="" disabled>Please select a locality</option>
+                  {BANGALORE_NEIGHBOURHOODS.map((n) => (
+                    <option key={n} value={n} className="text-warm-900">{n}</option>
+                  ))}
+                </select>
+              ) : (
+                // No curated list for this city yet — type the area instead.
+                <input
+                  type="text"
+                  required
+                  value={form.locality}
+                  onChange={(e) => setForm({ ...form, locality: e.target.value })}
+                  placeholder={`e.g. Koregaon Park, ${form.city}`}
+                  className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors"
+                />
+              )}
+            </label>
             <label className="block">
               <span className="block text-sm font-semibold text-warm-900 mb-1">Full address {requiredAsterisk}</span>
               <textarea
@@ -637,6 +680,7 @@ function AddParkModal({ onClose, existing }: { onClose: () => void; existing?: P
       ? {
           name: existing.name,
           locality: existing.locality,
+          city: existing.city,
           rating: existing.rating,
           image_url: existing.image_url ?? '',
           address: existing.address,
@@ -650,7 +694,7 @@ function AddParkModal({ onClose, existing }: { onClose: () => void; existing?: P
           highlights: existing.highlights ?? [],
         }
       : {
-          name: '', locality: '', rating: 4, image_url: '',
+          name: '', locality: '', city: DEFAULT_CITY, rating: 4, image_url: '',
           address: '', hours: '', cost: '', off_leash: '',
           features: '', phone: '', email: '', website: '', highlights: [],
         }
@@ -687,6 +731,7 @@ function AddParkModal({ onClose, existing }: { onClose: () => void; existing?: P
     mutation.mutate({
       name: form.name.trim(),
       locality: form.locality.trim(),
+      city: form.city || DEFAULT_CITY,
       rating: form.rating,
       image_url: form.image_url?.trim() || undefined,
       address: form.address.trim(),
@@ -721,6 +766,19 @@ function AddParkModal({ onClose, existing }: { onClose: () => void; existing?: P
             <label className="block">
               <span className="block text-sm font-semibold text-warm-900 mb-1">Park name {star}</span>
               <input type="text" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="e.g. Cubbon Park" className={inputCls} />
+            </label>
+            <label className="block">
+              <span className="block text-sm font-semibold text-warm-900 mb-1">City {star}</span>
+              <select
+                required
+                value={form.city ?? DEFAULT_CITY}
+                onChange={(e) => setForm({ ...form, city: e.target.value })}
+                className={`${inputCls} bg-white`}
+              >
+                {CITIES.map((c) => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
             </label>
             <label className="block">
               <span className="block text-sm font-semibold text-warm-900 mb-1">Locality {star}</span>
@@ -796,6 +854,7 @@ function AddSwimSchoolModal({ onClose, existing }: { onClose: () => void; existi
       ? {
           name: existing.name,
           locality: existing.locality,
+          city: existing.city,
           rating: existing.rating,
           image_url: existing.image_url ?? '',
           address: existing.address,
@@ -808,7 +867,7 @@ function AddSwimSchoolModal({ onClose, existing }: { onClose: () => void; existi
           highlights: existing.highlights ?? [],
         }
       : {
-          name: '', locality: '', rating: 4, image_url: '', address: '',
+          name: '', locality: '', city: DEFAULT_CITY, rating: 4, image_url: '', address: '',
           hours: '', cost: '', pool_type: '', phone: '', email: '', website: '', highlights: [],
         }
   );
@@ -847,6 +906,7 @@ function AddSwimSchoolModal({ onClose, existing }: { onClose: () => void; existi
     mutation.mutate({
       name: form.name.trim(),
       locality: form.locality.trim(),
+      city: form.city || DEFAULT_CITY,
       rating: form.rating,
       image_url: form.image_url?.trim() || undefined,
       address: form.address.trim(),
@@ -879,6 +939,19 @@ function AddSwimSchoolModal({ onClose, existing }: { onClose: () => void; existi
             <label className="block">
               <span className="block text-sm font-semibold text-warm-900 mb-1">Swim school name {star}</span>
               <input type="text" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="e.g. Indiranagar Aquatic Pet Centre" className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors" />
+            </label>
+            <label className="block">
+              <span className="block text-sm font-semibold text-warm-900 mb-1">City {star}</span>
+              <select
+                required
+                value={form.city ?? DEFAULT_CITY}
+                onChange={(e) => setForm({ ...form, city: e.target.value })}
+                className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors bg-white"
+              >
+                {CITIES.map((c) => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
             </label>
             <label className="block">
               <span className="block text-sm font-semibold text-warm-900 mb-1">Locality {star}</span>
@@ -1302,6 +1375,24 @@ function optCell(row: SheetRow, key: string): string | undefined {
   const v = (row[key] ?? '').trim();
   return v || undefined;
 }
+// A blank City means Bengaluru — that is what every sheet written before
+// multi-city holds. Old names are folded in so one spreadsheet saying
+// "Bangalore" does not create a second, half-empty city directory.
+const CITY_ALIASES: Record<string, string> = {
+  bangalore: 'Bengaluru',
+  bengaluru: 'Bengaluru',
+  bombay: 'Mumbai',
+  mumbai: 'Mumbai',
+  poona: 'Pune',
+  pune: 'Pune',
+  hyderabad: 'Hyderabad',
+  secunderabad: 'Hyderabad',
+};
+function cityCell(row: SheetRow): string {
+  const raw = (row['City'] ?? '').trim();
+  if (!raw) return DEFAULT_CITY;
+  return CITY_ALIASES[raw.toLowerCase()] ?? raw;
+}
 function parseRating(row: SheetRow): number {
   const raw = (row['Rating'] ?? '').trim();
   if (!raw) return 4;
@@ -1325,6 +1416,9 @@ const IMPORT_CONFIGS: Record<ImportConfig['kind'], ImportConfig> = {
     columns: [
       { header: 'Name', required: true },
       { header: 'Locality', required: true },
+      { header: 'City', hint: 'blank = Bengaluru' },
+      { header: 'City', hint: 'blank = Bengaluru' },
+      { header: 'City', hint: 'blank = Bengaluru' },
       { header: 'Address', required: true },
       { header: 'Phone', required: true },
       { header: 'Specialties', hint: 'comma-separated' },
@@ -1336,6 +1430,7 @@ const IMPORT_CONFIGS: Record<ImportConfig['kind'], ImportConfig> = {
     sample: {
       Name: 'SKS Veterinary Hospital',
       Locality: 'Indiranagar',
+      City: 'Bengaluru',
       Address: '17 Service Rd, HAL 3rd Stage, Bengaluru 560075',
       Phone: '+91 80 4000 0000',
       Specialties: 'General, Surgery, Diagnostics',
@@ -1349,6 +1444,7 @@ const IMPORT_CONFIGS: Record<ImportConfig['kind'], ImportConfig> = {
       const created = await createHospital({
         name: reqCell(row, 'Name'),
         locality: reqCell(row, 'Locality'),
+        city: cityCell(row),
         address: reqCell(row, 'Address'),
         phone: reqCell(row, 'Phone'),
         specialties: optCell(row, 'Specialties'),
@@ -1383,6 +1479,7 @@ const IMPORT_CONFIGS: Record<ImportConfig['kind'], ImportConfig> = {
     sample: {
       Name: 'Cubbon Park',
       Locality: 'Sampangi Rama Nagar, Bengaluru',
+      City: 'Bengaluru',
       Address: 'Kasturba Road, Bengaluru 560001',
       Rating: '5',
       Cost: 'Free to use',
@@ -1400,6 +1497,7 @@ const IMPORT_CONFIGS: Record<ImportConfig['kind'], ImportConfig> = {
       const created = await createPark({
         name: reqCell(row, 'Name'),
         locality: reqCell(row, 'Locality'),
+        city: cityCell(row),
         address: reqCell(row, 'Address'),
         rating: parseRating(row),
         cost: optCell(row, 'Cost'),
@@ -1437,6 +1535,7 @@ const IMPORT_CONFIGS: Record<ImportConfig['kind'], ImportConfig> = {
     sample: {
       Name: 'Indiranagar Aquatic Pet Centre',
       Locality: 'Indiranagar, Bengaluru',
+      City: 'Bengaluru',
       Address: '12, 100 Feet Rd, Indiranagar, Bengaluru 560038',
       Rating: '5',
       'Pool type': 'Heated indoor pool',
@@ -1453,6 +1552,7 @@ const IMPORT_CONFIGS: Record<ImportConfig['kind'], ImportConfig> = {
       const created = await createSwimSchool({
         name: reqCell(row, 'Name'),
         locality: reqCell(row, 'Locality'),
+        city: cityCell(row),
         address: reqCell(row, 'Address'),
         rating: parseRating(row),
         pool_type: optCell(row, 'Pool type'),
@@ -1508,7 +1608,7 @@ const IMPORT_CONFIGS: Record<ImportConfig['kind'], ImportConfig> = {
       const created = await createGroomingSalon({
         name: reqCell(row, 'Name'),
         area: reqCell(row, 'Area'),
-        city: optCell(row, 'City') ?? 'Bengaluru',
+        city: cityCell(row),
         address: reqCell(row, 'Address'),
         phone: reqCell(row, 'Phone'),
         rating_avg: ratingAvg,
@@ -3150,10 +3250,10 @@ const EXPORT_CONFIGS: ExportConfig[] = [
     label: 'Hospitals',
     emoji: '🏥',
     file: 'hispike-hospitals-backup.xlsx',
-    headers: ['Name', 'Locality', 'Address', 'Phone', 'Specialties', 'Rating', 'Email', 'Open hours', 'Website'],
+    headers: ['Name', 'Locality', 'City', 'Address', 'Phone', 'Specialties', 'Rating', 'Email', 'Open hours', 'Website'],
     run: async () =>
       (await listHospitals()).map((r) => ({
-        Name: cell(r.name), Locality: cell(r.locality), Address: cell(r.address), Phone: cell(r.phone),
+        Name: cell(r.name), Locality: cell(r.locality), City: cell(r.city), Address: cell(r.address), Phone: cell(r.phone),
         Specialties: cell(r.specialties), Rating: cell(r.rating), Email: cell(r.email),
         'Open hours': cell(r.hours), Website: cell(r.website),
       })),
@@ -3163,10 +3263,10 @@ const EXPORT_CONFIGS: ExportConfig[] = [
     label: 'Parks',
     emoji: '🌳',
     file: 'hispike-parks-backup.xlsx',
-    headers: ['Name', 'Locality', 'Address', 'Rating', 'Cost', 'Off-leash', 'Features', 'Open hours', 'Phone', 'Email', 'Website', 'Image URL', 'Highlights'],
+    headers: ['Name', 'Locality', 'City', 'Address', 'Rating', 'Cost', 'Off-leash', 'Features', 'Open hours', 'Phone', 'Email', 'Website', 'Image URL', 'Highlights'],
     run: async () =>
       (await listParks()).map((r) => ({
-        Name: cell(r.name), Locality: cell(r.locality), Address: cell(r.address), Rating: cell(r.rating),
+        Name: cell(r.name), Locality: cell(r.locality), City: cell(r.city), Address: cell(r.address), Rating: cell(r.rating),
         Cost: cell(r.cost), 'Off-leash': cell(r.off_leash), Features: cell(r.features), 'Open hours': cell(r.hours),
         Phone: cell(r.phone), Email: cell(r.email), Website: cell(r.website), 'Image URL': cell(r.image_url),
         Highlights: cell(r.highlights),
@@ -3177,10 +3277,10 @@ const EXPORT_CONFIGS: ExportConfig[] = [
     label: 'Swim schools',
     emoji: '🐕💦',
     file: 'hispike-swim-schools-backup.xlsx',
-    headers: ['Name', 'Locality', 'Address', 'Rating', 'Pool type', 'Cost', 'Open hours', 'Phone', 'Email', 'Website', 'Image URL', 'Highlights'],
+    headers: ['Name', 'Locality', 'City', 'Address', 'Rating', 'Pool type', 'Cost', 'Open hours', 'Phone', 'Email', 'Website', 'Image URL', 'Highlights'],
     run: async () =>
       (await listSwimSchools()).map((r) => ({
-        Name: cell(r.name), Locality: cell(r.locality), Address: cell(r.address), Rating: cell(r.rating),
+        Name: cell(r.name), Locality: cell(r.locality), City: cell(r.city), Address: cell(r.address), Rating: cell(r.rating),
         'Pool type': cell(r.pool_type), Cost: cell(r.cost), 'Open hours': cell(r.hours), Phone: cell(r.phone),
         Email: cell(r.email), Website: cell(r.website), 'Image URL': cell(r.image_url), Highlights: cell(r.highlights),
       })),

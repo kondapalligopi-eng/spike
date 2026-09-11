@@ -8,6 +8,9 @@ export type SwimSchoolRead = {
   id: string;
   name: string;
   locality: string;
+  /** City directory this listing belongs to. Bengaluru for everything that
+   *  predates multi-city. */
+  city: string;
   rating: number;
   image_url: string | null;
   address: string;
@@ -28,6 +31,7 @@ export type SwimSchoolRead = {
 export type SwimSchoolCreate = {
   name: string;
   locality: string;
+  city?: string;
   rating: number;
   image_url?: string;
   address: string;
@@ -40,7 +44,7 @@ export type SwimSchoolCreate = {
   highlights?: string[];
 };
 
-const DEFAULTS: Omit<SwimSchoolRead, 'id' | 'created_at' | 'updated_at' | 'phone' | 'email' | 'website'>[] = [
+const DEFAULTS: Omit<SwimSchoolRead, 'id' | 'created_at' | 'updated_at' | 'phone' | 'email' | 'website' | 'city'>[] = [
   {
     name: 'Indiranagar Aquatic Pet Centre',
     locality: 'Indiranagar, Bengaluru',
@@ -151,7 +155,7 @@ function seedMockStoreIfEmpty(): void {
   const now = new Date().toISOString();
   const seeded = DEFAULTS.map((s, i) => {
     const ts = new Date(Date.now() - (DEFAULTS.length - i) * 1000).toISOString();
-    return { ...s, phone: null, email: null, website: null, id: makeId(), created_at: ts, updated_at: now } satisfies SwimSchoolRead;
+    return { ...s, phone: null, email: null, website: null, city: 'Bengaluru', id: makeId(), created_at: ts, updated_at: now } satisfies SwimSchoolRead;
   });
   try {
     localStorage.setItem(MOCK_KEY, JSON.stringify(seeded));
@@ -202,6 +206,7 @@ export async function createSwimSchool(data: SwimSchoolCreate): Promise<SwimScho
       id: makeId(),
       name: data.name,
       locality: data.locality,
+      city: data.city?.trim() || 'Bengaluru',
       rating: data.rating,
       image_url: data.image_url?.trim() || null,
       address: data.address,

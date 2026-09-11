@@ -7,7 +7,7 @@ const MOCK_SEEDED_KEY = 'hispike_mock_hospitals_seeded';
 // Default hospitals — kept in sync with backend/scripts/seed_hospitals.py.
 // In mock mode the store is auto-seeded with these on first read so the
 // admin's add/delete experience matches production.
-const DEFAULT_HOSPITALS: Omit<HospitalRead, 'id' | 'created_at' | 'updated_at' | 'hours' | 'email'>[] = [
+const DEFAULT_HOSPITALS: Omit<HospitalRead, 'id' | 'created_at' | 'updated_at' | 'hours' | 'email' | 'city'>[] = [
   {
     name: 'SKS Veterinary Hospital',
     locality: 'Indiranagar',
@@ -68,6 +68,9 @@ export type HospitalRead = {
   id: string;
   name: string;
   locality: string;
+  /** City directory this listing belongs to. Bengaluru for everything that
+   *  predates multi-city. */
+  city: string;
   address: string;
   phone: string;
   specialties: string | null;
@@ -85,6 +88,7 @@ export type HospitalRead = {
 export type HospitalCreate = {
   name: string;
   locality: string;
+  city?: string;
   address: string;
   phone: string;
   specialties?: string;
@@ -113,6 +117,7 @@ function seedMockStoreIfEmpty(): void {
       ...h,
       hours: null,
       email: null,
+      city: 'Bengaluru',
       id: makeId(),
       created_at: ts,
       updated_at: now,
@@ -170,6 +175,7 @@ export async function createHospital(data: HospitalCreate): Promise<HospitalRead
       id: makeId(),
       name: data.name,
       locality: data.locality,
+      city: data.city?.trim() || 'Bengaluru',
       address: data.address,
       phone: data.phone,
       specialties: data.specialties?.trim() || null,
