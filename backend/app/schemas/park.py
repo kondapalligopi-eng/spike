@@ -9,6 +9,9 @@ from pydantic import BaseModel, ConfigDict, Field
 class ParkBase(BaseModel):
     name: str = Field(..., min_length=2, max_length=255)
     locality: str = Field(..., min_length=2, max_length=255)
+    # Optional on the way in: a payload without it is a Bengaluru listing,
+    # which keeps every existing client and import sheet working.
+    city: str = Field("Bengaluru", min_length=2, max_length=120)
     rating: int = Field(4, ge=1, le=5)
     image_url: str | None = Field(None, max_length=500)
     address: str = Field(..., min_length=2)
