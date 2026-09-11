@@ -34,8 +34,8 @@ import { Newsroom } from '@/pages/Newsroom';
 import { Blog } from '@/pages/Blog';
 import { BlogPost } from '@/pages/BlogPost';
 import { BLOG_POST_SLUGS } from '@/content/blogPosts';
-import { CITIES, DEFAULT_CITY } from '@/lib/cities';
-import { Navigate } from 'react-router-dom';
+import { CITIES } from '@/lib/cities';
+import { LegacyCategoryRedirect } from '@/components/LegacyCategoryRedirect';
 import { Careers } from '@/pages/Careers';
 import { Feedback } from '@/pages/Feedback';
 import { TermsOfService } from '@/pages/TermsOfService';
@@ -72,7 +72,7 @@ const CITY_PATHS = CITIES.filter((c) => c.live).map((c) => c.slug);
 const LEGACY_CATEGORIES = ['hospital', 'park', 'swimming', 'grooming'] as const;
 const LEGACY_CATEGORY_REDIRECTS: RouteRecord[] = LEGACY_CATEGORIES.map((segment) => ({
   path: segment,
-  element: <Navigate to={`/${DEFAULT_CITY.slug}/${segment}`} replace />,
+  element: <LegacyCategoryRedirect segment={segment} />,
 }));
 
 export const routes: RouteRecord[] = [
