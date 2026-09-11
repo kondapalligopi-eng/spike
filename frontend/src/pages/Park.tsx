@@ -493,7 +493,7 @@ export function Park() {
               <div className="mb-6">
                 <ShareButtons
                   name={selectedSpot.name}
-                  url={`/park?q=${encodeURIComponent(selectedSpot.name)}`}
+                  url={`/${city.slug}/park?q=${encodeURIComponent(selectedSpot.name)}`}
                   context={selectedSpot.locality}
                   track={{ category: 'park', id: selectedSpot.id }}
                 />

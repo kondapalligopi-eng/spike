@@ -650,7 +650,7 @@ export function Hospital() {
                   <div className="mt-3 pt-3 border-t border-warm-100 flex justify-end">
                     <ShareButtons
                       name={h.name}
-                      url={`/hospital?q=${encodeURIComponent(h.name)}`}
+                      url={`/${city.slug}/hospital?q=${encodeURIComponent(h.name)}`}
                       context={`${h.locality}, ${city.name}`}
                       track={{ category: 'hospital', id: h.id }}
                       variant="compact"
