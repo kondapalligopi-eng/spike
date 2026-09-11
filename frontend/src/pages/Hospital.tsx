@@ -734,13 +734,27 @@ export function Hospital() {
 
                 <div className="block">
                   <span className="block text-sm font-semibold text-warm-900 mb-1">Locality <span className="text-red-500">*</span></span>
-                  <SelectMenu
-                    value={form.locality}
-                    onChange={(v) => setForm({ ...form, locality: v })}
-                    options={BANGALORE_NEIGHBOURHOODS}
-                    placeholder="Please select a locality"
-                    ariaLabel="Locality"
-                  />
+                  {city.slug === 'bengaluru' ? (
+                    <SelectMenu
+                      value={form.locality}
+                      onChange={(v) => setForm({ ...form, locality: v })}
+                      options={BANGALORE_NEIGHBOURHOODS}
+                      placeholder="Please select a locality"
+                      ariaLabel="Locality"
+                    />
+                  ) : (
+                    // The neighbourhood list is Bengaluru's. Other cities type
+                    // their own area until one has the listings to justify a
+                    // curated list.
+                    <input
+                      type="text"
+                      required
+                      value={form.locality}
+                      onChange={(e) => setForm({ ...form, locality: e.target.value })}
+                      placeholder={`Area within ${city.name}`}
+                      className="w-full px-3 py-2 border-2 border-warm-300 rounded-md text-sm outline-none focus:border-primary-500 transition-colors"
+                    />
+                  )}
                 </div>
 
                 <label className="block">
