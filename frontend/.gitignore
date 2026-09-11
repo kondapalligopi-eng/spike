@@ -36,3 +36,8 @@ yarn-error.log*
 
 # Testing
 coverage
+
+# One-time Google Places pulls — seed spreadsheets to curate and import.
+# Not committed: this repo is public, and the pull is deliberately one-time so
+# we are not storing Google's data long-term. See scripts/import-google-places.mjs.
+google-import/

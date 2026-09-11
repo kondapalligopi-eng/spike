@@ -144,7 +144,13 @@ async function searchText(query, max) {
     });
     if (!res.ok) {
       const text = await res.text();
-      throw new Error(`Places API ${res.status}: ${text.slice(0, 400)}`);
+      let detail = text.slice(0, 400);
+      try {
+        detail = JSON.parse(text).error?.message ?? detail;
+      } catch {
+        // Not JSON — the raw body is the best we have.
+      }
+      throw new Error(`Places API ${res.status}: ${detail}`);
     }
     const data = await res.json();
     out.push(...(data.places || []));
@@ -379,5 +385,5 @@ async function main() {
 
 main().catch((err) => {
   console.error('\n✗ Failed:', err.message, '\n');
-  process.exit(1);
+  process.exitCode = 1;
 });
