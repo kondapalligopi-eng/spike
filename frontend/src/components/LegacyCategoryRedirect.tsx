@@ -1,4 +1,4 @@
-import { Navigate } from 'react-router-dom';
+import { Navigate, useParams } from 'react-router-dom';
 import { PageHead } from './PageHead';
 import { DEFAULT_CITY } from '@/lib/cities';
 
@@ -23,6 +23,28 @@ export function LegacyCategoryRedirect({ segment }: { segment: string }) {
       <PageHead
         title="HiSpike"
         description={`This directory now lives at ${to}.`}
+        path={to}
+        noindex
+      />
+      <Navigate to={to} replace />
+    </>
+  );
+}
+
+/**
+ * Salon detail pages were shared as /grooming/<slug> before cities existed, and
+ * those links are out in the world — in WhatsApp threads, on salon websites.
+ * Without this the new :city/grooming/:slug route would leave every one of them
+ * on a 404. Sends them into the default city, keeping the slug.
+ */
+export function LegacySalonRedirect() {
+  const { slug } = useParams<{ slug: string }>();
+  const to = `/${DEFAULT_CITY.slug}/grooming/${slug ?? ''}`;
+  return (
+    <>
+      <PageHead
+        title="HiSpike"
+        description={`This salon page now lives at ${to}.`}
         path={to}
         noindex
       />

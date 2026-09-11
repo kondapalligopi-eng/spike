@@ -36,6 +36,7 @@ import { BlogPost } from '@/pages/BlogPost';
 import { BLOG_POST_SLUGS } from '@/content/blogPosts';
 import { CITIES } from '@/lib/cities';
 import { LegacyCategoryRedirect } from '@/components/LegacyCategoryRedirect';
+import { LegacySalonRedirect } from '@/components/LegacyCategoryRedirect';
 import { Careers } from '@/pages/Careers';
 import { Feedback } from '@/pages/Feedback';
 import { TermsOfService } from '@/pages/TermsOfService';
@@ -125,6 +126,9 @@ export const routes: RouteRecord[] = [
           // request that reaches the SPA anyway, so an old bookmark or an
           // internal link never dead-ends.
           ...LEGACY_CATEGORY_REDIRECTS,
+          // Salon pages were shared as /grooming/<slug> before cities. Those
+          // links are out in the world, so keep them resolving.
+          { path: 'grooming/:slug', Component: LegacySalonRedirect },
           { path: 'pet-supplies', Component: PetSupplies },
           { path: 'dog-walking', Component: DogWalking },
           // Public, shareable dog page — slug is user-created, so it renders
