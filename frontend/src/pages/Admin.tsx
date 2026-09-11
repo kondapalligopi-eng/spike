@@ -69,6 +69,15 @@ import { listAllShops, deleteShop } from '@/api/petShops';
 import { counterKey, type TrackCategory } from '@/lib/trackClick';
 import { GROOMING_SALONS } from '@/data/groomingSalons';
 
+// Cities HiSpike runs a directory for. A fixed list rather than free text on
+// purpose: one admin typing "Bangalore" and another "Bengaluru" would split a
+// city's listings in two, and the city is what every page will filter on.
+// Add a city here when its directory is ready to be filled.
+const CITIES = ['Bengaluru', 'Pune', 'Hyderabad', 'Mumbai'] as const;
+const DEFAULT_CITY = CITIES[0];
+
+// Localities offered for Bengaluru. Other cities take free text until one of
+// them has enough listings to be worth curating a list for.
 const BANGALORE_NEIGHBOURHOODS = [
   'Banashankari', 'Banaswadi', 'Basavanagudi', 'Bellandur', 'Bommanahalli',
   'Brookefield', 'BTM Layout', 'CV Raman Nagar', 'Domlur', 'Electronic City',
@@ -141,6 +150,7 @@ function AddHospitalModal({ onClose, existing }: { onClose: () => void; existing
       ? {
           name: existing.name,
           locality: existing.locality,
+          city: existing.city,
           address: existing.address,
           phone: existing.phone,
           specialties: existing.specialties ?? '',
@@ -152,6 +162,7 @@ function AddHospitalModal({ onClose, existing }: { onClose: () => void; existing
       : {
           name: '',
           locality: '',
+          city: DEFAULT_CITY,
           address: '',
           phone: '',
           specialties: '',
@@ -193,6 +204,7 @@ function AddHospitalModal({ onClose, existing }: { onClose: () => void; existing
     mutation.mutate({
       name: form.name.trim(),
       locality: form.locality,
+      city: form.city || DEFAULT_CITY,
       address: form.address.trim(),
       phone: form.phone.trim(),
       specialties: form.specialties?.trim() || undefined,

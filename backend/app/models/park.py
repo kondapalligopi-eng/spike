@@ -13,6 +13,11 @@ class Park(UUIDBase):
 
     name: Mapped[str] = mapped_column(String(255), nullable=False, index=True)
     locality: Mapped[str] = mapped_column(String(255), nullable=False, index=True)
+    # Which city directory this listing belongs to. Defaults to Bengaluru so
+    # every row that predates multi-city keeps working untouched.
+    city: Mapped[str] = mapped_column(
+        String(120), nullable=False, default="Bengaluru", server_default="Bengaluru", index=True
+    )
     rating: Mapped[int] = mapped_column(Integer, nullable=False, default=4)
     image_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
     address: Mapped[str] = mapped_column(Text, nullable=False)

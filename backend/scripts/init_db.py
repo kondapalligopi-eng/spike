@@ -55,6 +55,19 @@ SCHEMA_PATCHES: list[str] = [
     "ALTER TABLE grooming_salons ADD COLUMN IF NOT EXISTS email VARCHAR(255)",
     "ALTER TABLE grooming_salons ADD COLUMN IF NOT EXISTS website VARCHAR(500)",
     "ALTER TABLE grooming_salons ADD COLUMN IF NOT EXISTS image_url VARCHAR(500)",
+    # Multi-city: every listing belongs to a city directory. NOT NULL DEFAULT
+    # backfills the existing rows to Bengaluru in the same statement, which is
+    # exactly right — everything in the table today is a Bengaluru listing.
+    # grooming_salons already had city/state from the start, so it is not here.
+    "ALTER TABLE hospitals ADD COLUMN IF NOT EXISTS city VARCHAR(120) NOT NULL DEFAULT 'Bengaluru'",
+    "ALTER TABLE parks ADD COLUMN IF NOT EXISTS city VARCHAR(120) NOT NULL DEFAULT 'Bengaluru'",
+    "ALTER TABLE swim_schools ADD COLUMN IF NOT EXISTS city VARCHAR(120) NOT NULL DEFAULT 'Bengaluru'",
+    # create_all adds the index on a fresh database; an existing table needs it
+    # spelled out. Names match SQLAlchemy's ix_<table>_<column> convention so
+    # both paths end up with the same schema.
+    "CREATE INDEX IF NOT EXISTS ix_hospitals_city ON hospitals (city)",
+    "CREATE INDEX IF NOT EXISTS ix_parks_city ON parks (city)",
+    "CREATE INDEX IF NOT EXISTS ix_swim_schools_city ON swim_schools (city)",
     # Pet-shop storefront redesign
     "ALTER TABLE pet_shops ADD COLUMN IF NOT EXISTS hero_url VARCHAR(1024)",
     "ALTER TABLE pet_shops ADD COLUMN IF NOT EXISTS offer VARCHAR(200)",

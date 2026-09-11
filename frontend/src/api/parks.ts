@@ -8,6 +8,9 @@ export type ParkRead = {
   id: string;
   name: string;
   locality: string;
+  /** City directory this listing belongs to. Bengaluru for everything that
+   *  predates multi-city. */
+  city: string;
   rating: number;
   image_url: string | null;
   address: string;
@@ -29,6 +32,7 @@ export type ParkRead = {
 export type ParkCreate = {
   name: string;
   locality: string;
+  city?: string;
   rating: number;
   image_url?: string;
   address: string;
@@ -49,7 +53,7 @@ const DEFAULT_HIGHLIGHTS = [
   'Popular spot to socialize with other dog owners',
 ];
 
-const DEFAULT_PARKS: Omit<ParkRead, 'id' | 'created_at' | 'updated_at'>[] = [
+const DEFAULT_PARKS: Omit<ParkRead, 'id' | 'created_at' | 'updated_at' | 'city'>[] = [
   { name: 'Cubbon Park',                     locality: 'Sampangi Rama Nagar, Bengaluru', rating: 5, image_url: '/parks/cubbon-park.jpg', address: 'Kasturba Road, Sampangi Rama Nagar, Bengaluru, Karnataka 560001', hours: '5 am to 8 pm', cost: 'Free to use, may need to pay for parking', off_leash: 'Yes, in designated areas only', features: 'Walking trails, Playground, Restrooms', phone: null, email: null, website: null, highlights: DEFAULT_HIGHLIGHTS },
   { name: 'Lalbagh Botanical Garden',        locality: 'Mavalli, Bengaluru',             rating: 5, image_url: '/parks/lalbagh.jpg',      address: 'Mavalli, Bengaluru, Karnataka 560004',                            hours: '6 am to 7 pm', cost: '₹20 entry; free under 12',               off_leash: 'On-leash only',                       features: 'Glass house, Lake, Walking trails',       phone: null, email: null, website: null, highlights: DEFAULT_HIGHLIGHTS },
   { name: 'Agara Lake Park',                 locality: 'HSR Layout, Bengaluru',          rating: 4, image_url: '/parks/agara.jpg',        address: 'HSR Layout, Bengaluru, Karnataka 560102',                          hours: '5 am to 9 pm', cost: 'Free to use',                            off_leash: 'On-leash only',                       features: 'Lakeside walk, Jogging track',            phone: null, email: null, website: null, highlights: DEFAULT_HIGHLIGHTS },
@@ -70,7 +74,7 @@ function seedMockStoreIfEmpty(): void {
   const now = new Date().toISOString();
   const seeded = DEFAULT_PARKS.map((p, i) => {
     const ts = new Date(Date.now() - (DEFAULT_PARKS.length - i) * 1000).toISOString();
-    return { ...p, id: makeId(), created_at: ts, updated_at: now } satisfies ParkRead;
+    return { ...p, city: 'Bengaluru', id: makeId(), created_at: ts, updated_at: now } satisfies ParkRead;
   });
   try {
     localStorage.setItem(MOCK_KEY, JSON.stringify(seeded));
@@ -121,6 +125,7 @@ export async function createPark(data: ParkCreate): Promise<ParkRead> {
       id: makeId(),
       name: data.name,
       locality: data.locality,
+      city: data.city?.trim() || 'Bengaluru',
       rating: data.rating,
       image_url: data.image_url?.trim() || null,
       address: data.address,
