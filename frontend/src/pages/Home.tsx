@@ -3,6 +3,8 @@ import { PageHead } from '@/components/PageHead';
 import { RailArrow } from '@/components/RailArrow';
 import { useScrollEdges } from '@/hooks/useScrollEdges';
 import { useBackendWarmup } from '@/lib/warmupBackend';
+import { useActiveCity } from '@/hooks/useActiveCity';
+import { type City } from '@/lib/cities';
 
 type Service = {
   label: string;
@@ -27,10 +29,17 @@ const SERVICES: Service[] = [
   { label: 'Pet Supplies', dog: '🐶🦴', badge: '🥣', kicker: 'Shop', tint: 'from-violet-200 to-violet-400', to: '/pet-supplies' },
 ];
 
-function ServiceTile({ service, className = '' }: { service: Service; className?: string }) {
+// The four directories live under a city; every other link is city-agnostic.
+const CITY_SEGMENTS = ['hospital', 'park', 'swimming', 'grooming'];
+function withCity(to: string, city: City): string {
+  const segment = to.replace(/^\//, '');
+  return CITY_SEGMENTS.includes(segment) ? `/${city.slug}/${segment}` : to;
+}
+
+function ServiceTile({ service, className = '', city }: { service: Service; className?: string; city: City }) {
   const { label, dog, badge, kicker, tint, to } = service;
   return (
-    <Link to={to} className={`group block text-center ${className}`}>
+    <Link to={withCity(to, city)} className={`group block text-center ${className}`}>
       <p className="text-xs text-warm-600 mb-3 tracking-wide">{kicker}</p>
       <div className={`relative mx-auto aspect-square w-20 sm:w-24 lg:w-28 rounded-full overflow-visible bg-gradient-to-br ${tint} ring-1 ring-warm-200 group-hover:ring-primary-400 transition`}>
         <span aria-hidden="true" className="absolute inset-0 flex items-center justify-center text-3xl sm:text-4xl drop-shadow group-hover:scale-110 transition-transform">
@@ -104,6 +113,7 @@ function ServicesSection() {
             <ServiceTile
               key={service.label}
               service={service}
+              city={activeCity}
               className="snap-start justify-self-center w-24"
             />
           ))}
@@ -127,6 +137,7 @@ function ServicesSection() {
             <ServiceTile
               key={service.label}
               service={service}
+              city={activeCity}
               className="shrink-0 w-28 lg:w-32 snap-start"
             />
           ))}
@@ -296,7 +307,7 @@ export function Home() {
                 supplies — every service your best friend needs, under one roof.
               </p>
               <Link
-                to="/hospital"
+                to={`/${activeCity.slug}/hospital`}
                 className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-accent-400 hover:bg-accent-300 text-warm-900 text-sm font-bold tracking-[0.15em] uppercase ring-2 ring-accent-300/50 hover:ring-accent-200 transition-all shadow-lg"
               >
                 Explore Services

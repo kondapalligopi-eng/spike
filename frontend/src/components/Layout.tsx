@@ -1,10 +1,19 @@
 import { Outlet } from 'react-router-dom';
 import { Navbar } from './Navbar';
 import { ScrollToTop } from './ScrollToTop';
+import { useActiveCity } from '@/hooks/useActiveCity';
+import { type City } from '@/lib/cities';
 import { ToastContainer } from './Toast';
 import { VisitTracker } from './VisitTracker';
 import { WhatsAppLink } from './WhatsAppLink';
 import { SOCIAL } from '@/lib/social';
+
+// The four directories live under a city; every other link is city-agnostic.
+const CITY_SEGMENTS = ['hospital', 'park', 'swimming', 'grooming'];
+function withCity(to: string, city: City): string {
+  const segment = to.replace(/^\//, '');
+  return CITY_SEGMENTS.includes(segment) ? `/${city.slug}/${segment}` : to;
+}
 
 const FOOTER_COLUMNS: { heading: string; links: { label: string; href: string; external?: boolean }[] }[] = [
   {
@@ -46,6 +55,7 @@ function SocialIcon({ label, children, href }: { label: string; children: React.
 }
 
 export function Layout() {
+  const activeCity = useActiveCity();
   return (
     <div className="min-h-screen bg-warm-50 flex flex-col">
       <ScrollToTop />
@@ -109,7 +119,7 @@ export function Layout() {
                   {col.links.map((link) => (
                     <li key={link.label}>
                       <a
-                        href={link.href}
+                        href={withCity(link.href, activeCity)}
                         className="text-sm text-primary-700 hover:text-primary-800 hover:underline inline-flex items-center gap-1"
                       >
                         {link.label}
