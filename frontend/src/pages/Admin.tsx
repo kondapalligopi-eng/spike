@@ -1421,8 +1421,6 @@ const IMPORT_CONFIGS: Record<ImportConfig['kind'], ImportConfig> = {
       { header: 'Name', required: true },
       { header: 'Locality', required: true },
       { header: 'City', hint: 'blank = Bengaluru' },
-      { header: 'City', hint: 'blank = Bengaluru' },
-      { header: 'City', hint: 'blank = Bengaluru' },
       { header: 'Address', required: true },
       { header: 'Phone', required: true },
       { header: 'Specialties', hint: 'comma-separated' },
@@ -1468,6 +1466,7 @@ const IMPORT_CONFIGS: Record<ImportConfig['kind'], ImportConfig> = {
     columns: [
       { header: 'Name', required: true },
       { header: 'Locality', required: true },
+      { header: 'City', hint: 'blank = Bengaluru' },
       { header: 'Address', required: true },
       { header: 'Rating', hint: '1–5' },
       { header: 'Cost' },
@@ -1525,6 +1524,7 @@ const IMPORT_CONFIGS: Record<ImportConfig['kind'], ImportConfig> = {
     columns: [
       { header: 'Name', required: true },
       { header: 'Locality', required: true },
+      { header: 'City', hint: 'blank = Bengaluru' },
       { header: 'Address', required: true },
       { header: 'Rating', hint: '1–5' },
       { header: 'Pool type' },
