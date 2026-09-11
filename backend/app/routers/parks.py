@@ -47,6 +47,7 @@ async def create_park(
     park = Park(
         name=payload.name.strip(),
         locality=payload.locality.strip(),
+        city=payload.city.strip() or "Bengaluru",
         rating=payload.rating,
         image_url=(payload.image_url or "").strip() or None,
         address=payload.address.strip(),
@@ -84,6 +85,7 @@ async def update_park(
         )
     park.name = payload.name.strip()
     park.locality = payload.locality.strip()
+    park.city = payload.city.strip() or "Bengaluru"
     park.rating = payload.rating
     park.image_url = (payload.image_url or "").strip() or None
     park.address = payload.address.strip()
