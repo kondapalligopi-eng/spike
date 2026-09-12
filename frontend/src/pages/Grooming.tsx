@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { listGroomingSalons, type GroomingSalonRead } from '@/api/groomingSalons';
 import { createSubmission } from '@/api/submissions';
@@ -11,7 +11,7 @@ import { SelectMenu } from '@/components/SelectMenu';
 import { WhatsAppLink } from '@/components/WhatsAppLink';
 import { useBackendWarmup } from '@/lib/warmupBackend';
 import { useCity } from '@/hooks/useCity';
-import { hasCategory, isInCity, type City } from '@/lib/cities';
+import { citiesWithCategory, hasCategory, isInCity, LIVE_CITIES, type City } from '@/lib/cities';
 import { NotFound } from '@/pages/NotFound';
 import { ComingSoon } from '@/components/ComingSoon';
 
@@ -157,9 +157,19 @@ function PaginationControls({ currentPage, totalPages, onChange }: PaginationPro
   );
 }
 
+// Distinguishes the city selector from the locality one beside it, which
+// uses SelectMenu's default pin.
+const CityIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" className="w-full h-full" aria-hidden="true">
+    <path d="M3 21h18M5 21V7l6-4v18M19 21V11l-8-4" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+    <path d="M8 9h.01M8 13h.01M8 17h.01M15 13h.01M15 17h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+  </svg>
+);
+
 export function Grooming() {
   useBackendWarmup();
   const city = useCity();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [query, setQuery] = useState('');
   const [appliedQuery, setAppliedQuery] = useState('');
@@ -304,6 +314,9 @@ export function Grooming() {
         body={`We are still building the grooming directory for ${city.name}. Run a salon there, or know one worth listing? Tell us — listing is free.`}
         notifySubject={`grooming salons are listed in ${city.name}`}
         path={`/${city.slug}/grooming`}
+        elsewhere={citiesWithCategory('grooming')
+          .filter((c) => c.slug !== city.slug)
+          .map((c) => ({ name: c.name, to: `/${c.slug}/grooming` }))}
         noindex
       />
     );
@@ -366,6 +379,18 @@ export function Grooming() {
               />
             </label>
 
+            {/* City — the broadest filter, so it leads. Changing it navigates
+                rather than filters, because the city is in the URL. */}
+            {LIVE_CITIES.length > 1 && (
+              <SelectMenu
+                value={city.slug}
+                onChange={(slug) => navigate(`/${slug}/grooming`)}
+                options={LIVE_CITIES.map((c) => ({ value: c.slug, label: c.name }))}
+                ariaLabel="Choose city"
+                icon={<CityIcon />}
+                className="w-full sm:w-auto sm:min-w-[170px]"
+              />
+            )}
             <SelectMenu
               value={locationFilter}
               onChange={setLocationFilter}

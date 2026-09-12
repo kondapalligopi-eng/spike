@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { listHospitals, type HospitalRead } from '@/api/hospitals';
 import { createSubmission } from '@/api/submissions';
@@ -14,7 +14,7 @@ import { useBackendWarmup } from '@/lib/warmupBackend';
 import { trackClick } from '@/lib/trackClick';
 import { useStaleShareFallback } from '@/hooks/useStaleShareFallback';
 import { useCity } from '@/hooks/useCity';
-import { hasCategory, isInCity, type City } from '@/lib/cities';
+import { citiesWithCategory, hasCategory, isInCity, LIVE_CITIES, type City } from '@/lib/cities';
 import { NotFound } from '@/pages/NotFound';
 import { ComingSoon } from '@/components/ComingSoon';
 
@@ -198,6 +198,15 @@ const BANGALORE_NEIGHBOURHOODS = [
   'Yeshwantpur',
 ];
 
+// Distinguishes the city selector from the locality one beside it, which
+// uses SelectMenu's default pin.
+const CityIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" className="w-full h-full" aria-hidden="true">
+    <path d="M3 21h18M5 21V7l6-4v18M19 21V11l-8-4" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+    <path d="M8 9h.01M8 13h.01M8 17h.01M15 13h.01M15 17h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+  </svg>
+);
+
 export function Hospital() {
   useBackendWarmup();
   const [searchParams] = useSearchParams();
@@ -205,6 +214,7 @@ export function Hospital() {
   const [specialty, setSpecialty] = useState(ALL_SPECIALTIES);
   const [location, setLocation] = useState(ALL_LOCATIONS);
   const city = useCity();
+  const navigate = useNavigate();
   // Not the city directory — a locality substring filter that predates it.
   const [activeArea] = useState<string | null>(null);
   const [applied, setApplied] = useState({ search: '', specialty: ALL_SPECIALTIES, location: ALL_LOCATIONS });
@@ -388,6 +398,9 @@ export function Hospital() {
         body={`We are still building the vet directory for ${city.name}. Run a clinic there, or know one worth listing? Tell us — listing is free.`}
         notifySubject={`vets are listed in ${city.name}`}
         path={`/${city.slug}/hospital`}
+        elsewhere={citiesWithCategory('hospital')
+          .filter((c) => c.slug !== city.slug)
+          .map((c) => ({ name: c.name, to: `/${c.slug}/hospital` }))}
         noindex
       />
     );
@@ -472,6 +485,18 @@ export function Hospital() {
               }
             />
 
+            {/* City — the broadest filter, so it leads. Changing it navigates
+                rather than filters, because the city is in the URL. */}
+            {LIVE_CITIES.length > 1 && (
+              <SelectMenu
+                value={city.slug}
+                onChange={(slug) => navigate(`/${slug}/hospital`)}
+                options={LIVE_CITIES.map((c) => ({ value: c.slug, label: c.name }))}
+                ariaLabel="Choose city"
+                icon={<CityIcon />}
+                className="w-full sm:w-auto sm:min-w-[170px]"
+              />
+            )}
             {/* Location */}
             <SelectMenu
               value={location}

@@ -55,6 +55,12 @@ export const LIVE_CITIES = CITIES.filter((c) => c.live);
  *  have to be loaded before a city can go live. */
 export const CITY_NAMES = CITIES.map((c) => c.name);
 
+/** Live cities that list this category — used to point a visitor at one
+ *  that has what the city they are on does not. */
+export function citiesWithCategory(category: Category): City[] {
+  return CITIES.filter((c) => c.live && c.categories.includes(category));
+}
+
 /** Does this city list anything in this category? */
 export function hasCategory(city: City, category: Category): boolean {
   return city.categories.includes(category);
