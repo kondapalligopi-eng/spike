@@ -22,9 +22,12 @@ type ComingSoonProps = {
   /** Keep it out of search results. An empty category is a real page for
    *  a visitor but nothing Google should file as a directory. */
   noindex?: boolean;
+  /** Somewhere this thing does exist — shown as "Open in: <links>". Only
+   *  pass places that genuinely have it, or the link is another dead end. */
+  elsewhere?: { name: string; to: string }[];
 };
 
-export function ComingSoon({ emoji, eyebrow, title, body, notifySubject, path, noindex }: ComingSoonProps) {
+export function ComingSoon({ emoji, eyebrow, title, body, notifySubject, path, noindex, elsewhere }: ComingSoonProps) {
   const mailtoHref = `mailto:support@hispike.in?subject=${encodeURIComponent(
     `Notify me when ${notifySubject}`,
   )}`;
@@ -60,7 +63,34 @@ export function ComingSoon({ emoji, eyebrow, title, body, notifySubject, path, n
             {title}
           </h1>
           <div className="mx-auto h-1 w-20 bg-accent-400 rounded-full mb-5" />
-          <p className="text-base sm:text-lg text-primary-100/95 max-w-xl mx-auto mb-8">{body}</p>
+          <p className="text-base sm:text-lg text-primary-100/95 max-w-xl mx-auto mb-6">{body}</p>
+
+          {/* Where it does exist. Cheaper than a city dropdown here, and it
+              cannot land anyone on a second empty page.
+
+              Given its own panel rather than a line of text: this is the only
+              thing on the page that actually leads somewhere useful, so it has
+              to out-rank the two buttons below it. Solid white pills against the
+              blue read as buttons at a glance. */}
+          {elsewhere && elsewhere.length > 0 && (
+            <div className="mx-auto mb-8 max-w-lg rounded-2xl border border-white/20 bg-white/[0.08] px-5 py-4 backdrop-blur-sm">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-accent-300 mb-3">
+                Available in these cities
+              </p>
+              <div className="flex flex-wrap items-center justify-center gap-2.5">
+                {elsewhere.map((place) => (
+                  <Link
+                    key={place.to}
+                    to={place.to}
+                    className="inline-flex items-center gap-1.5 rounded-full bg-white px-4 py-2 text-sm font-bold text-primary-800 shadow-sm hover:bg-accent-300 hover:text-warm-900 transition-colors"
+                  >
+                    {place.name}
+                    <span aria-hidden="true">→</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
           <div className="flex flex-wrap items-center justify-center gap-3">
             <Link
               to="/"
