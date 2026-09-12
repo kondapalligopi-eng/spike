@@ -23,9 +23,9 @@ export type City = {
 
 export const CITIES: City[] = [
   { slug: 'bengaluru', name: 'Bengaluru', state: 'Karnataka', live: true },
-  { slug: 'pune', name: 'Pune', state: 'Maharashtra', live: false },
-  { slug: 'hyderabad', name: 'Hyderabad', state: 'Telangana', live: false },
-  { slug: 'mumbai', name: 'Mumbai', state: 'Maharashtra', live: false },
+  { slug: 'pune', name: 'Pune', state: 'Maharashtra', live: true },
+  { slug: 'hyderabad', name: 'Hyderabad', state: 'Telangana', live: true },
+  { slug: 'mumbai', name: 'Mumbai', state: 'Maharashtra', live: true },
 ];
 
 /** Where a visitor with no city in the URL ends up. */
