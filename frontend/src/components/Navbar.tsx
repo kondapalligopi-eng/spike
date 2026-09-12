@@ -289,9 +289,9 @@ export function Navbar() {
         {/* Second row: service nav strip — visible at every breakpoint so
             mobile users can jump between services without opening the
             drawer. Horizontally scrollable on narrow screens. */}
-        <nav className="bg-primary-50 border-t border-warm-200">
+        <nav className="relative bg-primary-50 border-t border-warm-200">
 
-          <div className="max-w-7xl mx-auto overflow-x-auto">
+          <div className="max-w-7xl mx-auto overflow-x-auto no-scrollbar">
             <div className="flex items-center justify-start md:justify-center gap-6 md:gap-10 px-4 sm:px-6 lg:px-8 py-3 min-w-max">
               <NavLink to={`/${activeCity.slug}/hospital`} className={navLinkClass}>Hospital</NavLink>
               <NavLink to={`/${activeCity.slug}/park`} className={navLinkClass}>Park</NavLink>
@@ -304,6 +304,10 @@ export function Navbar() {
               <NavLink to="/pet-supplies" className={navLinkClass}>Pet Supplies</NavLink>
             </div>
           </div>
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-primary-50 to-transparent md:hidden"
+          />
         </nav>
       </header>
 
