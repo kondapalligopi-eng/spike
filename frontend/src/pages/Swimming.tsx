@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { listSwimSchools, type SwimSchoolRead } from '@/api/swimSchools';
 import { createSubmission } from '@/api/submissions';
@@ -13,7 +13,7 @@ import { WhatsAppLink } from '@/components/WhatsAppLink';
 import { useBackendWarmup } from '@/lib/warmupBackend';
 import { useStaleShareFallback } from '@/hooks/useStaleShareFallback';
 import { useCity } from '@/hooks/useCity';
-import { hasCategory, isInCity, type City } from '@/lib/cities';
+import { hasCategory, isInCity, LIVE_CITIES, type City } from '@/lib/cities';
 import { NotFound } from '@/pages/NotFound';
 import { ComingSoon } from '@/components/ComingSoon';
 
@@ -168,6 +168,15 @@ function PaginationControls({ currentPage, totalPages, onChange }: PaginationPro
   );
 }
 
+// Distinguishes the city selector from the locality one beside it, which
+// uses SelectMenu's default pin.
+const CityIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" className="w-full h-full" aria-hidden="true">
+    <path d="M3 21h18M5 21V7l6-4v18M19 21V11l-8-4" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+    <path d="M8 9h.01M8 13h.01M8 17h.01M15 13h.01M15 17h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+  </svg>
+);
+
 export function Swimming() {
   useBackendWarmup();
   const [searchParams] = useSearchParams();
@@ -185,6 +194,7 @@ export function Swimming() {
   const [locationFilter, setLocationFilter] = useState('');
   const [activeCity, setActiveCity] = useState<string | null>(null);
   const city = useCity();
+  const navigate = useNavigate();
   const [selectedSpot, setSelectedSpot] = useState<SwimSpot | null>(null);
 
   const swimSchoolsQuery = useQuery({
@@ -399,6 +409,18 @@ export function Swimming() {
                   />
                 </label>
 
+                {/* City — the broadest filter, so it leads. Changing it navigates
+                    rather than filters, because the city is in the URL. */}
+                {LIVE_CITIES.length > 1 && (
+                  <SelectMenu
+                    value={city.slug}
+                    onChange={(slug) => navigate(`/${slug}/swimming`)}
+                    options={LIVE_CITIES.map((c) => ({ value: c.slug, label: c.name }))}
+                    ariaLabel="Choose city"
+                    icon={<CityIcon />}
+                    className="w-full sm:w-auto sm:min-w-[170px]"
+                  />
+                )}
                 <SelectMenu
                   value={locationFilter}
                   onChange={setLocationFilter}
