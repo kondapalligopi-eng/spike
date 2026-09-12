@@ -66,20 +66,29 @@ export function ComingSoon({ emoji, eyebrow, title, body, notifySubject, path, n
           <p className="text-base sm:text-lg text-primary-100/95 max-w-xl mx-auto mb-6">{body}</p>
 
           {/* Where it does exist. Cheaper than a city dropdown here, and it
-              cannot land anyone on a second empty page. */}
+              cannot land anyone on a second empty page.
+
+              Given its own panel rather than a line of text: this is the only
+              thing on the page that actually leads somewhere useful, so it has
+              to out-rank the two buttons below it. Solid white pills against the
+              blue read as buttons at a glance. */}
           {elsewhere && elsewhere.length > 0 && (
-            <div className="flex flex-wrap items-center justify-center gap-2 mb-8">
-              <span className="text-sm text-primary-100/80">Open in</span>
-              {elsewhere.map((place) => (
-                <Link
-                  key={place.to}
-                  to={place.to}
-                  className="inline-flex items-center gap-1 rounded-full bg-white/10 hover:bg-white/20 border border-white/25 px-3 py-1 text-sm font-bold text-white transition-colors"
-                >
-                  {place.name}
-                  <span aria-hidden="true">→</span>
-                </Link>
-              ))}
+            <div className="mx-auto mb-8 max-w-lg rounded-2xl border border-white/20 bg-white/[0.08] px-5 py-4 backdrop-blur-sm">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-accent-300 mb-3">
+                Available in these cities
+              </p>
+              <div className="flex flex-wrap items-center justify-center gap-2.5">
+                {elsewhere.map((place) => (
+                  <Link
+                    key={place.to}
+                    to={place.to}
+                    className="inline-flex items-center gap-1.5 rounded-full bg-white px-4 py-2 text-sm font-bold text-primary-800 shadow-sm hover:bg-accent-300 hover:text-warm-900 transition-colors"
+                  >
+                    {place.name}
+                    <span aria-hidden="true">→</span>
+                  </Link>
+                ))}
+              </div>
             </div>
           )}
           <div className="flex flex-wrap items-center justify-center gap-3">
