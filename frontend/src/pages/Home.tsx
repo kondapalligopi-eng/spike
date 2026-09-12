@@ -13,7 +13,21 @@ type Service = {
   kicker: string;
   tint: string;
   to: string;
+
 };
+
+const TILE_ART = import.meta.glob('@/assets/tiles/*.png', {
+  eager: true,
+  query: '?url',
+  import: 'default',
+}) as Record<string, string>;
+
+/** "Pet Shops" -> the bundled URL for pet-shops.png, or undefined. */
+function tileArt(label: string): string | undefined {
+  const file = `${label.toLowerCase().replace(/\s+/g, '-')}.png`;
+  const key = Object.keys(TILE_ART).find((k) => k.endsWith(`/${file}`));
+  return key ? TILE_ART[key] : undefined;
+}
 
 const SERVICES: Service[] = [
   { label: 'Hospital', dog: '🐶', badge: '🩺', kicker: 'Vet Care', tint: 'from-rose-200 to-rose-400', to: '/hospital' },
@@ -38,13 +52,24 @@ function withCity(to: string, city: City): string {
 
 function ServiceTile({ service, className = '', city }: { service: Service; className?: string; city: City }) {
   const { label, dog, badge, kicker, tint, to } = service;
+  const image = tileArt(label);
   return (
     <Link to={withCity(to, city)} className={`group block text-center ${className}`}>
       <p className="text-xs text-warm-600 mb-3 tracking-wide">{kicker}</p>
       <div className={`relative mx-auto aspect-square w-20 sm:w-24 lg:w-28 rounded-full overflow-visible bg-gradient-to-br ${tint} ring-1 ring-warm-200 group-hover:ring-primary-400 transition`}>
-        <span aria-hidden="true" className="absolute inset-0 flex items-center justify-center text-3xl sm:text-4xl drop-shadow group-hover:scale-110 transition-transform">
-          {dog}
-        </span>
+        {image ? (
+          <img
+            src={image}
+            alt=""
+            aria-hidden="true"
+            loading="lazy"
+            className="absolute inset-0 h-full w-full rounded-full object-cover group-hover:scale-110 transition-transform"
+          />
+        ) : (
+          <span aria-hidden="true" className="absolute inset-0 flex items-center justify-center text-3xl sm:text-4xl drop-shadow group-hover:scale-110 transition-transform">
+            {dog}
+          </span>
+        )}
         <span
           aria-hidden="true"
           className="absolute -bottom-1 -right-1 w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-white text-xl sm:text-2xl shadow-lg ring-2 ring-primary-300 group-hover:ring-primary-500 group-hover:scale-110 transition"
