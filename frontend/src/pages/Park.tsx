@@ -15,6 +15,7 @@ import { useStaleShareFallback } from '@/hooks/useStaleShareFallback';
 import { useCity } from '@/hooks/useCity';
 import { isInCity, type City } from '@/lib/cities';
 import { NotFound } from '@/pages/NotFound';
+import { ComingSoon } from '@/components/ComingSoon';
 
 // The Bengaluru answers name real parks, which is what makes them worth
 // reading. A city we have just opened gets the same questions answered
@@ -361,6 +362,23 @@ export function Park() {
 
   // Unknown slug is a 404, never a silent fallback to another city.
   if (!city) return <NotFound />;
+
+  // Nothing listed here yet. Data-driven rather than a per-city flag, so the
+  // real directory returns by itself the moment a listing is imported. Held
+  // back until the fetch settles so it cannot flash during loading.
+  if (!parksQuery.isLoading && !parksQuery.isError && allSpots.length === 0) {
+    return (
+      <ComingSoon
+        emoji="🌳"
+        eyebrow={`Outdoors · ${city.name}`}
+        title={`Dog parks in ${city.name} — coming soon`}
+        body={`We are still checking which parks in ${city.name} genuinely welcome dogs. Know a good one? Tell us and we will list it — free.`}
+        notifySubject={`dog parks open in ${city.name}`}
+        path={`/${city.slug}/park`}
+        noindex
+      />
+    );
+  }
 
   return (
     <div className="bg-white">

@@ -16,6 +16,7 @@ import { useStaleShareFallback } from '@/hooks/useStaleShareFallback';
 import { useCity } from '@/hooks/useCity';
 import { isInCity, type City } from '@/lib/cities';
 import { NotFound } from '@/pages/NotFound';
+import { ComingSoon } from '@/components/ComingSoon';
 
 // Neighbourhood names only make sense where we have the listings to back them
 // up. Bengaluru gets the specific copy it has earned; a city we have just
@@ -368,6 +369,23 @@ export function Hospital() {
   // listings under any slug someone invents would let crawlers index an
   // unbounded set of duplicate pages.
   if (!city) return <NotFound />;
+
+  // Nothing listed here yet. Data-driven rather than a per-city flag, so the
+  // real directory returns by itself the moment a listing is imported. Held
+  // back until the fetch settles so it cannot flash during loading.
+  if (!adminHospitalsQuery.isLoading && !adminHospitalsQuery.isError && allHospitals.length === 0) {
+    return (
+      <ComingSoon
+        emoji="🏥"
+        eyebrow={`Vet Care · ${city.name}`}
+        title={`Vets in ${city.name} — coming soon`}
+        body={`We are still building the vet directory for ${city.name}. Run a clinic there, or know one worth listing? Tell us — listing is free.`}
+        notifySubject={`vets are listed in ${city.name}`}
+        path={`/${city.slug}/hospital`}
+        noindex
+      />
+    );
+  }
 
   const areaLine = city.slug === 'bengaluru' ? ` — ${BENGALURU_AREAS}` : '';
 
