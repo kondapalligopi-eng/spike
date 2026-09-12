@@ -15,6 +15,7 @@ import { useStaleShareFallback } from '@/hooks/useStaleShareFallback';
 import { useCity } from '@/hooks/useCity';
 import { isInCity, type City } from '@/lib/cities';
 import { NotFound } from '@/pages/NotFound';
+import { ComingSoon } from '@/components/ComingSoon';
 
 // Bengaluru's answers name the pools we actually list. Other cities get the
 // same questions answered from their own directory instead of borrowed detail.
@@ -313,6 +314,23 @@ export function Swimming() {
 
   // Unknown slug is a 404, never a silent fallback to another city.
   if (!city) return <NotFound />;
+
+  // Nothing listed here yet. Data-driven rather than a per-city flag, so the
+  // real directory returns by itself the moment a listing is imported. Held
+  // back until the fetch settles so it cannot flash during loading.
+  if (!swimSchoolsQuery.isLoading && !swimSchoolsQuery.isError && allSpots.length === 0) {
+    return (
+      <ComingSoon
+        emoji="🐕💦"
+        eyebrow={`Aquatic · ${city.name}`}
+        title={`Dog swim schools in ${city.name} — coming soon`}
+        body={`We have not found dog swimming pools in ${city.name} that meet our bar yet. Dedicated canine pools are still rare outside Bengaluru. Run one, or know one? Tell us and we will list it — free.`}
+        notifySubject={`swim schools open in ${city.name}`}
+        path={`/${city.slug}/swimming`}
+        noindex
+      />
+    );
+  }
 
   return (
     <div className="bg-white">

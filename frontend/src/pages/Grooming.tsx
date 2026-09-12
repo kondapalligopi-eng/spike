@@ -13,6 +13,7 @@ import { useBackendWarmup } from '@/lib/warmupBackend';
 import { useCity } from '@/hooks/useCity';
 import { isInCity, type City } from '@/lib/cities';
 import { NotFound } from '@/pages/NotFound';
+import { ComingSoon } from '@/components/ComingSoon';
 
 // Bengaluru's answers name the salons we actually list. Other cities answer the
 // same questions from their own directory rather than borrowing local detail.
@@ -284,6 +285,23 @@ export function Grooming() {
 
   // Unknown slug is a 404, never a silent fallback to another city.
   if (!city) return <NotFound />;
+
+  // Nothing listed here yet. Data-driven rather than a per-city flag, so the
+  // real directory returns by itself the moment a listing is imported. Held
+  // back until the fetch settles so it cannot flash during loading.
+  if (!salonsQuery.isLoading && !salonsQuery.isError && allSalons.length === 0) {
+    return (
+      <ComingSoon
+        emoji="✂️"
+        eyebrow={`Salons · ${city.name}`}
+        title={`Dog grooming in ${city.name} — coming soon`}
+        body={`We are still building the grooming directory for ${city.name}. Run a salon there, or know one worth listing? Tell us — listing is free.`}
+        notifySubject={`grooming salons are listed in ${city.name}`}
+        path={`/${city.slug}/grooming`}
+        noindex
+      />
+    );
+  }
 
   return (
     <div className="bg-white">

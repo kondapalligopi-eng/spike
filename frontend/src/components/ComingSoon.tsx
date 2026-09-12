@@ -19,9 +19,12 @@ type ComingSoonProps = {
   /** Path used for canonical/og URL — omitted means no SEO head injected
    *  (used when a parent already sets PageHead, e.g. PetSupplies toggle). */
   path?: string;
+  /** Keep it out of search results. An empty category is a real page for
+   *  a visitor but nothing Google should file as a directory. */
+  noindex?: boolean;
 };
 
-export function ComingSoon({ emoji, eyebrow, title, body, notifySubject, path }: ComingSoonProps) {
+export function ComingSoon({ emoji, eyebrow, title, body, notifySubject, path, noindex }: ComingSoonProps) {
   const mailtoHref = `mailto:support@hispike.in?subject=${encodeURIComponent(
     `Notify me when ${notifySubject}`,
   )}`;
@@ -33,6 +36,7 @@ export function ComingSoon({ emoji, eyebrow, title, body, notifySubject, path }:
           title={title}
           description={body}
           path={path}
+          noindex={noindex}
         />
       )}
       <section className="relative overflow-hidden bg-gradient-to-r from-primary-900 via-primary-800 to-primary-600 text-white">
