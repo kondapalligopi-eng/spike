@@ -13,7 +13,7 @@ import { WhatsAppLink } from '@/components/WhatsAppLink';
 import { useBackendWarmup } from '@/lib/warmupBackend';
 import { useStaleShareFallback } from '@/hooks/useStaleShareFallback';
 import { useCity } from '@/hooks/useCity';
-import { isInCity, type City } from '@/lib/cities';
+import { hasCategory, isInCity, type City } from '@/lib/cities';
 import { NotFound } from '@/pages/NotFound';
 import { ComingSoon } from '@/components/ComingSoon';
 
@@ -315,10 +315,16 @@ export function Swimming() {
   // Unknown slug is a 404, never a silent fallback to another city.
   if (!city) return <NotFound />;
 
-  // Nothing listed here yet. Data-driven rather than a per-city flag, so the
-  // real directory returns by itself the moment a listing is imported. Held
-  // back until the fetch settles so it cannot flash during loading.
-  if (!swimSchoolsQuery.isLoading && !swimSchoolsQuery.isError && allSpots.length === 0) {
+  // Nothing to show here. The declared-categories check comes first because it
+  // is the only one that holds during pre-rendering — at build time the query
+  // has not resolved, so a purely data-driven check would emit a normal,
+  // indexable page for a category with nothing in it. The data check behind it
+  // covers a category that is declared but happens to be empty, and is held
+  // until the fetch settles so it cannot flash while loading.
+  if (
+    !hasCategory(city, 'swimming') ||
+    (!swimSchoolsQuery.isLoading && !swimSchoolsQuery.isError && allSpots.length === 0)
+  ) {
     return (
       <ComingSoon
         emoji="🐕💦"
