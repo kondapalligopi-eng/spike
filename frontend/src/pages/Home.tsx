@@ -4,7 +4,7 @@ import { RailArrow } from '@/components/RailArrow';
 import { useScrollEdges } from '@/hooks/useScrollEdges';
 import { useBackendWarmup } from '@/lib/warmupBackend';
 import { useActiveCity } from '@/hooks/useActiveCity';
-import { type City } from '@/lib/cities';
+import { liveCitiesLabel, type City } from '@/lib/cities';
 
 type Service = {
   label: string;
@@ -184,7 +184,8 @@ export function Home() {
         className="bg-gradient-to-r from-accent-300 via-accent-400 to-accent-300 text-warm-900 text-sm sm:text-base font-semibold text-center py-2.5 px-4 border-y border-accent-500/30"
       >
         <span aria-hidden="true" className="mr-1.5">🐾</span>
-        List your pet business on HiSpike — free for verified providers in Bengaluru
+        List your pet business on HiSpike — free for verified providers in{' '}
+        {liveCitiesLabel()}
         <Link
           to="/feedback"
           className="ml-2 underline underline-offset-2 hover:text-warm-700 font-bold"

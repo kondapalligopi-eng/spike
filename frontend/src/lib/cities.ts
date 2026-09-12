@@ -55,6 +55,21 @@ export const LIVE_CITIES = CITIES.filter((c) => c.live);
  *  have to be loaded before a city can go live. */
 export const CITY_NAMES = CITIES.map((c) => c.name);
 
+/**
+ * The live cities as a readable phrase: "Bengaluru, Pune, Hyderabad & Mumbai".
+ *
+ * Past `max` it counts instead of naming, because a banner listing eight
+ * cities stops being read. Derived from CITIES so copy that names our
+ * coverage cannot quietly go stale the next time one is published.
+ */
+export function liveCitiesLabel(max = 4): string {
+  const names = CITIES.filter((c) => c.live).map((c) => c.name);
+  if (names.length === 0) return DEFAULT_CITY.name;
+  if (names.length === 1) return names[0];
+  if (names.length > max) return `${names.length} Indian cities`;
+  return `${names.slice(0, -1).join(', ')} & ${names[names.length - 1]}`;
+}
+
 /** Live cities that list this category — used to point a visitor at one
  *  that has what the city they are on does not. */
 export function citiesWithCategory(category: Category): City[] {

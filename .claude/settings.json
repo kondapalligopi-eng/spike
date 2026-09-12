@@ -3,7 +3,8 @@
     "allow": [
       "Bash(node \"C:/Users/sunit/AppData/Local/Temp/claude/c--Users-sunit-petdogs/cca573ef-ab57-4e70-84c9-e3ebef758d7c/scratchpad/fix-links.mjs\")",
       "Bash(curl -sS -m 30 \"http://localhost:3000/\")",
-      "Bash(node \"C:/Users/sunit/AppData/Local/Temp/claude/c--Users-sunit-petdogs/cca573ef-ab57-4e70-84c9-e3ebef758d7c/scratchpad/memo5.mjs\")"
+      "Bash(node \"C:/Users/sunit/AppData/Local/Temp/claude/c--Users-sunit-petdogs/cca573ef-ab57-4e70-84c9-e3ebef758d7c/scratchpad/memo5.mjs\")",
+      "Bash(grep -o \"free for verified providers in.\\\\{0,90\\\\}\")"
     ]
   },
   "hooks": {
