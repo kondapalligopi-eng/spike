@@ -4,7 +4,7 @@ import { RailArrow } from '@/components/RailArrow';
 import { useScrollEdges } from '@/hooks/useScrollEdges';
 import { useBackendWarmup } from '@/lib/warmupBackend';
 import { useActiveCity } from '@/hooks/useActiveCity';
-import { type City } from '@/lib/cities';
+import { liveCitiesCountLabel, liveCitiesLabel, type City } from '@/lib/cities';
 
 type Service = {
   label: string;
@@ -171,8 +171,8 @@ export function Home() {
   return (
     <div className="flex flex-col">
       <PageHead
-        title="HiSpike — All-In-One Pet Care for Dogs in Bengaluru"
-        description="HiSpike is Bengaluru's all-in-one pet care platform — find trusted vets, dog parks, swim coaches, grooming salons, and premium pet supplies in one place. Verified providers, honest reviews, hyperlocal."
+        title="HiSpike — All-In-One Pet Care for Dogs"
+        description={`HiSpike is an all-in-one pet care platform for ${liveCitiesLabel()} — trusted vets, dog parks, swim coaches, grooming and pet supplies.`}
         path="/"
       />
 
@@ -184,7 +184,11 @@ export function Home() {
         className="bg-gradient-to-r from-accent-300 via-accent-400 to-accent-300 text-warm-900 text-sm sm:text-base font-semibold text-center py-2.5 px-4 border-y border-accent-500/30"
       >
         <span aria-hidden="true" className="mr-1.5">🐾</span>
-        List your pet business on HiSpike — free for verified providers in Bengaluru
+        List your pet business on HiSpike — free for verified providers in{' '}
+        {/* Naming four cities wraps this banner to two lines on a phone, so
+            narrow screens get the count and wider ones get the names. */}
+        <span className="sm:hidden">{liveCitiesCountLabel()}</span>
+        <span className="hidden sm:inline">{liveCitiesLabel()}</span>
         <Link
           to="/feedback"
           className="ml-2 underline underline-offset-2 hover:text-warm-700 font-bold"
@@ -387,7 +391,9 @@ export function Home() {
               Why HiSpike
             </p>
             <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-warm-900">
-              Built for Bengaluru's dog owners
+              Built for dog owners in{' '}
+              <span className="sm:hidden">{liveCitiesCountLabel()}</span>
+              <span className="hidden sm:inline">{liveCitiesLabel()}</span>
             </h2>
             <div className="mx-auto mt-3 h-0.5 w-16 bg-accent-400 rounded-full" />
           </div>
@@ -411,7 +417,7 @@ export function Home() {
               {
                 emoji: '⭐',
                 title: 'Honest reviews',
-                body: 'Transparent ratings and notes from real Bengaluru dog parents, not paid promotions.',
+                body: 'Transparent ratings and notes from real dog parents, not paid promotions.',
               },
             ].map(({ emoji, title, body }) => (
               <div
