@@ -10,6 +10,10 @@
 // the URL still works so you can preview it. Thin, near-empty city pages are
 // how a directory gets treated as low-value, so this is deliberately opt-in.
 
+export type Category = 'hospital' | 'park' | 'swimming' | 'grooming';
+
+export const ALL_CATEGORIES: Category[] = ['hospital', 'park', 'swimming', 'grooming'];
+
 export type City = {
   /** URL segment. Permanent once indexed. */
   slug: string;
@@ -17,15 +21,28 @@ export type City = {
   name: string;
   /** Shown under the name in the switcher. */
   state: string;
+  /**
+   * The categories this city actually has listings for. A category left out
+   * renders a "coming soon" splash instead of an empty directory.
+   *
+   * Static rather than counted from the API, because the decision has to hold
+   * during pre-rendering: at build time the data has not been fetched, so a
+   * data-driven check emits a normal, indexable page for a category with
+   * nothing in it. Add a category here once its listings are imported.
+   */
+  categories: Category[];
   /** Published? See the note above before flipping one on. */
   live: boolean;
 };
 
 export const CITIES: City[] = [
-  { slug: 'bengaluru', name: 'Bengaluru', state: 'Karnataka', live: true },
-  { slug: 'pune', name: 'Pune', state: 'Maharashtra', live: true },
-  { slug: 'hyderabad', name: 'Hyderabad', state: 'Telangana', live: true },
-  { slug: 'mumbai', name: 'Mumbai', state: 'Maharashtra', live: true },
+  { slug: 'bengaluru', name: 'Bengaluru', state: 'Karnataka', categories: ALL_CATEGORIES, live: true },
+  // No dog pools worth listing here — swimming shows a coming-soon splash.
+  { slug: 'pune', name: 'Pune', state: 'Maharashtra', categories: ['hospital', 'park', 'grooming'], live: true },
+  // No dog pools worth listing here — swimming shows a coming-soon splash.
+  { slug: 'hyderabad', name: 'Hyderabad', state: 'Telangana', categories: ['hospital', 'park', 'grooming'], live: true },
+  // No dog pools worth listing here — swimming shows a coming-soon splash.
+  { slug: 'mumbai', name: 'Mumbai', state: 'Maharashtra', categories: ['hospital', 'park', 'grooming'], live: true },
 ];
 
 /** Where a visitor with no city in the URL ends up. */
@@ -37,6 +54,11 @@ export const LIVE_CITIES = CITIES.filter((c) => c.live);
 /** The names the admin can pick from — every city, live or not, since listings
  *  have to be loaded before a city can go live. */
 export const CITY_NAMES = CITIES.map((c) => c.name);
+
+/** Does this city list anything in this category? */
+export function hasCategory(city: City, category: Category): boolean {
+  return city.categories.includes(category);
+}
 
 export function cityBySlug(slug: string | undefined): City | undefined {
   if (!slug) return undefined;
