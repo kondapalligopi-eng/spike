@@ -4,7 +4,7 @@ import { RailArrow } from '@/components/RailArrow';
 import { useScrollEdges } from '@/hooks/useScrollEdges';
 import { useBackendWarmup } from '@/lib/warmupBackend';
 import { useActiveCity } from '@/hooks/useActiveCity';
-import { liveCitiesLabel, type City } from '@/lib/cities';
+import { liveCitiesCountLabel, liveCitiesLabel, type City } from '@/lib/cities';
 
 type Service = {
   label: string;
@@ -185,7 +185,10 @@ export function Home() {
       >
         <span aria-hidden="true" className="mr-1.5">🐾</span>
         List your pet business on HiSpike — free for verified providers in{' '}
-        {liveCitiesLabel()}
+        {/* Naming four cities wraps this banner to two lines on a phone, so
+            narrow screens get the count and wider ones get the names. */}
+        <span className="sm:hidden">{liveCitiesCountLabel()}</span>
+        <span className="hidden sm:inline">{liveCitiesLabel()}</span>
         <Link
           to="/feedback"
           className="ml-2 underline underline-offset-2 hover:text-warm-700 font-bold"

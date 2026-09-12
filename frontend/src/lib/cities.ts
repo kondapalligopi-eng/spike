@@ -70,6 +70,17 @@ export function liveCitiesLabel(max = 4): string {
   return `${names.slice(0, -1).join(', ')} & ${names[names.length - 1]}`;
 }
 
+/**
+ * The compact form: "4 Indian cities". For places too narrow to name them —
+ * a phone-width banner, mostly. Falls back to the name when there is only
+ * one, since "1 Indian cities" would be daft.
+ */
+export function liveCitiesCountLabel(): string {
+  const names = CITIES.filter((c) => c.live).map((c) => c.name);
+  if (names.length <= 1) return names[0] ?? DEFAULT_CITY.name;
+  return `${names.length} Indian cities`;
+}
+
 /** Live cities that list this category — used to point a visitor at one
  *  that has what the city they are on does not. */
 export function citiesWithCategory(category: Category): City[] {
