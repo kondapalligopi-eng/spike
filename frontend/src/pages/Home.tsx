@@ -14,20 +14,14 @@ type Service = {
   kicker: string;
   tint: string;
   to: string;
-  /**
-   * Optional square artwork, e.g. "/tiles/hospital.webp". Cropped to the
-   * circle by CSS rather than in an editor, so one file stays sharp at every
-   * breakpoint. Falls back to the emoji if it is missing or fails to load,
-   * which also means a half-finished set never shows a broken tile.
-   */
-  image?: string;
+
 };
 
 const SERVICES: Service[] = [
-  { label: 'Hospital', dog: '🐶', badge: '🩺', kicker: 'Vet Care', tint: 'from-rose-200 to-rose-400', to: '/hospital', image: '/tiles/hospital.png' },
+  { label: 'Hospital', dog: '🐶', badge: '🩺', kicker: 'Vet Care', tint: 'from-rose-200 to-rose-400', to: '/hospital' },
   { label: 'Park', dog: '🐕', badge: '🌳', kicker: 'Outdoors', tint: 'from-emerald-200 to-emerald-500', to: '/park' },
   { label: 'Swimming', dog: '🐶💦', badge: '🌊', kicker: 'Aquatic', tint: 'from-sky-200 to-sky-500', to: '/swimming' },
-  { label: 'Grooming', dog: '🐩', badge: '✂️', kicker: 'Salon', tint: 'from-amber-200 to-amber-400', to: '/grooming', image: '/tiles/grooming.png' },
+  { label: 'Grooming', dog: '🐩', badge: '✂️', kicker: 'Salon', tint: 'from-amber-200 to-amber-400', to: '/grooming' },
   { label: 'Pet Shops', dog: '🐶', badge: '🏪', kicker: 'Local Shops', tint: 'from-teal-200 to-teal-400', to: '/petshops' },
   { label: 'Pet Stories', dog: '🐶', badge: '📖', kicker: 'Stories', tint: 'from-fuchsia-200 to-fuchsia-400', to: '/pet-stories' },
   { label: 'Pet Play', dog: '🐶', badge: '🦴', kicker: 'Play', tint: 'from-indigo-200 to-indigo-400', to: '/pet-play' },
@@ -45,16 +39,18 @@ function withCity(to: string, city: City): string {
 }
 
 function ServiceTile({ service, className = '', city }: { service: Service; className?: string; city: City }) {
-  const { label, dog, badge, kicker, tint, to, image } = service;
-  // Artwork can 404 while a set is being put together; drop back to the
-  // emoji rather than showing a broken image.
+  const { label, dog, badge, kicker, tint, to } = service;
+  // Artwork is looked up by label — "Pet Shops" -> /tiles/pet-shops.png — so
+  // adding a tile picture means dropping the file in, nothing else. A tile
+  // with no file (or a file that fails to load) falls back to its emoji, so
+  // a half-finished set never shows a broken image.
   const [artOk, setArtOk] = useState(true);
-  const showArt = Boolean(image) && artOk;
+  const image = `/tiles/${label.toLowerCase().replace(/\s+/g, '-')}.png`;
   return (
     <Link to={withCity(to, city)} className={`group block text-center ${className}`}>
       <p className="text-xs text-warm-600 mb-3 tracking-wide">{kicker}</p>
       <div className={`relative mx-auto aspect-square w-20 sm:w-24 lg:w-28 rounded-full overflow-visible bg-gradient-to-br ${tint} ring-1 ring-warm-200 group-hover:ring-primary-400 transition`}>
-        {showArt ? (
+        {artOk ? (
           <img
             src={image}
             alt=""
