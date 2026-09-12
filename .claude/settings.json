@@ -1,4 +1,10 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(node \"C:/Users/sunit/AppData/Local/Temp/claude/c--Users-sunit-petdogs/cca573ef-ab57-4e70-84c9-e3ebef758d7c/scratchpad/fix-links.mjs\")",
+      "Bash(curl -sS -m 30 \"http://localhost:3000/\")"
+    ]
+  },
   "hooks": {
     "PostToolUse": [
       {
@@ -10,11 +16,6 @@
           }
         ]
       }
-    ]
-  },
-  "permissions": {
-    "allow": [
-      "Bash(node \"C:/Users/sunit/AppData/Local/Temp/claude/c--Users-sunit-petdogs/cca573ef-ab57-4e70-84c9-e3ebef758d7c/scratchpad/fix-links.mjs\")"
     ]
   }
 }
