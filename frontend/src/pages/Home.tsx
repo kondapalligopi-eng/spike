@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { PageHead } from '@/components/PageHead';
 import { RailArrow } from '@/components/RailArrow';
@@ -13,13 +14,20 @@ type Service = {
   kicker: string;
   tint: string;
   to: string;
+  /**
+   * Optional square artwork, e.g. "/tiles/hospital.webp". Cropped to the
+   * circle by CSS rather than in an editor, so one file stays sharp at every
+   * breakpoint. Falls back to the emoji if it is missing or fails to load,
+   * which also means a half-finished set never shows a broken tile.
+   */
+  image?: string;
 };
 
 const SERVICES: Service[] = [
-  { label: 'Hospital', dog: '🐶', badge: '🩺', kicker: 'Vet Care', tint: 'from-rose-200 to-rose-400', to: '/hospital' },
+  { label: 'Hospital', dog: '🐶', badge: '🩺', kicker: 'Vet Care', tint: 'from-rose-200 to-rose-400', to: '/hospital', image: '/tiles/hospital.png' },
   { label: 'Park', dog: '🐕', badge: '🌳', kicker: 'Outdoors', tint: 'from-emerald-200 to-emerald-500', to: '/park' },
   { label: 'Swimming', dog: '🐶💦', badge: '🌊', kicker: 'Aquatic', tint: 'from-sky-200 to-sky-500', to: '/swimming' },
-  { label: 'Grooming', dog: '🐩', badge: '✂️', kicker: 'Salon', tint: 'from-amber-200 to-amber-400', to: '/grooming' },
+  { label: 'Grooming', dog: '🐩', badge: '✂️', kicker: 'Salon', tint: 'from-amber-200 to-amber-400', to: '/grooming', image: '/tiles/grooming.png' },
   { label: 'Pet Shops', dog: '🐶', badge: '🏪', kicker: 'Local Shops', tint: 'from-teal-200 to-teal-400', to: '/petshops' },
   { label: 'Pet Stories', dog: '🐶', badge: '📖', kicker: 'Stories', tint: 'from-fuchsia-200 to-fuchsia-400', to: '/pet-stories' },
   { label: 'Pet Play', dog: '🐶', badge: '🦴', kicker: 'Play', tint: 'from-indigo-200 to-indigo-400', to: '/pet-play' },
@@ -37,14 +45,29 @@ function withCity(to: string, city: City): string {
 }
 
 function ServiceTile({ service, className = '', city }: { service: Service; className?: string; city: City }) {
-  const { label, dog, badge, kicker, tint, to } = service;
+  const { label, dog, badge, kicker, tint, to, image } = service;
+  // Artwork can 404 while a set is being put together; drop back to the
+  // emoji rather than showing a broken image.
+  const [artOk, setArtOk] = useState(true);
+  const showArt = Boolean(image) && artOk;
   return (
     <Link to={withCity(to, city)} className={`group block text-center ${className}`}>
       <p className="text-xs text-warm-600 mb-3 tracking-wide">{kicker}</p>
       <div className={`relative mx-auto aspect-square w-20 sm:w-24 lg:w-28 rounded-full overflow-visible bg-gradient-to-br ${tint} ring-1 ring-warm-200 group-hover:ring-primary-400 transition`}>
-        <span aria-hidden="true" className="absolute inset-0 flex items-center justify-center text-3xl sm:text-4xl drop-shadow group-hover:scale-110 transition-transform">
-          {dog}
-        </span>
+        {showArt ? (
+          <img
+            src={image}
+            alt=""
+            aria-hidden="true"
+            loading="lazy"
+            onError={() => setArtOk(false)}
+            className="absolute inset-0 h-full w-full rounded-full object-cover group-hover:scale-110 transition-transform"
+          />
+        ) : (
+          <span aria-hidden="true" className="absolute inset-0 flex items-center justify-center text-3xl sm:text-4xl drop-shadow group-hover:scale-110 transition-transform">
+            {dog}
+          </span>
+        )}
         <span
           aria-hidden="true"
           className="absolute -bottom-1 -right-1 w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-white text-xl sm:text-2xl shadow-lg ring-2 ring-primary-300 group-hover:ring-primary-500 group-hover:scale-110 transition"
