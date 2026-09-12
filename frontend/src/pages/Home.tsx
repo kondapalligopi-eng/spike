@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { PageHead } from '@/components/PageHead';
 import { RailArrow } from '@/components/RailArrow';
@@ -16,6 +15,19 @@ type Service = {
   to: string;
 
 };
+
+const TILE_ART = import.meta.glob('@/assets/tiles/*.png', {
+  eager: true,
+  query: '?url',
+  import: 'default',
+}) as Record<string, string>;
+
+/** "Pet Shops" -> the bundled URL for pet-shops.png, or undefined. */
+function tileArt(label: string): string | undefined {
+  const file = `${label.toLowerCase().replace(/\s+/g, '-')}.png`;
+  const key = Object.keys(TILE_ART).find((k) => k.endsWith(`/${file}`));
+  return key ? TILE_ART[key] : undefined;
+}
 
 const SERVICES: Service[] = [
   { label: 'Hospital', dog: '🐶', badge: '🩺', kicker: 'Vet Care', tint: 'from-rose-200 to-rose-400', to: '/hospital' },
@@ -40,23 +52,17 @@ function withCity(to: string, city: City): string {
 
 function ServiceTile({ service, className = '', city }: { service: Service; className?: string; city: City }) {
   const { label, dog, badge, kicker, tint, to } = service;
-  // Artwork is looked up by label — "Pet Shops" -> /tiles/pet-shops.png — so
-  // adding a tile picture means dropping the file in, nothing else. A tile
-  // with no file (or a file that fails to load) falls back to its emoji, so
-  // a half-finished set never shows a broken image.
-  const [artOk, setArtOk] = useState(true);
-  const image = `/tiles/${label.toLowerCase().replace(/\s+/g, '-')}.png`;
+  const image = tileArt(label);
   return (
     <Link to={withCity(to, city)} className={`group block text-center ${className}`}>
       <p className="text-xs text-warm-600 mb-3 tracking-wide">{kicker}</p>
       <div className={`relative mx-auto aspect-square w-20 sm:w-24 lg:w-28 rounded-full overflow-visible bg-gradient-to-br ${tint} ring-1 ring-warm-200 group-hover:ring-primary-400 transition`}>
-        {artOk ? (
+        {image ? (
           <img
             src={image}
             alt=""
             aria-hidden="true"
             loading="lazy"
-            onError={() => setArtOk(false)}
             className="absolute inset-0 h-full w-full rounded-full object-cover group-hover:scale-110 transition-transform"
           />
         ) : (
