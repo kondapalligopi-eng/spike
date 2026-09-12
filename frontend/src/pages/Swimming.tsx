@@ -13,7 +13,7 @@ import { WhatsAppLink } from '@/components/WhatsAppLink';
 import { useBackendWarmup } from '@/lib/warmupBackend';
 import { useStaleShareFallback } from '@/hooks/useStaleShareFallback';
 import { useCity } from '@/hooks/useCity';
-import { hasCategory, isInCity, LIVE_CITIES, type City } from '@/lib/cities';
+import { citiesWithCategory, hasCategory, isInCity, LIVE_CITIES, type City } from '@/lib/cities';
 import { NotFound } from '@/pages/NotFound';
 import { ComingSoon } from '@/components/ComingSoon';
 
@@ -343,6 +343,9 @@ export function Swimming() {
         body={`We have not found dog swimming pools in ${city.name} that meet our bar yet. Dedicated canine pools are still rare outside Bengaluru. Run one, or know one? Tell us and we will list it — free.`}
         notifySubject={`swim schools open in ${city.name}`}
         path={`/${city.slug}/swimming`}
+        elsewhere={citiesWithCategory('swimming')
+          .filter((c) => c.slug !== city.slug)
+          .map((c) => ({ name: c.name, to: `/${c.slug}/swimming` }))}
         noindex
       />
     );

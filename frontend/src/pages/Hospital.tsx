@@ -14,7 +14,7 @@ import { useBackendWarmup } from '@/lib/warmupBackend';
 import { trackClick } from '@/lib/trackClick';
 import { useStaleShareFallback } from '@/hooks/useStaleShareFallback';
 import { useCity } from '@/hooks/useCity';
-import { hasCategory, isInCity, LIVE_CITIES, type City } from '@/lib/cities';
+import { citiesWithCategory, hasCategory, isInCity, LIVE_CITIES, type City } from '@/lib/cities';
 import { NotFound } from '@/pages/NotFound';
 import { ComingSoon } from '@/components/ComingSoon';
 
@@ -398,6 +398,9 @@ export function Hospital() {
         body={`We are still building the vet directory for ${city.name}. Run a clinic there, or know one worth listing? Tell us — listing is free.`}
         notifySubject={`vets are listed in ${city.name}`}
         path={`/${city.slug}/hospital`}
+        elsewhere={citiesWithCategory('hospital')
+          .filter((c) => c.slug !== city.slug)
+          .map((c) => ({ name: c.name, to: `/${c.slug}/hospital` }))}
         noindex
       />
     );

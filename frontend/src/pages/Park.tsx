@@ -13,7 +13,7 @@ import { WhatsAppLink } from '@/components/WhatsAppLink';
 import { useBackendWarmup } from '@/lib/warmupBackend';
 import { useStaleShareFallback } from '@/hooks/useStaleShareFallback';
 import { useCity } from '@/hooks/useCity';
-import { hasCategory, isInCity, LIVE_CITIES, type City } from '@/lib/cities';
+import { citiesWithCategory, hasCategory, isInCity, LIVE_CITIES, type City } from '@/lib/cities';
 import { NotFound } from '@/pages/NotFound';
 import { ComingSoon } from '@/components/ComingSoon';
 
@@ -391,6 +391,9 @@ export function Park() {
         body={`We are still checking which parks in ${city.name} genuinely welcome dogs. Know a good one? Tell us and we will list it — free.`}
         notifySubject={`dog parks open in ${city.name}`}
         path={`/${city.slug}/park`}
+        elsewhere={citiesWithCategory('park')
+          .filter((c) => c.slug !== city.slug)
+          .map((c) => ({ name: c.name, to: `/${c.slug}/park` }))}
         noindex
       />
     );

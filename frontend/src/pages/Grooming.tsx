@@ -11,7 +11,7 @@ import { SelectMenu } from '@/components/SelectMenu';
 import { WhatsAppLink } from '@/components/WhatsAppLink';
 import { useBackendWarmup } from '@/lib/warmupBackend';
 import { useCity } from '@/hooks/useCity';
-import { hasCategory, isInCity, LIVE_CITIES, type City } from '@/lib/cities';
+import { citiesWithCategory, hasCategory, isInCity, LIVE_CITIES, type City } from '@/lib/cities';
 import { NotFound } from '@/pages/NotFound';
 import { ComingSoon } from '@/components/ComingSoon';
 
@@ -314,6 +314,9 @@ export function Grooming() {
         body={`We are still building the grooming directory for ${city.name}. Run a salon there, or know one worth listing? Tell us — listing is free.`}
         notifySubject={`grooming salons are listed in ${city.name}`}
         path={`/${city.slug}/grooming`}
+        elsewhere={citiesWithCategory('grooming')
+          .filter((c) => c.slug !== city.slug)
+          .map((c) => ({ name: c.name, to: `/${c.slug}/grooming` }))}
         noindex
       />
     );
