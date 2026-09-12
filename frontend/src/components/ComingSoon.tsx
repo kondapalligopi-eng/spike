@@ -22,9 +22,12 @@ type ComingSoonProps = {
   /** Keep it out of search results. An empty category is a real page for
    *  a visitor but nothing Google should file as a directory. */
   noindex?: boolean;
+  /** Somewhere this thing does exist — shown as "Open in: <links>". Only
+   *  pass places that genuinely have it, or the link is another dead end. */
+  elsewhere?: { name: string; to: string }[];
 };
 
-export function ComingSoon({ emoji, eyebrow, title, body, notifySubject, path, noindex }: ComingSoonProps) {
+export function ComingSoon({ emoji, eyebrow, title, body, notifySubject, path, noindex, elsewhere }: ComingSoonProps) {
   const mailtoHref = `mailto:support@hispike.in?subject=${encodeURIComponent(
     `Notify me when ${notifySubject}`,
   )}`;
@@ -60,7 +63,25 @@ export function ComingSoon({ emoji, eyebrow, title, body, notifySubject, path, n
             {title}
           </h1>
           <div className="mx-auto h-1 w-20 bg-accent-400 rounded-full mb-5" />
-          <p className="text-base sm:text-lg text-primary-100/95 max-w-xl mx-auto mb-8">{body}</p>
+          <p className="text-base sm:text-lg text-primary-100/95 max-w-xl mx-auto mb-6">{body}</p>
+
+          {/* Where it does exist. Cheaper than a city dropdown here, and it
+              cannot land anyone on a second empty page. */}
+          {elsewhere && elsewhere.length > 0 && (
+            <div className="flex flex-wrap items-center justify-center gap-2 mb-8">
+              <span className="text-sm text-primary-100/80">Open in</span>
+              {elsewhere.map((place) => (
+                <Link
+                  key={place.to}
+                  to={place.to}
+                  className="inline-flex items-center gap-1 rounded-full bg-white/10 hover:bg-white/20 border border-white/25 px-3 py-1 text-sm font-bold text-white transition-colors"
+                >
+                  {place.name}
+                  <span aria-hidden="true">→</span>
+                </Link>
+              ))}
+            </div>
+          )}
           <div className="flex flex-wrap items-center justify-center gap-3">
             <Link
               to="/"
