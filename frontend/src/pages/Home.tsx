@@ -171,8 +171,8 @@ export function Home() {
   return (
     <div className="flex flex-col">
       <PageHead
-        title="HiSpike — All-In-One Pet Care for Dogs in Bengaluru"
-        description="HiSpike is Bengaluru's all-in-one pet care platform — find trusted vets, dog parks, swim coaches, grooming salons, and premium pet supplies in one place. Verified providers, honest reviews, hyperlocal."
+        title="HiSpike — All-In-One Pet Care for Dogs"
+        description={`HiSpike is an all-in-one pet care platform for ${liveCitiesLabel()} — trusted vets, dog parks, swim coaches, grooming and pet supplies.`}
         path="/"
       />
 
@@ -391,7 +391,9 @@ export function Home() {
               Why HiSpike
             </p>
             <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-warm-900">
-              Built for Bengaluru's dog owners
+              Built for dog owners in{' '}
+              <span className="sm:hidden">{liveCitiesCountLabel()}</span>
+              <span className="hidden sm:inline">{liveCitiesLabel()}</span>
             </h2>
             <div className="mx-auto mt-3 h-0.5 w-16 bg-accent-400 rounded-full" />
           </div>
@@ -415,7 +417,7 @@ export function Home() {
               {
                 emoji: '⭐',
                 title: 'Honest reviews',
-                body: 'Transparent ratings and notes from real Bengaluru dog parents, not paid promotions.',
+                body: 'Transparent ratings and notes from real dog parents, not paid promotions.',
               },
             ].map(({ emoji, title, body }) => (
               <div
