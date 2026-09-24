@@ -65,8 +65,12 @@ export const CITY_NAMES = CITIES.map((c) => c.name);
  * Past `max` it counts instead of naming, because a banner listing eight
  * cities stops being read. Derived from CITIES so copy that names our
  * coverage cannot quietly go stale the next time one is published.
+ *
+ * `max` is 5 so the banner still names every city once Delhi NCR publishes.
+ * Raise it again only if the line still reads at a glance — the phone-width
+ * banner falls back to liveCitiesCountLabel() either way.
  */
-export function liveCitiesLabel(max = 4): string {
+export function liveCitiesLabel(max = 5): string {
   const names = CITIES.filter((c) => c.live).map((c) => c.name);
   if (names.length === 0) return DEFAULT_CITY.name;
   if (names.length === 1) return names[0];
