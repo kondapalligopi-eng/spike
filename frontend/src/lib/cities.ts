@@ -43,6 +43,12 @@ export const CITIES: City[] = [
   { slug: 'hyderabad', name: 'Hyderabad', state: 'Telangana', categories: ['hospital', 'park', 'grooming'], live: true },
   // No dog pools worth listing here — swimming shows a coming-soon splash.
   { slug: 'mumbai', name: 'Mumbai', state: 'Maharashtra', categories: ['hospital', 'park', 'grooming'], live: true },
+  // One directory for the whole capital region: Delhi proper plus Gurgaon,
+  // Noida, Ghaziabad and Faridabad, which is how people search for it and where
+  // half the listings actually are. Unlike the other cities added after
+  // Bengaluru this one has real dog pools, so swimming is listed rather than
+  // splashed. Awaiting curation of its first import — see `live`.
+  { slug: 'delhi-ncr', name: 'Delhi NCR', state: 'Delhi NCR', categories: ALL_CATEGORIES, live: false },
 ];
 
 /** Where a visitor with no city in the URL ends up. */
@@ -61,8 +67,12 @@ export const CITY_NAMES = CITIES.map((c) => c.name);
  * Past `max` it counts instead of naming, because a banner listing eight
  * cities stops being read. Derived from CITIES so copy that names our
  * coverage cannot quietly go stale the next time one is published.
+ *
+ * `max` is 5 so the banner still names every city once Delhi NCR publishes.
+ * Raise it again only if the line still reads at a glance — the phone-width
+ * banner falls back to liveCitiesCountLabel() either way.
  */
-export function liveCitiesLabel(max = 4): string {
+export function liveCitiesLabel(max = 5): string {
   const names = CITIES.filter((c) => c.live).map((c) => c.name);
   if (names.length === 0) return DEFAULT_CITY.name;
   if (names.length === 1) return names[0];
