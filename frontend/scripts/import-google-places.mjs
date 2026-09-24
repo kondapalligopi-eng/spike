@@ -71,7 +71,10 @@ const getFlag = (name, def) => {
 const hasFlag = (name) => args.includes(`--${name}`);
 
 const MAX_PER_CATEGORY = Number(getFlag('max', '40'));
-const OUT_DIR = resolve(getFlag('out', '.'));
+// Defaults into google-import/ because that is the folder .gitignore excludes.
+// Writing to the repo root instead put a whole Google Places pull into a commit,
+// which is exactly what not storing this data long-term is meant to avoid.
+const OUT_DIR = resolve(getFlag('out', './google-import'));
 // Fetches and reports counts without writing any spreadsheets — a cheap way to
 // see how much a city actually has before committing to curating it.
 const COUNT_ONLY = hasFlag('count-only');
