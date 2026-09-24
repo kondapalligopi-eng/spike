@@ -42,7 +42,11 @@ function loadCities() {
     throw new Error(`Could not read ${file} — run this from the frontend/ folder.`);
   }
   const cities = [];
-  const entry = /\{\s*slug:\s*'([^']+)',\s*name:\s*'([^']+)',\s*state:\s*'([^']+)',\s*live:\s*(true|false)\s*\}/g;
+  // `live` is matched loosely rather than as the fourth field: a city entry has
+  // grown a `categories` list since, and pinning the field order is what made an
+  // earlier version of this parse silently find nothing.
+  const entry =
+    /\{\s*slug:\s*'([^']+)',\s*name:\s*'([^']+)',\s*state:\s*'([^']+)',[^}]*?live:\s*(true|false)\s*,?\s*\}/g;
   let m;
   while ((m = entry.exec(source))) {
     cities.push({ slug: m[1], name: m[2], state: m[3], live: m[4] === 'true' });
