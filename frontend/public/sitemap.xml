@@ -76,6 +76,26 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://hispike.in/delhi-ncr/hospital</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://hispike.in/delhi-ncr/park</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://hispike.in/delhi-ncr/swimming</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://hispike.in/delhi-ncr/grooming</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://hispike.in/pet-supplies</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
