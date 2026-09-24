@@ -13,7 +13,7 @@
 //   node scripts/import-google-places.mjs YOUR_GOOGLE_MAPS_API_KEY
 //   node scripts/import-google-places.mjs YOUR_KEY --city Pune
 //   node scripts/import-google-places.mjs YOUR_KEY --city pune,hyderabad,mumbai
-//   node scripts/import-google-places.mjs YOUR_KEY --city all --max 40 --out ./google-import
+//   node scripts/import-google-places.mjs YOUR_KEY --city all --max 40 --out ./elsewhere
 //   node scripts/import-google-places.mjs YOUR_KEY --count-only
 // Or:  GOOGLE_MAPS_API_KEY=... node scripts/import-google-places.mjs
 //
