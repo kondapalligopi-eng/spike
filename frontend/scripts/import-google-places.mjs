@@ -13,7 +13,7 @@
 //   node scripts/import-google-places.mjs YOUR_GOOGLE_MAPS_API_KEY
 //   node scripts/import-google-places.mjs YOUR_KEY --city Pune
 //   node scripts/import-google-places.mjs YOUR_KEY --city pune,hyderabad,mumbai
-//   node scripts/import-google-places.mjs YOUR_KEY --city all --max 40 --out ./google-import
+//   node scripts/import-google-places.mjs YOUR_KEY --city all --max 40 --out ./elsewhere
 //   node scripts/import-google-places.mjs YOUR_KEY --count-only
 // Or:  GOOGLE_MAPS_API_KEY=... node scripts/import-google-places.mjs
 //
@@ -42,7 +42,11 @@ function loadCities() {
     throw new Error(`Could not read ${file} — run this from the frontend/ folder.`);
   }
   const cities = [];
-  const entry = /\{\s*slug:\s*'([^']+)',\s*name:\s*'([^']+)',\s*state:\s*'([^']+)',\s*live:\s*(true|false)\s*\}/g;
+  // `live` is matched loosely rather than as the fourth field: a city entry has
+  // grown a `categories` list since, and pinning the field order is what made an
+  // earlier version of this parse silently find nothing.
+  const entry =
+    /\{\s*slug:\s*'([^']+)',\s*name:\s*'([^']+)',\s*state:\s*'([^']+)',[^}]*?live:\s*(true|false)\s*,?\s*\}/g;
   let m;
   while ((m = entry.exec(source))) {
     cities.push({ slug: m[1], name: m[2], state: m[3], live: m[4] === 'true' });
@@ -67,7 +71,10 @@ const getFlag = (name, def) => {
 const hasFlag = (name) => args.includes(`--${name}`);
 
 const MAX_PER_CATEGORY = Number(getFlag('max', '40'));
-const OUT_DIR = resolve(getFlag('out', '.'));
+// Defaults into google-import/ because that is the folder .gitignore excludes.
+// Writing to the repo root instead put a whole Google Places pull into a commit,
+// which is exactly what not storing this data long-term is meant to avoid.
+const OUT_DIR = resolve(getFlag('out', './google-import'));
 // Fetches and reports counts without writing any spreadsheets — a cheap way to
 // see how much a city actually has before committing to curating it.
 const COUNT_ONLY = hasFlag('count-only');

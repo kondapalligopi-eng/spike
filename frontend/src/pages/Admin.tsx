@@ -1391,6 +1391,18 @@ const CITY_ALIASES: Record<string, string> = {
   pune: 'Pune',
   hyderabad: 'Hyderabad',
   secunderabad: 'Hyderabad',
+  // The capital region is one directory, so every NCR town folds into it —
+  // otherwise a Gurgaon sheet quietly opens a "Gurgaon" city with nine listings.
+  delhi: 'Delhi NCR',
+  'new delhi': 'Delhi NCR',
+  'delhi ncr': 'Delhi NCR',
+  ncr: 'Delhi NCR',
+  gurgaon: 'Delhi NCR',
+  gurugram: 'Delhi NCR',
+  noida: 'Delhi NCR',
+  'greater noida': 'Delhi NCR',
+  ghaziabad: 'Delhi NCR',
+  faridabad: 'Delhi NCR',
 };
 function cityCell(row: SheetRow): string {
   const raw = (row['City'] ?? '').trim();
