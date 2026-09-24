@@ -47,8 +47,8 @@ export const CITIES: City[] = [
   // Noida, Ghaziabad and Faridabad, which is how people search for it and where
   // half the listings actually are. Unlike the other cities added after
   // Bengaluru this one has real dog pools, so swimming is listed rather than
-  // splashed. Awaiting curation of its first import — see `live`.
-  { slug: 'delhi-ncr', name: 'Delhi NCR', state: 'Delhi NCR', categories: ALL_CATEGORIES, live: false },
+  // splashed.
+  { slug: 'delhi-ncr', name: 'Delhi NCR', state: 'Delhi NCR', categories: ALL_CATEGORIES, live: true },
 ];
 
 /** Where a visitor with no city in the URL ends up. */
