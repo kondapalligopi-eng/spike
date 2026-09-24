@@ -45,8 +45,10 @@ export const CITIES: City[] = [
   { slug: 'mumbai', name: 'Mumbai', state: 'Maharashtra', categories: ['hospital', 'park', 'grooming'], live: true },
   // One directory for the whole capital region: Delhi proper plus Gurgaon,
   // Noida, Ghaziabad and Faridabad, which is how people search for it and where
-  // half the listings actually are. Waiting on its first import — see `live`.
-  { slug: 'delhi-ncr', name: 'Delhi NCR', state: 'Delhi NCR', categories: ['hospital', 'park', 'grooming'], live: false },
+  // half the listings actually are. Unlike the other cities added after
+  // Bengaluru this one has real dog pools, so swimming is listed rather than
+  // splashed. Awaiting curation of its first import — see `live`.
+  { slug: 'delhi-ncr', name: 'Delhi NCR', state: 'Delhi NCR', categories: ALL_CATEGORIES, live: false },
 ];
 
 /** Where a visitor with no city in the URL ends up. */
