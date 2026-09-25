@@ -43,8 +43,10 @@ export function PetShops() {
               Browse neighbourhood pet stores, see their products, and message them directly on WhatsApp — food, toys, grooming supplies, and more.
             </p>
           </div>
+          {/* Goes to the pitch, not the form: an owner arriving cold has no idea
+              a storefront, shelves and order flow sit behind this button. */}
           <Link
-            to="/my-shop"
+            to="/for-shops"
             className="self-start md:self-auto inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-accent-400 hover:bg-accent-300 text-warm-900 text-sm font-bold tracking-[0.15em] uppercase ring-2 ring-accent-300/50 hover:ring-accent-200 transition-all shadow-md"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
