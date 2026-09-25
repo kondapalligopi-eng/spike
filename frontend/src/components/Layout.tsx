@@ -26,6 +26,9 @@ const FOOTER_COLUMNS: { heading: string; links: { label: string; href: string; e
       { label: 'Create a Pet Story', href: '/pet-stories/create' },
       { label: 'Dog Walkers', href: '/dog-walking' },
       { label: 'Shop Pet Supplies', href: '/pet-supplies' },
+      // The one owner-facing link in a column of visitor links — a shop owner
+      // browsing the site has no other route to the pitch except the directory.
+      { label: 'List Your Pet Shop', href: '/for-shops' },
     ],
   },
   {
