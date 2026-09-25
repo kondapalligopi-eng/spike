@@ -138,6 +138,9 @@ export const routes: RouteRecord[] = [
           { path: 'pet-play', Component: PetPlay },
           // Pet Shops directory (browse) — inside HiSpike chrome.
           { path: 'petshops', Component: PetShops },
+          // The owner-facing side of the same marketplace: what a shop gets and
+          // what it costs. The link we send a shop owner on WhatsApp.
+          { path: 'for-shops', Component: ForShops },
           // Public so visitors can build a pet page before signing up — the
           // /pet-stories is the PUBLIC GALLERY — the nav tab lands here, so a
           // first-time visitor sees real stories instead of an empty form.
