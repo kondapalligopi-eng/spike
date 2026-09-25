@@ -21,6 +21,7 @@ import { PetPlay } from '@/pages/PetPlay';
 import { PetShop } from '@/pages/PetShop';
 import { PetShopCart } from '@/pages/PetShopCart';
 import { PetShops } from '@/pages/PetShops';
+import { ForShops } from '@/pages/ForShops';
 import { Adoptions } from '@/pages/Adoptions';
 import { Swimming } from '@/pages/Swimming';
 import { Hospital } from '@/pages/Hospital';
