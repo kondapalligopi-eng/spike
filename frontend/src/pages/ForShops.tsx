@@ -171,12 +171,12 @@ export function ForShops() {
           </p>
           <div className="mt-6 grid gap-6 lg:grid-cols-[1.6fr_1fr] items-start">
             <Shot
-              src="/for-shops/storefront-hero.png"
+              src="/for-shops/storefront-hero.webp"
               alt="A pet shop storefront on HiSpike showing the shop name, current sale, delivery terms, opening hours and WhatsApp and Call buttons"
               caption="Your storefront — offer, timings and contact buttons up front"
             />
             <Shot
-              src="/for-shops/storefront-mobile.png"
+              src="/for-shops/storefront-mobile.webp"
               alt="The same pet shop storefront on a phone screen"
               caption="The same page on a phone, where most customers will see it"
               crop="max-h-[420px]"
@@ -184,7 +184,7 @@ export function ForShops() {
           </div>
           <div className="mt-6">
             <Shot
-              src="/for-shops/storefront-shelves.png"
+              src="/for-shops/storefront-shelves.webp"
               alt="Product shelves on a pet shop storefront, with a swipeable row of products for each category"
               caption="Products sit on shelves by category, so a big catalogue stays browsable"
             />
