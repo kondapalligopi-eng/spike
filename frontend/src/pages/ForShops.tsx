@@ -179,6 +179,7 @@ export function ForShops() {
               src="/for-shops/storefront-mobile.png"
               alt="The same pet shop storefront on a phone screen"
               caption="The same page on a phone, where most customers will see it"
+              crop="max-h-[420px]"
             />
           </div>
           <div className="mt-6">
