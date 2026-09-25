@@ -69,8 +69,15 @@ export function PetShops() {
             <div className="text-5xl mb-3">🏪</div>
             <p className="text-lg font-bold text-warm-900">No shops listed yet</p>
             <p className="text-warm-500 mt-1">Be the first pet shop in Bengaluru on HiSpike.</p>
-            <Link to="/my-shop" className="mt-5 inline-flex rounded-full bg-primary-600 px-6 py-3 text-sm font-bold text-white hover:bg-primary-700 transition-colors">
-              Create your shop page — free
+            {/* An empty directory is the moment the pitch matters most — say what
+                a shop actually gets rather than only asking them to sign up. */}
+            <ul className="mt-5 mx-auto max-w-md text-left text-sm text-warm-600 space-y-2">
+              <li className="flex gap-2"><span aria-hidden="true">🏪</span> Your own shop page with your products and timings</li>
+              <li className="flex gap-2"><span aria-hidden="true">💬</span> Customers order on WhatsApp, or straight from the page</li>
+              <li className="flex gap-2"><span aria-hidden="true">💸</span> They pay you directly — no commission, no setup fee</li>
+            </ul>
+            <Link to="/for-shops" className="mt-6 inline-flex rounded-full bg-primary-600 px-6 py-3 text-sm font-bold text-white hover:bg-primary-700 transition-colors">
+              See what you get — it&rsquo;s free
             </Link>
           </div>
         ) : (
