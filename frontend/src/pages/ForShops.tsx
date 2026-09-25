@@ -88,11 +88,30 @@ const FAQS: FaqItem[] = [
   },
 ];
 
-function Shot({ src, alt, caption }: { src: string; alt: string; caption: string }) {
+// `crop` caps the height and anchors to the top of the image. The phone
+// screenshot is twice as tall as it is wide, so shown whole it towers over the
+// desktop shot beside it and leaves a dead column; cropping keeps the two
+// roughly level while still showing the part that matters.
+function Shot({
+  src,
+  alt,
+  caption,
+  crop,
+}: {
+  src: string;
+  alt: string;
+  caption: string;
+  crop?: string;
+}) {
   return (
     <figure className="min-w-0">
       <div className="rounded-2xl border border-warm-200 bg-white overflow-hidden shadow-sm">
-        <img src={src} alt={alt} loading="lazy" className="w-full h-auto block" />
+        <img
+          src={src}
+          alt={alt}
+          loading="lazy"
+          className={crop ? `w-full ${crop} object-cover object-top block` : 'w-full h-auto block'}
+        />
       </div>
       <figcaption className="mt-2 text-xs text-warm-500 text-center">{caption}</figcaption>
     </figure>
